@@ -1,53 +1,139 @@
-<script>
-const SUPABASE_URL = "https://zleztbdrxnqirccgkvqx.supabase.co"
-const SUPABASE_ANON_KEY = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR"
-const FUNCTION_URL = SUPABASE_URL + "/functions/v1/book-appointment"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Columbus East Tax Services</title>
 
-// Load services
-fetch(SUPABASE_URL + "/rest/v1/services", {
-  headers: {
-    apikey: https://zleztbdrxnqirccgkvqx.supabase.co,
-    Authorization: "Bearer " + sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR
-  }
-})
-.then(res => res.json())
-.then(services => {
-  const select = document.getElementById("service")
-  services.forEach(service => {
-    const option = document.createElement("option")
-    option.value = service.id
-    option.textContent = service.name
-    select.appendChild(option)
-  })
-})
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
 
-// Handle booking
-document.getElementById("booking").addEventListener("submit", async e => {
-  e.preventDefault()
-  document.getElementById("status").textContent = "Booking..."
+.card {
+  background: #ffffff;
+  max-width: 420px;
+  width: 100%;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  text-align: center;
+}
 
-  const payload = {
-    name: document.getElementById("name").value,
-    email: document.getElementById("email").value,
-    service_id: document.getElementById("service").value,
-    start_time: document.getElementById("time").value
-  }
+h1 {
+  margin-top: 0;
+  font-size: 24px;
+  color: #1f2933;
+}
 
-  try {
-    const res = await fetch(FUNCTION_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    })
+p {
+  color: #4b5563;
+  margin: 8px 0;
+}
 
-    const data = await res.json()
+.services {
+  text-align: left;
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
 
-    document.getElementById("status").textContent =
-      res.ok ? "✅ Appointment booked!" : "❌ " + (data.error || "Booking failed")
+.services ul {
+  margin: 8px 0 0 18px;
+  padding: 0;
+}
 
-  } catch (err) {
-    document.getElementById("status").textContent =
-      "❌ Network error. Please try again."
-  }
-})
-</script>
+.services li {
+  margin-bottom: 6px;
+}
+
+.buttons {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.buttons a {
+  display: block;
+  text-decoration: none;
+  color: #ffffff;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.call { background: #2563eb; }
+.text { background: #16a34a; }
+.email { background: #9333ea; }
+.book { background: #0f766e; }
+
+footer {
+  margin-top: 14px;
+  font-size: 13px;
+  color: #6b7280;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>Columbus East Tax Services</h1>
+
+<p>📍 Columbus, Ohio 43227</p>
+
+<p>
+📞 <a href="tel:16145991185">614-599-1185</a><br>
+📞 <a href="tel:16142597625">614-259-7625</a>
+</p>
+
+<p>
+✉️ <a href="mailto:Columbuseast.taxservices@outlook.com">
+Columbuseast.taxservices@outlook.com
+</a>
+</p>
+
+<div class="services">
+<strong>Services Offered</strong>
+<ul>
+  <li>W-2 & Individual Tax Returns</li>
+  <li>1099 & Self-Employed Taxes</li>
+  <li>LLC & Small Business Filing</li>
+  <li>Audit Help & IRS Letters</li>
+  <li>Amended Returns (1040-X)</li>
+</ul>
+</div>
+
+<div class="buttons">
+  <a href="tel:16145991185" class="call">📞 Call Now</a>
+  <a href="sms:16145991185" class="text">💬 Text Us</a>
+  <a href="mailto:Columbuseast.taxservices@outlook.com" class="email">✉️ Email Us</a>
+
+  <!-- ✅ SAME PAGE BOOKING BUTTON -->
+  <a href="#book" class="book">
+    📅 BOOK APPOINTMENT
+  </a>
+</div>
+
+<footer>
+Tap to call, text, email, or book online
+</footer>
+
+</div>
+
+<!-- 🔽 BOOKING SECTION (PLACEHOLDER FOR NOW) -->
+<div id="book"></div>
+
+</body>
+</html>
