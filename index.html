@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Columbus East Tax Services</title>
+<title>Columbus East Tax Services – Book Appointment</title>
 
 <style>
 body {
@@ -11,16 +11,16 @@ body {
   background: #f4f6f8;
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+}
+
+.container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 16px;
 }
 
 .card {
   background: #ffffff;
-  max-width: 420px;
-  width: 100%;
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
@@ -63,13 +63,11 @@ p {
 }
 
 .buttons a {
-  display: block;
   text-decoration: none;
-  color: #ffffff;
+  color: #fff;
   padding: 14px;
   border-radius: 8px;
   font-weight: bold;
-  font-size: 16px;
 }
 
 .call { background: #2563eb; }
@@ -77,63 +75,166 @@ p {
 .email { background: #9333ea; }
 .book { background: #0f766e; }
 
-footer {
-  margin-top: 14px;
-  font-size: 13px;
-  color: #6b7280;
+.booking {
+  margin-top: 24px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.booking h2 {
+  margin-top: 0;
+  font-size: 20px;
+  color: #1f2933;
+  text-align: center;
+}
+
+.booking input,
+.booking select,
+.booking button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+.booking button {
+  background: #0f766e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.booking button:hover {
+  opacity: 0.95;
+}
+
+#status {
+  margin-top: 12px;
+  text-align: center;
+  font-weight: bold;
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="container">
 
-<h1>Columbus East Tax Services</h1>
+  <!-- 🔹 DIGITAL CARD -->
+  <div class="card">
+    <h1>Columbus East Tax Services</h1>
 
-<p>📍 Columbus, Ohio 43227</p>
+    <p>📍 Columbus, Ohio 43227</p>
 
-<p>
-📞 <a href="tel:16145991185">614-599-1185</a><br>
-📞 <a href="tel:16142597625">614-259-7625</a>
-</p>
+    <p>
+      📞 <a href="tel:16145991185">614-599-1185</a><br>
+      📞 <a href="tel:16142597625">614-259-7625</a>
+    </p>
 
-<p>
-✉️ <a href="mailto:Columbuseast.taxservices@outlook.com">
-Columbuseast.taxservices@outlook.com
-</a>
-</p>
+    <p>
+      ✉️ <a href="mailto:Columbuseast.taxservices@outlook.com">
+      Columbuseast.taxservices@outlook.com</a>
+    </p>
 
-<div class="services">
-<strong>Services Offered</strong>
-<ul>
-  <li>W-2 & Individual Tax Returns</li>
-  <li>1099 & Self-Employed Taxes</li>
-  <li>LLC & Small Business Filing</li>
-  <li>Audit Help & IRS Letters</li>
-  <li>Amended Returns (1040-X)</li>
-</ul>
+    <div class="services">
+      <strong>Services Offered</strong>
+      <ul>
+        <li>W-2 & Individual Tax Returns</li>
+        <li>1099 & Self-Employed Taxes</li>
+        <li>LLC & Small Business Filing</li>
+        <li>Audit Help & IRS Letters</li>
+        <li>Amended Returns (1040-X)</li>
+      </ul>
+    </div>
+
+    <div class="buttons">
+      <a href="tel:16145991185" class="call">📞 Call</a>
+      <a href="sms:16145991185" class="text">💬 Text</a>
+      <a href="mailto:Columbuseast.taxservices@outlook.com" class="email">✉️ Email</a>
+      <a href="#book" class="book">📅 Book Appointment</a>
+    </div>
+  </div>
+
+  <!-- 🔹 BOOKING FORM -->
+  <div id="book" class="booking">
+    <h2>Book an Appointment</h2>
+
+    <form id="booking-form">
+      <input id="name" placeholder="Full Name" required>
+      <input id="email" type="email" placeholder="Email Address" required>
+
+      <select id="service" required>
+        <option value="">Select Service</option>
+      </select>
+
+      <input id="time" type="datetime-local" required>
+
+      <button type="submit">Confirm Booking</button>
+    </form>
+
+    <div id="status"></div>
+  </div>
+
 </div>
 
-<div class="buttons">
-  <a href="tel:16145991185" class="call">📞 Call Now</a>
-  <a href="sms:16145991185" class="text">💬 Text Us</a>
-  <a href="mailto:Columbuseast.taxservices@outlook.com" class="email">✉️ Email Us</a>
+<script>
+const SUPABASE_URL = "https://zleztbdrxnqirccgkvqx.supabase.co"
+const SUPABASE_ANON_KEY = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR"
+const FUNCTION_URL = SUPABASE_URL + "/functions/v1/book-appointment"
 
-  <!-- ✅ SAME PAGE BOOKING BUTTON -->
-  <a href="#book" class="book">
-    📅 BOOK APPOINTMENT
-  </a>
-</div>
+// Load services
+fetch(SUPABASE_URL + "/rest/v1/services", {
+  headers: {
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: "Bearer " + SUPABASE_ANON_KEY
+  }
+})
+.then(res => res.json())
+.then(services => {
+  const select = document.getElementById("service")
+  services.forEach(s => {
+    const opt = document.createElement("option")
+    opt.value = s.id
+    opt.textContent = s.name
+    select.appendChild(opt)
+  })
+})
 
-<footer>
-Tap to call, text, email, or book online
-</footer>
+// Handle booking
+document.getElementById("booking-form").addEventListener("submit", async e => {
+  e.preventDefault()
+  document.getElementById("status").textContent = "Booking..."
 
-</div>
+  const payload = {
+    name: name.value,
+    email: email.value,
+    service_id: service.value,
+    start_time: time.value
+  }
 
-<!-- 🔽 BOOKING SECTION (PLACEHOLDER FOR NOW) -->
-<div id="book"></div>
+  try {
+    const res = await fetch(FUNCTION_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+
+    const data = await res.json()
+
+    document.getElementById("status").textContent =
+      res.ok ? "✅ Appointment booked successfully!" :
+      "❌ " + (data.error || "Time unavailable")
+
+  } catch {
+    document.getElementById("status").textContent =
+      "❌ Network error. Please try again."
+  }
+})
+</script>
 
 </body>
 </html>
