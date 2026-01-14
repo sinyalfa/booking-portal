@@ -1,60 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Book Appointment</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Columbus East Tax Services – Booking</title>
+
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      padding: 30px;
+    }
+    .container {
+      max-width: 420px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 15px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+    }
+    #message {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
 </head>
 
-<body style="font-family:Arial; background:#f4f6f8;">
-  <h2>Book Appointment</h2>
+<body>
 
-  <form id="form">
-    <input id="name" placeholder="Name" required><br><br>
-    <input id="email" placeholder="Email" required><br><br>
-    <input id="time" type="datetime-local" required><br><br>
-    <button type="submit">Confirm Booking</button>
-  </form>
+  <div class="container">
+    <h1>Book Appointment</h1>
 
-  <pre id="output"></pre>
+    <form id="bookingForm">
+      <label>Name</label>
+      <input id="name" required />
 
-<script>
-document.getElementById("form").addEventListener("submit", async (e) => {
-  e.preventDefault()
+      <label>Email</label>
+      <input id="email" type="email" required />
 
-  const payload = {
-    name: document.getElementById("name").value,
-    email: document.getElementById("email").value,
-    service_id: "00000000-0000-0000-0000-000000000001",
-    start_time: new Date(
-      document.getElementById("time").value
-    ).toISOString()
-  }
+      <label>Service</label>
+      <select id="service" required>
+        <option value="">Select Service</option>
+        <option value="W2">W-2 Tax Filing</option>
+        <option value="1099">1099 Contractor Filing</option>
+        <option value="LLC">LLC / Business Taxes</option>
+        <option value="Audit">Audit Assistance</option>
+      </select>
 
-  document.getElementById("output").textContent =
-    "Sending:\n" + JSON.stringify(payload, null, 2)
+      <label>Date & Time</label>
+      <input id="time" type="datetime-local" required />
 
-  try {
-    const res = await fetch(
-      "https://zleztbdrxnqirccgkvqx.supabase.co/functions/v1/book-appointment",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR"
-        },
-        body: JSON.stringify(payload)
+      <button type="submit">Confirm Booking</button>
+    </form>
+
+    <div id="message"></div>
+  </div>
+
+  <!-- 🔻 SCRIPT SECTION STARTS HERE 🔻 -->
+  <script>
+    document.getElementById("bookingForm").addEventListener("submit", async (e) => {
+      e.preventDefault()
+
+      const message = document.getElementById("message")
+      message.textContent = "Submitting..."
+
+      const payload = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        service_id: document.getElementById("service").value,
+        start_time: new Date(
+          document.getElementById("time").value
+        ).toISOString()
       }
-    )
 
-    const data = await res.json()
-    document.getElementById("output").textContent =
-      "RESPONSE:\n" + JSON.stringify(data, null, 2)
+      try {
+        const res = await fetch(
+          "https://zleztbdrxnqirccgkvqx.supabase.co/functions/v1/book-appointment",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer public"
+            },
+            body: JSON.stringify(payload)
+          }
+        )
 
-  } catch (err) {
-    document.getElementById("output").textContent =
-      "ERROR:\n" + err.message
-  }
-})
-</script>
+        const text = await res.text()
+        console.log("RAW RESPONSE:", text)
+
+        const data = JSON.parse(text)
+        if (!res.ok) throw new Error(data.error)
+
+        message.textContent = "✅ Appointment booked successfully"
+
+      } catch (err) {
+        console.error(err)
+        message.textContent = "❌ " + err.message
+      }
+    })
+  </script>
+  <!-- 🔺 SCRIPT SECTION ENDS HERE 🔺 -->
+
 </body>
 </html>
