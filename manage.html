@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Appointment</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; background:#f4f6f8; margin:0; padding:30px; display:flex; justify-content:center; }
+    .box { max-width:520px; width:100%; background:#fff; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.1); padding:22px; }
+    h1 { margin:0 0 10px 0; font-size:22px; }
+    .muted { color:#6b7280; font-size:13px; }
+    .row { margin:10px 0; }
+    .label { font-weight:bold; color:#111827; }
+    .val { color:#111827; }
+    .status { margin-top:12px; font-weight:bold; }
+    .ok { color:#16a34a; }
+    .bad { color:#dc2626; }
+    .btns { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+    button, a.btn {
+      border-radius:10px; padding:12px 14px; font-weight:bold; cursor:pointer;
+      border:1px solid #d1d5db; background:#fff; text-decoration:none; color:#111827;
+    }
+    button.danger { background:#dc2626; border:none; color:#fff; }
+    button:disabled { opacity:.6; cursor:not-allowed; }
+    code { word-break: break-all; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Manage Appointment</h1>
+    <div class="muted">Use the link you received after booking.</div>
+
+    <div id="content" style="display:none;">
+      <div class="row"><span class="label">Service:</span> <span class="val" id="svc"></span></div>
+      <div class="row"><span class="label">Date & Time:</span> <span class="val" id="dt"></span></div>
+      <div class="row"><span class="label">Duration:</span> <span class="val">60 minutes</span></div>
+      <div class="row"><span class="label">Status:</span> <span class="val" id="st"></span></div>
+      <div class="row muted"><span class="label">Confirmation #:</span> <code id="cid"></code></div>
+
+      <div class="btns">
+        <a class="btn" href="./">Back to Booking</a>
+        <button class="danger" id="cancelBtn" type="button">Cancel Appointment</button>
+      </div>
+    </div>
+
+    <div id="msg" class="status"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
+    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+
+    const msg = document.getElementById("msg");
+    const content = document.getElementById("content");
+    const cancelBtn = document.getElementById("cancelBtn");
+
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+    const token = params.get("token");
+
+    function setMsg(text, ok) {
+      msg.textContent = text;
+      msg.className = "status " + (ok ? "ok" : "bad");
+    }
+
+    function fmt(iso) {
+      const d = new Date(iso);
+      return d.toLocaleString([], { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+    }
+
+    async function load() {
+      if (!id || !token) {
+        setMsg("Missing appointment link parameters. Please use the full manage link.", false);
+        return;
+      }
+
+      if (!window.supabase?.createClient) {
+        setMsg("Supabase library didn't load. Refresh and try again.", false);
+        return;
+      }
+
+      const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+      setMsg("Loading appointment...", true);
+
+      const { data, error } = await supa
+        .from("appointments")
+        .select("id, service, start_time, status")
+        .eq("id", id)
+        .eq("cancel_token", token)
+        .maybeSingle();
+
+      if (error) {
+        console.error(error);
+        setMsg("Error loading appointment: " + error.message, false);
+        return;
+      }
+
+      if (!data) {
+        setMsg("Appointment not found (link may be invalid).", false);
+        return;
+      }
+
+      document.getElementById("svc").textContent = data.service || "";
+      document.getElementById("dt").textContent = fmt(data.start_time);
+      document.getElementById("st").textContent = data.status || "confirmed";
+      document.getElementById("cid").textContent = data.id;
+
+      // Disable cancel if already cancelled
+      if ((data.status || "").toLowerCase() === "cancelled") {
+        cancelBtn.disabled = true;
+        cancelBtn.textContent = "Already Cancelled";
+      }
+
+      content.style.display = "block";
+      setMsg("", true);
+    }
+
+    cancelBtn.addEventListener("click", async () => {
+      if (!confirm("Cancel this appointment?")) return;
+
+      const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+      cancelBtn.disabled = true;
+      setMsg("Cancelling...", true);
+
+      const { error } = await supa
+        .from("appointments")
+        .update({ status: "cancelled" })
+        .eq("id", id)
+        .eq("cancel_token", token);
+
+      if (error) {
+        console.error(error);
+        setMsg("Cancel failed: " + error.message, false);
+        cancelBtn.disabled = false;
+        return;
+      }
+
+      document.getElementById("st").textContent = "cancelled";
+      cancelBtn.textContent = "Cancelled";
+      setMsg("✅ Appointment cancelled.", true);
+    });
+
+    load();
+  </script>
+</body>
+</html>
