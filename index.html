@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Columbus East Tax Services</title>
+  <title>Columbus East Tax Services – Booking</title>
 
   <style>
     body {
@@ -12,37 +12,40 @@
       display: flex;
       justify-content: center;
       padding: 30px;
-      margin: 0;
     }
 
-    .card {
-      background: #ffffff;
+    .container {
       max-width: 420px;
       width: 100%;
+      background: #ffffff;
       padding: 25px;
       border-radius: 12px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      text-align: center;
     }
 
     h1 {
+      text-align: center;
       margin-bottom: 10px;
-      font-size: 24px;
-      color: #1f2933;
     }
 
-    .info {
-      margin: 10px 0;
-      font-size: 16px;
-      color: #4b5563;
+    .contact {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .contact a {
+      display: block;
+      color: #0066cc;
+      text-decoration: none;
+      margin: 6px 0;
+      font-weight: bold;
     }
 
     .services {
-      text-align: left;
-      background: #f9fafb;
+      background: #f1f3f5;
       padding: 15px;
-      border-radius: 10px;
-      margin: 20px 0;
+      border-radius: 8px;
+      margin-bottom: 20px;
     }
 
     .services h3 {
@@ -50,23 +53,20 @@
     }
 
     .services ul {
-      padding-left: 20px;
+      padding-left: 18px;
+      margin: 0;
     }
 
-    .buttons {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .btn {
-      text-decoration: none;
+    .action-btn {
+      width: 100%;
       padding: 14px;
-      border-radius: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
       font-weight: bold;
+      cursor: pointer;
       color: #fff;
-      display: block;
     }
 
     .call { background: #2563eb; }
@@ -74,62 +74,56 @@
     .email { background: #9333ea; }
     .book { background: #0f766e; }
 
-    footer {
-      margin-top: 15px;
-      font-size: 13px;
-      color: #6b7280;
-    }
-
-    /* BOOKING FORM STYLES */
-    #booking-section {
+    form {
+      margin-top: 20px;
       display: none;
-      margin-top: 25px;
-      text-align: left;
     }
 
-    #booking-section label {
+    label {
       display: block;
-      margin-top: 10px;
+      margin-top: 12px;
       font-weight: bold;
     }
 
-    #booking-section input,
-    #booking-section select,
-    #booking-section button {
+    input, select {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
+      margin-top: 4px;
       border-radius: 6px;
       border: 1px solid #ccc;
+      font-size: 14px;
     }
 
-    #booking-section button {
+    form button {
       margin-top: 15px;
-      background: #2563eb;
+      background: #0f766e;
       color: #fff;
-      font-weight: bold;
       border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
       cursor: pointer;
+    }
+
+    .note {
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+      margin-top: 12px;
     }
   </style>
 </head>
 
 <body>
+  <div class="container">
 
-  <div class="card">
     <h1>Columbus East Tax Services</h1>
 
-    <div class="info">📍 Columbus, Ohio 43227</div>
-
-    <div class="info">
-      📞 <a href="tel:16145991185">614-599-1185</a><br>
-      📞 <a href="tel:16142597625">614-259-7625</a>
-    </div>
-
-    <div class="info">
-      ✉️ <a href="mailto:Columbuseast.taxservices@outlook.com">
-        Columbuseast.taxservices@outlook.com
-      </a>
+    <div class="contact">
+      📍 Columbus, Ohio 43227
+      <a href="tel:16145991185">📞 614-599-1185</a>
+      <a href="tel:16142597625">📞 614-259-7625</a>
+      <a href="mailto:columbuseast.taxservices@outlook.com">✉️ Email Us</a>
     </div>
 
     <div class="services">
@@ -143,47 +137,78 @@
       </ul>
     </div>
 
-    <div class="buttons">
-      <a href="tel:16145991185" class="btn call">📞 Call Now</a>
-      <a href="sms:16145991185" class="btn text">💬 Text Us</a>
-      <a href="mailto:Columbuseast.taxservices@outlook.com" class="btn email">✉️ Email Us</a>
-      <div class="btn book">📅 Book Appointment</div>
-    </div>
+    <button class="action-btn call">📞 Call Now</button>
+    <button class="action-btn text">💬 Text Us</button>
+    <button class="action-btn email">✉️ Email Us</button>
 
-    <!-- STEP 1: BOOKING FORM (HIDDEN) -->
-    <div id="booking-section">
-      <h3>Book an Appointment</h3>
+    <!-- BOOK BUTTON -->
+    <button class="action-btn book" id="openBooking">📅 Book Appointment</button>
 
-      <form id="bookingForm">
-        <label for="name">Name</label>
-        <input id="name" name="name" placeholder="Your name" required />
+    <!-- BOOKING FORM -->
+    <form id="bookingForm">
 
-        <label for="email">Email</label>
-        <input id="email" name="email" type="email" placeholder="you@example.com" required />
+      <label for="name">Full Name</label>
+      <input
+        id="name"
+        type="text"
+        placeholder="Your full name"
+        title="Your full name"
+        required
+      />
 
-        <label for="service">Service</label>
-        <select id="service" name="service" required>
-          <option value="">Select Service</option>
-          <option value="W2">W-2 & Individual Taxes</option>
-          <option value="1099">1099 / Self-Employed</option>
-          <option value="LLC">LLC / Business Filing</option>
-          <option value="Audit">Audit Help</option>
-        </select>
+      <label for="email">Email Address</label>
+      <input
+        id="email"
+        type="email"
+        placeholder="you@example.com"
+        title="Your email address"
+        required
+      />
 
-        <label for="time">Date & Time</label>
-        <input id="time" name="time" type="datetime-local" required />
+      <label for="service">Select Service</label>
+      <select
+        id="service"
+        title="Select a service"
+        required
+      >
+        <option value="">Choose a service</option>
+        <option>W-2 / Individual Taxes</option>
+        <option>1099 / Self-Employed</option>
+        <option>LLC / Business Filing</option>
+        <option>Audit Help</option>
+      </select>
 
-        <button type="submit">Confirm Booking</button>
-      </form>
+      <label for="time">Appointment Date & Time</label>
+      <input
+        id="time"
+        type="datetime-local"
+        title="Appointment date and time"
+        required
+      />
 
-      <div id="message" style="margin-top:10px;font-weight:bold;"></div>
-    </div>
-    <!-- END STEP 1 -->
+      <button type="submit">Confirm Booking</button>
+    </form>
 
-    <footer>
+    <div class="note">
       Tap to call, text, email, or book online
-    </footer>
+    </div>
+
   </div>
+
+  <!-- SCRIPT -->
+  <script>
+    const openBtn = document.getElementById("openBooking");
+    const form = document.getElementById("bookingForm");
+
+    openBtn.addEventListener("click", () => {
+      form.style.display = form.style.display === "block" ? "none" : "block";
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("Booking submitted (backend will be added next)");
+    });
+  </script>
 
 </body>
 </html>
