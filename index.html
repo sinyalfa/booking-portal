@@ -43,6 +43,7 @@
       text-decoration: none;
       margin: 8px 0;
       font-weight: bold;
+      word-break: break-word;
     }
 
     .services {
@@ -82,6 +83,8 @@
       justify-content: center;
       align-items: center;
       gap: 10px;
+      text-decoration: none;
+      box-sizing: border-box;
     }
 
     .call { background: #2563eb; }
@@ -154,11 +157,10 @@
 
     <div class="contact">
       📍 Columbus, Ohio 43227
-
       <a href="tel:16145991185" title="Call 614-599-1185">📞 614-599-1185</a>
       <a href="tel:16142597625" title="Call 614-259-7625">📞 614-259-7625</a>
       <a href="mailto:columbuseast.taxservices@outlook.com" title="Email Columbus East Tax Services">
-        ✉️ Columbuseast.taxservices@outlook.com
+        ✉️ columbuseast.taxservices@outlook.com
       </a>
     </div>
 
@@ -207,82 +209,98 @@
     <div class="note">Tap to call, text, email, or book online</div>
   </div>
 
-  <!-- Supabase JS -->
+  <!-- ✅ STEP A: Toggle script (runs even if Supabase fails) -->
+  <script>
+    (function () {
+      const openBtn = document.getElementById("openBooking");
+      const form = document.getElementById("bookingForm");
+      const statusEl = document.getElementById("status");
+
+      if (!openBtn || !form) return;
+
+      openBtn.addEventListener("click", () => {
+        const isOpen = form.style.display === "block";
+        form.style.display = isOpen ? "none" : "block";
+        if (statusEl) {
+          statusEl.textContent = "";
+          statusEl.className = "";
+        }
+        if (!isOpen) form.scrollIntoView({ behavior: "smooth" });
+      });
+    })();
+  </script>
+
+  <!-- Supabase library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <!-- ✅ STEP B: Booking submit (only runs if Supabase loaded) -->
   <script>
-    // ✅ Supabase Config (your values)
-    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    (function () {
+      const statusEl = document.getElementById("status");
+      const form = document.getElementById("bookingForm");
 
-    const openBtn = document.getElementById("openBooking");
-    const form = document.getElementById("bookingForm");
-    const statusEl = document.getElementById("status");
-
-    // Toggle booking form
-    openBtn.addEventListener("click", () => {
-      const isOpen = form.style.display === "block";
-      form.style.display = isOpen ? "none" : "block";
-      statusEl.textContent = "";
-      statusEl.className = "";
-
-      if (!isOpen) {
-        form.scrollIntoView({ behavior: "smooth" });
-      }
-    });
-
-    // Submit booking to Supabase
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      statusEl.textContent = "Submitting...";
-      statusEl.className = "";
-
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const service = document.getElementById("service").value;
-      const time = document.getElementById("time").value;
-
-      if (!name || !email || !service || !time) {
-        statusEl.textContent = "❌ Please fill out all fields.";
-        statusEl.className = "bad";
-        return;
+      function setStatus(text, ok) {
+        if (!statusEl) return;
+        statusEl.textContent = text;
+        statusEl.className = ok ? "ok" : "bad";
       }
 
-      try {
-        const { error } = await supabase
-          .from("appointments")
-          .insert([{
-            client_name: name,
-            client_email: email,
-            service: service,
-            start_time: new Date(time).toISOString()
-          }]);
+      if (!form) return;
 
-        if (error) {
-          console.error(error);
-          statusEl.textContent = "❌ Booking failed: " + error.message;
-          statusEl.className = "bad";
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // If Supabase library didn't load, don't break the page.
+        if (!window.supabase || !window.supabase.createClient) {
+          setStatus("❌ Supabase library did not load. Refresh the page and try again.", false);
           return;
         }
 
-        statusEl.textContent = "✅ Appointment booked successfully!";
-        statusEl.className = "ok";
+        setStatus("Submitting...", true);
 
-        form.reset();
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const service = document.getElementById("service").value;
+        const time = document.getElementById("time").value;
 
-        // Optional: auto close after success
-        setTimeout(() => {
-          form.style.display = "none";
-        }, 1200);
+        if (!name || !email || !service || !time) {
+          setStatus("❌ Please fill out all fields.", false);
+          return;
+        }
 
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = "❌ Booking failed: " + (err.message || err);
-        statusEl.className = "bad";
-      }
-    });
+        const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
+        const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+        const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        try {
+          const { error } = await supa
+            .from("appointments")
+            .insert([{
+              client_name: name,
+              client_email: email,
+              service: service,
+              start_time: new Date(time).toISOString()
+            }]);
+
+          if (error) {
+            console.error(error);
+            setStatus("❌ Booking failed: " + error.message, false);
+            return;
+          }
+
+          setStatus("✅ Appointment booked successfully!", true);
+          form.reset();
+
+          setTimeout(() => {
+            form.style.display = "none";
+          }, 1200);
+
+        } catch (err) {
+          console.error(err);
+          setStatus("❌ Booking failed: " + (err.message || err), false);
+        }
+      });
+    })();
   </script>
 </body>
 </html>
