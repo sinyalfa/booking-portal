@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Columbus East Tax Services – Booking</title>
+  <title>Columbus East Tax Services</title>
 
   <style>
     body {
@@ -12,122 +12,178 @@
       display: flex;
       justify-content: center;
       padding: 30px;
+      margin: 0;
     }
-    .container {
+
+    .card {
+      background: #ffffff;
       max-width: 420px;
-      background: #fff;
+      width: 100%;
       padding: 25px;
       border-radius: 12px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      width: 100%;
-    }
-    h1 {
       text-align: center;
     }
-    label {
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 24px;
+      color: #1f2933;
+    }
+
+    .info {
+      margin: 10px 0;
+      font-size: 16px;
+      color: #4b5563;
+    }
+
+    .services {
+      text-align: left;
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    .services h3 {
+      margin-top: 0;
+    }
+
+    .services ul {
+      padding-left: 20px;
+    }
+
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn {
+      text-decoration: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: bold;
+      color: #fff;
       display: block;
-      margin-top: 12px;
+    }
+
+    .call { background: #2563eb; }
+    .text { background: #16a34a; }
+    .email { background: #9333ea; }
+    .book { background: #0f766e; }
+
+    footer {
+      margin-top: 15px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    /* BOOKING FORM STYLES */
+    #booking-section {
+      display: none;
+      margin-top: 25px;
+      text-align: left;
+    }
+
+    #booking-section label {
+      display: block;
+      margin-top: 10px;
       font-weight: bold;
     }
-    input, select, button {
+
+    #booking-section input,
+    #booking-section select,
+    #booking-section button {
       width: 100%;
       padding: 10px;
-      margin-top: 6px;
+      margin-top: 5px;
       border-radius: 6px;
       border: 1px solid #ccc;
     }
-    button {
+
+    #booking-section button {
       margin-top: 15px;
       background: #2563eb;
-      color: white;
-      font-size: 16px;
+      color: #fff;
       font-weight: bold;
-      cursor: pointer;
       border: none;
-    }
-    #message {
-      margin-top: 15px;
-      text-align: center;
-      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>Book Appointment</h1>
+  <div class="card">
+    <h1>Columbus East Tax Services</h1>
 
-    <form id="bookingForm">
-      <label>Name</label>
-      <input id="name" required />
+    <div class="info">📍 Columbus, Ohio 43227</div>
 
-      <label>Email</label>
-      <input id="email" type="email" required />
+    <div class="info">
+      📞 <a href="tel:16145991185">614-599-1185</a><br>
+      📞 <a href="tel:16142597625">614-259-7625</a>
+    </div>
 
-      <label>Service</label>
-      <select id="service" required>
-        <option value="">Select Service</option>
-        <option value="W2">W-2 Tax Filing</option>
-        <option value="1099">1099 Contractor Filing</option>
-        <option value="LLC">LLC / Business Taxes</option>
-        <option value="Audit">Audit Assistance</option>
-      </select>
+    <div class="info">
+      ✉️ <a href="mailto:Columbuseast.taxservices@outlook.com">
+        Columbuseast.taxservices@outlook.com
+      </a>
+    </div>
 
-      <label>Date & Time</label>
-      <input id="time" type="datetime-local" required />
+    <div class="services">
+      <h3>Services Offered</h3>
+      <ul>
+        <li>W-2 & Individual Tax Returns</li>
+        <li>1099 & Self-Employed Taxes</li>
+        <li>LLC & Small Business Filing</li>
+        <li>Audit Help & IRS Letters</li>
+        <li>Amended Returns (1040-X)</li>
+      </ul>
+    </div>
 
-      <button type="submit">Confirm Booking</button>
-    </form>
+    <div class="buttons">
+      <a href="tel:16145991185" class="btn call">📞 Call Now</a>
+      <a href="sms:16145991185" class="btn text">💬 Text Us</a>
+      <a href="mailto:Columbuseast.taxservices@outlook.com" class="btn email">✉️ Email Us</a>
+      <div class="btn book">📅 Book Appointment</div>
+    </div>
 
-    <div id="message"></div>
+    <!-- STEP 1: BOOKING FORM (HIDDEN) -->
+    <div id="booking-section">
+      <h3>Book an Appointment</h3>
+
+      <form id="bookingForm">
+        <label for="name">Name</label>
+        <input id="name" name="name" placeholder="Your name" required />
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+        <label for="service">Service</label>
+        <select id="service" name="service" required>
+          <option value="">Select Service</option>
+          <option value="W2">W-2 & Individual Taxes</option>
+          <option value="1099">1099 / Self-Employed</option>
+          <option value="LLC">LLC / Business Filing</option>
+          <option value="Audit">Audit Help</option>
+        </select>
+
+        <label for="time">Date & Time</label>
+        <input id="time" name="time" type="datetime-local" required />
+
+        <button type="submit">Confirm Booking</button>
+      </form>
+
+      <div id="message" style="margin-top:10px;font-weight:bold;"></div>
+    </div>
+    <!-- END STEP 1 -->
+
+    <footer>
+      Tap to call, text, email, or book online
+    </footer>
   </div>
-
-  <!-- 🔻 SCRIPT SECTION STARTS HERE 🔻 -->
-  <script>
-    document.getElementById("bookingForm").addEventListener("submit", async (e) => {
-      e.preventDefault()
-
-      const message = document.getElementById("message")
-      message.textContent = "Submitting..."
-
-      const payload = {
-        name: document.getElementById("name").value,
-        email: document.getElementById("email").value,
-        service_id: document.getElementById("service").value,
-        start_time: new Date(
-          document.getElementById("time").value
-        ).toISOString()
-      }
-
-      try {
-        const res = await fetch(
-          "https://zleztbdrxnqirccgkvqx.supabase.co/functions/v1/book-appointment",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Bearer public"
-            },
-            body: JSON.stringify(payload)
-          }
-        )
-
-        const text = await res.text()
-        console.log("RAW RESPONSE:", text)
-
-        const data = JSON.parse(text)
-        if (!res.ok) throw new Error(data.error)
-
-        message.textContent = "✅ Appointment booked successfully"
-
-      } catch (err) {
-        console.error(err)
-        message.textContent = "❌ " + err.message
-      }
-    })
-  </script>
-  <!-- 🔺 SCRIPT SECTION ENDS HERE 🔺 -->
 
 </body>
 </html>
