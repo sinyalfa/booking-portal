@@ -209,6 +209,58 @@
       alert("Booking submitted (backend will be added next)");
     });
   </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // ✅ Supabase Config
+  const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
+  const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  // Toggle booking form open/close
+  const openBtn = document.getElementById("openBooking");
+  const form = document.getElementById("bookingForm");
+
+  openBtn.addEventListener("click", () => {
+    form.style.display = form.style.display === "block" ? "none" : "block";
+    form.scrollIntoView({ behavior: "smooth" });
+  });
+
+  // Submit booking to Supabase
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const service = document.getElementById("service").value;
+    const time = document.getElementById("time").value;
+
+    if (!name || !email || !service || !time) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    // Insert into Supabase
+    const { error } = await supabase
+      .from("appointments")
+      .insert([{
+        client_name: name,
+        client_email: email,
+        service: service,
+        start_time: new Date(time).toISOString()
+      }]);
+
+    if (error) {
+      console.error(error);
+      alert("❌ Booking failed: " + error.message);
+      return;
+    }
+
+    alert("✅ Appointment booked successfully!");
+    form.reset();
+    form.style.display = "none";
+  });
+</script>
 
 </body>
 </html>
