@@ -143,10 +143,66 @@
       margin-top: 10px;
       font-weight: bold;
       text-align: center;
+      white-space: pre-wrap;
     }
 
     .ok { color: #16a34a; }
     .bad { color: #dc2626; }
+
+    /* Confirmation card */
+    #confirmBox {
+      display: none;
+      margin-top: 18px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 16px;
+      text-align: left;
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    #confirmBox h3 {
+      margin: 0 0 10px 0;
+      color: #111827;
+    }
+
+    .confirm-row {
+      margin: 8px 0;
+      color: #111827;
+      font-size: 15px;
+    }
+
+    .confirm-small {
+      color: #6b7280;
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .confirm-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn-lite {
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-green {
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #16a34a;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
   </style>
 </head>
 
@@ -206,25 +262,37 @@
       <div id="status"></div>
     </form>
 
+    <!-- CONFIRMATION BOX -->
+    <div id="confirmBox">
+      <h3>✅ Booking Confirmed</h3>
+      <div class="confirm-row"><strong>Service:</strong> <span id="c_service"></span></div>
+      <div class="confirm-row"><strong>Date & Time:</strong> <span id="c_time"></span></div>
+      <div class="confirm-row"><strong>Duration:</strong> 60 minutes</div>
+      <div class="confirm-row"><strong>Confirmation #:</strong></div>
+      <div class="confirm-small" id="c_id"></div>
+
+      <div class="confirm-actions">
+        <button class="btn-lite" id="bookAnother" type="button">Book Another</button>
+        <a class="btn-green" id="addToCal" href="#" target="_blank" rel="noopener">Add to Calendar</a>
+      </div>
+    </div>
+
     <div class="note">Tap to call, text, email, or book online</div>
   </div>
 
-  <!-- ✅ STEP A: Toggle script (runs even if Supabase fails) -->
+  <!-- Toggle script -->
   <script>
     (function () {
       const openBtn = document.getElementById("openBooking");
       const form = document.getElementById("bookingForm");
       const statusEl = document.getElementById("status");
-
-      if (!openBtn || !form) return;
+      const confirmBox = document.getElementById("confirmBox");
 
       openBtn.addEventListener("click", () => {
         const isOpen = form.style.display === "block";
         form.style.display = isOpen ? "none" : "block";
-        if (statusEl) {
-          statusEl.textContent = "";
-          statusEl.className = "";
-        }
+        if (statusEl) { statusEl.textContent = ""; statusEl.className = ""; }
+        if (confirmBox) confirmBox.style.display = "none";
         if (!isOpen) form.scrollIntoView({ behavior: "smooth" });
       });
     })();
@@ -233,26 +301,56 @@
   <!-- Supabase library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- ✅ STEP B: Booking submit (only runs if Supabase loaded) -->
+  <!-- Booking submit + confirmation -->
   <script>
     (function () {
       const statusEl = document.getElementById("status");
       const form = document.getElementById("bookingForm");
+      const confirmBox = document.getElementById("confirmBox");
+
+      const cService = document.getElementById("c_service");
+      const cTime = document.getElementById("c_time");
+      const cId = document.getElementById("c_id");
+      const addToCal = document.getElementById("addToCal");
+      const bookAnother = document.getElementById("bookAnother");
 
       function setStatus(text, ok) {
-        if (!statusEl) return;
         statusEl.textContent = text;
         statusEl.className = ok ? "ok" : "bad";
       }
 
-      if (!form) return;
+      function formatLocal(iso) {
+        const d = new Date(iso);
+        return d.toLocaleString([], { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+      }
+
+      function makeGoogleCalLink({ title, details, location, startISO, endISO }) {
+        // Google calendar uses YYYYMMDDTHHMMSSZ format
+        function toGCal(dtIso) {
+          return new Date(dtIso).toISOString().replace(/[-:]/g, "").replace(".000", "");
+        }
+        const dates = `${toGCal(startISO)}/${toGCal(endISO)}`;
+        const url = new URL("https://calendar.google.com/calendar/render");
+        url.searchParams.set("action", "TEMPLATE");
+        url.searchParams.set("text", title);
+        url.searchParams.set("details", details);
+        url.searchParams.set("location", location);
+        url.searchParams.set("dates", dates);
+        return url.toString();
+      }
+
+      bookAnother.addEventListener("click", () => {
+        confirmBox.style.display = "none";
+        form.style.display = "block";
+        setStatus("", true);
+        form.scrollIntoView({ behavior: "smooth" });
+      });
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        // If Supabase library didn't load, don't break the page.
         if (!window.supabase || !window.supabase.createClient) {
-          setStatus("❌ Supabase library did not load. Refresh the page and try again.", false);
+          setStatus("❌ Supabase library did not load. Refresh and try again.", false);
           return;
         }
 
@@ -273,14 +371,21 @@
         const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         try {
-          const { error } = await supa
+          // 60 min booking
+          const startISO = new Date(time).toISOString();
+          const endISO = new Date(new Date(time).getTime() + 60 * 60 * 1000).toISOString();
+
+          const { data, error } = await supa
             .from("appointments")
             .insert([{
               client_name: name,
               client_email: email,
               service: service,
-              start_time: new Date(time).toISOString()
-            }]);
+              start_time: startISO,
+              end_time: endISO
+            }])
+            .select("id, service, start_time, end_time")
+            .single();
 
           if (error) {
             console.error(error);
@@ -288,12 +393,24 @@
             return;
           }
 
-          setStatus("✅ Appointment booked successfully!", true);
-          form.reset();
+          // Show confirmation screen
+          setStatus("", true);
+          form.style.display = "none";
+          confirmBox.style.display = "block";
 
-          setTimeout(() => {
-            form.style.display = "none";
-          }, 1200);
+          cService.textContent = data.service;
+          cTime.textContent = formatLocal(data.start_time);
+          cId.textContent = data.id;
+
+          const calLink = makeGoogleCalLink({
+            title: "Tax Appointment – Columbus East Tax Services",
+            details: `Service: ${data.service}\nClient: ${name}\nEmail: ${email}\nConfirmation: ${data.id}`,
+            location: "Columbus, Ohio 43227",
+            startISO: data.start_time,
+            endISO: data.end_time
+          });
+
+          addToCal.href = calLink;
 
         } catch (err) {
           console.error(err);
