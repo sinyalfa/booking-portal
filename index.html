@@ -6,209 +6,57 @@
   <title>Columbus East Tax Services – Booking</title>
 
   <style>
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f4f6f8;
-      display: flex;
-      justify-content: center;
-      padding: 30px;
-      margin: 0;
-    }
-
-    .container {
-      max-width: 420px;
-      width: 100%;
-      background: #ffffff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-      color: #1f2933;
-    }
-
-    .contact {
-      text-align: center;
-      margin-bottom: 18px;
-      color: #4b5563;
-      font-size: 16px;
-    }
-
-    .contact a {
-      display: block;
-      color: #0066cc;
-      text-decoration: none;
-      margin: 8px 0;
-      font-weight: bold;
-      word-break: break-word;
-    }
-
-    .services {
-      background: #f1f3f5;
-      padding: 15px;
-      border-radius: 10px;
-      margin: 18px 0;
-      text-align: left;
-    }
-
-    .services h3 {
-      margin: 0 0 10px 0;
-      color: #111827;
-    }
-
-    .services ul {
-      margin: 0;
-      padding-left: 18px;
-      color: #111827;
-    }
-
-    .services li {
-      margin: 6px 0;
-    }
-
+    body { font-family: Arial, Helvetica, sans-serif; background:#f4f6f8; display:flex; justify-content:center; padding:30px; margin:0; }
+    .container { max-width:420px; width:100%; background:#fff; padding:25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.1); }
+    h1 { text-align:center; margin-bottom:10px; color:#1f2933; }
+    .contact { text-align:center; margin-bottom:18px; color:#4b5563; font-size:16px; }
+    .contact a { display:block; color:#0066cc; text-decoration:none; margin:8px 0; font-weight:bold; word-break:break-word; }
+    .services { background:#f1f3f5; padding:15px; border-radius:10px; margin:18px 0; text-align:left; }
+    .services h3 { margin:0 0 10px 0; color:#111827; }
+    .services ul { margin:0; padding-left:18px; color:#111827; }
+    .services li { margin:6px 0; }
     .action-btn {
-      width: 100%;
-      padding: 14px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      box-sizing: border-box;
+      width:100%; padding:14px; margin-top:10px; border:none; border-radius:10px;
+      font-size:16px; font-weight:bold; cursor:pointer; color:#fff;
+      display:flex; justify-content:center; align-items:center; gap:10px; text-decoration:none; box-sizing:border-box;
     }
+    .call { background:#2563eb; } .text { background:#16a34a; } .email { background:#9333ea; } .book { background:#0f766e; }
+    .note { text-align:center; font-size:13px; color:#6b7280; margin-top:14px; }
 
-    .call { background: #2563eb; }
-    .text { background: #16a34a; }
-    .email { background: #9333ea; }
-    .book { background: #0f766e; }
-
-    .note {
-      text-align: center;
-      font-size: 13px;
-      color: #6b7280;
-      margin-top: 14px;
+    #bookingForm { display:none; margin-top:18px; text-align:left; border-top:1px solid #e5e7eb; padding-top:16px; }
+    #bookingForm label { display:block; margin-top:12px; font-weight:bold; color:#111827; }
+    #bookingForm input, #bookingForm select {
+      width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #d1d5db; font-size:15px; box-sizing:border-box;
     }
-
-    /* Booking Form */
-    #bookingForm {
-      display: none;
-      margin-top: 18px;
-      text-align: left;
-      border-top: 1px solid #e5e7eb;
-      padding-top: 16px;
-    }
-
-    #bookingForm label {
-      display: block;
-      margin-top: 12px;
-      font-weight: bold;
-      color: #111827;
-    }
-
-    #bookingForm input,
-    #bookingForm select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 15px;
-      box-sizing: border-box;
-    }
-
     #bookingForm button[type="submit"] {
-      margin-top: 14px;
-      width: 100%;
-      background: #0f766e;
-      border: none;
-      color: #fff;
-      font-weight: bold;
-      padding: 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 16px;
+      margin-top:14px; width:100%; background:#0f766e; border:none; color:#fff; font-weight:bold;
+      padding:12px; border-radius:10px; cursor:pointer; font-size:16px;
     }
+    #status { margin-top:10px; font-weight:bold; text-align:center; white-space:pre-wrap; }
+    .ok { color:#16a34a; } .bad { color:#dc2626; }
 
-    #status {
-      margin-top: 10px;
-      font-weight: bold;
-      text-align: center;
-      white-space: pre-wrap;
-    }
-
-    .ok { color: #16a34a; }
-    .bad { color: #dc2626; }
-
-    /* Confirmation card */
     #confirmBox {
-      display: none;
-      margin-top: 18px;
-      border-top: 1px solid #e5e7eb;
-      padding-top: 16px;
-      text-align: left;
-      background: #f9fafb;
-      border-radius: 10px;
-      padding: 16px;
+      display:none; margin-top:18px; border-top:1px solid #e5e7eb; padding-top:16px;
+      text-align:left; background:#f9fafb; border-radius:10px; padding:16px;
     }
-
-    #confirmBox h3 {
-      margin: 0 0 10px 0;
-      color: #111827;
-    }
-
-    .confirm-row {
-      margin: 8px 0;
-      color: #111827;
-      font-size: 15px;
-    }
-
-    .confirm-small {
-      color: #6b7280;
-      font-size: 13px;
-      word-break: break-all;
-    }
-
-    .confirm-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
+    #confirmBox h3 { margin:0 0 10px 0; color:#111827; }
+    .confirm-row { margin:8px 0; color:#111827; font-size:15px; }
+    .confirm-small { color:#6b7280; font-size:13px; word-break:break-all; }
+    .confirm-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
     .btn-lite {
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
-      background: #fff;
-      cursor: pointer;
-      font-weight: bold;
+      padding:12px; border-radius:10px; border:1px solid #d1d5db; background:#fff; cursor:pointer; font-weight:bold; text-align:center;
     }
-
     .btn-green {
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      background: #16a34a;
-      color: #fff;
-      cursor: pointer;
-      font-weight: bold;
+      padding:12px; border-radius:10px; border:none; background:#16a34a; color:#fff; cursor:pointer; font-weight:bold; text-decoration:none; text-align:center;
+    }
+    .btn-teal {
+      padding:12px; border-radius:10px; border:none; background:#0f766e; color:#fff; cursor:pointer; font-weight:bold; text-decoration:none; text-align:center;
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-
     <h1>Columbus East Tax Services</h1>
 
     <div class="contact">
@@ -258,7 +106,6 @@
       <input id="time" name="time" type="datetime-local" title="Appointment date and time" required />
 
       <button type="submit">Confirm Booking</button>
-
       <div id="status"></div>
     </form>
 
@@ -271,153 +118,173 @@
       <div class="confirm-row"><strong>Confirmation #:</strong></div>
       <div class="confirm-small" id="c_id"></div>
 
+      <div class="confirm-row"><strong>Manage / Cancel Link:</strong></div>
+      <div class="confirm-small" id="c_manage"></div>
+
       <div class="confirm-actions">
         <button class="btn-lite" id="bookAnother" type="button">Book Another</button>
         <a class="btn-green" id="addToCal" href="#" target="_blank" rel="noopener">Add to Calendar</a>
+        <a class="btn-teal" id="manageBtn" href="#" target="_blank" rel="noopener">View / Cancel</a>
+        <button class="btn-lite" id="copyManage" type="button">Copy Link</button>
       </div>
     </div>
 
     <div class="note">Tap to call, text, email, or book online</div>
   </div>
 
-  <!-- Toggle script -->
-  <script>
-    (function () {
-      const openBtn = document.getElementById("openBooking");
-      const form = document.getElementById("bookingForm");
-      const statusEl = document.getElementById("status");
-      const confirmBox = document.getElementById("confirmBox");
-
-      openBtn.addEventListener("click", () => {
-        const isOpen = form.style.display === "block";
-        form.style.display = isOpen ? "none" : "block";
-        if (statusEl) { statusEl.textContent = ""; statusEl.className = ""; }
-        if (confirmBox) confirmBox.style.display = "none";
-        if (!isOpen) form.scrollIntoView({ behavior: "smooth" });
-      });
-    })();
-  </script>
-
-  <!-- Supabase library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Booking submit + confirmation -->
   <script>
-    (function () {
-      const statusEl = document.getElementById("status");
-      const form = document.getElementById("bookingForm");
-      const confirmBox = document.getElementById("confirmBox");
+    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
+    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
 
-      const cService = document.getElementById("c_service");
-      const cTime = document.getElementById("c_time");
-      const cId = document.getElementById("c_id");
-      const addToCal = document.getElementById("addToCal");
-      const bookAnother = document.getElementById("bookAnother");
+    const openBtn = document.getElementById("openBooking");
+    const form = document.getElementById("bookingForm");
+    const statusEl = document.getElementById("status");
+    const confirmBox = document.getElementById("confirmBox");
 
-      function setStatus(text, ok) {
-        statusEl.textContent = text;
-        statusEl.className = ok ? "ok" : "bad";
+    const cService = document.getElementById("c_service");
+    const cTime = document.getElementById("c_time");
+    const cId = document.getElementById("c_id");
+    const cManage = document.getElementById("c_manage");
+    const addToCal = document.getElementById("addToCal");
+    const manageBtn = document.getElementById("manageBtn");
+    const copyManage = document.getElementById("copyManage");
+    const bookAnother = document.getElementById("bookAnother");
+
+    function setStatus(text, ok) {
+      statusEl.textContent = text;
+      statusEl.className = ok ? "ok" : "bad";
+    }
+
+    function formatLocal(iso) {
+      const d = new Date(iso);
+      return d.toLocaleString([], { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+    }
+
+    function toGCal(dtIso) {
+      return new Date(dtIso).toISOString().replace(/[-:]/g, "").replace(".000", "");
+    }
+
+    function makeGoogleCalLink({ title, details, location, startISO, endISO }) {
+      const dates = `${toGCal(startISO)}/${toGCal(endISO)}`;
+      const url = new URL("https://calendar.google.com/calendar/render");
+      url.searchParams.set("action", "TEMPLATE");
+      url.searchParams.set("text", title);
+      url.searchParams.set("details", details);
+      url.searchParams.set("location", location);
+      url.searchParams.set("dates", dates);
+      return url.toString();
+    }
+
+    openBtn.addEventListener("click", () => {
+      const isOpen = form.style.display === "block";
+      form.style.display = isOpen ? "none" : "block";
+      setStatus("", true);
+      confirmBox.style.display = "none";
+      if (!isOpen) form.scrollIntoView({ behavior: "smooth" });
+    });
+
+    bookAnother.addEventListener("click", () => {
+      confirmBox.style.display = "none";
+      form.style.display = "block";
+      setStatus("", true);
+      form.scrollIntoView({ behavior: "smooth" });
+    });
+
+    copyManage.addEventListener("click", async () => {
+      const link = manageBtn.href;
+      try {
+        await navigator.clipboard.writeText(link);
+        copyManage.textContent = "Copied!";
+        setTimeout(() => (copyManage.textContent = "Copy Link"), 1200);
+      } catch {
+        alert("Copy failed. You can manually copy the link.");
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!window.supabase?.createClient) {
+        setStatus("❌ Supabase library did not load. Refresh and try again.", false);
+        return;
       }
 
-      function formatLocal(iso) {
-        const d = new Date(iso);
-        return d.toLocaleString([], { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+      setStatus("Submitting...", true);
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const service = document.getElementById("service").value;
+      const time = document.getElementById("time").value;
+
+      if (!name || !email || !service || !time) {
+        setStatus("❌ Please fill out all fields.", false);
+        return;
       }
 
-      function makeGoogleCalLink({ title, details, location, startISO, endISO }) {
-        // Google calendar uses YYYYMMDDTHHMMSSZ format
-        function toGCal(dtIso) {
-          return new Date(dtIso).toISOString().replace(/[-:]/g, "").replace(".000", "");
+      const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+      // 60 min booking
+      const startISO = new Date(time).toISOString();
+      const endISO = new Date(new Date(time).getTime() + 60 * 60 * 1000).toISOString();
+
+      // private cancel token stored with appointment
+      const cancelToken = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now());
+
+      try {
+        const { data, error } = await supa
+          .from("appointments")
+          .insert([{
+            client_name: name,
+            client_email: email,
+            service: service,
+            start_time: startISO,
+            end_time: endISO,
+            cancel_token: cancelToken,
+            status: "confirmed"
+          }])
+          .select("id, service, start_time, end_time")
+          .single();
+
+        if (error) {
+          console.error(error);
+          setStatus("❌ Booking failed: " + error.message, false);
+          return;
         }
-        const dates = `${toGCal(startISO)}/${toGCal(endISO)}`;
-        const url = new URL("https://calendar.google.com/calendar/render");
-        url.searchParams.set("action", "TEMPLATE");
-        url.searchParams.set("text", title);
-        url.searchParams.set("details", details);
-        url.searchParams.set("location", location);
-        url.searchParams.set("dates", dates);
-        return url.toString();
-      }
 
-      bookAnother.addEventListener("click", () => {
-        confirmBox.style.display = "none";
-        form.style.display = "block";
+        // Manage link (same repo)
+        const manageLink = new URL("manage.html", window.location.href);
+        manageLink.searchParams.set("id", data.id);
+        manageLink.searchParams.set("token", cancelToken);
+
+        // Show confirmation
         setStatus("", true);
-        form.scrollIntoView({ behavior: "smooth" });
-      });
+        form.style.display = "none";
+        confirmBox.style.display = "block";
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+        cService.textContent = data.service;
+        cTime.textContent = formatLocal(data.start_time);
+        cId.textContent = data.id;
 
-        if (!window.supabase || !window.supabase.createClient) {
-          setStatus("❌ Supabase library did not load. Refresh and try again.", false);
-          return;
-        }
+        cManage.textContent = manageLink.toString();
+        manageBtn.href = manageLink.toString();
 
-        setStatus("Submitting...", true);
+        addToCal.href = makeGoogleCalLink({
+          title: "Tax Appointment – Columbus East Tax Services",
+          details: `Service: ${data.service}\nClient: ${name}\nEmail: ${email}\nConfirmation: ${data.id}\nManage: ${manageLink}`,
+          location: "Columbus, Ohio 43227",
+          startISO: data.start_time,
+          endISO: data.end_time
+        });
 
-        const name = document.getElementById("name").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const service = document.getElementById("service").value;
-        const time = document.getElementById("time").value;
+        form.reset();
 
-        if (!name || !email || !service || !time) {
-          setStatus("❌ Please fill out all fields.", false);
-          return;
-        }
-
-        const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-        const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
-        const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-        try {
-          // 60 min booking
-          const startISO = new Date(time).toISOString();
-          const endISO = new Date(new Date(time).getTime() + 60 * 60 * 1000).toISOString();
-
-          const { data, error } = await supa
-            .from("appointments")
-            .insert([{
-              client_name: name,
-              client_email: email,
-              service: service,
-              start_time: startISO,
-              end_time: endISO
-            }])
-            .select("id, service, start_time, end_time")
-            .single();
-
-          if (error) {
-            console.error(error);
-            setStatus("❌ Booking failed: " + error.message, false);
-            return;
-          }
-
-          // Show confirmation screen
-          setStatus("", true);
-          form.style.display = "none";
-          confirmBox.style.display = "block";
-
-          cService.textContent = data.service;
-          cTime.textContent = formatLocal(data.start_time);
-          cId.textContent = data.id;
-
-          const calLink = makeGoogleCalLink({
-            title: "Tax Appointment – Columbus East Tax Services",
-            details: `Service: ${data.service}\nClient: ${name}\nEmail: ${email}\nConfirmation: ${data.id}`,
-            location: "Columbus, Ohio 43227",
-            startISO: data.start_time,
-            endISO: data.end_time
-          });
-
-          addToCal.href = calLink;
-
-        } catch (err) {
-          console.error(err);
-          setStatus("❌ Booking failed: " + (err.message || err), false);
-        }
-      });
-    })();
+      } catch (err) {
+        console.error(err);
+        setStatus("❌ Booking failed: " + (err.message || err), false);
+      }
+    });
   </script>
 </body>
 </html>
