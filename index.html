@@ -12,6 +12,7 @@
       display: flex;
       justify-content: center;
       padding: 30px;
+      margin: 0;
     }
 
     .container {
@@ -26,35 +27,45 @@
     h1 {
       text-align: center;
       margin-bottom: 10px;
+      color: #1f2933;
     }
 
     .contact {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
+      color: #4b5563;
+      font-size: 16px;
     }
 
     .contact a {
       display: block;
       color: #0066cc;
       text-decoration: none;
-      margin: 6px 0;
+      margin: 8px 0;
       font-weight: bold;
     }
 
     .services {
       background: #f1f3f5;
       padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+      border-radius: 10px;
+      margin: 18px 0;
+      text-align: left;
     }
 
     .services h3 {
-      margin-top: 0;
+      margin: 0 0 10px 0;
+      color: #111827;
     }
 
     .services ul {
-      padding-left: 18px;
       margin: 0;
+      padding-left: 18px;
+      color: #111827;
+    }
+
+    .services li {
+      margin: 6px 0;
     }
 
     .action-btn {
@@ -62,11 +73,15 @@
       padding: 14px;
       margin-top: 10px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
       color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
     }
 
     .call { background: #2563eb; }
@@ -74,43 +89,61 @@
     .email { background: #9333ea; }
     .book { background: #0f766e; }
 
-    form {
-      margin-top: 20px;
-      display: none;
-    }
-
-    label {
-      display: block;
-      margin-top: 12px;
-      font-weight: bold;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 4px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-
-    form button {
-      margin-top: 15px;
-      background: #0f766e;
-      color: #fff;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
     .note {
       text-align: center;
       font-size: 13px;
-      color: #555;
-      margin-top: 12px;
+      color: #6b7280;
+      margin-top: 14px;
     }
+
+    /* Booking Form */
+    #bookingForm {
+      display: none;
+      margin-top: 18px;
+      text-align: left;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 16px;
+    }
+
+    #bookingForm label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    #bookingForm input,
+    #bookingForm select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+
+    #bookingForm button[type="submit"] {
+      margin-top: 14px;
+      width: 100%;
+      background: #0f766e;
+      border: none;
+      color: #fff;
+      font-weight: bold;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #status {
+      margin-top: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .ok { color: #16a34a; }
+    .bad { color: #dc2626; }
   </style>
 </head>
 
@@ -121,9 +154,12 @@
 
     <div class="contact">
       📍 Columbus, Ohio 43227
-      <a href="tel:16145991185">📞 614-599-1185</a>
-      <a href="tel:16142597625">📞 614-259-7625</a>
-      <a href="mailto:columbuseast.taxservices@outlook.com">✉️ Email Us</a>
+
+      <a href="tel:16145991185" title="Call 614-599-1185">📞 614-599-1185</a>
+      <a href="tel:16142597625" title="Call 614-259-7625">📞 614-259-7625</a>
+      <a href="mailto:columbuseast.taxservices@outlook.com" title="Email Columbus East Tax Services">
+        ✉️ Columbuseast.taxservices@outlook.com
+      </a>
     </div>
 
     <div class="services">
@@ -137,130 +173,116 @@
       </ul>
     </div>
 
-    <button class="action-btn call">📞 Call Now</button>
-    <button class="action-btn text">💬 Text Us</button>
-    <button class="action-btn email">✉️ Email Us</button>
+    <a class="action-btn call" href="tel:16145991185">📞 Call Now</a>
+    <a class="action-btn text" href="sms:16145991185">💬 Text Us</a>
+    <a class="action-btn email" href="mailto:columbuseast.taxservices@outlook.com">✉️ Email Us</a>
 
-    <!-- BOOK BUTTON -->
-    <button class="action-btn book" id="openBooking">📅 Book Appointment</button>
+    <button class="action-btn book" id="openBooking" type="button">📅 Book Appointment</button>
 
     <!-- BOOKING FORM -->
     <form id="bookingForm">
-
       <label for="name">Full Name</label>
-      <input
-        id="name"
-        type="text"
-        placeholder="Your full name"
-        title="Your full name"
-        required
-      />
+      <input id="name" name="name" type="text" placeholder="Your full name" title="Your full name" required />
 
       <label for="email">Email Address</label>
-      <input
-        id="email"
-        type="email"
-        placeholder="you@example.com"
-        title="Your email address"
-        required
-      />
+      <input id="email" name="email" type="email" placeholder="you@example.com" title="Your email address" required />
 
       <label for="service">Select Service</label>
-      <select
-        id="service"
-        title="Select a service"
-        required
-      >
+      <select id="service" name="service" title="Select a service" required>
         <option value="">Choose a service</option>
-        <option>W-2 / Individual Taxes</option>
-        <option>1099 / Self-Employed</option>
-        <option>LLC / Business Filing</option>
-        <option>Audit Help</option>
+        <option value="W-2 / Individual Taxes">W-2 / Individual Taxes</option>
+        <option value="1099 / Self-Employed">1099 / Self-Employed</option>
+        <option value="LLC / Business Filing">LLC / Business Filing</option>
+        <option value="Audit Help">Audit Help</option>
       </select>
 
       <label for="time">Appointment Date & Time</label>
-      <input
-        id="time"
-        type="datetime-local"
-        title="Appointment date and time"
-        required
-      />
+      <input id="time" name="time" type="datetime-local" title="Appointment date and time" required />
 
       <button type="submit">Confirm Booking</button>
+
+      <div id="status"></div>
     </form>
 
-    <div class="note">
-      Tap to call, text, email, or book online
-    </div>
-
+    <div class="note">Tap to call, text, email, or book online</div>
   </div>
 
-  <!-- SCRIPT -->
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
+    // ✅ Supabase Config (your values)
+    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
+    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
     const openBtn = document.getElementById("openBooking");
     const form = document.getElementById("bookingForm");
+    const statusEl = document.getElementById("status");
 
+    // Toggle booking form
     openBtn.addEventListener("click", () => {
-      form.style.display = form.style.display === "block" ? "none" : "block";
+      const isOpen = form.style.display === "block";
+      form.style.display = isOpen ? "none" : "block";
+      statusEl.textContent = "";
+      statusEl.className = "";
+
+      if (!isOpen) {
+        form.scrollIntoView({ behavior: "smooth" });
+      }
     });
 
-    form.addEventListener("submit", (e) => {
+    // Submit booking to Supabase
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      alert("Booking submitted (backend will be added next)");
+
+      statusEl.textContent = "Submitting...";
+      statusEl.className = "";
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const service = document.getElementById("service").value;
+      const time = document.getElementById("time").value;
+
+      if (!name || !email || !service || !time) {
+        statusEl.textContent = "❌ Please fill out all fields.";
+        statusEl.className = "bad";
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from("appointments")
+          .insert([{
+            client_name: name,
+            client_email: email,
+            service: service,
+            start_time: new Date(time).toISOString()
+          }]);
+
+        if (error) {
+          console.error(error);
+          statusEl.textContent = "❌ Booking failed: " + error.message;
+          statusEl.className = "bad";
+          return;
+        }
+
+        statusEl.textContent = "✅ Appointment booked successfully!";
+        statusEl.className = "ok";
+
+        form.reset();
+
+        // Optional: auto close after success
+        setTimeout(() => {
+          form.style.display = "none";
+        }, 1200);
+
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "❌ Booking failed: " + (err.message || err);
+        statusEl.className = "bad";
+      }
     });
   </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-  // ✅ Supabase Config
-  const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-  const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-  // Toggle booking form open/close
-  const openBtn = document.getElementById("openBooking");
-  const form = document.getElementById("bookingForm");
-
-  openBtn.addEventListener("click", () => {
-    form.style.display = form.style.display === "block" ? "none" : "block";
-    form.scrollIntoView({ behavior: "smooth" });
-  });
-
-  // Submit booking to Supabase
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const service = document.getElementById("service").value;
-    const time = document.getElementById("time").value;
-
-    if (!name || !email || !service || !time) {
-      alert("Please fill out all fields.");
-      return;
-    }
-
-    // Insert into Supabase
-    const { error } = await supabase
-      .from("appointments")
-      .insert([{
-        client_name: name,
-        client_email: email,
-        service: service,
-        start_time: new Date(time).toISOString()
-      }]);
-
-    if (error) {
-      console.error(error);
-      alert("❌ Booking failed: " + error.message);
-      return;
-    }
-
-    alert("✅ Appointment booked successfully!");
-    form.reset();
-    form.style.display = "none";
-  });
-</script>
-
 </body>
 </html>
