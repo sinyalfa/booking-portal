@@ -49,24 +49,22 @@
     .tinybtn.blue { background:#2563eb; color:#fff; }
     .tinybtn:disabled { opacity:.6; cursor:not-allowed; }
 
-    /* Reschedule modal */
-    .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(0,0,0,.35);
-      display:none; align-items:center; justify-content:center; padding:20px;
+    /* Modal */
+    .modal-backdrop{
+      position:fixed; inset:0; background:rgba(0,0,0,.35);
+      display:none; align-items:center; justify-content:center; padding:18px;
     }
-    .modal {
+    .modal{
       width:100%; max-width:520px; background:#fff; border-radius:14px;
       box-shadow:0 12px 35px rgba(0,0,0,.25); padding:18px;
     }
-    .modal h2 { margin:0 0 8px 0; font-size:18px; }
-    .modal .muted { margin-bottom:10px; }
-    .modal .grid { display:grid; gap:10px; }
-    .modal .grid label { font-weight:bold; color:#111827; }
-    .modal .grid input { width:100%; }
-    .modal .btnrow { display:flex; gap:10px; margin-top:14px; justify-content:flex-end; }
-    .modal .btnrow button { padding:10px 12px; border-radius:10px; }
-    .modal .btnrow .cancel { background:#fff; color:#111827; border:1px solid #d1d5db; }
-    .modal .btnrow .save { background:#0f766e; color:#fff; border:none; }
+    .modal h2{ margin:0 0 8px 0; font-size:18px; }
+    .modal .grid{ display:grid; gap:10px; }
+    .modal label{ font-weight:bold; color:#111827; }
+    .modal .btnrow{ display:flex; gap:10px; justify-content:flex-end; margin-top:14px; }
+    .modal .btnrow button{ padding:10px 12px; border-radius:10px; }
+    .modal .btnrow .close{ background:#fff; color:#111827; border:1px solid #d1d5db; }
+    .modal .btnrow .save{ background:#0f766e; color:#fff; border:none; }
   </style>
 </head>
 <body>
@@ -116,7 +114,7 @@
               <th style="min-width:160px;">Service</th>
               <th style="min-width:110px;">Status</th>
               <th style="min-width:240px;">ID</th>
-              <th style="min-width:230px;">Actions</th>
+              <th style="min-width:260px;">Actions</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
@@ -138,9 +136,10 @@
       </div>
 
       <div class="btnrow">
-        <button class="cancel" id="modalCancel" type="button">Close</button>
-        <button class="save" id="modalSave" type="button">Save Changes</button>
+        <button class="close" id="modalClose" type="button">Close</button>
+        <button class="save" id="modalSave" type="button">Save</button>
       </div>
+
       <div id="modalMsg" class="muted" style="margin-top:10px;"></div>
     </div>
   </div>
@@ -168,16 +167,16 @@
     const refreshBtn = document.getElementById("refreshBtn");
     const exportBtn = document.getElementById("exportBtn");
 
-    // Modal refs
+    // modal refs
     const modalBackdrop = document.getElementById("modalBackdrop");
     const modalInfo = document.getElementById("modalInfo");
     const newTime = document.getElementById("newTime");
-    const modalCancel = document.getElementById("modalCancel");
+    const modalClose = document.getElementById("modalClose");
     const modalSave = document.getElementById("modalSave");
     const modalMsg = document.getElementById("modalMsg");
 
     let latestRows = [];
-    let rescheduleTarget = null; // { id, client_name, client_email, service, start_time }
+    let rescheduleTarget = null;
 
     function fmt(iso) {
       const d = new Date(iso);
@@ -188,15 +187,9 @@
     }
 
     function toLocalInputValue(iso) {
-      // Convert ISO -> "YYYY-MM-DDTHH:MM" in local time for datetime-local input
       const d = new Date(iso);
       const pad = (n) => String(n).padStart(2, "0");
-      const yyyy = d.getFullYear();
-      const mm = pad(d.getMonth() + 1);
-      const dd = pad(d.getDate());
-      const hh = pad(d.getHours());
-      const mi = pad(d.getMinutes());
-      return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
     function setMsg(text, cls="muted") {
@@ -224,12 +217,7 @@
       const lines = [header.join(",")];
       for (const r of rows) {
         const line = [
-          r.start_time,
-          r.client_name,
-          r.client_email,
-          r.service,
-          r.status,
-          r.id
+          r.start_time, r.client_name, r.client_email, r.service, r.status, r.id
         ].map(v => `"${String(v ?? "").replaceAll('"','""')}"`).join(",");
         lines.push(line);
       }
@@ -252,7 +240,7 @@
       const ok = confirm("Cancel this appointment?\n\nThis will mark it as cancelled.");
       if (!ok) return;
 
-      setMsg("Cancelling appointment...", "muted");
+      setMsg("Cancelling...", "muted");
 
       const { error } = await supa
         .from("appointments")
@@ -265,11 +253,11 @@
         return;
       }
 
-      setMsg("✅ Appointment cancelled.", "ok");
+      setMsg("✅ Cancelled.", "ok");
       await loadAppointments();
     }
 
-    function openRescheduleModal(row) {
+    function openReschedule(row) {
       rescheduleTarget = row;
       modalMsg.textContent = "";
       modalInfo.textContent = `${row.client_name} • ${row.client_email} • ${row.service} • Current: ${fmt(row.start_time)}`;
@@ -277,7 +265,7 @@
       modalBackdrop.style.display = "flex";
     }
 
-    function closeRescheduleModal() {
+    function closeReschedule() {
       modalBackdrop.style.display = "none";
       rescheduleTarget = null;
     }
@@ -291,7 +279,6 @@
         return;
       }
 
-      // Compute +60 min
       const startISO = new Date(value).toISOString();
       const endISO = new Date(new Date(value).getTime() + 60 * 60 * 1000).toISOString();
 
@@ -316,8 +303,8 @@
       }
 
       modalMsg.textContent = "✅ Updated!";
-      setMsg("✅ Appointment rescheduled.", "ok");
-      closeRescheduleModal();
+      setMsg("✅ Rescheduled.", "ok");
+      closeReschedule();
       await loadAppointments();
     }
 
@@ -335,7 +322,6 @@
         const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
         const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
         q = q.gte("start_time", start).lt("start_time", end);
-
       } else if (rangeFilter.value === "upcoming") {
         const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
         q = q.gte("start_time", thirtyDaysAgo);
@@ -379,38 +365,19 @@
             <td class="small">${escapeHtml(r.id)}</td>
             <td>
               <div class="actions">
-                <button
-                  class="tinybtn blue"
-                  data-action="reschedule"
-                  data-id="${escapeHtml(r.id)}"
-                  ${isCancelled ? "disabled" : ""}
-                >
+                <button class="tinybtn blue" data-action="reschedule" data-id="${escapeHtml(r.id)}" ${isCancelled ? "disabled" : ""}>
                   Reschedule
                 </button>
-
-                <button
-                  class="tinybtn red"
-                  data-action="cancel"
-                  data-id="${escapeHtml(r.id)}"
-                  ${isCancelled ? "disabled" : ""}
-                >
+                <button class="tinybtn red" data-action="cancel" data-id="${escapeHtml(r.id)}" ${isCancelled ? "disabled" : ""}>
                   ${isCancelled ? "Cancelled" : "Cancel"}
                 </button>
-
-                <button
-                  class="tinybtn gray"
-                  data-action="copyid"
-                  data-id="${escapeHtml(r.id)}"
-                >
-                  Copy ID
-                </button>
+                <button class="tinybtn gray" data-action="copyid" data-id="${escapeHtml(r.id)}">Copy ID</button>
               </div>
             </td>
           </tr>
         `;
       }).join("");
 
-      // button actions
       tbody.querySelectorAll("button[data-action]").forEach(btn => {
         btn.addEventListener("click", async () => {
           const action = btn.getAttribute("data-action");
@@ -424,13 +391,13 @@
 
           if (action === "reschedule") {
             if (!row) return;
-            openRescheduleModal(row);
+            openReschedule(row);
           }
 
           if (action === "copyid") {
             try {
               await navigator.clipboard.writeText(id);
-              setMsg("✅ Copied appointment ID to clipboard.", "ok");
+              setMsg("✅ Copied appointment ID.", "ok");
             } catch {
               setMsg("❌ Copy failed.", "err");
             }
@@ -441,18 +408,17 @@
       setMsg(`✅ Loaded ${filtered.length} appointment(s).`, "ok");
     }
 
-    // export CSV
     exportBtn.onclick = () => {
       const csv = toCSV(latestRows);
       const stamp = new Date().toISOString().slice(0,10);
       download(`appointments_${stamp}.csv`, csv);
     };
 
-    // modal buttons
-    modalCancel.onclick = closeRescheduleModal;
+    // modal controls
+    modalClose.onclick = closeReschedule;
     modalSave.onclick = saveReschedule;
     modalBackdrop.addEventListener("click", (e) => {
-      if (e.target === modalBackdrop) closeRescheduleModal();
+      if (e.target === modalBackdrop) closeReschedule();
     });
 
     // login
