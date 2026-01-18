@@ -5,145 +5,304 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Manage Appointment</title>
   <style>
-    body { font-family: Arial, Helvetica, sans-serif; background:#f4f6f8; margin:0; padding:30px; display:flex; justify-content:center; }
-    .box { max-width:520px; width:100%; background:#fff; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.1); padding:22px; }
-    h1 { margin:0 0 10px 0; font-size:22px; }
-    .muted { color:#6b7280; font-size:13px; }
-    .row { margin:10px 0; }
-    .label { font-weight:bold; color:#111827; }
-    .val { color:#111827; }
-    .status { margin-top:12px; font-weight:bold; }
-    .ok { color:#16a34a; }
-    .bad { color:#dc2626; }
-    .btns { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
-    button, a.btn {
-      border-radius:10px; padding:12px 14px; font-weight:bold; cursor:pointer;
-      border:1px solid #d1d5db; background:#fff; text-decoration:none; color:#111827;
+    :root{
+      --bg1:#0b1220;
+      --bg2:#111827;
+      --card:rgba(255,255,255,.96);
+      --muted:#6b7280;
+      --text:#0f172a;
+
+      --okBg:#dcfce7; --okText:#166534; --okBorder:#86efac;
+      --badBg:#fee2e2; --badText:#991b1b; --badBorder:#fecaca;
+      --warnBg:#fff7ed; --warnText:#9a3412; --warnBorder:#fed7aa;
+
+      --accent:#4f46e5;
     }
-    button.danger { background:#dc2626; border:none; color:#fff; }
-    button:disabled { opacity:.6; cursor:not-allowed; }
-    code { word-break: break-all; }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      padding:14px;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(79,70,229,.25), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(16,185,129,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      color:#e5e7eb;
+      min-height:100vh;
+    }
+
+    .wrap{ max-width: 820px; margin: 0 auto; }
+    .card{
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 18px;
+      box-shadow: 0 20px 55px rgba(0,0,0,.35);
+      padding:16px;
+      color: var(--text);
+      backdrop-filter: blur(8px);
+    }
+
+    h1{ margin:0 0 6px 0; font-size:20px; }
+    .muted{ color: var(--muted); font-size:13px; line-height:1.4; }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; border-radius:999px; font-weight:900; font-size:12px;
+      border: 1px solid transparent;
+    }
+    .pill.ok{ background:var(--okBg); color:var(--okText); border-color:var(--okBorder); }
+    .pill.bad{ background:var(--badBg); color:var(--badText); border-color:var(--badBorder); }
+    .pill.warn{ background:var(--warnBg); color:var(--warnText); border-color:var(--warnBorder); }
+
+    .grid{
+      margin-top:14px;
+      display:grid;
+      gap:10px;
+    }
+    .item{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      padding:12px;
+    }
+    .label{ font-size:12px; font-weight:900; color:#6b7280; text-transform:uppercase; letter-spacing:.03em; }
+    .value{ margin-top:6px; font-size:14px; font-weight:900; color:#111827; line-height:1.4; }
+    .value small{ font-weight:700; color:#4b5563; }
+
+    .actions{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    button{
+      padding:12px 14px;
+      border-radius:14px;
+      border:none;
+      font-weight:900;
+      cursor:pointer;
+      min-height:46px;
+      box-shadow: 0 12px 22px rgba(0,0,0,.10);
+      transition: transform .12s ease, opacity .12s ease;
+    }
+    button:hover{ transform: translateY(-1px); opacity:.96; }
+    button:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .btnDanger{ background:#dc2626; color:#fff; }
+    .btnSecondary{ background:#fff; color:#111827; border:1px solid #d1d5db; box-shadow:none; }
+    a.link{ color: var(--accent); font-weight:900; text-decoration:none; }
+
+    @media (max-width: 520px){
+      body{ padding:12px; }
+      .card{ padding:14px; }
+      .actions button{ width:100%; }
+    }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>Manage Appointment</h1>
-    <div class="muted">Use the link you received after booking.</div>
+  <div class="wrap">
+    <div class="card">
+      <h1>Manage Appointment</h1>
+      <div class="muted">View details and cancel if needed.</div>
 
-    <div id="content" style="display:none;">
-      <div class="row"><span class="label">Service:</span> <span class="val" id="svc"></span></div>
-      <div class="row"><span class="label">Date & Time:</span> <span class="val" id="dt"></span></div>
-      <div class="row"><span class="label">Duration:</span> <span class="val">60 minutes</span></div>
-      <div class="row"><span class="label">Status:</span> <span class="val" id="st"></span></div>
-      <div class="row muted"><span class="label">Confirmation #:</span> <code id="cid"></code></div>
+      <div id="status" style="margin-top:10px;"></div>
 
-      <div class="btns">
-        <a class="btn" href="./">Back to Booking</a>
-        <button class="danger" id="cancelBtn" type="button">Cancel Appointment</button>
+      <div id="content" class="grid" style="display:none;">
+        <div class="item">
+          <div class="label">Client</div>
+          <div class="value" id="vClient">—</div>
+        </div>
+        <div class="item">
+          <div class="label">Email</div>
+          <div class="value" id="vEmail">—</div>
+        </div>
+        <div class="item">
+          <div class="label">Service</div>
+          <div class="value" id="vService">—</div>
+        </div>
+        <div class="item">
+          <div class="label">Location</div>
+          <div class="value" id="vLocation">—</div>
+        </div>
+        <div class="item">
+          <div class="label">Date & Time</div>
+          <div class="value" id="vTime">—</div>
+        </div>
+        <div class="item">
+          <div class="label">Status</div>
+          <div class="value" id="vStatus">—</div>
+        </div>
+
+        <div class="actions">
+          <button id="cancelBtn" class="btnDanger" type="button">Cancel Appointment</button>
+          <button id="backBtn" class="btnSecondary" type="button">Back to Booking</button>
+        </div>
+
+        <div class="muted" style="margin-top:8px;">
+          If you need help, call/text <b>614-599-1185</b> or email
+          <a class="link" href="mailto:Columbuseast.taxservices@outlook.com">Columbuseast.taxservices@outlook.com</a>.
+        </div>
       </div>
     </div>
-
-    <div id="msg" class="status"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // Supabase
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    const msg = document.getElementById("msg");
-    const content = document.getElementById("content");
+    // UI
+    const statusEl = document.getElementById("status");
+    const contentEl = document.getElementById("content");
+
+    const vClient = document.getElementById("vClient");
+    const vEmail = document.getElementById("vEmail");
+    const vService = document.getElementById("vService");
+    const vLocation = document.getElementById("vLocation");
+    const vTime = document.getElementById("vTime");
+    const vStatus = document.getElementById("vStatus");
+
     const cancelBtn = document.getElementById("cancelBtn");
+    const backBtn = document.getElementById("backBtn");
 
-    const params = new URLSearchParams(location.search);
-    const id = params.get("id");
-    const token = params.get("token");
+    let appt = null;
 
-    function setMsg(text, ok) {
-      msg.textContent = text;
-      msg.className = "status " + (ok ? "ok" : "bad");
+    function pill(type, text){
+      const cls = type === "ok" ? "pill ok" : type === "warn" ? "pill warn" : "pill bad";
+      return `<span class="${cls}">${text}</span>`;
     }
 
-    function fmt(iso) {
+    function fmtDateTime(iso){
       const d = new Date(iso);
-      return d.toLocaleString([], { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+      return d.toLocaleString([], { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
     }
 
-    async function load() {
-      if (!id || !token) {
-        setMsg("Missing appointment link parameters. Please use the full manage link.", false);
+    // ✅ Convert stored "Columbus Metropolitan Library..." to "CML – Branch ..."
+    function formatLocation(raw){
+      const s = String(raw || "").trim();
+      if (!s) return "—";
+      // Handles both ":" and "-" styles you’ve used
+      // Examples:
+      // "Columbus Metropolitan Library: Whitehall Branch — 4445 E Broad St..."
+      // "Columbus Metropolitan Library - Barnett Branch — 3434 E Livingston Ave..."
+      return s
+        .replace(/^Columbus Metropolitan Library\s*[:\-]\s*/i, "CML – ")
+        .replace(/^Columbus Metropolitan Library/i, "CML");
+    }
+
+    // Optional: email function (non-blocking)
+    function sendUpdateEmail(payload) {
+      fetch(`${supabaseUrl}/functions/v1/send-update`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(() => {});
+    }
+
+    function getParams(){
+      const u = new URL(window.location.href);
+      return {
+        id: u.searchParams.get("id") || "",
+        email: (u.searchParams.get("email") || "").trim()
+      };
+    }
+
+    async function loadAppointment(){
+      const { id, email } = getParams();
+
+      if (!id || !email) {
+        statusEl.innerHTML = pill("bad", "Missing link info") +
+          ` <span class="muted">This link needs an id and email. Please use the link you received after booking.</span>`;
         return;
       }
 
-      if (!window.supabase?.createClient) {
-        setMsg("Supabase library didn't load. Refresh and try again.", false);
-        return;
-      }
-
-      const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-      setMsg("Loading appointment...", true);
+      statusEl.innerHTML = pill("warn", "Loading…");
 
       const { data, error } = await supa
         .from("appointments")
-        .select("id, service, start_time, status")
+        .select("id, client_name, client_email, service, location, start_time, status")
         .eq("id", id)
-        .eq("cancel_token", token)
-        .maybeSingle();
+        .single();
 
-      if (error) {
-        console.error(error);
-        setMsg("Error loading appointment: " + error.message, false);
+      if (error || !data) {
+        statusEl.innerHTML = pill("bad", "Not found") +
+          ` <span class="muted">This appointment could not be loaded.</span>`;
         return;
       }
 
-      if (!data) {
-        setMsg("Appointment not found (link may be invalid).", false);
+      // Security check: email must match
+      if ((data.client_email || "").trim().toLowerCase() !== email.toLowerCase()) {
+        statusEl.innerHTML = pill("bad", "Access denied") +
+          ` <span class="muted">Email does not match this appointment.</span>`;
         return;
       }
 
-      document.getElementById("svc").textContent = data.service || "";
-      document.getElementById("dt").textContent = fmt(data.start_time);
-      document.getElementById("st").textContent = data.status || "confirmed";
-      document.getElementById("cid").textContent = data.id;
+      appt = data;
 
-      // Disable cancel if already cancelled
-      if ((data.status || "").toLowerCase() === "cancelled") {
-        cancelBtn.disabled = true;
-        cancelBtn.textContent = "Already Cancelled";
-      }
+      const status = (appt.status || "confirmed").toLowerCase();
+      const cancelled = status === "cancelled";
 
-      content.style.display = "block";
-      setMsg("", true);
+      vClient.textContent = appt.client_name || "—";
+      vEmail.textContent = appt.client_email || "—";
+      vService.textContent = appt.service || "—";
+      vLocation.textContent = formatLocation(appt.location);
+      vTime.textContent = appt.start_time ? fmtDateTime(appt.start_time) : "—";
+      vStatus.innerHTML = cancelled ? pill("bad", "cancelled") : pill("ok", "confirmed");
+
+      cancelBtn.disabled = cancelled;
+
+      statusEl.innerHTML = cancelled
+        ? pill("bad", "Cancelled") + ` <span class="muted">This appointment is already cancelled.</span>`
+        : pill("ok", "Confirmed");
+
+      contentEl.style.display = "grid";
     }
 
-    cancelBtn.addEventListener("click", async () => {
-      if (!confirm("Cancel this appointment?")) return;
+    async function cancelAppointment(){
+      if (!appt) return;
 
-      const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+      const status = (appt.status || "confirmed").toLowerCase();
+      if (status === "cancelled") return;
+
+      const ok = confirm("Cancel this appointment?\n\nYou will receive a cancellation confirmation.");
+      if (!ok) return;
 
       cancelBtn.disabled = true;
-      setMsg("Cancelling...", true);
+      statusEl.innerHTML = pill("warn", "Cancelling…");
 
       const { error } = await supa
         .from("appointments")
         .update({ status: "cancelled" })
-        .eq("id", id)
-        .eq("cancel_token", token);
+        .eq("id", appt.id);
 
       if (error) {
-        console.error(error);
-        setMsg("Cancel failed: " + error.message, false);
+        statusEl.innerHTML = pill("bad", "Cancel failed") + ` <span class="muted">${error.message}</span>`;
         cancelBtn.disabled = false;
         return;
       }
 
-      document.getElementById("st").textContent = "cancelled";
-      cancelBtn.textContent = "Cancelled";
-      setMsg("✅ Appointment cancelled.", true);
-    });
+      // Email customer + admin (if your send-update function is live)
+      sendUpdateEmail({
+        type: "cancel",
+        appointment_id: appt.id,
+        client_name: appt.client_name,
+        client_email: appt.client_email,
+        service: appt.service,
+        location: appt.location,
+        start_time: appt.start_time
+      });
 
-    load();
+      // Reload fresh data
+      await loadAppointment();
+    }
+
+    cancelBtn.addEventListener("click", cancelAppointment);
+    backBtn.addEventListener("click", () => window.location.href = "index.html");
+
+    loadAppointment();
   </script>
 </body>
 </html>
