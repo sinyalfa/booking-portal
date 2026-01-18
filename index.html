@@ -18,7 +18,6 @@
 
       --slotAvailBg:#ecfdf5; --slotAvailText:#065f46; --slotAvailBorder:#6ee7b7;
       --slotTakenBg:#f3f4f6; --slotTakenText:#6b7280; --slotTakenBorder:#e5e7eb;
-      --slotBreakBg:#fff7ed; --slotBreakText:#9a3412; --slotBreakBorder:#fdba74;
 
       --primary:#111827;
       --accent:#4f46e5;
@@ -55,10 +54,7 @@
       backdrop-filter: blur(8px);
     }
 
-    .brand{
-      display:flex; gap:12px; align-items:center;
-      margin-bottom:8px;
-    }
+    .brand{ display:flex; gap:12px; align-items:center; margin-bottom:8px; }
     .logo{
       width:46px; height:46px; border-radius:14px;
       background: linear-gradient(135deg, rgba(79,70,229,1), rgba(16,185,129,1));
@@ -78,7 +74,6 @@
       display:flex;
       justify-content:center;
       align-items:center;
-      gap:8px;
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
       transition: transform .12s ease, opacity .12s ease;
     }
@@ -148,7 +143,6 @@
     }
     .tag.avail{ background:var(--slotAvailBg); color:var(--slotAvailText); border-color:var(--slotAvailBorder); }
     .tag.taken{ background:var(--slotTakenBg); color:var(--slotTakenText); border-color:var(--slotTakenBorder); }
-    .tag.break{ background:var(--slotBreakBg); color:var(--slotBreakText); border-color:var(--slotBreakBorder); }
 
     .slots{
       margin-top: 12px;
@@ -187,13 +181,6 @@
       border-color: var(--slotTakenBorder);
       cursor:not-allowed;
       opacity:.85;
-    }
-    .slot.break{
-      background: var(--slotBreakBg);
-      color: var(--slotBreakText);
-      border-color: var(--slotBreakBorder);
-      cursor:not-allowed;
-      opacity:.95;
     }
 
     .confirmBox{
@@ -252,7 +239,7 @@
       <div style="margin-top:12px;">
         <div class="pill ok">Business Hours Rules</div>
         <div class="muted" style="margin-top:8px;">
-          <b>Mon–Fri:</b> 10:00 AM–2:00 PM and 5:00 PM–8:00 PM (blocked 2–5)<br/>
+          <b>Mon–Fri:</b> 10:00 AM–2:00 PM and 5:00 PM–8:00 PM<br/>
           <b>Sat–Sun:</b> 9:00 AM–8:00 PM
         </div>
       </div>
@@ -262,7 +249,7 @@
     <div class="card">
       <div class="bookingTitle">Book an Appointment</div>
       <div class="muted" style="margin-top:6px;">
-        Choose a date and time. Appointments are <b>60 minutes</b>. Times shown follow the schedule rules.
+        Appointments are <b>60 minutes</b>. Only valid times are shown (blocked times are hidden).
       </div>
 
       <div class="row" style="margin-top:12px;">
@@ -294,7 +281,6 @@
         <div class="legend">
           <div class="tag avail">Available</div>
           <div class="tag taken">Booked</div>
-          <div class="tag break">Blocked</div>
         </div>
 
         <div class="slots" id="slots"></div>
@@ -359,58 +345,30 @@
       return d.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
     }
 
-    // === SCHEDULE RULES ===
-    // Returns: { allowedStartHour, allowedEndHour, breakStartHour, breakEndHour } OR null for no break
+    // === RULES ===
     function getDayRules(dateObj){
       const dow = dateObj.getDay(); // 0 Sun, 6 Sat
       const isWeekend = (dow === 0 || dow === 6);
 
       if (isWeekend) {
-        return {
-          allowedStartHour: 9,
-          allowedEndHour: 20,   // must END by 8pm
-          breakStartHour: null,
-          breakEndHour: null
-        };
+        return { allowedStartHour: 9, allowedEndHour: 20, breakStartHour: null, breakEndHour: null };
       }
-
-      // Mon-Fri
-      return {
-        allowedStartHour: 10,
-        allowedEndHour: 20,    // must END by 8pm
-        breakStartHour: 14,    // 2pm
-        breakEndHour: 17       // 5pm
-      };
+      return { allowedStartHour: 10, allowedEndHour: 20, breakStartHour: 14, breakEndHour: 17 };
     }
 
-    function isInBreak(startDateObj, rules){
-      if (rules.breakStartHour == null) return false;
-      const t = startDateObj.getHours() + startDateObj.getMinutes()/60;
-      return t >= rules.breakStartHour && t < rules.breakEndHour;
-    }
-
-    // Start must be within allowed range AND end must be <= allowedEndHour AND not in break
     function isAllowedStart(startDateObj, rules){
       const end = new Date(startDateObj.getTime() + APPOINTMENT_MINUTES * 60 * 1000);
-
       const startH = startDateObj.getHours() + startDateObj.getMinutes()/60;
       const endH   = end.getHours() + end.getMinutes()/60;
 
       if (startH < rules.allowedStartHour) return false;
       if (endH > rules.allowedEndHour) return false;
 
-      // Block break window for Mon–Fri
-      if (isInBreak(startDateObj, rules)) return false;
-
-      // ALSO prevent starts that would overlap into break (e.g., 1:30pm 60min => 2:30pm)
       if (rules.breakStartHour != null) {
-        const breakStart = new Date(startDateObj);
-        breakStart.setHours(rules.breakStartHour, 0, 0, 0);
-        const breakEnd = new Date(startDateObj);
-        breakEnd.setHours(rules.breakEndHour, 0, 0, 0);
-
-        // Overlap check: [start,end) intersects [breakStart,breakEnd)
-        if (startDateObj < breakEnd && end > breakStart) return false;
+        const bs = new Date(startDateObj); bs.setHours(rules.breakStartHour, 0,0,0);
+        const be = new Date(startDateObj); be.setHours(rules.breakEndHour, 0,0,0);
+        // overlap check
+        if (startDateObj < be && end > bs) return false;
       }
 
       return true;
@@ -463,54 +421,56 @@
       bookBtn.disabled = true;
 
       const rules = getDayRules(selectedDate);
-      const isWeekend = (selectedDate.getDay() === 0 || selectedDate.getDay() === 6);
+      const dow = selectedDate.getDay();
+      const isWeekend = (dow === 0 || dow === 6);
 
       rangeLabel.textContent =
-        `${fmtDay(selectedDate)} • ${isWeekend ? "Weekend Hours 9AM–8PM" : "Weekday Hours 10AM–2PM & 5PM–8PM (2–5 blocked)"}`;
+        `${fmtDay(selectedDate)} • ${isWeekend ? "Weekend 9AM–8PM" : "Weekdays 10–2 & 5–8"}`;
 
       const dayStart = new Date(selectedDate);
       const taken = await fetchBookedSlotsForDay(dayStart);
 
-      // Build candidate slot times from earliest allowed start to latest possible start
+      // Generate ONLY allowed slots (blocked slots hidden)
       const slots = [];
 
-      // We'll iterate from 8:00 AM to 8:00 PM and mark allowed/taken/break.
-      // This gives a consistent grid, and "Blocked" shows visually.
-      const iter = new Date(dayStart);
-      iter.setHours(8, 0, 0, 0);
+      // Earliest start candidate = allowedStartHour:00
+      const cur = new Date(dayStart);
+      cur.setHours(rules.allowedStartHour, 0, 0, 0);
 
-      const endIter = new Date(dayStart);
-      endIter.setHours(20, 0, 0, 0);
-
-      while (iter <= endIter) {
-        const iso = iter.toISOString();
-        const allowed = isAllowedStart(iter, rules);
-
-        let kind = "break";
-        if (allowed) kind = taken.has(iso) ? "taken" : "avail";
-        else {
-          // show "break" color for the blocked window, otherwise gray-out as taken-like
-          const inBreak = isInBreak(iter, rules) || (rules.breakStartHour != null && (() => {
-            // overlap into break also considered blocked
-            const testEnd = new Date(iter.getTime() + APPOINTMENT_MINUTES * 60 * 1000);
-            const bs = new Date(iter); bs.setHours(rules.breakStartHour, 0, 0, 0);
-            const be = new Date(iter); be.setHours(rules.breakEndHour, 0, 0, 0);
-            return (iter < be && testEnd > bs);
-          })());
-          kind = inBreak ? "break" : "taken";
+      // Iterate in 30-min steps until end boundary
+      while (true) {
+        if (!isAllowedStart(cur, rules)) {
+          // If we're before end boundary but blocked (break overlap), just step forward
+          // Stop only when even the earliest possible start would end after allowedEndHour
+          const testEnd = new Date(cur.getTime() + APPOINTMENT_MINUTES * 60 * 1000);
+          const endH = testEnd.getHours() + testEnd.getMinutes()/60;
+          if (endH > rules.allowedEndHour) break;
+          cur.setMinutes(cur.getMinutes() + SLOT_MINUTES);
+          continue;
         }
 
-        slots.push({ iso, label: fmtTime(iter), kind });
-        iter.setMinutes(iter.getMinutes() + SLOT_MINUTES);
+        const iso = cur.toISOString();
+        slots.push({
+          iso,
+          label: fmtTime(cur),
+          taken: taken.has(iso)
+        });
+
+        cur.setMinutes(cur.getMinutes() + SLOT_MINUTES);
+
+        const nextEnd = new Date(cur.getTime() + APPOINTMENT_MINUTES * 60 * 1000);
+        const nextEndH = nextEnd.getHours() + nextEnd.getMinutes()/60;
+        if (nextEndH > rules.allowedEndHour) break;
+      }
+
+      if (!slots.length) {
+        slotsEl.innerHTML = `<div class="muted">No available times for this day.</div>`;
+        return;
       }
 
       slotsEl.innerHTML = slots.map(s => {
-        const cls = `slot ${s.kind}` + (s.kind === "avail" && s.iso === selectedSlotISO ? " active" : "");
-        const title =
-          s.kind === "avail" ? "Available" :
-          s.kind === "taken" ? "Booked/Unavailable" :
-          "Blocked (break)";
-        return `<div class="${cls}" data-iso="${s.iso}" data-kind="${s.kind}" title="${title}">${s.label}</div>`;
+        const kind = s.taken ? "taken" : "avail";
+        return `<div class="slot ${kind}" data-iso="${s.iso}" data-kind="${kind}">${s.label}</div>`;
       }).join("");
 
       slotsEl.querySelectorAll(".slot").forEach(el => {
@@ -526,7 +486,6 @@
       });
     }
 
-    // Booking submit
     bookBtn.onclick = async () => {
       statusEl.innerHTML = `<span class="pill ok">Submitting…</span>`;
       bookBtn.disabled = true;
@@ -540,7 +499,7 @@
 
       // HARD BLOCK
       if (!isAllowedStart(start, rules)) {
-        statusEl.innerHTML = `<span class="pill bad">Not allowed</span> Please choose a time inside the schedule.`;
+        statusEl.innerHTML = `<span class="pill bad">Not allowed</span> Please choose a valid time.`;
         validateForm();
         return;
       }
