@@ -134,6 +134,7 @@
       min-height:44px;
     }
 
+    /* Week strip */
     .weekBar{
       display:flex;
       gap:8px;
@@ -217,6 +218,7 @@
       .slots{ grid-template-columns: repeat(2, 1fr); }
     }
 
+    /* Sticky confirm area (mobile-friendly) */
     .stickyBar{
       position: sticky;
       bottom: 10px;
@@ -234,6 +236,7 @@
 <body>
 
   <div class="wrap">
+    <!-- Business Card -->
     <div class="card">
       <div class="brand">
         <div class="logo"></div>
@@ -279,6 +282,7 @@
       </div>
     </div>
 
+    <!-- Booking Portal -->
     <div class="card">
       <div class="bookingTitle">Book an Appointment</div>
       <div class="muted" style="margin-top:6px;">
@@ -303,21 +307,22 @@
 
       <div class="row">
         <select id="location" aria-label="Location">
-          <option value="Columbus Metropolitan Library: Whitehall Branch — 4445 E Broad St, Columbus, OH 43213">
-            Columbus Metropolitan Library: Whitehall Branch — 4445 E Broad St, Columbus, OH 43213
+          <option value="CML – Whitehall Branch — 4445 E Broad St, Columbus, OH 43213">
+            CML – Whitehall Branch — 4445 E Broad St, Columbus, OH 43213
           </option>
-          <option value="Columbus Metropolitan Library: Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227">
-            Columbus Metropolitan Library: Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227
+          <option value="CML – Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227">
+            CML – Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227
           </option>
-          <option value="Columbus Metropolitan Library: Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068">
-            Columbus Metropolitan Library: Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068
+          <option value="CML – Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068">
+            CML – Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068
           </option>
-          <option value="Columbus Metropolitan Library: Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125">
-            Columbus Metropolitan Library: Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125
+          <option value="CML – Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125">
+            CML – Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125
           </option>
         </select>
       </div>
 
+      <!-- Date picker + Week view -->
       <div class="row" style="align-items:flex-end;">
         <div style="flex:1; min-width:220px;">
           <div class="muted" style="font-weight:900; margin-bottom:6px;">Choose a date</div>
@@ -336,6 +341,7 @@
         <div class="slots" id="slots"></div>
       </div>
 
+      <!-- Sticky confirm area -->
       <div class="stickyBar">
         <div class="row">
           <button id="bookBtn" type="button" disabled style="width:100%;">Confirm Booking</button>
@@ -360,13 +366,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // ====== SETTINGS ======
     const APPOINTMENT_MINUTES = 60;
     const SLOT_MINUTES = 30;
 
+    // Supabase
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+    // UI
     const nameEl = document.getElementById("name");
     const emailEl = document.getElementById("email");
     const serviceEl = document.getElementById("service");
@@ -385,9 +394,10 @@
     const confirmText = document.getElementById("confirmText");
     const manageUrlEl = document.getElementById("manageUrl");
 
+    // State
     let selectedDate = new Date();
     selectedDate.setHours(0,0,0,0);
-    let weekStart = startOfWeek(selectedDate);
+    let weekStart = startOfWeek(selectedDate); // Sunday start
     let selectedSlotISO = null;
 
     function startOfWeek(d){
@@ -410,8 +420,21 @@
       return d.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
     }
 
+    // ✅ Edge Function call (with auth headers)
+    function sendUpdateEmail(payload) {
+      fetch(`${supabaseUrl}/functions/v1/send-update`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${supabaseKey}`,
+          "apikey": supabaseKey
+        },
+        body: JSON.stringify(payload)
+      }).catch(() => {});
+    }
+
     // Hours:
-    // Mon–Fri 10–8, Sat 10–6, Sun 12–6
+    // Mon–Fri 10–20, Sat 10–18, Sun 12–18
     function getDayRules(dateObj){
       const dow = dateObj.getDay(); // 0 Sun, 6 Sat
       if (dow === 0) return { startHour: 12, endHour: 18 }; // Sunday
@@ -461,7 +484,6 @@
     nameEl.addEventListener("input", validateForm);
     emailEl.addEventListener("input", validateForm);
     serviceEl.addEventListener("change", validateForm);
-    locationEl.addEventListener("change", () => {}); // no-op, keeps future flexibility
 
     function renderWeekBar(){
       weekBar.innerHTML = "";
@@ -504,6 +526,7 @@
       const dayStart = new Date(selectedDate);
       const taken = await fetchBookedSlotsForDay(dayStart);
 
+      // ✅ Generate ONLY allowed + not-booked slots (blocked and booked are hidden)
       const slots = [];
       const cur = new Date(dayStart);
       cur.setHours(rules.startHour, 0, 0, 0);
@@ -515,10 +538,8 @@
 
         if (isAllowedStart(cur, rules)) {
           const iso = cur.toISOString();
-          // Hide booked + blocked (we only generate allowed, and skip booked)
           if (!taken.has(iso)) slots.push({ iso, label: fmtTime(cur) });
         }
-
         cur.setMinutes(cur.getMinutes() + SLOT_MINUTES);
       }
 
@@ -579,7 +600,7 @@
       const start = new Date(selectedSlotISO);
       const rules = getDayRules(start);
 
-      // HARD BLOCK
+      // HARD BLOCK (anti-bypass)
       if (!isAllowedStart(start, rules)) {
         statusEl.innerHTML = `<span class="pill bad">Not allowed</span> Please choose a valid time.`;
         validateForm();
@@ -614,6 +635,18 @@
       manageLink.searchParams.set("id", data.id);
       manageLink.searchParams.set("email", client_email);
 
+      // ✅ OPTION 4: send confirmation emails (client + admin)
+      sendUpdateEmail({
+        type: "confirm",
+        appointment_id: data.id,
+        client_name: data.client_name,
+        client_email: client_email,
+        service: data.service,
+        location: data.location,
+        start_time: data.start_time,
+        manage_url: manageLink.toString()
+      });
+
       statusEl.innerHTML = `<span class="pill ok">Success</span> Appointment booked.`;
       confirmBox.style.display = "block";
       confirmText.textContent =
@@ -624,6 +657,7 @@
       await renderSlots();
     };
 
+    // Init
     datePicker.value = toYYYYMMDD(selectedDate);
     renderWeekBar();
     renderSlots();
