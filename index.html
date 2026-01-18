@@ -4,208 +4,406 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Columbus East Tax Services – Booking</title>
-
   <style>
-    body { font-family: Arial, Helvetica, sans-serif; background:#f4f6f8; display:flex; justify-content:center; padding:30px; margin:0; }
-    .container { max-width:420px; width:100%; background:#fff; padding:25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.1); }
-    h1 { text-align:center; margin-bottom:10px; color:#1f2933; }
-    .contact { text-align:center; margin-bottom:18px; color:#4b5563; font-size:16px; }
-    .contact a { display:block; color:#0066cc; text-decoration:none; margin:8px 0; font-weight:bold; word-break:break-word; }
-
-    .services { background:#f1f3f5; padding:15px; border-radius:10px; margin:18px 0; }
-    .services h3 { margin:0 0 10px 0; }
-    .services li { margin:6px 0; }
-
-    .action-btn {
-      width:100%; padding:14px; margin-top:10px; border:none; border-radius:10px;
-      font-size:16px; font-weight:bold; cursor:pointer; color:#fff;
-      display:flex; justify-content:center; align-items:center;
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
     }
-    .call { background:#2563eb; }
-    .text { background:#16a34a; }
-    .email { background:#9333ea; }
-    .book { background:#0f766e; }
+    .wrap { max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: 360px 1fr; gap: 16px; }
+    @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } }
 
-    #bookingForm { display:none; margin-top:18px; border-top:1px solid #e5e7eb; padding-top:16px; }
-    #bookingForm label { display:block; margin-top:12px; font-weight:bold; }
-    #bookingForm input, #bookingForm select {
-      width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #d1d5db;
+    .card {
+      background: #ffffff;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     }
-    #bookingForm button { margin-top:14px; width:100%; background:#0f766e; color:#fff; border:none; padding:12px; border-radius:10px; font-weight:bold; }
-
-    #status { margin-top:10px; font-weight:bold; text-align:center; }
-    .ok { color:#16a34a; }
-    .bad { color:#dc2626; }
-
-    #confirmBox {
-      display:none; margin-top:18px; background:#f9fafb; padding:16px;
-      border-radius:10px; border-top:1px solid #e5e7eb;
+    h1 { margin: 0 0 8px 0; font-size: 22px; color:#111827; }
+    .muted { color:#6b7280; font-size: 13px; line-height: 1.4; }
+    .info { margin: 10px 0; font-size: 15px; color:#374151; line-height: 1.5; }
+    .btns { margin-top: 12px; display: grid; gap: 10px; }
+    .btns a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: 800;
+      padding: 12px;
+      border-radius: 10px;
+      display: inline-block;
+      text-align: center;
     }
-    .confirm-row { margin:8px 0; }
-    .confirm-small { font-size:13px; color:#6b7280; word-break:break-all; }
-    .confirm-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
-    .btn-lite { padding:12px; border-radius:10px; border:1px solid #d1d5db; background:#fff; font-weight:bold; }
-    .btn-green { padding:12px; border-radius:10px; border:none; background:#16a34a; color:#fff; font-weight:bold; }
+    .btnCall { background:#2563eb; }
+    .btnText { background:#16a34a; }
+    .btnEmail { background:#9333ea; }
+    .btns a:hover { opacity:.92; }
+
+    .sectionTitle { font-size: 14px; font-weight: 900; color:#111827; margin: 14px 0 8px; }
+    ul.services { margin: 0; padding-left: 18px; color:#374151; }
+    ul.services li { margin: 6px 0; }
+
+    .bookingTitle { margin: 0 0 8px 0; font-size: 18px; font-weight: 900; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; margin: 10px 0; }
+    input, select, button {
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      outline: none;
+    }
+    input, select { flex: 1; min-width: 220px; }
+    button { cursor:pointer; font-weight: 900; border:none; background:#111827; color:#fff; }
+    button:disabled { opacity:.6; cursor:not-allowed; }
+
+    .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
+
+    .slotWrap { margin-top: 10px; }
+    .slotHeader { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; }
+    .slotHeader .nav { display:flex; gap:8px; }
+    .slotHeader button { padding: 10px 12px; border-radius: 10px; }
+    .slots { margin-top: 10px; display:grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    @media (max-width: 900px) { .slots { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 520px) { .slots { grid-template-columns: repeat(2, 1fr); } }
+    .slot {
+      border: 1px solid #d1d5db;
+      background:#fff;
+      padding: 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align:center;
+      font-weight: 900;
+      color:#111827;
+    }
+    .slot:hover { background:#f9fafb; }
+    .slot.active { background:#111827; color:#fff; border-color:#111827; }
+    .slot.disabled { opacity:.45; cursor:not-allowed; }
+
+    .pill { display:inline-block; padding: 5px 10px; border-radius:999px; font-weight:900; font-size:12px; }
+    .ok { background:#dcfce7; color:#166534; }
+    .err { background:#fee2e2; color:#991b1b; }
+    .note { margin-top: 10px; }
+    .confirmBox { margin-top: 14px; padding: 12px; border-radius: 12px; border:1px solid #e5e7eb; background:#fafafa; }
+    .manageLink { word-break: break-all; color:#2563eb; font-weight: 900; text-decoration: none; }
   </style>
 </head>
-
 <body>
-<div class="container">
 
-  <h1>Columbus East Tax Services</h1>
+  <div class="wrap">
+    <!-- Business Card -->
+    <div class="card">
+      <h1>Columbus East Tax Services</h1>
+      <div class="muted">Columbus, Ohio 43227</div>
 
-  <div class="contact">
-    📍 Columbus, Ohio 43227
-    <a href="tel:16145991185">📞 614-599-1185</a>
-    <a href="tel:16142597625">📞 614-259-7625</a>
-    <a href="mailto:columbuseast.taxservices@outlook.com">✉️ columbuseast.taxservices@outlook.com</a>
-  </div>
+      <div class="info" style="margin-top:10px;">
+        📞 614-599-1185<br />
+        📞 614-259-7625
+      </div>
 
-  <div class="services">
-    <h3>Services Offered</h3>
-    <ul>
-      <li>W-2 & Individual Returns</li>
-      <li>1099 / Self-Employed</li>
-      <li>LLC & Small Business</li>
-      <li>Audit Help</li>
-    </ul>
-  </div>
+      <div class="info">
+        ✉️ Columbuseast.taxservices@outlook.com
+      </div>
 
-  <a class="action-btn call" href="tel:16145991185">Call Now</a>
-  <a class="action-btn text" href="sms:16145991185">Text Us</a>
-  <a class="action-btn email" href="mailto:columbuseast.taxservices@outlook.com">Email Us</a>
+      <div class="btns">
+        <a class="btnCall" href="tel:16145991185">Call 614-599-1185</a>
+        <a class="btnText" href="sms:16145991185">Text 614-599-1185</a>
+        <a class="btnEmail" href="mailto:Columbuseast.taxservices@outlook.com">Email Us</a>
+      </div>
 
-  <button class="action-btn book" id="openBooking">Book Appointment</button>
+      <div class="sectionTitle">Services</div>
+      <ul class="services">
+        <li>W-2 Tax Filing</li>
+        <li>1099 / Self-Employed</li>
+        <li>LLC / Small Business Taxes</li>
+        <li>Audit Help / IRS Letters</li>
+        <li>Tax Planning</li>
+        <li>Amended Returns</li>
+      </ul>
 
-  <!-- BOOKING FORM -->
-  <form id="bookingForm">
-    <label>Full Name</label>
-    <input id="name" required />
+      <div class="note muted" style="margin-top:12px;">
+        <span class="pill ok">Hours</span>
+        Appointments available <b>10:00 AM – 8:00 PM</b> (60 minutes).
+      </div>
+    </div>
 
-    <label>Email</label>
-    <input id="email" type="email" required />
+    <!-- Booking Portal -->
+    <div class="card">
+      <div class="bookingTitle">Book an Appointment</div>
+      <div class="muted">
+        Select a date + time between <b>10:00 AM and 8:00 PM</b>. Each appointment is <b>60 minutes</b>.
+      </div>
 
-    <label>Service</label>
-    <select id="service" required>
-      <option value="">Choose one</option>
-      <option>W-2 / Individual</option>
-      <option>1099 / Self-Employed</option>
-      <option>LLC / Business</option>
-      <option>Audit Help</option>
-    </select>
+      <div class="row grid2" style="margin-top:12px;">
+        <input id="name" type="text" placeholder="Full Name" aria-label="Full Name" />
+        <input id="email" type="email" placeholder="Email Address" aria-label="Email Address" />
+      </div>
 
-    <label>Date & Time</label>
-    <input id="time" type="datetime-local" required />
+      <div class="row">
+        <select id="service" aria-label="Service">
+          <option value="W-2 Tax Filing">W-2 Tax Filing</option>
+          <option value="1099 / Self-Employed">1099 / Self-Employed</option>
+          <option value="LLC / Small Business Taxes">LLC / Small Business Taxes</option>
+          <option value="Audit Help / IRS Letters">Audit Help / IRS Letters</option>
+          <option value="Tax Planning">Tax Planning</option>
+          <option value="Amended Returns">Amended Returns</option>
+        </select>
+      </div>
 
-    <button type="submit">Confirm Booking</button>
-    <div id="status"></div>
-  </form>
+      <div class="slotWrap">
+        <div class="slotHeader">
+          <div class="muted" id="rangeLabel"></div>
+          <div class="nav">
+            <button class="secondary" id="prevDay" type="button">◀</button>
+            <button class="secondary" id="todayBtn" type="button">Today</button>
+            <button class="secondary" id="nextDay" type="button">▶</button>
+          </div>
+        </div>
 
-  <!-- CONFIRMATION -->
-  <div id="confirmBox">
-    <h3>✅ Booking Confirmed</h3>
-    <div class="confirm-row"><b>Service:</b> <span id="c_service"></span></div>
-    <div class="confirm-row"><b>Date:</b> <span id="c_time"></span></div>
-    <div class="confirm-row"><b>Confirmation #</b></div>
-    <div class="confirm-small" id="c_id"></div>
+        <div class="slots" id="slots"></div>
+      </div>
 
-    <div class="confirm-row"><b>Manage / Cancel:</b></div>
-    <div class="confirm-small" id="c_manage"></div>
+      <div class="row" style="margin-top:12px;">
+        <button id="bookBtn" type="button" disabled>Confirm Booking</button>
+      </div>
 
-    <div class="confirm-actions">
-      <button class="btn-lite" id="bookAnother">Book Another</button>
-      <a class="btn-green" id="manageBtn" target="_blank">View / Cancel</a>
+      <div id="status" class="note muted"></div>
+
+      <div id="confirmBox" class="confirmBox" style="display:none;">
+        <div class="pill ok">Booked</div>
+        <div style="margin-top:8px;">
+          <div><b>Appointment Confirmed!</b></div>
+          <div class="muted" id="confirmText" style="margin-top:6px;"></div>
+          <div class="muted" style="margin-top:10px;">
+            Manage/Cancel link:
+            <a class="manageLink" id="manageUrl" href="#" target="_blank" rel="noopener noreferrer"></a>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // ====== SETTINGS ======
+    const WORK_START_HOUR = 10; // 10 AM
+    const WORK_END_HOUR = 20;   // 8 PM (end boundary)
+    const APPOINTMENT_MINUTES = 60;
+    const SLOT_MINUTES = 30;    // start every 30 minutes (still 60-min appointment)
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    // Supabase
+    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
+    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-<script>
-const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+    // UI
+    const nameEl = document.getElementById("name");
+    const emailEl = document.getElementById("email");
+    const serviceEl = document.getElementById("service");
+    const slotsEl = document.getElementById("slots");
+    const rangeLabel = document.getElementById("rangeLabel");
+    const bookBtn = document.getElementById("bookBtn");
+    const statusEl = document.getElementById("status");
+    const confirmBox = document.getElementById("confirmBox");
+    const confirmText = document.getElementById("confirmText");
+    const manageUrlEl = document.getElementById("manageUrl");
 
-const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const prevDayBtn = document.getElementById("prevDay");
+    const nextDayBtn = document.getElementById("nextDay");
+    const todayBtn = document.getElementById("todayBtn");
 
-const openBooking = document.getElementById("openBooking");
-const form = document.getElementById("bookingForm");
-const statusEl = document.getElementById("status");
-const confirmBox = document.getElementById("confirmBox");
+    // State
+    let selectedDate = new Date();
+    selectedDate.setHours(0,0,0,0);
+    let selectedSlotISO = null;
 
-openBooking.onclick = () => {
-  form.style.display = form.style.display === "block" ? "none" : "block";
-  confirmBox.style.display = "none";
-};
+    function pad(n){ return String(n).padStart(2,"0"); }
 
-form.onsubmit = async (e) => {
-  e.preventDefault();
-  statusEl.textContent = "Submitting...";
-  statusEl.className = "";
+    function fmtDay(d){
+      return d.toLocaleDateString([], { weekday:"short", month:"short", day:"2-digit", year:"numeric" });
+    }
+    function fmtTime(d){
+      return d.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
+    }
 
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const service = document.getElementById("service").value;
-  const time = document.getElementById("time").value;
+    // Working-hours check (ensures END time <= 8pm)
+    function isWithinWorkingHoursStart(startDateObj) {
+      const end = new Date(startDateObj.getTime() + APPOINTMENT_MINUTES * 60 * 1000);
+      const startHour = startDateObj.getHours() + startDateObj.getMinutes()/60;
+      const endHour = end.getHours() + end.getMinutes()/60;
 
-  const startISO = new Date(time).toISOString();
-  const endISO = new Date(new Date(time).getTime() + 60*60*1000).toISOString();
-  const cancelToken = crypto.randomUUID();
+      // Start must be >= 10:00, End must be <= 20:00
+      return (startHour >= WORK_START_HOUR) && (endHour <= WORK_END_HOUR);
+    }
 
-  /* 🔴 THIS IS THE EXACT INSERT BLOCK YOU ASKED FOR */
-  const { data, error } = await supa
-    .from("appointments")
-    .insert([{
-      client_name: name,
-      client_email: email,
-      service: service,
-      start_time: startISO,
-      end_time: endISO,
-      cancel_token: cancelToken,
-      status: "confirmed"
-    }])
-    .select("id, service, start_time, end_time")
-    .single();
+    async function fetchBookedSlotsForDay(dayStart) {
+      const dayEnd = new Date(dayStart);
+      dayEnd.setDate(dayEnd.getDate() + 1);
 
-  if (error) {
-    statusEl.textContent = error.message;
-    statusEl.className = "bad";
-    return;
-  }
+      const { data, error } = await supa
+        .from("appointments")
+        .select("start_time, status")
+        .gte("start_time", dayStart.toISOString())
+        .lt("start_time", dayEnd.toISOString());
 
-  const manageLink = `${location.origin}${location.pathname.replace("index.html","")}manage.html?id=${data.id}&token=${cancelToken}`;
+      if (error) {
+        console.warn(error);
+        return new Set();
+      }
 
-  /* ✅ EMAIL FUNCTION CALL */
-  fetch(`${supabaseUrl}/functions/v1/send-confirmation`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      client_name: name,
-      client_email: email,
-      service: data.service,
-      start_time: data.start_time,
-      end_time: data.end_time,
-      appointment_id: data.id,
-      manage_url: manageLink
-    })
-  }).catch(() => {});
+      // Treat confirmed as blocked. Cancelled does NOT block.
+      const taken = new Set();
+      for (const r of (data || [])) {
+        const st = new Date(r.start_time);
+        const status = (r.status || "confirmed").toLowerCase();
+        if (status !== "cancelled") {
+          taken.add(st.toISOString());
+        }
+      }
+      return taken;
+    }
 
-  form.style.display = "none";
-  confirmBox.style.display = "block";
+    async function renderSlots() {
+      confirmBox.style.display = "none";
+      statusEl.textContent = "";
+      selectedSlotISO = null;
+      bookBtn.disabled = true;
 
-  document.getElementById("c_service").textContent = data.service;
-  document.getElementById("c_time").textContent = new Date(data.start_time).toLocaleString();
-  document.getElementById("c_id").textContent = data.id;
-  document.getElementById("c_manage").textContent = manageLink;
-  document.getElementById("manageBtn").href = manageLink;
+      rangeLabel.textContent = `${fmtDay(selectedDate)} • Available times (10:00 AM – 8:00 PM)`;
 
-  form.reset();
-};
+      const dayStart = new Date(selectedDate);
+      const taken = await fetchBookedSlotsForDay(dayStart);
 
-document.getElementById("bookAnother").onclick = () => {
-  confirmBox.style.display = "none";
-  form.style.display = "block";
-};
-</script>
+      // Build slots from 10:00 to last start that still ends by 8:00
+      const slots = [];
+      const start = new Date(dayStart);
+      start.setHours(WORK_START_HOUR, 0, 0, 0);
+
+      // We'll iterate until 8pm boundary
+      for (;;) {
+        if (!isWithinWorkingHoursStart(start)) break;
+
+        const iso = start.toISOString();
+        slots.push({ iso, label: fmtTime(start), disabled: taken.has(iso) });
+
+        // next slot
+        start.setMinutes(start.getMinutes() + SLOT_MINUTES);
+
+        // safety stop
+        if (start.getHours() > WORK_END_HOUR + 1) break;
+      }
+
+      if (!slots.length) {
+        slotsEl.innerHTML = `<div class="muted">No slots available for this day.</div>`;
+        return;
+      }
+
+      slotsEl.innerHTML = slots.map(s => {
+        const cls = "slot" + (s.disabled ? " disabled" : "");
+        return `<div class="${cls}" data-iso="${s.iso}">${s.label}</div>`;
+      }).join("");
+
+      slotsEl.querySelectorAll(".slot").forEach(el => {
+        el.addEventListener("click", () => {
+          const iso = el.getAttribute("data-iso");
+          const isDisabled = el.classList.contains("disabled");
+          if (isDisabled) return;
+
+          slotsEl.querySelectorAll(".slot").forEach(x => x.classList.remove("active"));
+          el.classList.add("active");
+          selectedSlotISO = iso;
+          validateForm();
+        });
+      });
+    }
+
+    function validateForm() {
+      const name = nameEl.value.trim();
+      const email = emailEl.value.trim();
+      const ok = name.length >= 2 && email.includes("@") && selectedSlotISO;
+      bookBtn.disabled = !ok;
+    }
+
+    nameEl.addEventListener("input", validateForm);
+    emailEl.addEventListener("input", validateForm);
+    serviceEl.addEventListener("change", validateForm);
+
+    prevDayBtn.onclick = async () => {
+      selectedDate.setDate(selectedDate.getDate() - 1);
+      await renderSlots();
+    };
+    nextDayBtn.onclick = async () => {
+      selectedDate.setDate(selectedDate.getDate() + 1);
+      await renderSlots();
+    };
+    todayBtn.onclick = async () => {
+      selectedDate = new Date();
+      selectedDate.setHours(0,0,0,0);
+      await renderSlots();
+    };
+
+    // Booking submit
+    bookBtn.onclick = async () => {
+      statusEl.innerHTML = `<span class="pill ok">Submitting</span>`;
+      bookBtn.disabled = true;
+
+      const client_name = nameEl.value.trim();
+      const client_email = emailEl.value.trim();
+      const service = serviceEl.value;
+
+      const start = new Date(selectedSlotISO);
+
+      // ✅ HARD BLOCK (10am–8pm) server-side guard
+      if (!isWithinWorkingHoursStart(start)) {
+        statusEl.innerHTML = `<span class="pill err">Not allowed</span> Appointments are only available between 10:00 AM and 8:00 PM.`;
+        validateForm();
+        return;
+      }
+
+      const startISO = start.toISOString();
+      const endISO = new Date(start.getTime() + APPOINTMENT_MINUTES * 60 * 1000).toISOString();
+
+      // Insert
+      const { data, error } = await supa
+        .from("appointments")
+        .insert([{
+          client_name,
+          client_email,
+          service,
+          start_time: startISO,
+          end_time: endISO,
+          status: "confirmed"
+        }])
+        .select("id, client_name, client_email, service, start_time, end_time, status")
+        .single();
+
+      if (error) {
+        console.error(error);
+        statusEl.innerHTML = `<span class="pill err">Error</span> ${error.message}`;
+        validateForm();
+        return;
+      }
+
+      // Manage link (expects you have manage.html)
+      const manageLink = new URL("manage.html", window.location.href);
+      manageLink.searchParams.set("id", data.id);
+      manageLink.searchParams.set("email", client_email);
+
+      statusEl.innerHTML = `<span class="pill ok">Success</span> Appointment booked.`;
+      confirmBox.style.display = "block";
+      confirmText.textContent = `${data.client_name} • ${data.service} • ${fmtDay(new Date(data.start_time))} at ${fmtTime(new Date(data.start_time))}`;
+      manageUrlEl.textContent = manageLink.toString();
+      manageUrlEl.href = manageLink.toString();
+
+      // OPTIONAL: call your booking confirmation function if you already have it
+      // (Only if it exists and JWT verify is OFF)
+      // fetch(`${supabaseUrl}/functions/v1/send-confirmation`, { ... })
+
+      await renderSlots();
+    };
+
+    // Initial load
+    renderSlots();
+  </script>
 </body>
 </html>
