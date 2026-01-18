@@ -17,14 +17,13 @@
       --badBg:#fee2e2; --badText:#991b1b; --badBorder:#fecaca;
 
       --slotAvailBg:#ecfdf5; --slotAvailText:#065f46; --slotAvailBorder:#6ee7b7;
-
       --accent:#4f46e5;
     }
 
     *{ box-sizing:border-box; }
     body{
       margin:0;
-      padding:16px;
+      padding:14px;
       font-family: Arial, Helvetica, sans-serif;
       background:
         radial-gradient(1200px 600px at 20% 0%, rgba(79,70,229,.25), transparent 60%),
@@ -38,7 +37,7 @@
       margin: 0 auto;
       display:grid;
       grid-template-columns: 380px 1fr;
-      gap:16px;
+      gap:14px;
       align-items:start;
     }
 
@@ -47,7 +46,7 @@
       border: 1px solid rgba(255,255,255,.15);
       border-radius: 18px;
       box-shadow: 0 20px 55px rgba(0,0,0,.35);
-      padding:16px;
+      padding:14px;
       color: var(--text);
       backdrop-filter: blur(8px);
     }
@@ -111,7 +110,7 @@
       border-color: rgba(79,70,229,.55);
       box-shadow: 0 0 0 4px var(--ring);
     }
-    input, select{ flex:1; min-width:220px; }
+    input, select{ flex:1; min-width: 0; }
 
     button{
       border:none;
@@ -126,13 +125,6 @@
     button:hover{ transform: translateY(-1px); }
     button:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
 
-    .slotWrap{ margin-top: 12px; }
-    .slotHeader{
-      display:flex; justify-content:space-between; gap:10px;
-      flex-wrap:wrap; align-items:center;
-      margin-top: 4px;
-    }
-    .slotHeader .nav{ display:flex; gap:8px; }
     .secondary{
       background:#fff;
       border:1px solid #d1d5db;
@@ -142,19 +134,44 @@
       min-height:44px;
     }
 
-    .legend{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
-    .legend .tag{
-      font-size:12px; font-weight:900; border-radius:999px;
-      padding:6px 10px; border:1px solid transparent;
-      background:var(--slotAvailBg); color:var(--slotAvailText); border-color:var(--slotAvailBorder);
+    /* Week strip */
+    .weekBar{
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      padding-bottom:6px;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
     }
+    .dayChip{
+      flex: 0 0 auto;
+      min-width: 86px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      padding: 10px 10px;
+      text-align:center;
+      cursor:pointer;
+      scroll-snap-align: start;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .dayChip:hover{ transform: translateY(-1px); box-shadow:0 12px 22px rgba(0,0,0,.08); }
+    .dayChip .dow{ font-size:12px; font-weight:900; color:#111827; }
+    .dayChip .md{ font-size:12px; color:#6b7280; font-weight:900; margin-top:2px; }
+    .dayChip.active{
+      background: linear-gradient(135deg, #111827, #0b1220);
+      border-color:#111827;
+    }
+    .dayChip.active .dow, .dayChip.active .md{ color:#fff; }
 
+    .slotWrap{ margin-top: 12px; }
     .slots{
       margin-top: 12px;
       display:grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
     }
+
     .slot{
       border-radius: 14px;
       padding: 12px 10px;
@@ -165,7 +182,7 @@
       color: var(--slotAvailText);
       user-select:none;
       cursor:pointer;
-      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+      transition: transform .12s ease, box-shadow .12s ease;
       min-height:46px;
       display:flex;
       align-items:center;
@@ -193,22 +210,20 @@
       text-decoration: none;
     }
 
-    /* ✅ Mobile optimization */
+    /* Mobile */
     @media (max-width: 920px){
       .wrap{ grid-template-columns:1fr; }
     }
-    @media (max-width: 600px){
+    @media (max-width: 650px){
       body{ padding:12px; }
-      .card{ padding:14px; border-radius:16px; }
+      .card{ border-radius:16px; }
       .slots{ grid-template-columns: repeat(2, 1fr); }
-      .slotHeader{ gap:8px; }
-      input, select{ min-width: 0; }
     }
 
-    /* ✅ Sticky confirm bar on phone */
+    /* Sticky confirm area */
     .stickyBar{
       position: sticky;
-      bottom: 12px;
+      bottom: 10px;
       margin-top: 12px;
       background: rgba(255,255,255,.92);
       border: 1px solid rgba(209,213,219,.8);
@@ -272,7 +287,7 @@
     <div class="card">
       <div class="bookingTitle">Book an Appointment</div>
       <div class="muted" style="margin-top:6px;">
-        Appointments are <b>60 minutes</b>. Choose a date and pick a time.
+        Appointments are <b>60 minutes</b>. Pick a date (calendar or week view) and choose a time.
       </div>
 
       <div class="row" style="margin-top:12px;">
@@ -291,24 +306,25 @@
         </select>
       </div>
 
+      <!-- Date picker + Week view -->
+      <div class="row" style="align-items:flex-end;">
+        <div style="flex:1; min-width:220px;">
+          <div class="muted" style="font-weight:900; margin-bottom:6px;">Choose a date</div>
+          <input id="datePicker" type="date" aria-label="Choose a date" />
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="secondary" id="prevWeek" type="button">◀ Week</button>
+          <button class="secondary" id="nextWeek" type="button">Week ▶</button>
+        </div>
+      </div>
+
+      <div class="weekBar" id="weekBar" aria-label="Week view"></div>
+
       <div class="slotWrap">
-        <div class="slotHeader">
-          <div class="muted" id="rangeLabel"></div>
-          <div class="nav">
-            <button class="secondary" id="prevDay" type="button">◀</button>
-            <button class="secondary" id="todayBtn" type="button">Today</button>
-            <button class="secondary" id="nextDay" type="button">▶</button>
-          </div>
-        </div>
-
-        <div class="legend">
-          <div class="tag">Available</div>
-        </div>
-
+        <div class="muted" id="rangeLabel" style="margin-top:8px;"></div>
         <div class="slots" id="slots"></div>
       </div>
 
-      <!-- Sticky confirm area (mobile-friendly) -->
       <div class="stickyBar">
         <div class="row">
           <button id="bookBtn" type="button" disabled style="width:100%;">Confirm Booking</button>
@@ -346,6 +362,11 @@
     const nameEl = document.getElementById("name");
     const emailEl = document.getElementById("email");
     const serviceEl = document.getElementById("service");
+    const datePicker = document.getElementById("datePicker");
+    const prevWeekBtn = document.getElementById("prevWeek");
+    const nextWeekBtn = document.getElementById("nextWeek");
+    const weekBar = document.getElementById("weekBar");
+
     const slotsEl = document.getElementById("slots");
     const rangeLabel = document.getElementById("rangeLabel");
     const bookBtn = document.getElementById("bookBtn");
@@ -353,18 +374,29 @@
     const confirmBox = document.getElementById("confirmBox");
     const confirmText = document.getElementById("confirmText");
     const manageUrlEl = document.getElementById("manageUrl");
-    const prevDayBtn = document.getElementById("prevDay");
-    const nextDayBtn = document.getElementById("nextDay");
-    const todayBtn = document.getElementById("todayBtn");
 
     // State
     let selectedDate = new Date();
     selectedDate.setHours(0,0,0,0);
+    let weekStart = startOfWeek(selectedDate); // Sunday start
     let selectedSlotISO = null;
+
+    function startOfWeek(d){
+      const x = new Date(d);
+      x.setHours(0,0,0,0);
+      x.setDate(x.getDate() - x.getDay());
+      return x;
+    }
+
+    function toYYYYMMDD(d){
+      const pad = (n) => String(n).padStart(2,"0");
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
 
     function fmtDay(d){
       return d.toLocaleDateString([], { weekday:"short", month:"short", day:"2-digit", year:"numeric" });
     }
+
     function fmtTime(d){
       return d.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
     }
@@ -373,10 +405,7 @@
     function getDayRules(dateObj){
       const dow = dateObj.getDay(); // 0 Sun, 6 Sat
       const isWeekend = (dow === 0 || dow === 6);
-
-      if (isWeekend) {
-        return { allowedStartHour: 9, allowedEndHour: 20, breakStartHour: null, breakEndHour: null };
-      }
+      if (isWeekend) return { allowedStartHour: 9, allowedEndHour: 20, breakStartHour: null, breakEndHour: null };
       return { allowedStartHour: 10, allowedEndHour: 20, breakStartHour: 14, breakEndHour: 17 };
     }
 
@@ -391,8 +420,7 @@
       if (rules.breakStartHour != null) {
         const bs = new Date(startDateObj); bs.setHours(rules.breakStartHour, 0,0,0);
         const be = new Date(startDateObj); be.setHours(rules.breakEndHour, 0,0,0);
-        // overlap check with break window
-        if (startDateObj < be && end > bs) return false;
+        if (startDateObj < be && end > bs) return false; // overlaps break
       }
       return true;
     }
@@ -415,9 +443,7 @@
       const taken = new Set();
       for (const r of (data || [])) {
         const status = (r.status || "confirmed").toLowerCase();
-        if (status !== "cancelled") {
-          taken.add(new Date(r.start_time).toISOString());
-        }
+        if (status !== "cancelled") taken.add(new Date(r.start_time).toISOString());
       }
       return taken;
     }
@@ -433,9 +459,28 @@
     emailEl.addEventListener("input", validateForm);
     serviceEl.addEventListener("change", validateForm);
 
-    prevDayBtn.onclick = async () => { selectedDate.setDate(selectedDate.getDate() - 1); await renderSlots(); };
-    nextDayBtn.onclick = async () => { selectedDate.setDate(selectedDate.getDate() + 1); await renderSlots(); };
-    todayBtn.onclick = async () => { selectedDate = new Date(); selectedDate.setHours(0,0,0,0); await renderSlots(); };
+    function renderWeekBar(){
+      weekBar.innerHTML = "";
+      for (let i=0; i<7; i++){
+        const d = new Date(weekStart);
+        d.setDate(weekStart.getDate() + i);
+
+        const chip = document.createElement("div");
+        chip.className = "dayChip" + (toYYYYMMDD(d) === toYYYYMMDD(selectedDate) ? " active" : "");
+        chip.innerHTML = `
+          <div class="dow">${d.toLocaleDateString([], { weekday:"short" })}</div>
+          <div class="md">${d.toLocaleDateString([], { month:"short", day:"numeric" })}</div>
+        `;
+        chip.addEventListener("click", async () => {
+          selectedDate = new Date(d);
+          selectedDate.setHours(0,0,0,0);
+          datePicker.value = toYYYYMMDD(selectedDate);
+          renderWeekBar();
+          await renderSlots();
+        });
+        weekBar.appendChild(chip);
+      }
+    }
 
     async function renderSlots() {
       confirmBox.style.display = "none";
@@ -448,14 +493,13 @@
       const isWeekend = (dow === 0 || dow === 6);
 
       rangeLabel.textContent =
-        `${fmtDay(selectedDate)} • ${isWeekend ? "Weekend 9AM–8PM" : "Weekdays 10–2 & 5–8"}`;
+        `${fmtDay(selectedDate)} • ${isWeekend ? "Weekend 9AM–8PM" : "Weekdays 10–2 & 5–8"} • (Available only)`;
 
       const dayStart = new Date(selectedDate);
       const taken = await fetchBookedSlotsForDay(dayStart);
 
-      // Generate ONLY allowed AND NOT booked slots (booked hidden)
+      // ONLY allowed AND NOT booked slots (booked + blocked hidden)
       const slots = [];
-
       const cur = new Date(dayStart);
       cur.setHours(rules.allowedStartHour, 0, 0, 0);
 
@@ -466,11 +510,8 @@
 
         if (isAllowedStart(cur, rules)) {
           const iso = cur.toISOString();
-          if (!taken.has(iso)) {
-            slots.push({ iso, label: fmtTime(cur) });
-          }
+          if (!taken.has(iso)) slots.push({ iso, label: fmtTime(cur) });
         }
-
         cur.setMinutes(cur.getMinutes() + SLOT_MINUTES);
       }
 
@@ -479,9 +520,7 @@
         return;
       }
 
-      slotsEl.innerHTML = slots.map(s => {
-        return `<div class="slot" data-iso="${s.iso}">${s.label}</div>`;
-      }).join("");
+      slotsEl.innerHTML = slots.map(s => `<div class="slot" data-iso="${s.iso}">${s.label}</div>`).join("");
 
       slotsEl.querySelectorAll(".slot").forEach(el => {
         el.addEventListener("click", () => {
@@ -493,6 +532,37 @@
       });
     }
 
+    // Date picker
+    datePicker.addEventListener("change", async () => {
+      if (!datePicker.value) return;
+      const d = new Date(datePicker.value + "T00:00:00");
+      d.setHours(0,0,0,0);
+      selectedDate = d;
+      weekStart = startOfWeek(selectedDate);
+      renderWeekBar();
+      await renderSlots();
+    });
+
+    // Week nav
+    prevWeekBtn.addEventListener("click", async () => {
+      weekStart.setDate(weekStart.getDate() - 7);
+      selectedDate = new Date(weekStart);
+      selectedDate.setHours(0,0,0,0);
+      datePicker.value = toYYYYMMDD(selectedDate);
+      renderWeekBar();
+      await renderSlots();
+    });
+
+    nextWeekBtn.addEventListener("click", async () => {
+      weekStart.setDate(weekStart.getDate() + 7);
+      selectedDate = new Date(weekStart);
+      selectedDate.setHours(0,0,0,0);
+      datePicker.value = toYYYYMMDD(selectedDate);
+      renderWeekBar();
+      await renderSlots();
+    });
+
+    // Submit booking
     bookBtn.onclick = async () => {
       statusEl.innerHTML = `<span class="pill ok">Submitting…</span>`;
       bookBtn.disabled = true;
@@ -504,9 +574,9 @@
       const start = new Date(selectedSlotISO);
       const rules = getDayRules(start);
 
-      // HARD BLOCK (in case someone bypasses UI)
+      // HARD BLOCK (anti-bypass)
       if (!isAllowedStart(start, rules)) {
-        statusEl.innerHTML = `<span class="pill.bad">Not allowed</span> Please choose a valid time.`;
+        statusEl.innerHTML = `<span class="pill bad">Not allowed</span> Please choose a valid time.`;
         validateForm();
         return;
       }
@@ -540,13 +610,17 @@
 
       statusEl.innerHTML = `<span class="pill ok">Success</span> Appointment booked.`;
       confirmBox.style.display = "block";
-      confirmText.textContent = `${data.client_name} • ${data.service} • ${fmtDay(new Date(data.start_time))} at ${fmtTime(new Date(data.start_time))}`;
+      confirmText.textContent =
+        `${data.client_name} • ${data.service} • ${fmtDay(new Date(data.start_time))} at ${fmtTime(new Date(data.start_time))}`;
       manageUrlEl.textContent = manageLink.toString();
       manageUrlEl.href = manageLink.toString();
 
       await renderSlots();
     };
 
+    // Init
+    datePicker.value = toYYYYMMDD(selectedDate);
+    renderWeekBar();
     renderSlots();
   </script>
 </body>
