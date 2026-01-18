@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin – Appointments</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; background:#f4f6f8; margin:0; padding:24px; }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    .card { background:#fff; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.08); padding:18px; }
+    h1 { margin:0 0 6px 0; }
+    .muted { color:#6b7280; font-size:13px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+    input, select, button {
+      padding:10px 12px; border-radius:10px; border:1px solid #d1d5db; font-size:14px;
+    }
+    button { cursor:pointer; font-weight:bold; background:#111827; color:#fff; border:none; }
+    button.secondary { background:#fff; color:#111827; border:1px solid #d1d5db; }
+    table { width:100%; border-collapse:collapse; margin-top:12px; background:#fff; }
+    th, td { text-align:left; padding:10px; border-bottom:1px solid #e5e7eb; font-size:14px; vertical-align:top; }
+    th { background:#f9fafb; position:sticky; top:0; z-index:1; }
+    .pill { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:bold; }
+    .confirmed { background:#dcfce7; color:#166534; }
+    .cancelled { background:#fee2e2; color:#991b1b; }
+    .small { font-size:12px; color:#6b7280; word-break:break-all; }
+    .err { color:#dc2626; font-weight:bold; }
+    .ok { color:#16a34a; font-weight:bold; }
+    .login { max-width:420px; margin: 60px auto; }
+    .login .card { padding:22px; }
+    .hide { display:none; }
+  </style>
+</head>
+<body>
+  <!-- Simple password gate -->
+  <div id="loginView" class="login">
+    <div class="card">
+      <h1>Admin Login</h1>
+      <div class="muted">Enter your admin password to view appointments.</div>
+      <div class="row" style="margin-top:12px;">
+        <input id="adminPass" type="password" placeholder="Admin password" style="flex:1;" />
+        <button id="loginBtn">Enter</button>
+      </div>
+      <div id="loginMsg" class="muted"></div>
+      <div class="muted" style="margin-top:10px;">
+        Tip: You can change the password inside <span class="small">admin.html</span>.
+      </div>
+    </div>
+  </div>
+
+  <div id="appView" class="wrap hide">
+    <div class="card">
+      <h1>Appointments</h1>
+      <div class="muted">Admin calendar view (Supabase)</div>
+
+      <div class="row">
+        <input id="search" placeholder="Search name or email…" style="flex:1; min-width:220px;" />
+        <select id="statusFilter">
+          <option value="all">All statuses</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <select id="rangeFilter">
+          <option value="upcoming">Upcoming</option>
+          <option value="today">Today</option>
+          <option value="all">All time</option>
+        </select>
+        <button class="secondary" id="refreshBtn">Refresh</button>
+        <button id="exportBtn">Export CSV</button>
+      </div>
+
+      <div id="msg" class="muted"></div>
+
+      <div style="overflow:auto; border-radius:12px; margin-top:10px;">
+        <table>
+          <thead>
+            <tr>
+              <th style="min-width:160px;">Date & Time</th>
+              <th style="min-width:150px;">Client</th>
+              <th style="min-width:180px;">Email</th>
+              <th style="min-width:160px;">Service</th>
+              <th style="min-width:110px;">Status</th>
+              <th style="min-width:220px;">ID</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // ✅ CHANGE THIS PASSWORD (basic protection)
+    const ADMIN_PASSWORD = "ChangeThisPassword123";
+
+    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
+    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    const loginView = document.getElementById("loginView");
+    const appView = document.getElementById("appView");
+    const loginBtn = document.getElementById("loginBtn");
+    const loginMsg = document.getElementById("loginMsg");
+    const adminPass = document.getElementById("adminPass");
+
+    const tbody = document.getElementById("tbody");
+    const msg = document.getElementById("msg");
+    const search = document.getElementById("search");
+    const statusFilter = document.getElementById("statusFilter");
+    const rangeFilter = document.getElementById("rangeFilter");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const exportBtn = document.getElementById("exportBtn");
+
+    function fmt(iso) {
+      const d = new Date(iso);
+      return d.toLocaleString([], { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+    }
+
+    function setMsg(text, cls="muted") {
+      msg.className = cls;
+      msg.textContent = text;
+    }
+
+    function pill(status) {
+      const s = (status || "confirmed").toLowerCase();
+      const cls = s === "cancelled" ? "pill cancelled" : "pill confirmed";
+      return `<span class="${cls}">${s}</span>`;
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+
+    function toCSV(rows) {
+      const header = ["start_time","client_name","client_email","service","status","id"];
+      const lines = [header.join(",")];
+      for (const r of rows) {
+        const line = [
+          r.start_time,
+          r.client_name,
+          r.client_email,
+          r.service,
+          r.status,
+          r.id
+        ].map(v => `"${String(v ?? "").replaceAll('"','""')}"`).join(",");
+        lines.push(line);
+      }
+      return lines.join("\n");
+    }
+
+    function download(filename, text) {
+      const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    async function loadAppointments() {
+      setMsg("Loading…");
+
+      // base query
+      let q = supa
+        .from("appointments")
+        .select("id, client_name, client_email, service, start_time, status")
+        .order("start_time", { ascending: true });
+
+      // range filter
+      const now = new Date();
+      if (rangeFilter.value === "today") {
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+        const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
+        q = q.gte("start_time", start).lt("start_time", end);
+      } else if (rangeFilter.value === "upcoming") {
+        q = q.gte("start_time", now.toISOString());
+      }
+
+      // status filter
+      if (statusFilter.value !== "all") {
+        q = q.eq("status", statusFilter.value);
+      }
+
+      const { data, error } = await q;
+
+      if (error) {
+        console.error(error);
+        setMsg("❌ " + error.message, "err");
+        tbody.innerHTML = "";
+        return;
+      }
+
+      // search filter (client side)
+      const term = search.value.trim().toLowerCase();
+      const filtered = term
+        ? data.filter(r =>
+            (r.client_name || "").toLowerCase().includes(term) ||
+            (r.client_email || "").toLowerCase().includes(term)
+          )
+        : data;
+
+      // render
+      tbody.innerHTML = filtered.map(r => `
+        <tr>
+          <td>${escapeHtml(fmt(r.start_time))}</td>
+          <td>
+            <div>${escapeHtml(r.client_name)}</div>
+          </td>
+          <td>${escapeHtml(r.client_email)}</td>
+          <td>${escapeHtml(r.service)}</td>
+          <td>${pill(r.status)}</td>
+          <td class="small">${escapeHtml(r.id)}</td>
+        </tr>
+      `).join("");
+
+      setMsg(`✅ Loaded ${filtered.length} appointment(s).`, "ok");
+
+      // export handler uses latest list
+      exportBtn.onclick = () => {
+        const csv = toCSV(filtered);
+        const stamp = new Date().toISOString().slice(0,10);
+        download(`appointments_${stamp}.csv`, csv);
+      };
+    }
+
+    // login
+    loginBtn.onclick = () => {
+      const entered = adminPass.value;
+      if (entered === ADMIN_PASSWORD) {
+        loginView.classList.add("hide");
+        appView.classList.remove("hide");
+        loadAppointments();
+      } else {
+        loginMsg.textContent = "Wrong password.";
+      }
+    };
+
+    // controls
+    refreshBtn.onclick = loadAppointments;
+    search.oninput = () => loadAppointments();
+    statusFilter.onchange = loadAppointments;
+    rangeFilter.onchange = loadAppointments;
+
+    // allow pressing Enter in password field
+    adminPass.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") loginBtn.click();
+    });
+  </script>
+</body>
+</html>
