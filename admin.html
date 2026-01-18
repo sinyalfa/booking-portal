@@ -6,11 +6,11 @@
   <title>Admin – Appointments</title>
   <style>
     body { font-family: Arial, Helvetica, sans-serif; background:#f4f6f8; margin:0; padding:24px; }
-    .wrap { max-width: 1150px; margin: 0 auto; }
+    .wrap { max-width: 1200px; margin: 0 auto; }
     .card { background:#fff; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.08); padding:18px; }
     h1 { margin:0 0 6px 0; }
     .muted { color:#6b7280; font-size:13px; }
-    .row { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; align-items:center; }
 
     input, select, button {
       padding:10px 12px; border-radius:10px; border:1px solid #d1d5db; font-size:14px;
@@ -18,10 +18,6 @@
     button { cursor:pointer; font-weight:bold; background:#111827; color:#fff; border:none; }
     button.secondary { background:#fff; color:#111827; border:1px solid #d1d5db; }
     button:disabled { opacity:.6; cursor:not-allowed; }
-
-    table { width:100%; border-collapse:collapse; margin-top:12px; background:#fff; }
-    th, td { text-align:left; padding:10px; border-bottom:1px solid #e5e7eb; font-size:14px; vertical-align:top; }
-    th { background:#f9fafb; position:sticky; top:0; z-index:1; }
 
     .pill { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:bold; }
     .confirmed { background:#dcfce7; color:#166534; }
@@ -34,6 +30,20 @@
     .login .card { padding:22px; }
     .hide { display:none; }
 
+    /* Toggle */
+    .toggle {
+      display:flex; gap:8px; background:#f3f4f6; padding:6px; border-radius:12px; border:1px solid #e5e7eb;
+    }
+    .toggle button {
+      background:transparent; border:none; color:#111827; padding:10px 12px; border-radius:10px; font-weight:800;
+    }
+    .toggle button.active { background:#111827; color:#fff; }
+
+    /* List Table */
+    table { width:100%; border-collapse:collapse; margin-top:12px; background:#fff; }
+    th, td { text-align:left; padding:10px; border-bottom:1px solid #e5e7eb; font-size:14px; vertical-align:top; }
+    th { background:#f9fafb; position:sticky; top:0; z-index:1; }
+
     .actions { display:flex; gap:8px; flex-wrap:wrap; }
     .tinybtn {
       padding:8px 10px;
@@ -42,27 +52,85 @@
       font-weight:bold;
       cursor:pointer;
       border:none;
+      color:#fff;
     }
-    .tinybtn.red { background:#dc2626; color:#fff; }
-    .tinybtn.blue { background:#2563eb; color:#fff; }
+    .tinybtn.red { background:#dc2626; }
+    .tinybtn.blue { background:#2563eb; }
     .tinybtn:disabled { opacity:.6; cursor:not-allowed; }
 
-    /* Modal */
+    /* Calendar */
+    .calHeader {
+      display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .calHeader .monthTitle { font-size:18px; font-weight:900; color:#111827; }
+    .calHeader .nav { display:flex; gap:8px; }
+    .calHeader .nav button { padding:10px 12px; border-radius:10px; }
+
+    .calGrid {
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:10px;
+    }
+    .dow {
+      font-size:12px; color:#6b7280; font-weight:800; text-transform:uppercase;
+      padding:0 6px;
+    }
+    .day {
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      min-height:120px;
+      padding:10px;
+      box-shadow:0 3px 10px rgba(0,0,0,.04);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .day.mutedDay { background:#f9fafb; color:#9ca3af; }
+    .dayNumRow { display:flex; justify-content:space-between; align-items:center; }
+    .dayNum { font-weight:900; color:#111827; }
+    .badgeToday {
+      font-size:11px; font-weight:900; padding:4px 8px; border-radius:999px;
+      background:#111827; color:#fff;
+    }
+    .appt {
+      border-radius:12px;
+      padding:8px 10px;
+      background:#eef2ff;
+      border:1px solid #c7d2fe;
+      cursor:pointer;
+    }
+    .appt.cancelled {
+      background:#fef2f2;
+      border:1px solid #fecaca;
+      opacity:0.75;
+    }
+    .apptTop { display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .apptTime { font-weight:900; font-size:12px; color:#111827; }
+    .apptStatus { font-size:11px; font-weight:900; }
+    .apptName { font-size:13px; font-weight:900; color:#111827; margin-top:4px; }
+    .apptSvc { font-size:12px; color:#4b5563; margin-top:2px; }
+
+    /* Modal (Reschedule + Cancel) */
     .modal-backdrop{
       position:fixed; inset:0; background:rgba(0,0,0,.35);
       display:none; align-items:center; justify-content:center; padding:18px;
     }
     .modal{
-      width:100%; max-width:520px; background:#fff; border-radius:14px;
+      width:100%; max-width:560px; background:#fff; border-radius:14px;
       box-shadow:0 12px 35px rgba(0,0,0,.25); padding:18px;
     }
     .modal h2{ margin:0 0 8px 0; font-size:18px; }
     .modal .grid{ display:grid; gap:10px; }
     .modal label{ font-weight:bold; color:#111827; }
-    .modal .btnrow{ display:flex; gap:10px; justify-content:flex-end; margin-top:14px; }
+    .modal .btnrow{ display:flex; gap:10px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap; }
     .modal .btnrow button{ padding:10px 12px; border-radius:10px; }
     .modal .btnrow .close{ background:#fff; color:#111827; border:1px solid #d1d5db; }
     .modal .btnrow .save{ background:#0f766e; color:#fff; border:none; }
+    .modal .btnrow .danger{ background:#dc2626; color:#fff; border:none; }
+    .modal .meta { font-size:12px; color:#6b7280; line-height:1.5; }
   </style>
 </head>
 <body>
@@ -89,6 +157,11 @@
       <div class="muted">Admin calendar view (Supabase)</div>
 
       <div class="row">
+        <div class="toggle">
+          <button id="viewMonth" class="active" type="button">Month View</button>
+          <button id="viewList" type="button">List View</button>
+        </div>
+
         <input id="search" placeholder="Search name or email…" style="flex:1; min-width:220px;" />
 
         <select id="statusFilter">
@@ -97,19 +170,33 @@
           <option value="cancelled">Cancelled</option>
         </select>
 
-        <select id="rangeFilter">
-          <option value="upcoming" selected>Upcoming (Last 30 days + future)</option>
-          <option value="today">Today</option>
-          <option value="all">All time</option>
-        </select>
-
-        <button class="secondary" id="refreshBtn">Refresh</button>
-        <button id="exportBtn">Export CSV</button>
+        <button class="secondary" id="refreshBtn" type="button">Refresh</button>
+        <button id="exportBtn" type="button">Export CSV</button>
       </div>
 
       <div id="msg" class="muted"></div>
 
-      <div style="overflow:auto; border-radius:12px; margin-top:10px;">
+      <!-- MONTH VIEW -->
+      <div id="monthViewWrap">
+        <div class="calHeader">
+          <div class="monthTitle" id="monthTitle"></div>
+          <div class="nav">
+            <button class="secondary" id="prevMonth" type="button">◀</button>
+            <button class="secondary" id="todayBtn" type="button">Today</button>
+            <button class="secondary" id="nextMonth" type="button">▶</button>
+          </div>
+        </div>
+
+        <div class="calGrid" id="dowRow">
+          <div class="dow">Sun</div><div class="dow">Mon</div><div class="dow">Tue</div><div class="dow">Wed</div>
+          <div class="dow">Thu</div><div class="dow">Fri</div><div class="dow">Sat</div>
+        </div>
+
+        <div class="calGrid" id="calGrid"></div>
+      </div>
+
+      <!-- LIST VIEW -->
+      <div id="listViewWrap" class="hide" style="overflow:auto; border-radius:12px; margin-top:10px;">
         <table>
           <thead>
             <tr>
@@ -127,21 +214,22 @@
     </div>
   </div>
 
-  <!-- Reschedule Modal -->
+  <!-- Modal for action from Month/List -->
   <div id="modalBackdrop" class="modal-backdrop">
     <div class="modal">
-      <h2>Reschedule Appointment</h2>
-      <div class="muted" id="modalInfo"></div>
+      <h2 id="modalTitle">Appointment</h2>
+      <div class="meta" id="modalInfo"></div>
 
-      <div class="grid">
-        <label for="newTime">New Date & Time</label>
+      <div class="grid" style="margin-top:12px;">
+        <label for="newTime">Reschedule Date & Time</label>
         <input id="newTime" type="datetime-local" />
         <div class="muted">Duration stays <b>60 minutes</b>.</div>
       </div>
 
       <div class="btnrow">
         <button class="close" id="modalClose" type="button">Close</button>
-        <button class="save" id="modalSave" type="button">Save</button>
+        <button class="danger" id="modalCancelAppt" type="button">Cancel Appointment</button>
+        <button class="save" id="modalSave" type="button">Save Reschedule</button>
       </div>
 
       <div id="modalMsg" class="muted" style="margin-top:10px;"></div>
@@ -165,38 +253,50 @@
     const loginMsg = document.getElementById("loginMsg");
     const adminPass = document.getElementById("adminPass");
 
-    const tbody = document.getElementById("tbody");
     const msg = document.getElementById("msg");
     const search = document.getElementById("search");
     const statusFilter = document.getElementById("statusFilter");
-    const rangeFilter = document.getElementById("rangeFilter");
     const refreshBtn = document.getElementById("refreshBtn");
     const exportBtn = document.getElementById("exportBtn");
 
-    // modal refs
+    // view toggle
+    const viewMonth = document.getElementById("viewMonth");
+    const viewList = document.getElementById("viewList");
+    const monthViewWrap = document.getElementById("monthViewWrap");
+    const listViewWrap = document.getElementById("listViewWrap");
+
+    // month nav
+    const monthTitle = document.getElementById("monthTitle");
+    const prevMonth = document.getElementById("prevMonth");
+    const nextMonth = document.getElementById("nextMonth");
+    const todayBtn = document.getElementById("todayBtn");
+    const calGrid = document.getElementById("calGrid");
+
+    // list
+    const tbody = document.getElementById("tbody");
+
+    // modal
     const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalTitle = document.getElementById("modalTitle");
     const modalInfo = document.getElementById("modalInfo");
     const newTime = document.getElementById("newTime");
     const modalClose = document.getElementById("modalClose");
     const modalSave = document.getElementById("modalSave");
+    const modalCancelAppt = document.getElementById("modalCancelAppt");
     const modalMsg = document.getElementById("modalMsg");
 
+    // state
+    let currentMonth = new Date(); // points to month being shown
+    currentMonth.setDate(1);
+    currentMonth.setHours(0,0,0,0);
+
     let latestRows = [];
-    let rescheduleTarget = null;
-    let rescheduleOldStart = null;
+    let activeRow = null; // selected appointment for modal
+    let activeOldStart = null;
 
-    function fmt(iso) {
-      const d = new Date(iso);
-      return d.toLocaleString([], {
-        year:"numeric", month:"2-digit", day:"2-digit",
-        hour:"2-digit", minute:"2-digit"
-      });
-    }
-
-    function toLocalInputValue(iso) {
-      const d = new Date(iso);
-      const pad = (n) => String(n).padStart(2, "0");
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    function setMsg(text, cls="muted") {
+      msg.className = cls;
+      msg.textContent = text;
     }
 
     function escapeHtml(s) {
@@ -208,9 +308,20 @@
         .replaceAll("'","&#039;");
     }
 
-    function setMsg(text, cls="muted") {
-      msg.className = cls;
-      msg.textContent = text;
+    function fmtDateTime(iso) {
+      const d = new Date(iso);
+      return d.toLocaleString([], { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+    }
+
+    function fmtTime(iso) {
+      const d = new Date(iso);
+      return d.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
+    }
+
+    function toLocalInputValue(iso) {
+      const d = new Date(iso);
+      const pad = (n) => String(n).padStart(2,"0");
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
     function pill(status) {
@@ -223,9 +334,8 @@
       const header = ["start_time","client_name","client_email","service","status"];
       const lines = [header.join(",")];
       for (const r of rows) {
-        const line = [
-          r.start_time, r.client_name, r.client_email, r.service, r.status
-        ].map(v => `"${String(v ?? "").replaceAll('"','""')}"`).join(",");
+        const line = [r.start_time,r.client_name,r.client_email,r.service,r.status]
+          .map(v => `"${String(v ?? "").replaceAll('"','""')}"`).join(",");
         lines.push(line);
       }
       return lines.join("\n");
@@ -257,7 +367,215 @@
       .catch((e) => console.warn("send-update fetch failed:", e));
     }
 
-    async function cancelAppointment(row) {
+    async function fetchAppointmentsForMonth() {
+      // Month range: from grid start (Sunday before 1st) to grid end (Saturday after last)
+      const first = new Date(currentMonth);
+      const start = new Date(first);
+      start.setDate(1);
+      start.setHours(0,0,0,0);
+
+      const startDow = start.getDay(); // 0 Sun
+      const gridStart = new Date(start);
+      gridStart.setDate(start.getDate() - startDow); // back to Sunday
+
+      const end = new Date(start);
+      end.setMonth(end.getMonth() + 1);
+      end.setDate(0); // last day of month
+      end.setHours(23,59,59,999);
+
+      const endDow = end.getDay();
+      const gridEnd = new Date(end);
+      gridEnd.setDate(end.getDate() + (6 - endDow)); // forward to Saturday
+      gridEnd.setHours(23,59,59,999);
+
+      let q = supa
+        .from("appointments")
+        .select("id, client_name, client_email, service, start_time, end_time, status")
+        .gte("start_time", gridStart.toISOString())
+        .lte("start_time", gridEnd.toISOString())
+        .order("start_time", { ascending: true });
+
+      if (statusFilter.value !== "all") q = q.eq("status", statusFilter.value);
+
+      const { data, error } = await q;
+      if (error) throw error;
+
+      // client-side search
+      const term = search.value.trim().toLowerCase();
+      const filtered = term
+        ? data.filter(r =>
+            (r.client_name || "").toLowerCase().includes(term) ||
+            (r.client_email || "").toLowerCase().includes(term)
+          )
+        : data;
+
+      latestRows = filtered;
+      return { gridStart, gridEnd, monthStart: start };
+    }
+
+    function renderMonthTitle() {
+      monthTitle.textContent = currentMonth.toLocaleString([], { month: "long", year: "numeric" });
+    }
+
+    function groupByDay(rows) {
+      const map = new Map(); // key YYYY-MM-DD => rows
+      for (const r of rows) {
+        const d = new Date(r.start_time);
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(r);
+      }
+      // sort within day by time
+      for (const [k, arr] of map.entries()) {
+        arr.sort((a,b) => new Date(a.start_time) - new Date(b.start_time));
+      }
+      return map;
+    }
+
+    function renderCalendar(gridStart, monthStart, rows) {
+      calGrid.innerHTML = "";
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      const byDay = groupByDay(rows);
+
+      // 6 weeks * 7 days = 42 cells
+      for (let i = 0; i < 42; i++) {
+        const dayDate = new Date(gridStart);
+        dayDate.setDate(gridStart.getDate() + i);
+        dayDate.setHours(0,0,0,0);
+
+        const isInMonth = dayDate.getMonth() === monthStart.getMonth();
+        const isToday = dayDate.getTime() === today.getTime();
+
+        const key = `${dayDate.getFullYear()}-${String(dayDate.getMonth()+1).padStart(2,"0")}-${String(dayDate.getDate()).padStart(2,"0")}`;
+        const appts = byDay.get(key) || [];
+
+        const dayEl = document.createElement("div");
+        dayEl.className = "day" + (isInMonth ? "" : " mutedDay");
+
+        dayEl.innerHTML = `
+          <div class="dayNumRow">
+            <div class="dayNum">${dayDate.getDate()}</div>
+            ${isToday ? `<div class="badgeToday">Today</div>` : ``}
+          </div>
+        `;
+
+        // Show max 4 items + "more..."
+        const maxShow = 4;
+        appts.slice(0, maxShow).forEach(r => {
+          const status = (r.status || "confirmed").toLowerCase();
+          const appt = document.createElement("div");
+          appt.className = "appt" + (status === "cancelled" ? " cancelled" : "");
+          appt.innerHTML = `
+            <div class="apptTop">
+              <div class="apptTime">${escapeHtml(fmtTime(r.start_time))}</div>
+              <div class="apptStatus">${status === "cancelled" ? "❌" : "✅"}</div>
+            </div>
+            <div class="apptName">${escapeHtml(r.client_name)}</div>
+            <div class="apptSvc">${escapeHtml(r.service)}</div>
+          `;
+          appt.addEventListener("click", () => openModalForRow(r));
+          dayEl.appendChild(appt);
+        });
+
+        if (appts.length > maxShow) {
+          const more = document.createElement("div");
+          more.className = "muted";
+          more.style.fontWeight = "800";
+          more.style.padding = "0 4px";
+          more.textContent = `+ ${appts.length - maxShow} more`;
+          dayEl.appendChild(more);
+        }
+
+        calGrid.appendChild(dayEl);
+      }
+    }
+
+    function renderList(rows) {
+      tbody.innerHTML = rows.map(r => {
+        const status = (r.status || "confirmed").toLowerCase();
+        const isCancelled = status === "cancelled";
+        return `
+          <tr>
+            <td>${escapeHtml(fmtDateTime(r.start_time))}</td>
+            <td>${escapeHtml(r.client_name)}</td>
+            <td>${escapeHtml(r.client_email)}</td>
+            <td>${escapeHtml(r.service)}</td>
+            <td>${pill(r.status)}</td>
+            <td>
+              <div class="actions">
+                <button class="tinybtn blue" data-action="reschedule" data-id="${escapeHtml(r.id)}" ${isCancelled ? "disabled" : ""}>Reschedule</button>
+                <button class="tinybtn red" data-action="cancel" data-id="${escapeHtml(r.id)}" ${isCancelled ? "disabled" : ""}>${isCancelled ? "Cancelled" : "Cancel"}</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      // attach actions
+      tbody.querySelectorAll("button[data-action]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-id");
+          const action = btn.getAttribute("data-action");
+          const row = latestRows.find(x => x.id === id);
+          if (!row) return;
+
+          if (action === "cancel") doCancel(row);
+          if (action === "reschedule") openModalForRow(row);
+        });
+      });
+    }
+
+    async function loadAll() {
+      try {
+        setMsg("Loading…");
+        renderMonthTitle();
+
+        const { gridStart, monthStart } = await fetchAppointmentsForMonth();
+        // latestRows already updated by fetchAppointmentsForMonth
+        renderCalendar(gridStart, monthStart, latestRows);
+        renderList(latestRows);
+
+        setMsg(`✅ Loaded ${latestRows.length} appointment(s).`, "ok");
+      } catch (e) {
+        console.error(e);
+        setMsg("❌ " + (e?.message || e), "err");
+      }
+    }
+
+    function openModalForRow(row) {
+      activeRow = row;
+      activeOldStart = row.start_time;
+
+      modalMsg.textContent = "";
+      modalTitle.textContent = (row.status || "confirmed").toLowerCase() === "cancelled"
+        ? "Cancelled Appointment"
+        : "Appointment";
+
+      modalInfo.innerHTML = `
+        <div><b>${escapeHtml(row.client_name)}</b> • ${escapeHtml(row.client_email)}</div>
+        <div>Service: <b>${escapeHtml(row.service)}</b></div>
+        <div>Time: <b>${escapeHtml(fmtDateTime(row.start_time))}</b></div>
+        <div>Status: <b>${escapeHtml((row.status || "confirmed").toLowerCase())}</b></div>
+      `;
+
+      newTime.value = toLocalInputValue(row.start_time);
+
+      const isCancelled = (row.status || "confirmed").toLowerCase() === "cancelled";
+      modalCancelAppt.disabled = isCancelled;
+      modalSave.disabled = isCancelled;
+
+      modalBackdrop.style.display = "flex";
+    }
+
+    function closeModal() {
+      modalBackdrop.style.display = "none";
+      activeRow = null;
+      activeOldStart = null;
+    }
+
+    async function doCancel(row) {
       const ok = confirm("Cancel this appointment?\n\nThis will mark it as cancelled AND email the client.");
       if (!ok) return;
 
@@ -274,7 +592,6 @@
         return;
       }
 
-      // Email client + admin
       sendUpdateEmail({
         type: "cancel",
         appointment_id: row.id,
@@ -284,28 +601,12 @@
       });
 
       setMsg("✅ Cancelled (email sent).", "ok");
-      await loadAppointments();
+      closeModal();
+      await loadAll();
     }
 
-    function openReschedule(row) {
-      rescheduleTarget = row;
-      rescheduleOldStart = row.start_time;
-
-      modalMsg.textContent = "";
-      modalInfo.textContent = `${row.client_name} • ${row.client_email} • ${row.service} • Current: ${fmt(row.start_time)}`;
-      newTime.value = toLocalInputValue(row.start_time);
-      modalBackdrop.style.display = "flex";
-    }
-
-    function closeReschedule() {
-      modalBackdrop.style.display = "none";
-      rescheduleTarget = null;
-      rescheduleOldStart = null;
-    }
-
-    async function saveReschedule() {
-      if (!rescheduleTarget) return;
-
+    async function doReschedule() {
+      if (!activeRow) return;
       const value = newTime.value;
       if (!value) {
         modalMsg.textContent = "Please choose a date/time.";
@@ -321,7 +622,7 @@
       const { error } = await supa
         .from("appointments")
         .update({ start_time: startISO, end_time: endISO, status: "confirmed" })
-        .eq("id", rescheduleTarget.id);
+        .eq("id", activeRow.id);
 
       modalSave.disabled = false;
 
@@ -331,111 +632,60 @@
         return;
       }
 
-      // Email client + admin
       sendUpdateEmail({
         type: "reschedule",
-        appointment_id: rescheduleTarget.id,
-        client_name: rescheduleTarget.client_name,
-        client_email: rescheduleTarget.client_email,
-        service: rescheduleTarget.service,
-        old_start_time: rescheduleOldStart,
+        appointment_id: activeRow.id,
+        client_name: activeRow.client_name,
+        client_email: activeRow.client_email,
+        service: activeRow.service,
+        old_start_time: activeOldStart,
         new_start_time: startISO
       });
 
       setMsg("✅ Rescheduled (email sent).", "ok");
-      closeReschedule();
-      await loadAppointments();
+      closeModal();
+      await loadAll();
     }
 
-    async function loadAppointments() {
-      setMsg("Loading…");
-
-      let q = supa
-        .from("appointments")
-        .select("id, client_name, client_email, service, start_time, status")
-        .order("start_time", { ascending: true });
-
-      const now = new Date();
-
-      if (rangeFilter.value === "today") {
-        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-        const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
-        q = q.gte("start_time", start).lt("start_time", end);
-      } else if (rangeFilter.value === "upcoming") {
-        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
-        q = q.gte("start_time", thirtyDaysAgo);
+    // View toggle
+    function setView(mode) {
+      if (mode === "month") {
+        viewMonth.classList.add("active");
+        viewList.classList.remove("active");
+        monthViewWrap.classList.remove("hide");
+        listViewWrap.classList.add("hide");
+      } else {
+        viewList.classList.add("active");
+        viewMonth.classList.remove("active");
+        listViewWrap.classList.remove("hide");
+        monthViewWrap.classList.add("hide");
       }
-
-      if (statusFilter.value !== "all") {
-        q = q.eq("status", statusFilter.value);
-      }
-
-      const { data, error } = await q;
-
-      if (error) {
-        console.error(error);
-        setMsg("❌ " + error.message, "err");
-        tbody.innerHTML = "";
-        latestRows = [];
-        return;
-      }
-
-      const term = search.value.trim().toLowerCase();
-      const filtered = term
-        ? data.filter(r =>
-            (r.client_name || "").toLowerCase().includes(term) ||
-            (r.client_email || "").toLowerCase().includes(term)
-          )
-        : data;
-
-      latestRows = filtered;
-
-      tbody.innerHTML = filtered.map(r => {
-        const status = (r.status || "confirmed").toLowerCase();
-        const isCancelled = status === "cancelled";
-
-        return `
-          <tr>
-            <td>${escapeHtml(fmt(r.start_time))}</td>
-            <td>${escapeHtml(r.client_name)}</td>
-            <td>${escapeHtml(r.client_email)}</td>
-            <td>${escapeHtml(r.service)}</td>
-            <td>${pill(r.status)}</td>
-            <td>
-              <div class="actions">
-                <button class="tinybtn blue" data-action="reschedule" data-id="${escapeHtml(r.id)}" ${isCancelled ? "disabled" : ""}>
-                  Reschedule
-                </button>
-
-                <button class="tinybtn red" data-action="cancel" data-id="${escapeHtml(r.id)}" ${isCancelled ? "disabled" : ""}>
-                  ${isCancelled ? "Cancelled" : "Cancel"}
-                </button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join("");
-
-      tbody.querySelectorAll("button[data-action]").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const action = btn.getAttribute("data-action");
-          const id = btn.getAttribute("data-id");
-          const row = latestRows.find(x => x.id === id);
-          if (!row) return;
-
-          if (action === "cancel") {
-            btn.disabled = true;
-            await cancelAppointment(row);
-          }
-
-          if (action === "reschedule") {
-            openReschedule(row);
-          }
-        });
-      });
-
-      setMsg(`✅ Loaded ${filtered.length} appointment(s).`, "ok");
     }
+
+    // Handlers
+    viewMonth.onclick = () => setView("month");
+    viewList.onclick = () => setView("list");
+
+    prevMonth.onclick = async () => {
+      currentMonth.setMonth(currentMonth.getMonth() - 1);
+      currentMonth.setDate(1);
+      await loadAll();
+    };
+    nextMonth.onclick = async () => {
+      currentMonth.setMonth(currentMonth.getMonth() + 1);
+      currentMonth.setDate(1);
+      await loadAll();
+    };
+    todayBtn.onclick = async () => {
+      currentMonth = new Date();
+      currentMonth.setDate(1);
+      currentMonth.setHours(0,0,0,0);
+      await loadAll();
+    };
+
+    refreshBtn.onclick = loadAll;
+    statusFilter.onchange = loadAll;
+    search.oninput = () => loadAll();
 
     exportBtn.onclick = () => {
       const csv = toCSV(latestRows);
@@ -443,30 +693,24 @@
       download(`appointments_${stamp}.csv`, csv);
     };
 
-    modalClose.onclick = closeReschedule;
-    modalSave.onclick = saveReschedule;
-    modalBackdrop.addEventListener("click", (e) => {
-      if (e.target === modalBackdrop) closeReschedule();
-    });
+    // Modal buttons
+    modalClose.onclick = closeModal;
+    modalSave.onclick = doReschedule;
+    modalCancelAppt.onclick = () => activeRow && doCancel(activeRow);
+    modalBackdrop.addEventListener("click", (e) => { if (e.target === modalBackdrop) closeModal(); });
 
-    loginBtn.onclick = () => {
+    // Login
+    loginBtn.onclick = async () => {
       if (adminPass.value === ADMIN_PASSWORD) {
         loginView.classList.add("hide");
         appView.classList.remove("hide");
-        loadAppointments();
+        setView("month");
+        await loadAll();
       } else {
         loginMsg.textContent = "Wrong password.";
       }
     };
-
-    refreshBtn.onclick = loadAppointments;
-    search.oninput = loadAppointments;
-    statusFilter.onchange = loadAppointments;
-    rangeFilter.onchange = loadAppointments;
-
-    adminPass.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") loginBtn.click();
-    });
+    adminPass.addEventListener("keydown", (e) => { if (e.key === "Enter") loginBtn.click(); });
   </script>
 </body>
 </html>
