@@ -11,280 +11,201 @@
     h1 { text-align:center; margin-bottom:10px; color:#1f2933; }
     .contact { text-align:center; margin-bottom:18px; color:#4b5563; font-size:16px; }
     .contact a { display:block; color:#0066cc; text-decoration:none; margin:8px 0; font-weight:bold; word-break:break-word; }
-    .services { background:#f1f3f5; padding:15px; border-radius:10px; margin:18px 0; text-align:left; }
-    .services h3 { margin:0 0 10px 0; color:#111827; }
-    .services ul { margin:0; padding-left:18px; color:#111827; }
+
+    .services { background:#f1f3f5; padding:15px; border-radius:10px; margin:18px 0; }
+    .services h3 { margin:0 0 10px 0; }
     .services li { margin:6px 0; }
+
     .action-btn {
       width:100%; padding:14px; margin-top:10px; border:none; border-radius:10px;
       font-size:16px; font-weight:bold; cursor:pointer; color:#fff;
-      display:flex; justify-content:center; align-items:center; gap:10px; text-decoration:none; box-sizing:border-box;
+      display:flex; justify-content:center; align-items:center;
     }
-    .call { background:#2563eb; } .text { background:#16a34a; } .email { background:#9333ea; } .book { background:#0f766e; }
-    .note { text-align:center; font-size:13px; color:#6b7280; margin-top:14px; }
+    .call { background:#2563eb; }
+    .text { background:#16a34a; }
+    .email { background:#9333ea; }
+    .book { background:#0f766e; }
 
-    #bookingForm { display:none; margin-top:18px; text-align:left; border-top:1px solid #e5e7eb; padding-top:16px; }
-    #bookingForm label { display:block; margin-top:12px; font-weight:bold; color:#111827; }
+    #bookingForm { display:none; margin-top:18px; border-top:1px solid #e5e7eb; padding-top:16px; }
+    #bookingForm label { display:block; margin-top:12px; font-weight:bold; }
     #bookingForm input, #bookingForm select {
-      width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #d1d5db; font-size:15px; box-sizing:border-box;
+      width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #d1d5db;
     }
-    #bookingForm button[type="submit"] {
-      margin-top:14px; width:100%; background:#0f766e; border:none; color:#fff; font-weight:bold;
-      padding:12px; border-radius:10px; cursor:pointer; font-size:16px;
-    }
-    #status { margin-top:10px; font-weight:bold; text-align:center; white-space:pre-wrap; }
-    .ok { color:#16a34a; } .bad { color:#dc2626; }
+    #bookingForm button { margin-top:14px; width:100%; background:#0f766e; color:#fff; border:none; padding:12px; border-radius:10px; font-weight:bold; }
+
+    #status { margin-top:10px; font-weight:bold; text-align:center; }
+    .ok { color:#16a34a; }
+    .bad { color:#dc2626; }
 
     #confirmBox {
-      display:none; margin-top:18px; border-top:1px solid #e5e7eb; padding-top:16px;
-      text-align:left; background:#f9fafb; border-radius:10px; padding:16px;
+      display:none; margin-top:18px; background:#f9fafb; padding:16px;
+      border-radius:10px; border-top:1px solid #e5e7eb;
     }
-    #confirmBox h3 { margin:0 0 10px 0; color:#111827; }
-    .confirm-row { margin:8px 0; color:#111827; font-size:15px; }
-    .confirm-small { color:#6b7280; font-size:13px; word-break:break-all; }
+    .confirm-row { margin:8px 0; }
+    .confirm-small { font-size:13px; color:#6b7280; word-break:break-all; }
     .confirm-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
-    .btn-lite {
-      padding:12px; border-radius:10px; border:1px solid #d1d5db; background:#fff; cursor:pointer; font-weight:bold; text-align:center;
-    }
-    .btn-green {
-      padding:12px; border-radius:10px; border:none; background:#16a34a; color:#fff; cursor:pointer; font-weight:bold; text-decoration:none; text-align:center;
-    }
-    .btn-teal {
-      padding:12px; border-radius:10px; border:none; background:#0f766e; color:#fff; cursor:pointer; font-weight:bold; text-decoration:none; text-align:center;
-    }
+    .btn-lite { padding:12px; border-radius:10px; border:1px solid #d1d5db; background:#fff; font-weight:bold; }
+    .btn-green { padding:12px; border-radius:10px; border:none; background:#16a34a; color:#fff; font-weight:bold; }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>Columbus East Tax Services</h1>
+<div class="container">
 
-    <div class="contact">
-      📍 Columbus, Ohio 43227
-      <a href="tel:16145991185" title="Call 614-599-1185">📞 614-599-1185</a>
-      <a href="tel:16142597625" title="Call 614-259-7625">📞 614-259-7625</a>
-      <a href="mailto:columbuseast.taxservices@outlook.com" title="Email Columbus East Tax Services">
-        ✉️ columbuseast.taxservices@outlook.com
-      </a>
-    </div>
+  <h1>Columbus East Tax Services</h1>
 
-    <div class="services">
-      <h3>Services Offered</h3>
-      <ul>
-        <li>W-2 & Individual Tax Returns</li>
-        <li>1099 & Self-Employed Taxes</li>
-        <li>LLC & Small Business Filing</li>
-        <li>Audit Help & IRS Letters</li>
-        <li>Amended Returns (1040-X)</li>
-      </ul>
-    </div>
-
-    <a class="action-btn call" href="tel:16145991185">📞 Call Now</a>
-    <a class="action-btn text" href="sms:16145991185">💬 Text Us</a>
-    <a class="action-btn email" href="mailto:columbuseast.taxservices@outlook.com">✉️ Email Us</a>
-
-    <button class="action-btn book" id="openBooking" type="button">📅 Book Appointment</button>
-
-    <!-- BOOKING FORM -->
-    <form id="bookingForm">
-      <label for="name">Full Name</label>
-      <input id="name" name="name" type="text" placeholder="Your full name" title="Your full name" required />
-
-      <label for="email">Email Address</label>
-      <input id="email" name="email" type="email" placeholder="you@example.com" title="Your email address" required />
-
-      <label for="service">Select Service</label>
-      <select id="service" name="service" title="Select a service" required>
-        <option value="">Choose a service</option>
-        <option value="W-2 / Individual Taxes">W-2 / Individual Taxes</option>
-        <option value="1099 / Self-Employed">1099 / Self-Employed</option>
-        <option value="LLC / Business Filing">LLC / Business Filing</option>
-        <option value="Audit Help">Audit Help</option>
-      </select>
-
-      <label for="time">Appointment Date & Time</label>
-      <input id="time" name="time" type="datetime-local" title="Appointment date and time" required />
-
-      <button type="submit">Confirm Booking</button>
-      <div id="status"></div>
-    </form>
-
-    <!-- CONFIRMATION BOX -->
-    <div id="confirmBox">
-      <h3>✅ Booking Confirmed</h3>
-      <div class="confirm-row"><strong>Service:</strong> <span id="c_service"></span></div>
-      <div class="confirm-row"><strong>Date & Time:</strong> <span id="c_time"></span></div>
-      <div class="confirm-row"><strong>Duration:</strong> 60 minutes</div>
-      <div class="confirm-row"><strong>Confirmation #:</strong></div>
-      <div class="confirm-small" id="c_id"></div>
-
-      <div class="confirm-row"><strong>Manage / Cancel Link:</strong></div>
-      <div class="confirm-small" id="c_manage"></div>
-
-      <div class="confirm-actions">
-        <button class="btn-lite" id="bookAnother" type="button">Book Another</button>
-        <a class="btn-green" id="addToCal" href="#" target="_blank" rel="noopener">Add to Calendar</a>
-        <a class="btn-teal" id="manageBtn" href="#" target="_blank" rel="noopener">View / Cancel</a>
-        <button class="btn-lite" id="copyManage" type="button">Copy Link</button>
-      </div>
-    </div>
-
-    <div class="note">Tap to call, text, email, or book online</div>
+  <div class="contact">
+    📍 Columbus, Ohio 43227
+    <a href="tel:16145991185">📞 614-599-1185</a>
+    <a href="tel:16142597625">📞 614-259-7625</a>
+    <a href="mailto:columbuseast.taxservices@outlook.com">✉️ columbuseast.taxservices@outlook.com</a>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <div class="services">
+    <h3>Services Offered</h3>
+    <ul>
+      <li>W-2 & Individual Returns</li>
+      <li>1099 / Self-Employed</li>
+      <li>LLC & Small Business</li>
+      <li>Audit Help</li>
+    </ul>
+  </div>
 
-  <script>
-    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+  <a class="action-btn call" href="tel:16145991185">Call Now</a>
+  <a class="action-btn text" href="sms:16145991185">Text Us</a>
+  <a class="action-btn email" href="mailto:columbuseast.taxservices@outlook.com">Email Us</a>
 
-    const openBtn = document.getElementById("openBooking");
-    const form = document.getElementById("bookingForm");
-    const statusEl = document.getElementById("status");
-    const confirmBox = document.getElementById("confirmBox");
+  <button class="action-btn book" id="openBooking">Book Appointment</button>
 
-    const cService = document.getElementById("c_service");
-    const cTime = document.getElementById("c_time");
-    const cId = document.getElementById("c_id");
-    const cManage = document.getElementById("c_manage");
-    const addToCal = document.getElementById("addToCal");
-    const manageBtn = document.getElementById("manageBtn");
-    const copyManage = document.getElementById("copyManage");
-    const bookAnother = document.getElementById("bookAnother");
+  <!-- BOOKING FORM -->
+  <form id="bookingForm">
+    <label>Full Name</label>
+    <input id="name" required />
 
-    function setStatus(text, ok) {
-      statusEl.textContent = text;
-      statusEl.className = ok ? "ok" : "bad";
-    }
+    <label>Email</label>
+    <input id="email" type="email" required />
 
-    function formatLocal(iso) {
-      const d = new Date(iso);
-      return d.toLocaleString([], { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
-    }
+    <label>Service</label>
+    <select id="service" required>
+      <option value="">Choose one</option>
+      <option>W-2 / Individual</option>
+      <option>1099 / Self-Employed</option>
+      <option>LLC / Business</option>
+      <option>Audit Help</option>
+    </select>
 
-    function toGCal(dtIso) {
-      return new Date(dtIso).toISOString().replace(/[-:]/g, "").replace(".000", "");
-    }
+    <label>Date & Time</label>
+    <input id="time" type="datetime-local" required />
 
-    function makeGoogleCalLink({ title, details, location, startISO, endISO }) {
-      const dates = `${toGCal(startISO)}/${toGCal(endISO)}`;
-      const url = new URL("https://calendar.google.com/calendar/render");
-      url.searchParams.set("action", "TEMPLATE");
-      url.searchParams.set("text", title);
-      url.searchParams.set("details", details);
-      url.searchParams.set("location", location);
-      url.searchParams.set("dates", dates);
-      return url.toString();
-    }
+    <button type="submit">Confirm Booking</button>
+    <div id="status"></div>
+  </form>
 
-    openBtn.addEventListener("click", () => {
-      const isOpen = form.style.display === "block";
-      form.style.display = isOpen ? "none" : "block";
-      setStatus("", true);
-      confirmBox.style.display = "none";
-      if (!isOpen) form.scrollIntoView({ behavior: "smooth" });
-    });
+  <!-- CONFIRMATION -->
+  <div id="confirmBox">
+    <h3>✅ Booking Confirmed</h3>
+    <div class="confirm-row"><b>Service:</b> <span id="c_service"></span></div>
+    <div class="confirm-row"><b>Date:</b> <span id="c_time"></span></div>
+    <div class="confirm-row"><b>Confirmation #</b></div>
+    <div class="confirm-small" id="c_id"></div>
 
-    bookAnother.addEventListener("click", () => {
-      confirmBox.style.display = "none";
-      form.style.display = "block";
-      setStatus("", true);
-      form.scrollIntoView({ behavior: "smooth" });
-    });
+    <div class="confirm-row"><b>Manage / Cancel:</b></div>
+    <div class="confirm-small" id="c_manage"></div>
 
-    copyManage.addEventListener("click", async () => {
-      const link = manageBtn.href;
-      try {
-        await navigator.clipboard.writeText(link);
-        copyManage.textContent = "Copied!";
-        setTimeout(() => (copyManage.textContent = "Copy Link"), 1200);
-      } catch {
-        alert("Copy failed. You can manually copy the link.");
-      }
-    });
+    <div class="confirm-actions">
+      <button class="btn-lite" id="bookAnother">Book Another</button>
+      <a class="btn-green" id="manageBtn" target="_blank">View / Cancel</a>
+    </div>
+  </div>
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+</div>
 
-      if (!window.supabase?.createClient) {
-        setStatus("❌ Supabase library did not load. Refresh and try again.", false);
-        return;
-      }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-      setStatus("Submitting...", true);
+<script>
+const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
+const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
 
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const service = document.getElementById("service").value;
-      const time = document.getElementById("time").value;
+const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-      if (!name || !email || !service || !time) {
-        setStatus("❌ Please fill out all fields.", false);
-        return;
-      }
+const openBooking = document.getElementById("openBooking");
+const form = document.getElementById("bookingForm");
+const statusEl = document.getElementById("status");
+const confirmBox = document.getElementById("confirmBox");
 
-      const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+openBooking.onclick = () => {
+  form.style.display = form.style.display === "block" ? "none" : "block";
+  confirmBox.style.display = "none";
+};
 
-      // 60 min booking
-      const startISO = new Date(time).toISOString();
-      const endISO = new Date(new Date(time).getTime() + 60 * 60 * 1000).toISOString();
+form.onsubmit = async (e) => {
+  e.preventDefault();
+  statusEl.textContent = "Submitting...";
+  statusEl.className = "";
 
-      // private cancel token stored with appointment
-      const cancelToken = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now());
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const service = document.getElementById("service").value;
+  const time = document.getElementById("time").value;
 
-      try {
-        const { data, error } = await supa
-          .from("appointments")
-          .insert([{
-            client_name: name,
-            client_email: email,
-            service: service,
-            start_time: startISO,
-            end_time: endISO,
-            cancel_token: cancelToken,
-            status: "confirmed"
-          }])
-          .select("id, service, start_time, end_time")
-          .single();
+  const startISO = new Date(time).toISOString();
+  const endISO = new Date(new Date(time).getTime() + 60*60*1000).toISOString();
+  const cancelToken = crypto.randomUUID();
 
-        if (error) {
-          console.error(error);
-          setStatus("❌ Booking failed: " + error.message, false);
-          return;
-        }
+  /* 🔴 THIS IS THE EXACT INSERT BLOCK YOU ASKED FOR */
+  const { data, error } = await supa
+    .from("appointments")
+    .insert([{
+      client_name: name,
+      client_email: email,
+      service: service,
+      start_time: startISO,
+      end_time: endISO,
+      cancel_token: cancelToken,
+      status: "confirmed"
+    }])
+    .select("id, service, start_time, end_time")
+    .single();
 
-        // Manage link (same repo)
-        const manageLink = new URL("manage.html", window.location.href);
-        manageLink.searchParams.set("id", data.id);
-        manageLink.searchParams.set("token", cancelToken);
+  if (error) {
+    statusEl.textContent = error.message;
+    statusEl.className = "bad";
+    return;
+  }
 
-        // Show confirmation
-        setStatus("", true);
-        form.style.display = "none";
-        confirmBox.style.display = "block";
+  const manageLink = `${location.origin}${location.pathname.replace("index.html","")}manage.html?id=${data.id}&token=${cancelToken}`;
 
-        cService.textContent = data.service;
-        cTime.textContent = formatLocal(data.start_time);
-        cId.textContent = data.id;
+  /* ✅ EMAIL FUNCTION CALL */
+  fetch(`${supabaseUrl}/functions/v1/send-confirmation`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      client_name: name,
+      client_email: email,
+      service: data.service,
+      start_time: data.start_time,
+      end_time: data.end_time,
+      appointment_id: data.id,
+      manage_url: manageLink
+    })
+  }).catch(() => {});
 
-        cManage.textContent = manageLink.toString();
-        manageBtn.href = manageLink.toString();
+  form.style.display = "none";
+  confirmBox.style.display = "block";
 
-        addToCal.href = makeGoogleCalLink({
-          title: "Tax Appointment – Columbus East Tax Services",
-          details: `Service: ${data.service}\nClient: ${name}\nEmail: ${email}\nConfirmation: ${data.id}\nManage: ${manageLink}`,
-          location: "Columbus, Ohio 43227",
-          startISO: data.start_time,
-          endISO: data.end_time
-        });
+  document.getElementById("c_service").textContent = data.service;
+  document.getElementById("c_time").textContent = new Date(data.start_time).toLocaleString();
+  document.getElementById("c_id").textContent = data.id;
+  document.getElementById("c_manage").textContent = manageLink;
+  document.getElementById("manageBtn").href = manageLink;
 
-        form.reset();
+  form.reset();
+};
 
-      } catch (err) {
-        console.error(err);
-        setStatus("❌ Booking failed: " + (err.message || err), false);
-      }
-    });
-  </script>
+document.getElementById("bookAnother").onclick = () => {
+  confirmBox.style.display = "none";
+  form.style.display = "block";
+};
+</script>
 </body>
 </html>
