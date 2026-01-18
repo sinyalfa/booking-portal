@@ -17,7 +17,6 @@
     }
     button { cursor:pointer; font-weight:bold; background:#111827; color:#fff; border:none; }
     button.secondary { background:#fff; color:#111827; border:1px solid #d1d5db; }
-    button.danger { background:#dc2626; }
     button:disabled { opacity:.6; cursor:not-allowed; }
 
     table { width:100%; border-collapse:collapse; margin-top:12px; background:#fff; }
@@ -36,34 +35,29 @@
     .login .card { padding:22px; }
     .hide { display:none; }
 
-    .actions {
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
+    .actions { display:flex; gap:8px; flex-wrap:wrap; }
     .tinybtn {
       padding:8px 10px;
       border-radius:10px;
       font-size:12px;
       font-weight:bold;
+      cursor:pointer;
     }
-
     .tinybtn.gray {
       background:#fff;
       color:#111827;
       border:1px solid #d1d5db;
     }
-
     .tinybtn.red {
       background:#dc2626;
       color:#fff;
       border:none;
     }
+    .tinybtn:disabled { opacity:.6; cursor:not-allowed; }
   </style>
 </head>
 <body>
-  <!-- Simple password gate -->
+  <!-- Password gate -->
   <div id="loginView" class="login">
     <div class="card">
       <h1>Admin Login</h1>
@@ -89,7 +83,7 @@
           <option value="cancelled">Cancelled</option>
         </select>
         <select id="rangeFilter">
-          <option value="upcoming">Upcoming</option>
+          <option value="upcoming" selected>Upcoming (Last 30 days + future)</option>
           <option value="today">Today</option>
           <option value="all">All time</option>
         </select>
@@ -141,7 +135,6 @@
     const refreshBtn = document.getElementById("refreshBtn");
     const exportBtn = document.getElementById("exportBtn");
 
-    // keep latest loaded list (used for CSV export)
     let latestRows = [];
 
     function fmt(iso) {
@@ -202,7 +195,7 @@
     }
 
     async function cancelAppointment(id) {
-      const ok = confirm("Cancel this appointment?\n\nThis will mark it as cancelled in the admin calendar.");
+      const ok = confirm("Cancel this appointment?\n\nThis will mark it as cancelled.");
       if (!ok) return;
 
       setMsg("Cancelling appointment...", "muted");
@@ -230,17 +223,19 @@
         .select("id, client_name, client_email, service, start_time, status")
         .order("start_time", { ascending: true });
 
-      // range filter
       const now = new Date();
+
       if (rangeFilter.value === "today") {
         const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
         const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
         q = q.gte("start_time", start).lt("start_time", end);
+
       } else if (rangeFilter.value === "upcoming") {
-        q = q.gte("start_time", now.toISOString());
+        // ✅ FIX: show last 30 days + future bookings
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        q = q.gte("start_time", thirtyDaysAgo);
       }
 
-      // status filter
       if (statusFilter.value !== "all") {
         q = q.eq("status", statusFilter.value);
       }
@@ -255,7 +250,6 @@
         return;
       }
 
-      // search filter (client side)
       const term = search.value.trim().toLowerCase();
       const filtered = term
         ? data.filter(r =>
@@ -266,7 +260,6 @@
 
       latestRows = filtered;
 
-      // render rows
       tbody.innerHTML = filtered.map(r => {
         const status = (r.status || "confirmed").toLowerCase();
         const isCancelled = status === "cancelled";
@@ -303,7 +296,6 @@
         `;
       }).join("");
 
-      // attach button actions
       tbody.querySelectorAll("button[data-action]").forEach(btn => {
         btn.addEventListener("click", async () => {
           const action = btn.getAttribute("data-action");
@@ -328,14 +320,12 @@
       setMsg(`✅ Loaded ${filtered.length} appointment(s).`, "ok");
     }
 
-    // export CSV
     exportBtn.onclick = () => {
       const csv = toCSV(latestRows);
       const stamp = new Date().toISOString().slice(0,10);
       download(`appointments_${stamp}.csv`, csv);
     };
 
-    // login
     loginBtn.onclick = () => {
       const entered = adminPass.value;
       if (entered === ADMIN_PASSWORD) {
@@ -347,7 +337,6 @@
       }
     };
 
-    // controls
     refreshBtn.onclick = loadAppointments;
     search.oninput = () => loadAppointments();
     statusFilter.onchange = loadAppointments;
