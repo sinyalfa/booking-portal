@@ -6,7 +6,7 @@
   <title>Admin – Appointments</title>
   <style>
     body { font-family: Arial, Helvetica, sans-serif; background:#f4f6f8; margin:0; padding:24px; }
-    .wrap { max-width: 1100px; margin: 0 auto; }
+    .wrap { max-width: 1150px; margin: 0 auto; }
     .card { background:#fff; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.08); padding:18px; }
     h1 { margin:0 0 6px 0; }
     .muted { color:#6b7280; font-size:13px; }
@@ -42,18 +42,31 @@
       font-size:12px;
       font-weight:bold;
       cursor:pointer;
-    }
-    .tinybtn.gray {
-      background:#fff;
-      color:#111827;
-      border:1px solid #d1d5db;
-    }
-    .tinybtn.red {
-      background:#dc2626;
-      color:#fff;
       border:none;
     }
+    .tinybtn.gray { background:#fff; color:#111827; border:1px solid #d1d5db; }
+    .tinybtn.red { background:#dc2626; color:#fff; }
+    .tinybtn.blue { background:#2563eb; color:#fff; }
     .tinybtn:disabled { opacity:.6; cursor:not-allowed; }
+
+    /* Reschedule modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,.35);
+      display:none; align-items:center; justify-content:center; padding:20px;
+    }
+    .modal {
+      width:100%; max-width:520px; background:#fff; border-radius:14px;
+      box-shadow:0 12px 35px rgba(0,0,0,.25); padding:18px;
+    }
+    .modal h2 { margin:0 0 8px 0; font-size:18px; }
+    .modal .muted { margin-bottom:10px; }
+    .modal .grid { display:grid; gap:10px; }
+    .modal .grid label { font-weight:bold; color:#111827; }
+    .modal .grid input { width:100%; }
+    .modal .btnrow { display:flex; gap:10px; margin-top:14px; justify-content:flex-end; }
+    .modal .btnrow button { padding:10px 12px; border-radius:10px; }
+    .modal .btnrow .cancel { background:#fff; color:#111827; border:1px solid #d1d5db; }
+    .modal .btnrow .save { background:#0f766e; color:#fff; border:none; }
   </style>
 </head>
 <body>
@@ -103,12 +116,32 @@
               <th style="min-width:160px;">Service</th>
               <th style="min-width:110px;">Status</th>
               <th style="min-width:240px;">ID</th>
-              <th style="min-width:170px;">Actions</th>
+              <th style="min-width:230px;">Actions</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
         </table>
       </div>
+    </div>
+  </div>
+
+  <!-- Reschedule Modal -->
+  <div id="modalBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <h2>Reschedule Appointment</h2>
+      <div class="muted" id="modalInfo"></div>
+
+      <div class="grid">
+        <label for="newTime">New Date & Time</label>
+        <input id="newTime" type="datetime-local" />
+        <div class="muted">Duration stays <b>60 minutes</b>.</div>
+      </div>
+
+      <div class="btnrow">
+        <button class="cancel" id="modalCancel" type="button">Close</button>
+        <button class="save" id="modalSave" type="button">Save Changes</button>
+      </div>
+      <div id="modalMsg" class="muted" style="margin-top:10px;"></div>
     </div>
   </div>
 
@@ -135,7 +168,16 @@
     const refreshBtn = document.getElementById("refreshBtn");
     const exportBtn = document.getElementById("exportBtn");
 
+    // Modal refs
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalInfo = document.getElementById("modalInfo");
+    const newTime = document.getElementById("newTime");
+    const modalCancel = document.getElementById("modalCancel");
+    const modalSave = document.getElementById("modalSave");
+    const modalMsg = document.getElementById("modalMsg");
+
     let latestRows = [];
+    let rescheduleTarget = null; // { id, client_name, client_email, service, start_time }
 
     function fmt(iso) {
       const d = new Date(iso);
@@ -143,6 +185,18 @@
         year:"numeric", month:"2-digit", day:"2-digit",
         hour:"2-digit", minute:"2-digit"
       });
+    }
+
+    function toLocalInputValue(iso) {
+      // Convert ISO -> "YYYY-MM-DDTHH:MM" in local time for datetime-local input
+      const d = new Date(iso);
+      const pad = (n) => String(n).padStart(2, "0");
+      const yyyy = d.getFullYear();
+      const mm = pad(d.getMonth() + 1);
+      const dd = pad(d.getDate());
+      const hh = pad(d.getHours());
+      const mi = pad(d.getMinutes());
+      return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
     }
 
     function setMsg(text, cls="muted") {
@@ -215,6 +269,58 @@
       await loadAppointments();
     }
 
+    function openRescheduleModal(row) {
+      rescheduleTarget = row;
+      modalMsg.textContent = "";
+      modalInfo.textContent = `${row.client_name} • ${row.client_email} • ${row.service} • Current: ${fmt(row.start_time)}`;
+      newTime.value = toLocalInputValue(row.start_time);
+      modalBackdrop.style.display = "flex";
+    }
+
+    function closeRescheduleModal() {
+      modalBackdrop.style.display = "none";
+      rescheduleTarget = null;
+    }
+
+    async function saveReschedule() {
+      if (!rescheduleTarget) return;
+
+      const value = newTime.value;
+      if (!value) {
+        modalMsg.textContent = "Please pick a date/time.";
+        return;
+      }
+
+      // Compute +60 min
+      const startISO = new Date(value).toISOString();
+      const endISO = new Date(new Date(value).getTime() + 60 * 60 * 1000).toISOString();
+
+      modalSave.disabled = true;
+      modalMsg.textContent = "Saving…";
+
+      const { error } = await supa
+        .from("appointments")
+        .update({
+          start_time: startISO,
+          end_time: endISO,
+          status: "confirmed"
+        })
+        .eq("id", rescheduleTarget.id);
+
+      modalSave.disabled = false;
+
+      if (error) {
+        console.error(error);
+        modalMsg.textContent = "❌ Reschedule failed: " + error.message;
+        return;
+      }
+
+      modalMsg.textContent = "✅ Updated!";
+      setMsg("✅ Appointment rescheduled.", "ok");
+      closeRescheduleModal();
+      await loadAppointments();
+    }
+
     async function loadAppointments() {
       setMsg("Loading…");
 
@@ -231,7 +337,6 @@
         q = q.gte("start_time", start).lt("start_time", end);
 
       } else if (rangeFilter.value === "upcoming") {
-        // ✅ FIX: show last 30 days + future bookings
         const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
         q = q.gte("start_time", thirtyDaysAgo);
       }
@@ -275,6 +380,15 @@
             <td>
               <div class="actions">
                 <button
+                  class="tinybtn blue"
+                  data-action="reschedule"
+                  data-id="${escapeHtml(r.id)}"
+                  ${isCancelled ? "disabled" : ""}
+                >
+                  Reschedule
+                </button>
+
+                <button
                   class="tinybtn red"
                   data-action="cancel"
                   data-id="${escapeHtml(r.id)}"
@@ -296,14 +410,21 @@
         `;
       }).join("");
 
+      // button actions
       tbody.querySelectorAll("button[data-action]").forEach(btn => {
         btn.addEventListener("click", async () => {
           const action = btn.getAttribute("data-action");
           const id = btn.getAttribute("data-id");
+          const row = latestRows.find(x => x.id === id);
 
           if (action === "cancel") {
             btn.disabled = true;
             await cancelAppointment(id);
+          }
+
+          if (action === "reschedule") {
+            if (!row) return;
+            openRescheduleModal(row);
           }
 
           if (action === "copyid") {
@@ -320,12 +441,21 @@
       setMsg(`✅ Loaded ${filtered.length} appointment(s).`, "ok");
     }
 
+    // export CSV
     exportBtn.onclick = () => {
       const csv = toCSV(latestRows);
       const stamp = new Date().toISOString().slice(0,10);
       download(`appointments_${stamp}.csv`, csv);
     };
 
+    // modal buttons
+    modalCancel.onclick = closeRescheduleModal;
+    modalSave.onclick = saveReschedule;
+    modalBackdrop.addEventListener("click", (e) => {
+      if (e.target === modalBackdrop) closeRescheduleModal();
+    });
+
+    // login
     loginBtn.onclick = () => {
       const entered = adminPass.value;
       if (entered === ADMIN_PASSWORD) {
