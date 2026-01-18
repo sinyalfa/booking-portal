@@ -68,7 +68,6 @@
     }
     .label{ font-size:12px; font-weight:900; color:#6b7280; text-transform:uppercase; letter-spacing:.03em; }
     .value{ margin-top:6px; font-size:14px; font-weight:900; color:#111827; line-height:1.4; }
-    .value small{ font-weight:700; color:#4b5563; }
 
     .actions{
       margin-top:14px;
@@ -149,12 +148,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Supabase
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // UI
     const statusEl = document.getElementById("status");
     const contentEl = document.getElementById("content");
 
@@ -180,24 +177,22 @@
       return d.toLocaleString([], { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
     }
 
-    // ✅ Convert stored "Columbus Metropolitan Library..." to "CML – Branch ..."
     function formatLocation(raw){
       const s = String(raw || "").trim();
       if (!s) return "—";
-      // Handles both ":" and "-" styles you’ve used
-      // Examples:
-      // "Columbus Metropolitan Library: Whitehall Branch — 4445 E Broad St..."
-      // "Columbus Metropolitan Library - Barnett Branch — 3434 E Livingston Ave..."
       return s
         .replace(/^Columbus Metropolitan Library\s*[:\-]\s*/i, "CML – ")
         .replace(/^Columbus Metropolitan Library/i, "CML");
     }
 
-    // Optional: email function (non-blocking)
     function sendUpdateEmail(payload) {
       fetch(`${supabaseUrl}/functions/v1/send-update`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${supabaseKey}`,
+          "apikey": supabaseKey
+        },
         body: JSON.stringify(payload)
       }).catch(() => {});
     }
@@ -233,7 +228,6 @@
         return;
       }
 
-      // Security check: email must match
       if ((data.client_email || "").trim().toLowerCase() !== email.toLowerCase()) {
         statusEl.innerHTML = pill("bad", "Access denied") +
           ` <span class="muted">Email does not match this appointment.</span>`;
@@ -284,7 +278,6 @@
         return;
       }
 
-      // Email customer + admin (if your send-update function is live)
       sendUpdateEmail({
         type: "cancel",
         appointment_id: appt.id,
@@ -295,7 +288,6 @@
         start_time: appt.start_time
       });
 
-      // Reload fresh data
       await loadAppointment();
     }
 
