@@ -9,152 +9,93 @@
     .wrap { max-width: 1200px; margin: 0 auto; }
     .card { background:#fff; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.08); padding:18px; }
     h1 { margin:0 0 6px 0; }
-    .muted { color:#6b7280; font-size:13px; }
+    .muted { color:#6b7280; font-size:13px; line-height:1.4; }
     .row { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; align-items:center; }
 
-    input, select, button {
-      padding:10px 12px; border-radius:10px; border:1px solid #d1d5db; font-size:14px;
-    }
-    button { cursor:pointer; font-weight:bold; background:#111827; color:#fff; border:none; }
+    input, select, button { padding:10px 12px; border-radius:10px; border:1px solid #d1d5db; font-size:14px; }
+    button { cursor:pointer; font-weight:900; background:#111827; color:#fff; border:none; }
     button.secondary { background:#fff; color:#111827; border:1px solid #d1d5db; }
     button:disabled { opacity:.6; cursor:not-allowed; }
-
-    .pill { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:bold; }
-    .confirmed { background:#dcfce7; color:#166534; }
-    .cancelled { background:#fee2e2; color:#991b1b; }
-
-    .err { color:#dc2626; font-weight:bold; }
-    .ok { color:#16a34a; font-weight:bold; }
 
     .login { max-width:420px; margin: 60px auto; }
     .login .card { padding:22px; }
     .hide { display:none; }
 
-    /* Toggle */
-    .toggle {
-      display:flex; gap:8px; background:#f3f4f6; padding:6px; border-radius:12px; border:1px solid #e5e7eb;
-    }
-    .toggle button {
-      background:transparent; border:none; color:#111827; padding:10px 12px; border-radius:10px; font-weight:800;
-    }
+    .toggle { display:flex; gap:8px; background:#f3f4f6; padding:6px; border-radius:12px; border:1px solid #e5e7eb; }
+    .toggle button { background:transparent; border:none; color:#111827; padding:10px 12px; border-radius:10px; font-weight:900; }
     .toggle button.active { background:#111827; color:#fff; }
 
-    /* List Table */
+    .pill { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:900; }
+    .confirmed { background:#dcfce7; color:#166534; }
+    .cancelled { background:#fee2e2; color:#991b1b; }
+    .err { color:#dc2626; font-weight:900; }
+    .ok { color:#16a34a; font-weight:900; }
+
+    /* Calendar */
+    .calHeader { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
+    .calHeader .monthTitle { font-size:18px; font-weight:900; color:#111827; }
+    .calHeader .nav { display:flex; gap:8px; }
+
+    .calGrid { margin-top:12px; display:grid; grid-template-columns: repeat(7, 1fr); gap:10px; }
+    .dow { font-size:12px; color:#6b7280; font-weight:900; text-transform:uppercase; padding:0 6px; }
+    .day {
+      background:#fff; border:1px solid #e5e7eb; border-radius:14px; min-height:120px; padding:10px;
+      box-shadow:0 3px 10px rgba(0,0,0,.04); display:flex; flex-direction:column; gap:8px;
+    }
+    .day.mutedDay { background:#f9fafb; color:#9ca3af; }
+    .dayNumRow { display:flex; justify-content:space-between; align-items:center; }
+    .dayNum { font-weight:900; color:#111827; }
+    .badgeToday { font-size:11px; font-weight:900; padding:4px 8px; border-radius:999px; background:#111827; color:#fff; }
+
+    .appt { border-radius:12px; padding:8px 10px; background:#eef2ff; border:1px solid #c7d2fe; cursor:pointer; }
+    .appt.cancelled { background:#fef2f2; border:1px solid #fecaca; opacity:0.75; }
+    .apptTop { display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .apptTime { font-weight:900; font-size:12px; color:#111827; }
+    .apptName { font-size:13px; font-weight:900; color:#111827; margin-top:4px; }
+    .apptSvc { font-size:12px; color:#4b5563; margin-top:2px; }
+
+    /* List */
     table { width:100%; border-collapse:collapse; margin-top:12px; background:#fff; }
     th, td { text-align:left; padding:10px; border-bottom:1px solid #e5e7eb; font-size:14px; vertical-align:top; }
     th { background:#f9fafb; position:sticky; top:0; z-index:1; }
 
     .actions { display:flex; gap:8px; flex-wrap:wrap; }
-    .tinybtn {
-      padding:8px 10px;
-      border-radius:10px;
-      font-size:12px;
-      font-weight:bold;
-      cursor:pointer;
-      border:none;
-      color:#fff;
-    }
+    .tinybtn { padding:8px 10px; border-radius:10px; font-size:12px; font-weight:900; cursor:pointer; border:none; color:#fff; }
     .tinybtn.red { background:#dc2626; }
     .tinybtn.blue { background:#2563eb; }
     .tinybtn:disabled { opacity:.6; cursor:not-allowed; }
 
-    /* Calendar */
-    .calHeader {
-      display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
-      margin-top:10px;
-    }
-    .calHeader .monthTitle { font-size:18px; font-weight:900; color:#111827; }
-    .calHeader .nav { display:flex; gap:8px; }
-    .calHeader .nav button { padding:10px 12px; border-radius:10px; }
-
-    .calGrid {
-      margin-top:12px;
-      display:grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap:10px;
-    }
-    .dow {
-      font-size:12px; color:#6b7280; font-weight:800; text-transform:uppercase;
-      padding:0 6px;
-    }
-    .day {
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:14px;
-      min-height:120px;
-      padding:10px;
-      box-shadow:0 3px 10px rgba(0,0,0,.04);
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .day.mutedDay { background:#f9fafb; color:#9ca3af; }
-    .dayNumRow { display:flex; justify-content:space-between; align-items:center; }
-    .dayNum { font-weight:900; color:#111827; }
-    .badgeToday {
-      font-size:11px; font-weight:900; padding:4px 8px; border-radius:999px;
-      background:#111827; color:#fff;
-    }
-    .appt {
-      border-radius:12px;
-      padding:8px 10px;
-      background:#eef2ff;
-      border:1px solid #c7d2fe;
-      cursor:pointer;
-    }
-    .appt.cancelled {
-      background:#fef2f2;
-      border:1px solid #fecaca;
-      opacity:0.75;
-    }
-    .apptTop { display:flex; justify-content:space-between; gap:10px; align-items:center; }
-    .apptTime { font-weight:900; font-size:12px; color:#111827; }
-    .apptStatus { font-size:11px; font-weight:900; }
-    .apptName { font-size:13px; font-weight:900; color:#111827; margin-top:4px; }
-    .apptSvc { font-size:12px; color:#4b5563; margin-top:2px; }
-
-    /* Modal (Reschedule + Cancel) */
-    .modal-backdrop{
-      position:fixed; inset:0; background:rgba(0,0,0,.35);
-      display:none; align-items:center; justify-content:center; padding:18px;
-    }
-    .modal{
-      width:100%; max-width:560px; background:#fff; border-radius:14px;
-      box-shadow:0 12px 35px rgba(0,0,0,.25); padding:18px;
-    }
+    /* Modal */
+    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; padding:18px; }
+    .modal{ width:100%; max-width:560px; background:#fff; border-radius:14px; box-shadow:0 12px 35px rgba(0,0,0,.25); padding:18px; }
     .modal h2{ margin:0 0 8px 0; font-size:18px; }
     .modal .grid{ display:grid; gap:10px; }
-    .modal label{ font-weight:bold; color:#111827; }
+    .modal label{ font-weight:900; color:#111827; }
     .modal .btnrow{ display:flex; gap:10px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap; }
-    .modal .btnrow button{ padding:10px 12px; border-radius:10px; }
     .modal .btnrow .close{ background:#fff; color:#111827; border:1px solid #d1d5db; }
     .modal .btnrow .save{ background:#0f766e; color:#fff; border:none; }
     .modal .btnrow .danger{ background:#dc2626; color:#fff; border:none; }
-    .modal .meta { font-size:12px; color:#6b7280; line-height:1.5; }
+    .meta { font-size:12px; color:#6b7280; line-height:1.5; }
   </style>
 </head>
 <body>
 
-  <!-- Password gate -->
   <div id="loginView" class="login">
     <div class="card">
       <h1>Admin Login</h1>
       <div class="muted">Enter your admin password to view appointments.</div>
-
       <div class="row" style="margin-top:12px;">
         <input id="adminPass" type="password" placeholder="Admin password" style="flex:1;" />
         <button id="loginBtn">Enter</button>
       </div>
-
       <div id="loginMsg" class="muted"></div>
     </div>
   </div>
 
-  <!-- Admin App View -->
   <div id="appView" class="wrap hide">
     <div class="card">
       <h1>Appointments</h1>
-      <div class="muted">Admin calendar view (Supabase)</div>
+      <div class="muted"><span class="pill confirmed">Hours</span> Appointments allowed <b>10:00 AM – 8:00 PM</b> (60 minutes).</div>
 
       <div class="row">
         <div class="toggle">
@@ -163,20 +104,17 @@
         </div>
 
         <input id="search" placeholder="Search name or email…" style="flex:1; min-width:220px;" />
-
         <select id="statusFilter">
           <option value="all">All statuses</option>
           <option value="confirmed">Confirmed</option>
           <option value="cancelled">Cancelled</option>
         </select>
-
         <button class="secondary" id="refreshBtn" type="button">Refresh</button>
         <button id="exportBtn" type="button">Export CSV</button>
       </div>
 
       <div id="msg" class="muted"></div>
 
-      <!-- MONTH VIEW -->
       <div id="monthViewWrap">
         <div class="calHeader">
           <div class="monthTitle" id="monthTitle"></div>
@@ -187,7 +125,7 @@
           </div>
         </div>
 
-        <div class="calGrid" id="dowRow">
+        <div class="calGrid">
           <div class="dow">Sun</div><div class="dow">Mon</div><div class="dow">Tue</div><div class="dow">Wed</div>
           <div class="dow">Thu</div><div class="dow">Fri</div><div class="dow">Sat</div>
         </div>
@@ -195,7 +133,6 @@
         <div class="calGrid" id="calGrid"></div>
       </div>
 
-      <!-- LIST VIEW -->
       <div id="listViewWrap" class="hide" style="overflow:auto; border-radius:12px; margin-top:10px;">
         <table>
           <thead>
@@ -214,7 +151,6 @@
     </div>
   </div>
 
-  <!-- Modal for action from Month/List -->
   <div id="modalBackdrop" class="modal-backdrop">
     <div class="modal">
       <h2 id="modalTitle">Appointment</h2>
@@ -223,7 +159,7 @@
       <div class="grid" style="margin-top:12px;">
         <label for="newTime">Reschedule Date & Time</label>
         <input id="newTime" type="datetime-local" />
-        <div class="muted">Duration stays <b>60 minutes</b>.</div>
+        <div class="muted">Allowed: <b>10:00 AM – 8:00 PM</b> • Duration: <b>60 minutes</b></div>
       </div>
 
       <div class="btnrow">
@@ -238,15 +174,20 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ✅ Admin password
+    // ====== SETTINGS ======
+    const WORK_START_HOUR = 10;
+    const WORK_END_HOUR = 20;
+    const APPOINTMENT_MINUTES = 60;
+
+    // ✅ Admin password (note: hardcoding is not secure, but you asked for it)
     const ADMIN_PASSWORD = "Alfusain42!";
 
-    // ✅ Supabase
+    // Supabase
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // UI refs
+    // UI
     const loginView = document.getElementById("loginView");
     const appView = document.getElementById("appView");
     const loginBtn = document.getElementById("loginBtn");
@@ -259,23 +200,19 @@
     const refreshBtn = document.getElementById("refreshBtn");
     const exportBtn = document.getElementById("exportBtn");
 
-    // view toggle
     const viewMonth = document.getElementById("viewMonth");
     const viewList = document.getElementById("viewList");
     const monthViewWrap = document.getElementById("monthViewWrap");
     const listViewWrap = document.getElementById("listViewWrap");
 
-    // month nav
     const monthTitle = document.getElementById("monthTitle");
     const prevMonth = document.getElementById("prevMonth");
     const nextMonth = document.getElementById("nextMonth");
     const todayBtn = document.getElementById("todayBtn");
     const calGrid = document.getElementById("calGrid");
 
-    // list
     const tbody = document.getElementById("tbody");
 
-    // modal
     const modalBackdrop = document.getElementById("modalBackdrop");
     const modalTitle = document.getElementById("modalTitle");
     const modalInfo = document.getElementById("modalInfo");
@@ -286,48 +223,44 @@
     const modalMsg = document.getElementById("modalMsg");
 
     // state
-    let currentMonth = new Date(); // points to month being shown
+    let currentMonth = new Date();
     currentMonth.setDate(1);
     currentMonth.setHours(0,0,0,0);
 
     let latestRows = [];
-    let activeRow = null; // selected appointment for modal
+    let activeRow = null;
     let activeOldStart = null;
 
-    function setMsg(text, cls="muted") {
-      msg.className = cls;
-      msg.textContent = text;
-    }
-
+    function setMsg(text, cls="muted") { msg.className = cls; msg.textContent = text; }
     function escapeHtml(s) {
       return String(s ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
     }
-
     function fmtDateTime(iso) {
       const d = new Date(iso);
       return d.toLocaleString([], { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
     }
-
     function fmtTime(iso) {
       const d = new Date(iso);
       return d.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
     }
-
     function toLocalInputValue(iso) {
       const d = new Date(iso);
       const pad = (n) => String(n).padStart(2,"0");
       return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
-
     function pill(status) {
       const s = (status || "confirmed").toLowerCase();
       const cls = s === "cancelled" ? "pill cancelled" : "pill confirmed";
       return `<span class="${cls}">${s}</span>`;
+    }
+
+    function isWithinWorkingHoursStart(startDateObj) {
+      const end = new Date(startDateObj.getTime() + APPOINTMENT_MINUTES * 60 * 1000);
+      const startHour = startDateObj.getHours() + startDateObj.getMinutes()/60;
+      const endHour = end.getHours() + end.getMinutes()/60;
+      return (startHour >= WORK_START_HOUR) && (endHour <= WORK_END_HOUR);
     }
 
     function toCSV(rows) {
@@ -340,52 +273,56 @@
       }
       return lines.join("\n");
     }
-
     function download(filename, text) {
       const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
       URL.revokeObjectURL(url);
     }
 
-    // ✅ send-update Edge Function call (non-blocking)
+    // send-update (non-blocking)
     function sendUpdateEmail(payload) {
       fetch(`${supabaseUrl}/functions/v1/send-update`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
-      })
-      .then(async (r) => {
-        const t = await r.text();
-        if (!r.ok) console.warn("send-update failed:", t);
-      })
-      .catch((e) => console.warn("send-update fetch failed:", e));
+      }).catch(() => {});
+    }
+
+    function renderMonthTitle() {
+      monthTitle.textContent = currentMonth.toLocaleString([], { month:"long", year:"numeric" });
+    }
+
+    function groupByDay(rows) {
+      const map = new Map();
+      for (const r of rows) {
+        const d = new Date(r.start_time);
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(r);
+      }
+      for (const [k, arr] of map.entries()) {
+        arr.sort((a,b) => new Date(a.start_time) - new Date(b.start_time));
+      }
+      return map;
     }
 
     async function fetchAppointmentsForMonth() {
-      // Month range: from grid start (Sunday before 1st) to grid end (Saturday after last)
-      const first = new Date(currentMonth);
-      const start = new Date(first);
-      start.setDate(1);
-      start.setHours(0,0,0,0);
+      const start = new Date(currentMonth);
+      start.setDate(1); start.setHours(0,0,0,0);
 
-      const startDow = start.getDay(); // 0 Sun
       const gridStart = new Date(start);
-      gridStart.setDate(start.getDate() - startDow); // back to Sunday
+      gridStart.setDate(start.getDate() - start.getDay()); // back to Sunday
 
       const end = new Date(start);
       end.setMonth(end.getMonth() + 1);
-      end.setDate(0); // last day of month
+      end.setDate(0);
       end.setHours(23,59,59,999);
 
-      const endDow = end.getDay();
       const gridEnd = new Date(end);
-      gridEnd.setDate(end.getDate() + (6 - endDow)); // forward to Saturday
+      gridEnd.setDate(end.getDate() + (6 - end.getDay()));
       gridEnd.setHours(23,59,59,999);
 
       let q = supa
@@ -393,53 +330,29 @@
         .select("id, client_name, client_email, service, start_time, end_time, status")
         .gte("start_time", gridStart.toISOString())
         .lte("start_time", gridEnd.toISOString())
-        .order("start_time", { ascending: true });
+        .order("start_time", { ascending:true });
 
       if (statusFilter.value !== "all") q = q.eq("status", statusFilter.value);
 
       const { data, error } = await q;
       if (error) throw error;
 
-      // client-side search
       const term = search.value.trim().toLowerCase();
-      const filtered = term
-        ? data.filter(r =>
+      latestRows = term
+        ? (data || []).filter(r =>
             (r.client_name || "").toLowerCase().includes(term) ||
             (r.client_email || "").toLowerCase().includes(term)
           )
-        : data;
+        : (data || []);
 
-      latestRows = filtered;
-      return { gridStart, gridEnd, monthStart: start };
-    }
-
-    function renderMonthTitle() {
-      monthTitle.textContent = currentMonth.toLocaleString([], { month: "long", year: "numeric" });
-    }
-
-    function groupByDay(rows) {
-      const map = new Map(); // key YYYY-MM-DD => rows
-      for (const r of rows) {
-        const d = new Date(r.start_time);
-        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-        if (!map.has(key)) map.set(key, []);
-        map.get(key).push(r);
-      }
-      // sort within day by time
-      for (const [k, arr] of map.entries()) {
-        arr.sort((a,b) => new Date(a.start_time) - new Date(b.start_time));
-      }
-      return map;
+      return { gridStart, monthStart: start };
     }
 
     function renderCalendar(gridStart, monthStart, rows) {
       calGrid.innerHTML = "";
-      const today = new Date();
-      today.setHours(0,0,0,0);
-
+      const today = new Date(); today.setHours(0,0,0,0);
       const byDay = groupByDay(rows);
 
-      // 6 weeks * 7 days = 42 cells
       for (let i = 0; i < 42; i++) {
         const dayDate = new Date(gridStart);
         dayDate.setDate(gridStart.getDate() + i);
@@ -453,7 +366,6 @@
 
         const dayEl = document.createElement("div");
         dayEl.className = "day" + (isInMonth ? "" : " mutedDay");
-
         dayEl.innerHTML = `
           <div class="dayNumRow">
             <div class="dayNum">${dayDate.getDate()}</div>
@@ -461,7 +373,6 @@
           </div>
         `;
 
-        // Show max 4 items + "more..."
         const maxShow = 4;
         appts.slice(0, maxShow).forEach(r => {
           const status = (r.status || "confirmed").toLowerCase();
@@ -470,7 +381,7 @@
           appt.innerHTML = `
             <div class="apptTop">
               <div class="apptTime">${escapeHtml(fmtTime(r.start_time))}</div>
-              <div class="apptStatus">${status === "cancelled" ? "❌" : "✅"}</div>
+              <div>${status === "cancelled" ? "❌" : "✅"}</div>
             </div>
             <div class="apptName">${escapeHtml(r.client_name)}</div>
             <div class="apptSvc">${escapeHtml(r.service)}</div>
@@ -482,8 +393,7 @@
         if (appts.length > maxShow) {
           const more = document.createElement("div");
           more.className = "muted";
-          more.style.fontWeight = "800";
-          more.style.padding = "0 4px";
+          more.style.fontWeight = "900";
           more.textContent = `+ ${appts.length - maxShow} more`;
           dayEl.appendChild(more);
         }
@@ -513,14 +423,12 @@
         `;
       }).join("");
 
-      // attach actions
       tbody.querySelectorAll("button[data-action]").forEach(btn => {
         btn.addEventListener("click", () => {
           const id = btn.getAttribute("data-id");
           const action = btn.getAttribute("data-action");
           const row = latestRows.find(x => x.id === id);
           if (!row) return;
-
           if (action === "cancel") doCancel(row);
           if (action === "reschedule") openModalForRow(row);
         });
@@ -531,12 +439,9 @@
       try {
         setMsg("Loading…");
         renderMonthTitle();
-
         const { gridStart, monthStart } = await fetchAppointmentsForMonth();
-        // latestRows already updated by fetchAppointmentsForMonth
         renderCalendar(gridStart, monthStart, latestRows);
         renderList(latestRows);
-
         setMsg(`✅ Loaded ${latestRows.length} appointment(s).`, "ok");
       } catch (e) {
         console.error(e);
@@ -547,11 +452,10 @@
     function openModalForRow(row) {
       activeRow = row;
       activeOldStart = row.start_time;
-
       modalMsg.textContent = "";
-      modalTitle.textContent = (row.status || "confirmed").toLowerCase() === "cancelled"
-        ? "Cancelled Appointment"
-        : "Appointment";
+
+      const isCancelled = (row.status || "confirmed").toLowerCase() === "cancelled";
+      modalTitle.textContent = isCancelled ? "Cancelled Appointment" : "Appointment";
 
       modalInfo.innerHTML = `
         <div><b>${escapeHtml(row.client_name)}</b> • ${escapeHtml(row.client_email)}</div>
@@ -561,8 +465,6 @@
       `;
 
       newTime.value = toLocalInputValue(row.start_time);
-
-      const isCancelled = (row.status || "confirmed").toLowerCase() === "cancelled";
       modalCancelAppt.disabled = isCancelled;
       modalSave.disabled = isCancelled;
 
@@ -579,11 +481,10 @@
       const ok = confirm("Cancel this appointment?\n\nThis will mark it as cancelled AND email the client.");
       if (!ok) return;
 
-      setMsg("Cancelling...", "muted");
+      setMsg("Cancelling…", "muted");
 
-      const { error } = await supa
-        .from("appointments")
-        .update({ status: "cancelled" })
+      const { error } = await supa.from("appointments")
+        .update({ status:"cancelled" })
         .eq("id", row.id);
 
       if (error) {
@@ -607,21 +508,26 @@
 
     async function doReschedule() {
       if (!activeRow) return;
+
       const value = newTime.value;
-      if (!value) {
-        modalMsg.textContent = "Please choose a date/time.";
+      if (!value) { modalMsg.textContent = "Please choose a date/time."; return; }
+
+      const start = new Date(value);
+
+      // ✅ HARD BLOCK (10am–8pm)
+      if (!isWithinWorkingHoursStart(start)) {
+        modalMsg.innerHTML = `<span class="err">❌ Not allowed:</span> Must be between 10:00 AM and 8:00 PM.`;
         return;
       }
 
-      const startISO = new Date(value).toISOString();
-      const endISO = new Date(new Date(value).getTime() + 60 * 60 * 1000).toISOString();
+      const startISO = start.toISOString();
+      const endISO = new Date(start.getTime() + APPOINTMENT_MINUTES * 60 * 1000).toISOString();
 
       modalSave.disabled = true;
       modalMsg.textContent = "Saving…";
 
-      const { error } = await supa
-        .from("appointments")
-        .update({ start_time: startISO, end_time: endISO, status: "confirmed" })
+      const { error } = await supa.from("appointments")
+        .update({ start_time: startISO, end_time: endISO, status:"confirmed" })
         .eq("id", activeRow.id);
 
       modalSave.disabled = false;
@@ -647,7 +553,6 @@
       await loadAll();
     }
 
-    // View toggle
     function setView(mode) {
       if (mode === "month") {
         viewMonth.classList.add("active");
@@ -662,26 +567,12 @@
       }
     }
 
-    // Handlers
     viewMonth.onclick = () => setView("month");
     viewList.onclick = () => setView("list");
 
-    prevMonth.onclick = async () => {
-      currentMonth.setMonth(currentMonth.getMonth() - 1);
-      currentMonth.setDate(1);
-      await loadAll();
-    };
-    nextMonth.onclick = async () => {
-      currentMonth.setMonth(currentMonth.getMonth() + 1);
-      currentMonth.setDate(1);
-      await loadAll();
-    };
-    todayBtn.onclick = async () => {
-      currentMonth = new Date();
-      currentMonth.setDate(1);
-      currentMonth.setHours(0,0,0,0);
-      await loadAll();
-    };
+    prevMonth.onclick = async () => { currentMonth.setMonth(currentMonth.getMonth()-1); currentMonth.setDate(1); await loadAll(); };
+    nextMonth.onclick = async () => { currentMonth.setMonth(currentMonth.getMonth()+1); currentMonth.setDate(1); await loadAll(); };
+    todayBtn.onclick = async () => { currentMonth = new Date(); currentMonth.setDate(1); currentMonth.setHours(0,0,0,0); await loadAll(); };
 
     refreshBtn.onclick = loadAll;
     statusFilter.onchange = loadAll;
@@ -693,7 +584,6 @@
       download(`appointments_${stamp}.csv`, csv);
     };
 
-    // Modal buttons
     modalClose.onclick = closeModal;
     modalSave.onclick = doReschedule;
     modalCancelAppt.onclick = () => activeRow && doCancel(activeRow);
