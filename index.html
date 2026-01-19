@@ -21,6 +21,14 @@
     }
 
     *{ box-sizing:border-box; }
+
+    /* ✅ FIX: prevent horizontal scrolling on phones */
+    html, body{
+      width:100%;
+      max-width:100%;
+      overflow-x:hidden;
+    }
+
     body{
       margin:0;
       padding:14px;
@@ -32,13 +40,19 @@
       color:#e5e7eb;
     }
 
+    /* ✅ FIX: safer responsive grid that cannot overflow */
     .wrap{
+      width:100%;
       max-width: 1040px;
       margin: 0 auto;
       display:grid;
-      grid-template-columns: 380px 1fr;
+      grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
       gap:14px;
       align-items:start;
+    }
+
+    .card, .wrap{
+      max-width:100%;
     }
 
     .card{
@@ -49,6 +63,7 @@
       padding:14px;
       color: var(--text);
       backdrop-filter: blur(8px);
+      overflow:hidden; /* ✅ prevents internal overflow pushing screen width */
     }
 
     .brand{ display:flex; gap:12px; align-items:center; margin-bottom:8px; }
@@ -96,7 +111,15 @@
 
     .bookingTitle{ font-size:18px; font-weight:900; margin:0; }
 
-    .row{ display:flex; gap:10px; flex-wrap:wrap; margin: 10px 0; }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin: 10px 0;
+      width:100%;
+      min-width:0; /* ✅ important */
+    }
+
     input, select, button{
       padding: 12px 12px;
       border-radius: 12px;
@@ -105,12 +128,22 @@
       outline:none;
       background:#fff;
       min-height:44px;
+      flex:1;
+      min-width:0;
+      max-width:100%; /* ✅ prevents overflow */
     }
+
+    /* ✅ Fix long option text overflow on mobile */
+    select{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     input:focus, select:focus{
       border-color: rgba(79,70,229,.55);
       box-shadow: 0 0 0 4px var(--ring);
     }
-    input, select{ flex:1; min-width: 0; }
 
     button{
       border:none;
@@ -134,6 +167,7 @@
       min-height:44px;
     }
 
+    /* Week strip */
     .weekBar{
       display:flex;
       gap:8px;
@@ -141,6 +175,8 @@
       padding-bottom:6px;
       -webkit-overflow-scrolling: touch;
       scroll-snap-type: x mandatory;
+      width:100%;
+      max-width:100%;
     }
     .dayChip{
       flex: 0 0 auto;
@@ -163,12 +199,14 @@
     }
     .dayChip.active .dow, .dayChip.active .md{ color:#fff; }
 
-    .slotWrap{ margin-top: 12px; }
+    .slotWrap{ margin-top: 12px; width:100%; }
     .slots{
       margin-top: 12px;
       display:grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
+      width:100%;
+      max-width:100%;
     }
     .slot{
       border-radius: 14px;
@@ -208,7 +246,8 @@
       text-decoration: none;
     }
 
-    @media (max-width: 920px){
+    /* ✅ FIX: stack sooner */
+    @media (max-width: 980px){
       .wrap{ grid-template-columns:1fr; }
     }
     @media (max-width: 650px){
@@ -217,6 +256,7 @@
       .slots{ grid-template-columns: repeat(2, 1fr); }
     }
 
+    /* Sticky confirm area (mobile-friendly) */
     .stickyBar{
       position: sticky;
       bottom: 10px;
@@ -227,6 +267,8 @@
       padding: 10px;
       box-shadow: 0 14px 35px rgba(0,0,0,.12);
       backdrop-filter: blur(8px);
+      width:100%;
+      max-width:100%;
     }
     .stickyBar .row{ margin:0; }
   </style>
@@ -373,9 +415,7 @@
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // =========================
-    // ✅ STEP 5A (FULL): Edge Function email trigger WITH AUTH HEADERS
-    // =========================
+    // ✅ STEP 5A: Edge Function email trigger WITH AUTH HEADERS
     function sendUpdateEmail(payload) {
       fetch(`${supabaseUrl}/functions/v1/send-update`, {
         method: "POST",
@@ -387,7 +427,6 @@
         body: JSON.stringify(payload)
       })
       .then(async (res) => {
-        // Debug in browser console (optional)
         if (!res.ok) {
           const txt = await res.text().catch(() => "");
           console.warn("send-update failed:", res.status, txt);
@@ -636,7 +675,6 @@
         return;
       }
 
-      // ✅ Manage link created for customer + included in admin email
       const manageLink = new URL("manage.html", window.location.href);
       manageLink.searchParams.set("id", data.id);
       manageLink.searchParams.set("email", client_email);
