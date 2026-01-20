@@ -105,7 +105,8 @@
       color:#111827;
     }
 
-    .healthRow{ display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 2px 0; }
+    /* Hidden by default unless DEBUG or error */
+    .healthRow{ display:none; gap:8px; flex-wrap:wrap; margin:10px 0 2px 0; }
     .pill{
       font-size:12px;
       font-weight:900;
@@ -213,7 +214,7 @@
     .msg.bad{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
     .msg.warn{ background:#fef3c7; color:#92400e; border-color:#fde68a; }
 
-    /* Confirmation card */
+    /* Confirmation card (phone-optimized) */
     .confirmCard{
       display:none;
       margin-top:14px;
@@ -223,6 +224,10 @@
       padding:16px;
       box-shadow: 0 12px 30px rgba(0,0,0,.10);
     }
+    @media (max-width: 520px){
+      .confirmCard{ padding:14px; }
+    }
+
     .confirmHeader{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
     .checkIcon{
       width:44px;height:44px;border-radius:14px;
@@ -230,6 +235,7 @@
       font-size:22px;font-weight:900;
       background:#dcfce7;color:#166534;
       border:1px solid #86efac;
+      flex: 0 0 auto;
     }
     .confirmTitle{ font-size:18px;font-weight:900;margin:0;color:#0f172a; line-height:1.2; }
     .confirmSub{ margin:4px 0 0 0; font-size:13px; color:#475569; font-weight:800; }
@@ -252,19 +258,70 @@
     .confirmItem .k{ font-size:12px;font-weight:900;color:#64748b;margin-bottom:4px; }
     .confirmItem .v{ font-size:14px;font-weight:900;color:#0f172a; overflow-wrap:anywhere; }
 
-    .confirmActions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+    .confirmActions{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
     .miniBtn{
       flex:1;
-      min-width:180px;
       border:none;
       border-radius:14px;
       padding:12px 12px;
       font-weight:900;
       cursor:pointer;
       min-height:44px;
+      min-width: 240px;
+    }
+    @media (max-width: 520px){
+      .miniBtn{ min-width: 100%; }
     }
     .miniBtn.primary{ background:#0f766e; color:#fff; }
     .miniBtn.secondary{ background:#111827; color:#fff; }
+
+    /* Calendar actions */
+    .calWrap{
+      margin-top:12px;
+      border:1px solid #e5e7eb;
+      background:#fff;
+      border-radius:14px;
+      padding:12px;
+    }
+    .calTitle{
+      font-weight:900;
+      color:#0f172a;
+      margin:0 0 10px 0;
+      font-size:14px;
+    }
+    .calBtns{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:10px;
+    }
+    @media (max-width: 520px){
+      .calBtns{ grid-template-columns:1fr; }
+    }
+    .calBtn{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      text-decoration:none;
+      border-radius:14px;
+      padding:12px 12px;
+      min-height:44px;
+      font-weight:900;
+      border:1px solid #e5e7eb;
+      background:#f8fafc;
+      color:#0f172a;
+      cursor:pointer;
+    }
+    .calBtn:hover{ filter:brightness(0.98); }
+    .calBtn.google{ background:#eef2ff; border-color:#c7d2fe; }
+    .calBtn.outlook{ background:#ecfeff; border-color:#a5f3fc; }
+    .calBtn.ics{ background:#dcfce7; border-color:#86efac; }
+
   </style>
 </head>
 
@@ -308,7 +365,8 @@
         <span class="badge">60 minutes</span>
       </div>
 
-      <div class="healthRow">
+      <!-- Hidden unless ?debug=1 or error -->
+      <div id="healthRow" class="healthRow">
         <span id="pillJs" class="pill">JS: loading…</span>
         <span id="pillSb" class="pill">Supabase: loading…</span>
       </div>
@@ -406,6 +464,19 @@
           </div>
         </div>
 
+        <!-- Add to Calendar -->
+        <div class="calWrap">
+          <div class="calTitle">Add to Calendar</div>
+          <div class="calBtns">
+            <a id="calGoogle" class="calBtn google" href="#" target="_blank" rel="noopener">📅 Google</a>
+            <a id="calOutlook" class="calBtn outlook" href="#" target="_blank" rel="noopener">🗓️ Outlook</a>
+            <a id="calIcs" class="calBtn ics" href="#" download="appointment.ics">⬇️ Download .ICS</a>
+          </div>
+          <div class="note" style="margin-top:10px;">
+            Tip: iPhone/Mac users can tap <b>Download .ICS</b> to add it to Apple Calendar.
+          </div>
+        </div>
+
         <div class="confirmActions">
           <button id="btnBookAnother" class="miniBtn primary" type="button">📅 Book Another Appointment</button>
           <button id="btnBackTop" class="miniBtn secondary" type="button">⬆ Back to Top</button>
@@ -420,8 +491,13 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // Show pills only in debug mode OR if there's an error.
+    const DEBUG = new URLSearchParams(location.search).get("debug") === "1";
+    const healthRow = document.getElementById("healthRow");
     const pillJs = document.getElementById("pillJs");
     const pillSb = document.getElementById("pillSb");
+
+    function showHealth(){ healthRow.style.display = "flex"; }
     function pillOK(el, text){ el.textContent = text; el.className = "pill ok"; }
     function pillBAD(el, text){ el.textContent = text; el.className = "pill bad"; }
 
@@ -429,13 +505,16 @@
     function clearMsg(){ msg.style.display="none"; msg.textContent=""; msg.className="msg"; }
     function setMsg(type, text){ msg.style.display="block"; msg.className="msg "+type; msg.textContent=text; }
 
+    if (DEBUG) showHealth();
     pillOK(pillJs, "JS: loaded");
 
     if (!window.supabase) {
+      showHealth();
       pillBAD(pillSb, "Supabase: NOT loaded");
       setMsg("bad", "Supabase library failed to load.");
       throw new Error("Supabase library missing");
     }
+
     pillOK(pillSb, "Supabase: loaded");
 
     // ✅ Supabase
@@ -468,6 +547,11 @@
     const btnBookAnother = document.getElementById("btnBookAnother");
     const btnBackTop = document.getElementById("btnBackTop");
 
+    // Calendar links
+    const calGoogle = document.getElementById("calGoogle");
+    const calOutlook = document.getElementById("calOutlook");
+    const calIcs = document.getElementById("calIcs");
+
     const SLOT_MINUTES = 30;
     const APPT_MINUTES = 60;
 
@@ -490,6 +574,84 @@
     }
     function overlaps(aStart, aEnd, bStart, bEnd){ return aStart < bEnd && bStart < aEnd; }
 
+    // YYYYMMDDTHHMMSSZ for calendar
+    function toCalUTC(d){
+      const pad = n => String(n).padStart(2,"0");
+      return (
+        d.getUTCFullYear() +
+        pad(d.getUTCMonth()+1) +
+        pad(d.getUTCDate()) + "T" +
+        pad(d.getUTCHours()) +
+        pad(d.getUTCMinutes()) +
+        pad(d.getUTCSeconds()) + "Z"
+      );
+    }
+
+    function escICS(s){
+      return String(s || "")
+        .replace(/\\/g, "\\\\")
+        .replace(/\n/g, "\\n")
+        .replace(/,/g, "\\,")
+        .replace(/;/g, "\\;");
+    }
+
+    function buildICS({ title, description, location, start, end }){
+      const uid = "cets-" + Math.random().toString(16).slice(2) + "@booking";
+      const dtstamp = toCalUTC(new Date());
+      const dtstart = toCalUTC(start);
+      const dtend = toCalUTC(end);
+
+      return [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Columbus East Tax Services//Booking//EN",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
+        "UID:" + uid,
+        "DTSTAMP:" + dtstamp,
+        "DTSTART:" + dtstart,
+        "DTEND:" + dtend,
+        "SUMMARY:" + escICS(title),
+        "DESCRIPTION:" + escICS(description),
+        "LOCATION:" + escICS(location),
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+    }
+
+    function setCalendarLinks({ title, details, location, start, end }){
+      const startUTC = toCalUTC(start);
+      const endUTC = toCalUTC(end);
+
+      // Google Calendar
+      const gParams = new URLSearchParams({
+        action: "TEMPLATE",
+        text: title,
+        dates: `${startUTC}/${endUTC}`,
+        details,
+        location
+      });
+      calGoogle.href = "https://calendar.google.com/calendar/render?" + gParams.toString();
+
+      // Outlook Web (accepts ISO)
+      const oParams = new URLSearchParams({
+        subject: title,
+        startdt: start.toISOString(),
+        enddt: end.toISOString(),
+        body: details,
+        location
+      });
+      calOutlook.href = "https://outlook.live.com/calendar/0/deeplink/compose?" + oParams.toString();
+
+      // ICS download
+      const ics = buildICS({ title, description: details, location, start, end });
+      const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      calIcs.href = url;
+      calIcs.download = "appointment.ics";
+    }
+
     async function fetchDayAppointments(day){
       const start = new Date(day); start.setHours(0,0,0,0);
       const end = new Date(day); end.setDate(end.getDate()+1); end.setHours(0,0,0,0);
@@ -501,7 +663,9 @@
         .lt("start_time", end.toISOString());
 
       if(error){
-        console.warn(error);
+        // If this ever happens, show debug pills automatically
+        showHealth();
+        pillBAD(pillSb, "Supabase: error");
         setMsg("bad", "Availability load failed: " + (error.message || "unknown"));
         return [];
       }
@@ -619,6 +783,9 @@
         .single();
 
       if(error){
+        // show pills if an error happens
+        showHealth();
+        pillBAD(pillSb, "Supabase: error");
         console.warn(error);
         setMsg("bad", error.message || "Booking failed.");
         confirmBtn.disabled = false;
@@ -631,6 +798,23 @@
       ccDateTime.textContent = formatDateTimePretty(data.start_time || startISO);
       ccService.textContent = data.service || service;
       ccLocation.textContent = data.location || location;
+
+      // Build calendar buttons
+      const title = "Columbus East Tax Services Appointment";
+      const details =
+        `Service: ${data.service || service}\n` +
+        `Client: ${data.client_name || name}\n` +
+        `Email: ${data.client_email || email}\n` +
+        `Location: ${data.location || location}\n\n` +
+        `If you need changes, call or text: 614-599-1185`;
+
+      setCalendarLinks({
+        title,
+        details,
+        location: (data.location || location),
+        start: new Date(data.start_time || startISO),
+        end: new Date(data.end_time || endISO)
+      });
 
       // Show confirmation card + hide form
       bookingForm.style.display = "none";
@@ -645,6 +829,7 @@
       bookingForm.style.display = "block";
 
       clientName.value = "";
+      clientEmail.value = "";
       selectedSlotISO = null;
 
       await renderSlots();
