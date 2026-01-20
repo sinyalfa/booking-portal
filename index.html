@@ -91,7 +91,6 @@
 
     .footer{ margin-top:12px; color:#64748b; font-size:13px; }
 
-    /* Panel */
     .panelTitle{
       display:flex; align-items:center; justify-content:space-between;
       gap:10px; flex-wrap:wrap;
@@ -206,16 +205,15 @@
       border:1px solid transparent;
       display:none;
     }
-    .msg.ok{ display:block; background:#dcfce7; color:#166534; border-color:#86efac; }
-    .msg.bad{ display:block; background:#fee2e2; color:#991b1b; border-color:#fecaca; }
-    .msg.warn{ display:block; background:#fef3c7; color:#92400e; border-color:#fde68a; }
+    .msg.ok{ background:#dcfce7; color:#166534; border-color:#86efac; }
+    .msg.bad{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+    .msg.warn{ background:#fef3c7; color:#92400e; border-color:#fde68a; }
   </style>
 </head>
 
 <body>
   <div class="wrap">
 
-    <!-- LEFT: DIGITAL CARD -->
     <div class="card">
       <div class="logo"></div>
       <h1>Columbus East Tax Services</h1>
@@ -248,7 +246,6 @@
       <div class="footer">Tap to call, text, email, or book online</div>
     </div>
 
-    <!-- RIGHT: BOOKING PANEL -->
     <div class="panel" id="booking">
       <div class="panelTitle">
         <h2>Book an Appointment</h2>
@@ -318,11 +315,15 @@
     // =========================
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
-    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // ✅ IMPORTANT FIX:
-    // Force the public booking page to be ANON (prevents "permission denied")
-    supa.auth.signOut().catch(() => {});
+    // ✅ Best-practice for public pages: do not persist sessions
+    const supa = window.supabase.createClient(supabaseUrl, supabaseKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false
+      }
+    });
 
     // =========================
     // ADMIN EMAIL ALERT (Edge Function)
@@ -340,7 +341,7 @@
     }
 
     // =========================
-    // UI ELEMENTS
+    // UI
     // =========================
     const clientName = document.getElementById("clientName");
     const clientEmail = document.getElementById("clientEmail");
@@ -352,30 +353,39 @@
     const msg = document.getElementById("msg");
 
     // =========================
+    // MESSAGE HELPERS (✅ FIXED)
+    // =========================
+    function clearMsg(){
+      msg.style.display = "none";
+      msg.textContent = "";
+      msg.className = "msg";
+    }
+
+    function setMsg(type, text){
+      msg.style.display = "block";        // ✅ show message
+      msg.className = "msg " + type;
+      msg.textContent = text;
+    }
+
+    // =========================
     // SCHEDULING RULES
     // =========================
     const SLOT_MINUTES = 30;
     const APPT_MINUTES = 60;
 
     function dayRules(d){
-      // d is Date (local)
       const dow = d.getDay(); // 0 Sun ... 6 Sat
 
-      // Mon-Fri: 9-20 but block 14-17
       if(dow >= 1 && dow <= 5){
         return {
           startHour: 9,
           endHour: 20,
-          blocks: [{ start: 14, end: 17 }]
+          blocks: [{ start: 14, end: 17 }] // 2pm-5pm blocked
         };
       }
-
-      // Sat: 10-18
       if(dow === 6){
         return { startHour: 10, endHour: 18, blocks: [] };
       }
-
-      // Sun: 12-18
       return { startHour: 12, endHour: 18, blocks: [] };
     }
 
@@ -401,7 +411,6 @@
     }
 
     async function fetchDayAppointments(day){
-      // fetch by UTC range for that local day
       const start = new Date(day);
       start.setHours(0,0,0,0);
       const end = new Date(day);
@@ -425,17 +434,13 @@
       return aStart < bEnd && bStart < aEnd;
     }
 
-    function setMsg(type, text){
-      msg.className = "msg " + type;
-      msg.textContent = text;
-    }
-
     let selectedSlotISO = null;
 
     async function renderSlots(){
       selectedSlotISO = null;
       confirmBtn.disabled = true;
       slotsEl.innerHTML = "";
+      clearMsg();
 
       const ymdStr = datePick.value;
       if(!ymdStr) return;
@@ -454,19 +459,15 @@
       while(base < endBoundary){
         const h = base.getHours();
 
-        // hide blocked hours completely
         if(!inBlockedHours(h, rules.blocks)){
           const startTime = new Date(base);
           const endTime = new Date(base);
           endTime.setMinutes(endTime.getMinutes() + APPT_MINUTES);
 
-          // slot must end before closing
           if(endTime <= endBoundary){
-            // conflict check
             const isConflict = existing.some(r => {
               const aStart = new Date(r.start_time);
               const aEnd = new Date(r.end_time || r.start_time);
-              // if end_time missing, treat as 60 mins
               if(!r.end_time){
                 aEnd.setMinutes(aStart.getMinutes() + APPT_MINUTES);
               }
@@ -497,8 +498,7 @@
           b.classList.add("selected");
           selectedSlotISO = s.iso;
           confirmBtn.disabled = false;
-          setMsg("", ""); // clear
-          msg.style.display = "none";
+          clearMsg();
         });
         slotsEl.appendChild(b);
       });
@@ -547,12 +547,10 @@
           return;
         }
 
-        // Manage link (for your system)
         const manageLink = new URL("manage.html", window.location.href);
         manageLink.searchParams.set("id", data.id);
         manageLink.searchParams.set("email", email);
 
-        // ✅ Admin-only email alert via Edge Function
         sendUpdateEmail({
           type: "confirm",
           appointment_id: data.id,
@@ -564,8 +562,8 @@
           manage_url: manageLink.toString()
         });
 
-        setMsg("ok", "✅ Booking confirmed!");
-        await renderSlots(); // refresh availability
+        setMsg("ok", "✅ Booking confirmed! Check your email for details (admin notified).");
+        await renderSlots();
       } catch(e){
         console.warn(e);
         setMsg("bad", "Booking failed (network). Try again.");
