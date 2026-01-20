@@ -2,420 +2,331 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Columbus East Tax Services – Booking</title>
+
   <style>
-    :root{
-      --bg1:#0b1220;
-      --bg2:#111827;
-      --card:rgba(255,255,255,.96);
-      --muted:#6b7280;
-      --text:#0f172a;
-      --ring:rgba(99,102,241,.35);
-
-      --okBg:#dcfce7; --okText:#166534; --okBorder:#86efac;
-      --badBg:#fee2e2; --badText:#991b1b; --badBorder:#fecaca;
-
-      --slotAvailBg:#ecfdf5; --slotAvailText:#065f46; --slotAvailBorder:#6ee7b7;
-      --accent:#4f46e5;
-    }
-
     *{ box-sizing:border-box; }
-
-    /* ✅ FIX: prevent horizontal scrolling on phones */
-    html, body{
-      width:100%;
-      max-width:100%;
-      overflow-x:hidden;
-    }
+    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
 
     body{
       margin:0;
-      padding:14px;
       font-family: Arial, Helvetica, sans-serif;
       background:
-        radial-gradient(1200px 600px at 20% 0%, rgba(79,70,229,.25), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(16,185,129,.18), transparent 55%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
+        radial-gradient(1200px 600px at 20% 0%, rgba(79,70,229,.22), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(16,185,129,.16), transparent 55%),
+        linear-gradient(180deg, #0b1220, #111827);
+      padding:16px;
       color:#e5e7eb;
     }
 
-    /* ✅ FIX: safer responsive grid that cannot overflow */
     .wrap{
       width:100%;
-      max-width: 1040px;
-      margin: 0 auto;
+      max-width:1040px;
+      margin:0 auto;
       display:grid;
       grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
       gap:14px;
       align-items:start;
     }
-
-    .card, .wrap{
-      max-width:100%;
-    }
-
-    .card{
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,.15);
-      border-radius: 18px;
-      box-shadow: 0 20px 55px rgba(0,0,0,.35);
-      padding:14px;
-      color: var(--text);
-      backdrop-filter: blur(8px);
-      overflow:hidden; /* ✅ prevents internal overflow pushing screen width */
-    }
-
-    .brand{ display:flex; gap:12px; align-items:center; margin-bottom:8px; }
-    .logo{
-      width:46px; height:46px; border-radius:14px;
-      background: linear-gradient(135deg, rgba(79,70,229,1), rgba(16,185,129,1));
-      box-shadow: 0 14px 30px rgba(79,70,229,.35);
-      flex:0 0 auto;
-    }
-    h1{ font-size:20px; margin:0; }
-    .muted{ color: var(--muted); font-size:13px; line-height:1.4; }
-
-    .info{ margin:10px 0; color:#334155; line-height:1.5; }
-
-    .btns{ display:grid; gap:10px; margin-top:12px; }
-    .btns a{
-      text-decoration:none;
-      color:white;
-      font-weight:900;
-      padding:12px 14px;
-      border-radius:12px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      min-height:44px;
-      box-shadow: 0 10px 20px rgba(0,0,0,.10);
-      transition: transform .12s ease, opacity .12s ease;
-    }
-    .btns a:hover{ transform: translateY(-1px); opacity:.96; }
-    .btnCall{ background: linear-gradient(135deg, #2563eb, #1d4ed8); }
-    .btnText{ background: linear-gradient(135deg, #16a34a, #15803d); }
-    .btnEmail{ background: linear-gradient(135deg, #9333ea, #6d28d9); }
-
-    .sectionTitle{ margin-top:14px; font-weight:900; font-size:14px; color:#0f172a; }
-    ul.services{ margin:8px 0 0 0; padding-left:18px; color:#334155; }
-    ul.services li{ margin:6px 0; }
-
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:6px 10px; border-radius:999px; font-weight:900; font-size:12px;
-      border: 1px solid transparent;
-    }
-    .pill.ok{ background:var(--okBg); color:var(--okText); border-color:var(--okBorder); }
-    .pill.bad{ background:var(--badBg); color:var(--badText); border-color:var(--badBorder); }
-
-    .bookingTitle{ font-size:18px; font-weight:900; margin:0; }
-
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin: 10px 0;
-      width:100%;
-      min-width:0; /* ✅ important */
-    }
-
-    input, select, button{
-      padding: 12px 12px;
-      border-radius: 12px;
-      border: 1px solid #d1d5db;
-      font-size: 14px;
-      outline:none;
-      background:#fff;
-      min-height:44px;
-      flex:1;
-      min-width:0;
-      max-width:100%; /* ✅ prevents overflow */
-    }
-
-    /* ✅ Fix long option text overflow on mobile */
-    select{
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    input:focus, select:focus{
-      border-color: rgba(79,70,229,.55);
-      box-shadow: 0 0 0 4px var(--ring);
-    }
-
-    button{
-      border:none;
-      background: linear-gradient(135deg, #111827, #0b1220);
-      color:#fff;
-      font-weight:900;
-      cursor:pointer;
-      box-shadow: 0 10px 20px rgba(0,0,0,.12);
-      transition: transform .12s ease, opacity .12s ease;
-      min-height:46px;
-    }
-    button:hover{ transform: translateY(-1px); }
-    button:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
-
-    .secondary{
-      background:#fff;
-      border:1px solid #d1d5db;
-      color:#111827;
-      font-weight:900;
-      box-shadow:none;
-      min-height:44px;
-    }
-
-    /* Week strip */
-    .weekBar{
-      display:flex;
-      gap:8px;
-      overflow-x:auto;
-      padding-bottom:6px;
-      -webkit-overflow-scrolling: touch;
-      scroll-snap-type: x mandatory;
-      width:100%;
-      max-width:100%;
-    }
-    .dayChip{
-      flex: 0 0 auto;
-      min-width: 86px;
-      border-radius: 14px;
-      border: 1px solid #e5e7eb;
-      background: #fff;
-      padding: 10px 10px;
-      text-align:center;
-      cursor:pointer;
-      scroll-snap-align: start;
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .dayChip:hover{ transform: translateY(-1px); box-shadow:0 12px 22px rgba(0,0,0,.08); }
-    .dayChip .dow{ font-size:12px; font-weight:900; color:#111827; }
-    .dayChip .md{ font-size:12px; color:#6b7280; font-weight:900; margin-top:2px; }
-    .dayChip.active{
-      background: linear-gradient(135deg, #111827, #0b1220);
-      border-color:#111827;
-    }
-    .dayChip.active .dow, .dayChip.active .md{ color:#fff; }
-
-    .slotWrap{ margin-top: 12px; width:100%; }
-    .slots{
-      margin-top: 12px;
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      width:100%;
-      max-width:100%;
-    }
-    .slot{
-      border-radius: 14px;
-      padding: 12px 10px;
-      text-align:center;
-      font-weight: 900;
-      border: 1px solid var(--slotAvailBorder);
-      background: var(--slotAvailBg);
-      color: var(--slotAvailText);
-      user-select:none;
-      cursor:pointer;
-      transition: transform .12s ease, box-shadow .12s ease;
-      min-height:46px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    .slot:hover{ transform: translateY(-1px); box-shadow:0 12px 22px rgba(16,185,129,.18); }
-    .slot.active{
-      background: linear-gradient(135deg, #111827, #0b1220);
-      color:#fff;
-      border-color: #111827;
-      box-shadow: 0 16px 30px rgba(17,24,39,.25);
-    }
-
-    .confirmBox{
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 16px;
-      border:1px solid #e5e7eb;
-      background: #fafafa;
-    }
-    .manageLink{
-      word-break: break-all;
-      color: var(--accent);
-      font-weight: 900;
-      text-decoration: none;
-    }
-
-    /* ✅ FIX: stack sooner */
     @media (max-width: 980px){
       .wrap{ grid-template-columns:1fr; }
     }
-    @media (max-width: 650px){
-      body{ padding:12px; }
-      .card{ border-radius:16px; }
-      .slots{ grid-template-columns: repeat(2, 1fr); }
+
+    .card, .panel{
+      background: rgba(255,255,255,.96);
+      color:#0f172a;
+      border:1px solid rgba(255,255,255,.15);
+      border-radius:18px;
+      box-shadow: 0 20px 55px rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+    .card{ padding:16px; text-align:center; }
+    .panel{ padding:16px; }
+
+    .logo{
+      width:56px;height:56px;border-radius:18px;
+      margin:0 auto 10px auto;
+      background: linear-gradient(135deg, rgba(79,70,229,1), rgba(16,185,129,1));
+      box-shadow: 0 14px 30px rgba(79,70,229,.28);
     }
 
-    /* Sticky confirm area (mobile-friendly) */
-    .stickyBar{
-      position: sticky;
-      bottom: 10px;
-      margin-top: 12px;
-      background: rgba(255,255,255,.92);
-      border: 1px solid rgba(209,213,219,.8);
-      border-radius: 16px;
-      padding: 10px;
-      box-shadow: 0 14px 35px rgba(0,0,0,.12);
-      backdrop-filter: blur(8px);
-      width:100%;
-      max-width:100%;
+    h1{ margin:0; font-size:22px; font-weight:900; }
+    .sub{ margin-top:8px; color:#475569; font-size:14px; line-height:1.45; }
+    .info{ margin-top:10px; font-size:15px; color:#334155; line-height:1.6; }
+    .info a{ color:#0f172a; font-weight:800; text-decoration:none; }
+    .info a:hover{ text-decoration:underline; }
+
+    .servicesBox{
+      margin-top:14px;
+      text-align:left;
+      background:#f8fafc;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      padding:12px 14px;
     }
-    .stickyBar .row{ margin:0; }
+    .servicesBox h2{
+      margin:0 0 10px 0; font-size:16px; font-weight:900;
+    }
+    .servicesBox ul{ margin:0; padding-left:18px; color:#334155; font-weight:700; }
+    .servicesBox li{ margin:6px 0; }
+
+    .btns{ margin-top:14px; display:flex; flex-direction:column; gap:10px; }
+    .btn{
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      border:none; cursor:pointer;
+      font-weight:900;
+      padding:14px 14px;
+      border-radius:14px;
+      text-decoration:none;
+      color:white;
+      transition: transform .12s ease, opacity .12s ease;
+      min-height:48px;
+    }
+    .btn:hover{ transform: translateY(-1px); opacity:.98; }
+    .btn.call{ background:#2563eb; }
+    .btn.text{ background:#16a34a; }
+    .btn.email{ background:#9333ea; }
+    .btn.book{ background:#0f766e; }
+
+    .footer{ margin-top:12px; color:#64748b; font-size:13px; }
+
+    /* Panel */
+    .panelTitle{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .panelTitle h2{
+      margin:0; font-size:18px; font-weight:900; color:#0f172a;
+    }
+    .badge{
+      font-size:12px;
+      font-weight:900;
+      border-radius:999px;
+      padding:6px 10px;
+      border:1px solid #e5e7eb;
+      background:#f8fafc;
+      color:#111827;
+    }
+
+    label{
+      display:block;
+      text-align:left;
+      font-size:13px;
+      font-weight:900;
+      color:#0f172a;
+      margin:12px 0 6px 2px;
+    }
+
+    input, select, button{
+      max-width:100%;
+      width:100%;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid #d1d5db;
+      font-size:14px;
+      outline:none;
+      background:#fff;
+      min-height:44px;
+    }
+    input:focus, select:focus{
+      border-color: rgba(79,70,229,.55);
+      box-shadow: 0 0 0 4px rgba(99,102,241,.20);
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 520px){
+      .grid2{ grid-template-columns:1fr; }
+    }
+
+    .slots{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap:10px;
+    }
+    @media (max-width: 920px){
+      .slots{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+    }
+    @media (max-width: 520px){
+      .slots{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
+    .slotBtn{
+      border-radius:14px;
+      border:1px solid rgba(16,185,129,.55);
+      background: rgba(16,185,129,.08);
+      color:#065f46;
+      font-weight:900;
+      padding:12px 10px;
+      cursor:pointer;
+      transition: transform .12s ease, box-shadow .12s ease;
+      min-height:46px;
+      white-space:nowrap;
+    }
+    .slotBtn:hover{ transform: translateY(-1px); box-shadow:0 10px 18px rgba(0,0,0,.10); }
+    .slotBtn.selected{
+      border-color: rgba(79,70,229,.65);
+      background: rgba(79,70,229,.10);
+      color:#1e1b4b;
+      box-shadow: 0 0 0 4px rgba(99,102,241,.18);
+    }
+
+    .confirmBtn{
+      margin-top:14px;
+      border:none;
+      border-radius:14px;
+      background: linear-gradient(135deg, #111827, #0b1220);
+      color:#fff;
+      font-weight:900;
+      cursor:pointer;
+      padding:14px;
+      min-height:52px;
+    }
+    .confirmBtn:disabled{ opacity:.6; cursor:not-allowed; }
+
+    .note{
+      margin-top:10px;
+      font-size:13px;
+      color:#475569;
+      line-height:1.4;
+    }
+
+    .msg{
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:14px;
+      font-weight:900;
+      font-size:13px;
+      border:1px solid transparent;
+      display:none;
+    }
+    .msg.ok{ display:block; background:#dcfce7; color:#166534; border-color:#86efac; }
+    .msg.bad{ display:block; background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+    .msg.warn{ display:block; background:#fef3c7; color:#92400e; border-color:#fde68a; }
   </style>
 </head>
+
 <body>
-
   <div class="wrap">
-    <!-- Business Card -->
+
+    <!-- LEFT: DIGITAL CARD -->
     <div class="card">
-      <div class="brand">
-        <div class="logo"></div>
-        <div>
-          <h1>Columbus East Tax Services</h1>
-          <div class="muted">Columbus, Ohio 43227</div>
-        </div>
+      <div class="logo"></div>
+      <h1>Columbus East Tax Services</h1>
+      <div class="sub">Columbus, Ohio 43227</div>
+
+      <div class="info" style="margin-top:12px;">
+        📞 <a href="tel:16145991185">614-599-1185</a><br/>
+        📞 <a href="tel:16142597625">614-259-7625</a><br/>
+        ✉️ <a href="mailto:Columbuseast.taxservices@outlook.com">Columbuseast.taxservices@outlook.com</a>
       </div>
 
-      <div class="info">
-        📞 <b>614-599-1185</b><br />
-        📞 <b>614-259-7625</b>
-      </div>
-
-      <div class="info">
-        ✉️ <b>Columbuseast.taxservices@outlook.com</b>
+      <div class="servicesBox">
+        <h2>Services Offered</h2>
+        <ul>
+          <li>W-2 & Individual Tax Returns</li>
+          <li>1099 & Self-Employed Taxes</li>
+          <li>LLC & Small Business Filing</li>
+          <li>Audit Help & IRS Letters</li>
+          <li>Amended Returns (1040-X)</li>
+        </ul>
       </div>
 
       <div class="btns">
-        <a class="btnCall" href="tel:16145991185">Call</a>
-        <a class="btnText" href="sms:16145991185">Text</a>
-        <a class="btnEmail" href="mailto:Columbuseast.taxservices@outlook.com">Email</a>
+        <a class="btn call" href="tel:16145991185">📞 Call Now</a>
+        <a class="btn text" href="sms:16145991185">💬 Text Us</a>
+        <a class="btn email" href="mailto:Columbuseast.taxservices@outlook.com">✉️ Email Us</a>
+        <a class="btn book" href="#booking">📅 Book Appointment</a>
       </div>
 
-      <div class="sectionTitle">Services</div>
-      <ul class="services">
-        <li>W-2 Tax Filing</li>
-        <li>1099 / Self-Employed</li>
-        <li>LLC / Small Business Taxes</li>
-        <li>Audit Help / IRS Letters</li>
-        <li>Tax Planning</li>
-        <li>Amended Returns</li>
-      </ul>
-
-      <div style="margin-top:12px;">
-        <div class="pill ok">Hours</div>
-        <div class="muted" style="margin-top:8px;">
-          <b>Mon–Fri:</b> 10:00 AM – 8:00 PM<br/>
-          <b>Sat:</b> 10:00 AM – 6:00 PM<br/>
-          <b>Sun:</b> 12:00 PM – 6:00 PM<br/>
-          <span class="muted">(Only available times are shown)</span>
-        </div>
-      </div>
+      <div class="footer">Tap to call, text, email, or book online</div>
     </div>
 
-    <!-- Booking Portal -->
-    <div class="card">
-      <div class="bookingTitle">Book an Appointment</div>
-      <div class="muted" style="margin-top:6px;">
-        Appointments are <b>60 minutes</b>. Choose location, date, then time.
+    <!-- RIGHT: BOOKING PANEL -->
+    <div class="panel" id="booking">
+      <div class="panelTitle">
+        <h2>Book an Appointment</h2>
+        <span class="badge">60 minutes</span>
       </div>
 
-      <div class="row" style="margin-top:12px;">
-        <input id="name" type="text" placeholder="Full Name" aria-label="Full Name" />
-        <input id="email" type="email" placeholder="Email Address" aria-label="Email Address" />
-      </div>
-
-      <div class="row">
-        <select id="service" aria-label="Service">
-          <option value="W-2 Tax Filing">W-2 Tax Filing</option>
-          <option value="1099 / Self-Employed">1099 / Self-Employed</option>
-          <option value="LLC / Small Business Taxes">LLC / Small Business Taxes</option>
-          <option value="Audit Help / IRS Letters">Audit Help / IRS Letters</option>
-          <option value="Tax Planning">Tax Planning</option>
-          <option value="Amended Returns">Amended Returns</option>
-        </select>
-      </div>
-
-      <div class="row">
-        <select id="location" aria-label="Location">
-          <option value="CML – Whitehall Branch — 4445 E Broad St, Columbus, OH 43213">
-            CML – Whitehall Branch — 4445 E Broad St, Columbus, OH 43213
-          </option>
-          <option value="CML – Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227">
-            CML – Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227
-          </option>
-          <option value="CML – Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068">
-            CML – Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068
-          </option>
-          <option value="CML – Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125">
-            CML – Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125
-          </option>
-        </select>
-      </div>
-
-      <div class="row" style="align-items:flex-end;">
-        <div style="flex:1; min-width:220px;">
-          <div class="muted" style="font-weight:900; margin-bottom:6px;">Choose a date</div>
-          <input id="datePicker" type="date" aria-label="Choose a date" />
+      <div class="grid2">
+        <div>
+          <label for="clientName">Full Name</label>
+          <input id="clientName" type="text" placeholder="Your name" aria-label="Full name" />
         </div>
-        <div style="display:flex; gap:8px;">
-          <button class="secondary" id="prevWeek" type="button">◀ Week</button>
-          <button class="secondary" id="nextWeek" type="button">Week ▶</button>
+
+        <div>
+          <label for="clientEmail">Email Address</label>
+          <input id="clientEmail" type="email" placeholder="you@email.com" aria-label="Email address" />
         </div>
       </div>
 
-      <div class="weekBar" id="weekBar" aria-label="Week view"></div>
-
-      <div class="slotWrap">
-        <div class="muted" id="rangeLabel" style="margin-top:8px;"></div>
-        <div class="slots" id="slots"></div>
-      </div>
-
-      <div class="stickyBar">
-        <div class="row">
-          <button id="bookBtn" type="button" disabled style="width:100%;">Confirm Booking</button>
+      <div class="grid2">
+        <div>
+          <label for="serviceSelect">Select Service</label>
+          <select id="serviceSelect" aria-label="Select service">
+            <option value="W-2 / Individual Taxes">W-2 / Individual Taxes</option>
+            <option value="1099 / Self-Employed">1099 / Self-Employed</option>
+            <option value="LLC / Small Business Filing">LLC / Small Business Filing</option>
+            <option value="Audit Help">Audit Help</option>
+            <option value="Amended Return (1040-X)">Amended Return (1040-X)</option>
+          </select>
         </div>
-        <div id="status" class="muted" style="margin-top:8px;"></div>
-      </div>
 
-      <div id="confirmBox" class="confirmBox" style="display:none;">
-        <div class="pill ok">Booked</div>
-        <div style="margin-top:10px;">
-          <div><b>Appointment Confirmed!</b></div>
-          <div class="muted" id="confirmText" style="margin-top:6px;"></div>
-          <div class="muted" style="margin-top:10px;">
-            Manage/Cancel link:
-            <a class="manageLink" id="manageUrl" href="#" target="_blank" rel="noopener noreferrer"></a>
-          </div>
+        <div>
+          <label for="locationSelect">Location</label>
+          <select id="locationSelect" aria-label="Location">
+            <option value="CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213">CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213</option>
+            <option value="CML Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227">CML Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227</option>
+            <option value="CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068">CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068</option>
+            <option value="CML Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125">CML Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125</option>
+          </select>
         </div>
       </div>
 
+      <label for="datePick">Pick a Date</label>
+      <input id="datePick" type="date" aria-label="Pick a date" />
+
+      <div class="note">
+        <b>Hours:</b><br/>
+        Mon–Fri: 9:00 AM–8:00 PM (Blocked 2:00–5:00 PM)<br/>
+        Sat: 10:00 AM–6:00 PM<br/>
+        Sun: 12:00 PM–6:00 PM
+      </div>
+
+      <label>Available Times</label>
+      <div id="slots" class="slots"></div>
+
+      <button id="confirmBtn" class="confirmBtn" disabled>Confirm Booking</button>
+
+      <div id="msg" class="msg"></div>
+      <div class="note">You’ll be added to our schedule after confirmation.</div>
     </div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     // =========================
-    // SETTINGS
+    // SUPABASE
     // =========================
-    const APPOINTMENT_MINUTES = 60;
-    const SLOT_MINUTES = 30;
-
-    // Supabase
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // ✅ STEP 5A: Edge Function email trigger WITH AUTH HEADERS
+    // ✅ IMPORTANT FIX:
+    // Force the public booking page to be ANON (prevents "permission denied")
+    supa.auth.signOut().catch(() => {});
+
+    // =========================
+    // ADMIN EMAIL ALERT (Edge Function)
+    // =========================
     function sendUpdateEmail(payload) {
       fetch(`${supabaseUrl}/functions/v1/send-update`, {
         method: "POST",
@@ -425,286 +336,252 @@
           "apikey": supabaseKey
         },
         body: JSON.stringify(payload)
-      })
-      .then(async (res) => {
-        if (!res.ok) {
-          const txt = await res.text().catch(() => "");
-          console.warn("send-update failed:", res.status, txt);
-        }
-      })
-      .catch((err) => console.warn("send-update error:", err));
+      }).catch(() => {});
     }
 
-    // UI
-    const nameEl = document.getElementById("name");
-    const emailEl = document.getElementById("email");
-    const serviceEl = document.getElementById("service");
-    const locationEl = document.getElementById("location");
-
-    const datePicker = document.getElementById("datePicker");
-    const prevWeekBtn = document.getElementById("prevWeek");
-    const nextWeekBtn = document.getElementById("nextWeek");
-    const weekBar = document.getElementById("weekBar");
-
+    // =========================
+    // UI ELEMENTS
+    // =========================
+    const clientName = document.getElementById("clientName");
+    const clientEmail = document.getElementById("clientEmail");
+    const serviceSelect = document.getElementById("serviceSelect");
+    const locationSelect = document.getElementById("locationSelect");
+    const datePick = document.getElementById("datePick");
     const slotsEl = document.getElementById("slots");
-    const rangeLabel = document.getElementById("rangeLabel");
-    const bookBtn = document.getElementById("bookBtn");
-    const statusEl = document.getElementById("status");
-    const confirmBox = document.getElementById("confirmBox");
-    const confirmText = document.getElementById("confirmText");
-    const manageUrlEl = document.getElementById("manageUrl");
+    const confirmBtn = document.getElementById("confirmBtn");
+    const msg = document.getElementById("msg");
 
-    // State
-    let selectedDate = new Date();
-    selectedDate.setHours(0,0,0,0);
-    let weekStart = startOfWeek(selectedDate);
+    // =========================
+    // SCHEDULING RULES
+    // =========================
+    const SLOT_MINUTES = 30;
+    const APPT_MINUTES = 60;
+
+    function dayRules(d){
+      // d is Date (local)
+      const dow = d.getDay(); // 0 Sun ... 6 Sat
+
+      // Mon-Fri: 9-20 but block 14-17
+      if(dow >= 1 && dow <= 5){
+        return {
+          startHour: 9,
+          endHour: 20,
+          blocks: [{ start: 14, end: 17 }]
+        };
+      }
+
+      // Sat: 10-18
+      if(dow === 6){
+        return { startHour: 10, endHour: 18, blocks: [] };
+      }
+
+      // Sun: 12-18
+      return { startHour: 12, endHour: 18, blocks: [] };
+    }
+
+    function inBlockedHours(hour, blocks){
+      return blocks.some(b => hour >= b.start && hour < b.end);
+    }
+
+    function makeSlot(dateObj){
+      return {
+        iso: dateObj.toISOString(),
+        label: dateObj.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" })
+      };
+    }
+
+    function localDateFromYMD(ymdStr){
+      const [y,m,dd] = ymdStr.split("-").map(Number);
+      const d = new Date();
+      d.setFullYear(y);
+      d.setMonth(m-1);
+      d.setDate(dd);
+      d.setHours(0,0,0,0);
+      return d;
+    }
+
+    async function fetchDayAppointments(day){
+      // fetch by UTC range for that local day
+      const start = new Date(day);
+      start.setHours(0,0,0,0);
+      const end = new Date(day);
+      end.setDate(end.getDate()+1);
+      end.setHours(0,0,0,0);
+
+      const { data, error } = await supa
+        .from("appointments")
+        .select("start_time, end_time, status")
+        .gte("start_time", start.toISOString())
+        .lt("start_time", end.toISOString());
+
+      if(error){
+        console.warn(error);
+        return [];
+      }
+      return (data || []).filter(r => (r.status || "confirmed").toLowerCase() !== "cancelled");
+    }
+
+    function overlaps(aStart, aEnd, bStart, bEnd){
+      return aStart < bEnd && bStart < aEnd;
+    }
+
+    function setMsg(type, text){
+      msg.className = "msg " + type;
+      msg.textContent = text;
+    }
+
     let selectedSlotISO = null;
 
-    function startOfWeek(d){
-      const x = new Date(d);
-      x.setHours(0,0,0,0);
-      x.setDate(x.getDate() - x.getDay());
-      return x;
-    }
-
-    function toYYYYMMDD(d){
-      const pad = (n) => String(n).padStart(2,"0");
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    }
-
-    function fmtDay(d){
-      return d.toLocaleDateString([], { weekday:"short", month:"short", day:"2-digit", year:"numeric" });
-    }
-
-    function fmtTime(d){
-      return d.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
-    }
-
-    // Hours:
-    // Mon–Fri 10–20, Sat 10–18, Sun 12–18
-    function getDayRules(dateObj){
-      const dow = dateObj.getDay();
-      if (dow === 0) return { startHour: 12, endHour: 18 };
-      if (dow === 6) return { startHour: 10, endHour: 18 };
-      return { startHour: 10, endHour: 20 };
-    }
-
-    function isAllowedStart(startDateObj, rules){
-      const end = new Date(startDateObj.getTime() + APPOINTMENT_MINUTES * 60 * 1000);
-      const startH = startDateObj.getHours() + startDateObj.getMinutes()/60;
-      const endH   = end.getHours() + end.getMinutes()/60;
-      if (startH < rules.startHour) return false;
-      if (endH > rules.endHour) return false;
-      return true;
-    }
-
-    async function fetchBookedSlotsForDay(dayStart) {
-      const dayEnd = new Date(dayStart);
-      dayEnd.setDate(dayEnd.getDate() + 1);
-
-      const { data, error } = await supa
-        .from("appointments")
-        .select("start_time, status")
-        .gte("start_time", dayStart.toISOString())
-        .lt("start_time", dayEnd.toISOString());
-
-      if (error) {
-        console.warn(error);
-        return new Set();
-      }
-
-      const taken = new Set();
-      for (const r of (data || [])) {
-        const status = (r.status || "confirmed").toLowerCase();
-        if (status !== "cancelled") taken.add(new Date(r.start_time).toISOString());
-      }
-      return taken;
-    }
-
-    function validateForm() {
-      const name = nameEl.value.trim();
-      const email = emailEl.value.trim();
-      const ok = name.length >= 2 && email.includes("@") && selectedSlotISO;
-      bookBtn.disabled = !ok;
-    }
-
-    nameEl.addEventListener("input", validateForm);
-    emailEl.addEventListener("input", validateForm);
-    serviceEl.addEventListener("change", validateForm);
-
-    function renderWeekBar(){
-      weekBar.innerHTML = "";
-      for (let i=0; i<7; i++){
-        const d = new Date(weekStart);
-        d.setDate(weekStart.getDate() + i);
-
-        const chip = document.createElement("div");
-        chip.className = "dayChip" + (toYYYYMMDD(d) === toYYYYMMDD(selectedDate) ? " active" : "");
-        chip.innerHTML = `
-          <div class="dow">${d.toLocaleDateString([], { weekday:"short" })}</div>
-          <div class="md">${d.toLocaleDateString([], { month:"short", day:"numeric" })}</div>
-        `;
-        chip.addEventListener("click", async () => {
-          selectedDate = new Date(d);
-          selectedDate.setHours(0,0,0,0);
-          datePicker.value = toYYYYMMDD(selectedDate);
-          renderWeekBar();
-          await renderSlots();
-        });
-        weekBar.appendChild(chip);
-      }
-    }
-
-    async function renderSlots() {
-      confirmBox.style.display = "none";
-      statusEl.textContent = "";
+    async function renderSlots(){
       selectedSlotISO = null;
-      bookBtn.disabled = true;
+      confirmBtn.disabled = true;
+      slotsEl.innerHTML = "";
 
-      const rules = getDayRules(selectedDate);
-      const dow = selectedDate.getDay();
-      const label =
-        dow === 0 ? "Sunday 12PM–6PM" :
-        dow === 6 ? "Saturday 10AM–6PM" :
-        "Mon–Fri 10AM–8PM";
+      const ymdStr = datePick.value;
+      if(!ymdStr) return;
 
-      rangeLabel.textContent = `${fmtDay(selectedDate)} • ${label} • (Available only)`;
-
-      const taken = await fetchBookedSlotsForDay(selectedDate);
+      const day = localDateFromYMD(ymdStr);
+      const rules = dayRules(day);
+      const existing = await fetchDayAppointments(day);
 
       const slots = [];
-      const cur = new Date(selectedDate);
-      cur.setHours(rules.startHour, 0, 0, 0);
+      const base = new Date(day);
+      base.setHours(rules.startHour, 0, 0, 0);
 
-      while (true) {
-        const end = new Date(cur.getTime() + APPOINTMENT_MINUTES * 60 * 1000);
-        const endH = end.getHours() + end.getMinutes()/60;
-        if (endH > rules.endHour) break;
+      const endBoundary = new Date(day);
+      endBoundary.setHours(rules.endHour, 0, 0, 0);
 
-        if (isAllowedStart(cur, rules)) {
-          const iso = cur.toISOString();
-          if (!taken.has(iso)) slots.push({ iso, label: fmtTime(cur) });
+      while(base < endBoundary){
+        const h = base.getHours();
+
+        // hide blocked hours completely
+        if(!inBlockedHours(h, rules.blocks)){
+          const startTime = new Date(base);
+          const endTime = new Date(base);
+          endTime.setMinutes(endTime.getMinutes() + APPT_MINUTES);
+
+          // slot must end before closing
+          if(endTime <= endBoundary){
+            // conflict check
+            const isConflict = existing.some(r => {
+              const aStart = new Date(r.start_time);
+              const aEnd = new Date(r.end_time || r.start_time);
+              // if end_time missing, treat as 60 mins
+              if(!r.end_time){
+                aEnd.setMinutes(aStart.getMinutes() + APPT_MINUTES);
+              }
+              return overlaps(startTime, endTime, aStart, aEnd);
+            });
+
+            if(!isConflict){
+              slots.push(makeSlot(startTime));
+            }
+          }
         }
-        cur.setMinutes(cur.getMinutes() + SLOT_MINUTES);
+
+        base.setMinutes(base.getMinutes() + SLOT_MINUTES);
       }
 
-      if (!slots.length) {
-        slotsEl.innerHTML = `<div class="muted">No times available for this day. Try another date.</div>`;
+      if(!slots.length){
+        slotsEl.innerHTML = `<div class="note">No available times for that date. Try another day.</div>`;
         return;
       }
 
-      slotsEl.innerHTML = slots.map(s => `<div class="slot" data-iso="${s.iso}">${s.label}</div>`).join("");
-
-      slotsEl.querySelectorAll(".slot").forEach(el => {
-        el.addEventListener("click", () => {
-          slotsEl.querySelectorAll(".slot").forEach(x => x.classList.remove("active"));
-          el.classList.add("active");
-          selectedSlotISO = el.getAttribute("data-iso");
-          validateForm();
+      slots.forEach(s => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "slotBtn";
+        b.textContent = s.label;
+        b.addEventListener("click", () => {
+          document.querySelectorAll(".slotBtn").forEach(x => x.classList.remove("selected"));
+          b.classList.add("selected");
+          selectedSlotISO = s.iso;
+          confirmBtn.disabled = false;
+          setMsg("", ""); // clear
+          msg.style.display = "none";
         });
+        slotsEl.appendChild(b);
       });
     }
 
-    datePicker.addEventListener("change", async () => {
-      if (!datePicker.value) return;
-      const d = new Date(datePicker.value + "T00:00:00");
-      d.setHours(0,0,0,0);
-      selectedDate = d;
-      weekStart = startOfWeek(selectedDate);
-      renderWeekBar();
-      await renderSlots();
-    });
+    datePick.addEventListener("change", renderSlots);
 
-    prevWeekBtn.addEventListener("click", async () => {
-      weekStart.setDate(weekStart.getDate() - 7);
-      selectedDate = new Date(weekStart);
-      selectedDate.setHours(0,0,0,0);
-      datePicker.value = toYYYYMMDD(selectedDate);
-      renderWeekBar();
-      await renderSlots();
-    });
+    confirmBtn.addEventListener("click", async () => {
+      const name = (clientName.value || "").trim();
+      const email = (clientEmail.value || "").trim();
+      const service = serviceSelect.value;
+      const location = locationSelect.value;
 
-    nextWeekBtn.addEventListener("click", async () => {
-      weekStart.setDate(weekStart.getDate() + 7);
-      selectedDate = new Date(weekStart);
-      selectedDate.setHours(0,0,0,0);
-      datePicker.value = toYYYYMMDD(selectedDate);
-      renderWeekBar();
-      await renderSlots();
-    });
-
-    bookBtn.onclick = async () => {
-      statusEl.innerHTML = `<span class="pill ok">Submitting…</span>`;
-      bookBtn.disabled = true;
-
-      const client_name = nameEl.value.trim();
-      const client_email = emailEl.value.trim();
-      const service = serviceEl.value;
-      const location = locationEl.value;
-
-      const start = new Date(selectedSlotISO);
-      const rules = getDayRules(start);
-
-      if (!isAllowedStart(start, rules)) {
-        statusEl.innerHTML = `<span class="pill bad">Not allowed</span> Please choose a valid time.`;
-        validateForm();
+      if(!name || !email || !selectedSlotISO){
+        setMsg("bad", "Please fill name, email, and choose a time.");
         return;
       }
 
-      const startISO = start.toISOString();
-      const endISO = new Date(start.getTime() + APPOINTMENT_MINUTES * 60 * 1000).toISOString();
+      confirmBtn.disabled = true;
+      setMsg("warn", "Submitting…");
 
-      const { data, error } = await supa
-        .from("appointments")
-        .insert([{
-          client_name,
-          client_email,
-          service,
-          location,
-          start_time: startISO,
-          end_time: endISO,
-          status: "confirmed"
-        }])
-        .select("id, client_name, client_email, service, location, start_time")
-        .single();
+      const startISO = selectedSlotISO;
+      const end = new Date(startISO);
+      end.setMinutes(end.getMinutes() + APPT_MINUTES);
+      const endISO = end.toISOString();
 
-      if (error) {
-        console.error(error);
-        statusEl.innerHTML = `<span class="pill bad">Error</span> ${error.message}`;
-        validateForm();
-        return;
+      try{
+        const { data, error } = await supa
+          .from("appointments")
+          .insert([{
+            client_name: name,
+            client_email: email,
+            service: service,
+            location: location,
+            start_time: startISO,
+            end_time: endISO,
+            status: "confirmed"
+          }])
+          .select("*")
+          .single();
+
+        if(error){
+          console.warn(error);
+          setMsg("bad", error.message || "Booking failed.");
+          confirmBtn.disabled = false;
+          return;
+        }
+
+        // Manage link (for your system)
+        const manageLink = new URL("manage.html", window.location.href);
+        manageLink.searchParams.set("id", data.id);
+        manageLink.searchParams.set("email", email);
+
+        // ✅ Admin-only email alert via Edge Function
+        sendUpdateEmail({
+          type: "confirm",
+          appointment_id: data.id,
+          client_name: data.client_name,
+          client_email: email,
+          service: data.service,
+          location: data.location,
+          start_time: data.start_time,
+          manage_url: manageLink.toString()
+        });
+
+        setMsg("ok", "✅ Booking confirmed!");
+        await renderSlots(); // refresh availability
+      } catch(e){
+        console.warn(e);
+        setMsg("bad", "Booking failed (network). Try again.");
+        confirmBtn.disabled = false;
       }
+    });
 
-      const manageLink = new URL("manage.html", window.location.href);
-      manageLink.searchParams.set("id", data.id);
-      manageLink.searchParams.set("email", client_email);
-
-      // ✅ STEP 5B: send admin-only alert email
-      sendUpdateEmail({
-        type: "confirm",
-        appointment_id: data.id,
-        client_name: data.client_name,
-        client_email: client_email,
-        service: data.service,
-        location: data.location,
-        start_time: data.start_time,
-        manage_url: manageLink.toString()
-      });
-
-      statusEl.innerHTML = `<span class="pill ok">Success</span> Appointment booked.`;
-      confirmBox.style.display = "block";
-      confirmText.textContent =
-        `${data.client_name} • ${data.service} • ${data.location} • ${fmtDay(new Date(data.start_time))} at ${fmtTime(new Date(data.start_time))}`;
-      manageUrlEl.textContent = manageLink.toString();
-      manageUrlEl.href = manageLink.toString();
-
-      await renderSlots();
-    };
-
-    // Init
-    datePicker.value = toYYYYMMDD(selectedDate);
-    renderWeekBar();
-    renderSlots();
+    // Default date to today
+    (function init(){
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth()+1).padStart(2,"0");
+      const dd = String(now.getDate()).padStart(2,"0");
+      datePick.value = `${yyyy}-${mm}-${dd}`;
+      renderSlots();
+    })();
   </script>
 </body>
 </html>
