@@ -65,9 +65,7 @@
       border-radius:14px;
       padding:12px 14px;
     }
-    .servicesBox h2{
-      margin:0 0 10px 0; font-size:16px; font-weight:900;
-    }
+    .servicesBox h2{ margin:0 0 10px 0; font-size:16px; font-weight:900; }
     .servicesBox ul{ margin:0; padding-left:18px; color:#334155; font-weight:700; }
     .servicesBox li{ margin:6px 0; }
 
@@ -96,9 +94,7 @@
       gap:10px; flex-wrap:wrap;
       margin-bottom:10px;
     }
-    .panelTitle h2{
-      margin:0; font-size:18px; font-weight:900; color:#0f172a;
-    }
+    .panelTitle h2{ margin:0; font-size:18px; font-weight:900; color:#0f172a; }
     .badge{
       font-size:12px;
       font-weight:900;
@@ -109,12 +105,7 @@
       color:#111827;
     }
 
-    .healthRow{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin:10px 0 2px 0;
-    }
+    .healthRow{ display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 2px 0; }
     .pill{
       font-size:12px;
       font-weight:900;
@@ -207,12 +198,7 @@
     }
     .confirmBtn:disabled{ opacity:.6; cursor:not-allowed; }
 
-    .note{
-      margin-top:10px;
-      font-size:13px;
-      color:#475569;
-      line-height:1.4;
-    }
+    .note{ margin-top:10px; font-size:13px; color:#475569; line-height:1.4; }
 
     .msg{
       margin-top:12px;
@@ -333,21 +319,12 @@
   <script>
     const pillJs = document.getElementById("pillJs");
     const pillSb = document.getElementById("pillSb");
-
     function pillOK(el, text){ el.textContent = text; el.className = "pill ok"; }
     function pillBAD(el, text){ el.textContent = text; el.className = "pill bad"; }
 
     const msg = document.getElementById("msg");
-    function clearMsg(){
-      msg.style.display = "none";
-      msg.textContent = "";
-      msg.className = "msg";
-    }
-    function setMsg(type, text){
-      msg.style.display = "block";
-      msg.className = "msg " + type;
-      msg.textContent = text;
-    }
+    function clearMsg(){ msg.style.display="none"; msg.textContent=""; msg.className="msg"; }
+    function setMsg(type, text){ msg.style.display="block"; msg.className="msg "+type; msg.textContent=text; }
 
     pillOK(pillJs, "JS: loaded");
 
@@ -358,33 +335,14 @@
     }
     pillOK(pillSb, "Supabase: loaded");
 
-    // =========================
-    // ✅ SUPABASE (USE ANON PUBLIC KEY)
-    // =========================
+    // ✅ Supabase (anon public key)
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const supabaseKey =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs";
 
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey, {
       auth: { persistSession:false, autoRefreshToken:false, detectSessionInUrl:false }
     });
 
-    // Optional admin email alert (won’t block booking if it fails)
-    function sendUpdateEmail(payload) {
-      fetch(`${supabaseUrl}/functions/v1/send-update`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${supabaseKey}`,
-          "apikey": supabaseKey
-        },
-        body: JSON.stringify(payload)
-      }).catch(() => {});
-    }
-
-    // =========================
-    // UI
-    // =========================
     const clientName = document.getElementById("clientName");
     const clientEmail = document.getElementById("clientEmail");
     const serviceSelect = document.getElementById("serviceSelect");
@@ -393,9 +351,6 @@
     const slotsEl = document.getElementById("slots");
     const confirmBtn = document.getElementById("confirmBtn");
 
-    // =========================
-    // SCHEDULING RULES
-    // =========================
     const SLOT_MINUTES = 30;
     const APPT_MINUTES = 60;
 
@@ -430,7 +385,7 @@
 
       if(error){
         console.warn(error);
-        setMsg("bad", "Error loading availability: " + (error.message || "unknown"));
+        setMsg("bad", "Availability load failed: " + (error.message || "unknown"));
         return [];
       }
       return (data || []).filter(r => (r.status || "confirmed").toLowerCase() !== "cancelled");
@@ -476,7 +431,6 @@
             if(!isConflict) slots.push(makeSlot(startTime));
           }
         }
-
         base.setMinutes(base.getMinutes() + SLOT_MINUTES);
       }
 
@@ -542,21 +496,6 @@
         confirmBtn.disabled = false;
         return;
       }
-
-      const manageLink = new URL("manage.html", window.location.href);
-      manageLink.searchParams.set("id", data.id);
-      manageLink.searchParams.set("email", email);
-
-      sendUpdateEmail({
-        type: "confirm",
-        appointment_id: data.id,
-        client_name: data.client_name,
-        client_email: email,
-        service: data.service,
-        location: data.location,
-        start_time: data.start_time,
-        manage_url: manageLink.toString()
-      });
 
       setMsg("ok", "✅ Booking confirmed!");
       await renderSlots();
