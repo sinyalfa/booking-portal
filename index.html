@@ -109,6 +109,24 @@
       color:#111827;
     }
 
+    .healthRow{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin:10px 0 2px 0;
+    }
+    .pill{
+      font-size:12px;
+      font-weight:900;
+      border-radius:999px;
+      padding:6px 10px;
+      border:1px solid #e5e7eb;
+      background:#f8fafc;
+      color:#111827;
+    }
+    .pill.ok{ background:#dcfce7; border-color:#86efac; color:#166534; }
+    .pill.bad{ background:#fee2e2; border-color:#fecaca; color:#991b1b; }
+
     label{
       display:block;
       text-align:left;
@@ -213,7 +231,6 @@
 
 <body>
   <div class="wrap">
-
     <div class="card">
       <div class="logo"></div>
       <h1>Columbus East Tax Services</h1>
@@ -250,6 +267,12 @@
       <div class="panelTitle">
         <h2>Book an Appointment</h2>
         <span class="badge">60 minutes</span>
+      </div>
+
+      <!-- ✅ Visible health/status pills -->
+      <div class="healthRow">
+        <span id="pillJs" class="pill">JS: loading…</span>
+        <span id="pillSb" class="pill">Supabase: loading…</span>
       </div>
 
       <div class="grid2">
@@ -300,33 +323,59 @@
       <label>Available Times</label>
       <div id="slots" class="slots"></div>
 
-      <button id="confirmBtn" class="confirmBtn" disabled>Confirm Booking</button>
+      <button id="confirmBtn" class="confirmBtn" type="button" disabled>Confirm Booking</button>
 
       <div id="msg" class="msg"></div>
       <div class="note">You’ll be added to our schedule after confirmation.</div>
     </div>
-
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // ===== Health pills
+    const pillJs = document.getElementById("pillJs");
+    const pillSb = document.getElementById("pillSb");
+
+    function pillOK(el, text){ el.textContent = text; el.className = "pill ok"; }
+    function pillBAD(el, text){ el.textContent = text; el.className = "pill bad"; }
+
+    // ✅ If this shows, JS is running
+    pillOK(pillJs, "JS: loaded");
+
+    // ===== Message helpers
+    const msg = document.getElementById("msg");
+    function clearMsg(){
+      msg.style.display = "none";
+      msg.textContent = "";
+      msg.className = "msg";
+    }
+    function setMsg(type, text){
+      msg.style.display = "block";
+      msg.className = "msg " + type;
+      msg.textContent = text;
+    }
+
+    // ===== Check Supabase library loaded
+    if (!window.supabase) {
+      pillBAD(pillSb, "Supabase: NOT loaded");
+      setMsg("bad", "Supabase library failed to load. This page cannot book appointments.");
+      throw new Error("Supabase library missing");
+    }
+    pillOK(pillSb, "Supabase: loaded");
+
     // =========================
     // SUPABASE
     // =========================
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
 
-    // ✅ Best-practice for public pages: do not persist sessions
+    // ✅ Public page: never persist sessions
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false
-      }
+      auth: { persistSession:false, autoRefreshToken:false, detectSessionInUrl:false }
     });
 
     // =========================
-    // ADMIN EMAIL ALERT (Edge Function)
+    // EMAIL ALERT (optional)
     // =========================
     function sendUpdateEmail(payload) {
       fetch(`${supabaseUrl}/functions/v1/send-update`, {
@@ -350,22 +399,6 @@
     const datePick = document.getElementById("datePick");
     const slotsEl = document.getElementById("slots");
     const confirmBtn = document.getElementById("confirmBtn");
-    const msg = document.getElementById("msg");
-
-    // =========================
-    // MESSAGE HELPERS (✅ FIXED)
-    // =========================
-    function clearMsg(){
-      msg.style.display = "none";
-      msg.textContent = "";
-      msg.className = "msg";
-    }
-
-    function setMsg(type, text){
-      msg.style.display = "block";        // ✅ show message
-      msg.className = "msg " + type;
-      msg.textContent = text;
-    }
 
     // =========================
     // SCHEDULING RULES
@@ -375,47 +408,26 @@
 
     function dayRules(d){
       const dow = d.getDay(); // 0 Sun ... 6 Sat
-
-      if(dow >= 1 && dow <= 5){
-        return {
-          startHour: 9,
-          endHour: 20,
-          blocks: [{ start: 14, end: 17 }] // 2pm-5pm blocked
-        };
-      }
-      if(dow === 6){
-        return { startHour: 10, endHour: 18, blocks: [] };
-      }
-      return { startHour: 12, endHour: 18, blocks: [] };
+      if(dow >= 1 && dow <= 5) return { startHour:9, endHour:20, blocks:[{start:14,end:17}] };
+      if(dow === 6) return { startHour:10, endHour:18, blocks:[] };
+      return { startHour:12, endHour:18, blocks:[] };
     }
-
-    function inBlockedHours(hour, blocks){
-      return blocks.some(b => hour >= b.start && hour < b.end);
-    }
-
+    function inBlockedHours(hour, blocks){ return blocks.some(b => hour >= b.start && hour < b.end); }
     function makeSlot(dateObj){
-      return {
-        iso: dateObj.toISOString(),
-        label: dateObj.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" })
-      };
+      return { iso: dateObj.toISOString(), label: dateObj.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" }) };
     }
-
     function localDateFromYMD(ymdStr){
       const [y,m,dd] = ymdStr.split("-").map(Number);
       const d = new Date();
-      d.setFullYear(y);
-      d.setMonth(m-1);
-      d.setDate(dd);
+      d.setFullYear(y); d.setMonth(m-1); d.setDate(dd);
       d.setHours(0,0,0,0);
       return d;
     }
+    function overlaps(aStart, aEnd, bStart, bEnd){ return aStart < bEnd && bStart < aEnd; }
 
     async function fetchDayAppointments(day){
-      const start = new Date(day);
-      start.setHours(0,0,0,0);
-      const end = new Date(day);
-      end.setDate(end.getDate()+1);
-      end.setHours(0,0,0,0);
+      const start = new Date(day); start.setHours(0,0,0,0);
+      const end = new Date(day); end.setDate(end.getDate()+1); end.setHours(0,0,0,0);
 
       const { data, error } = await supa
         .from("appointments")
@@ -425,13 +437,10 @@
 
       if(error){
         console.warn(error);
+        setMsg("bad", "Supabase error loading availability: " + (error.message || "unknown"));
         return [];
       }
       return (data || []).filter(r => (r.status || "confirmed").toLowerCase() !== "cancelled");
-    }
-
-    function overlaps(aStart, aEnd, bStart, bEnd){
-      return aStart < bEnd && bStart < aEnd;
     }
 
     let selectedSlotISO = null;
@@ -468,15 +477,10 @@
             const isConflict = existing.some(r => {
               const aStart = new Date(r.start_time);
               const aEnd = new Date(r.end_time || r.start_time);
-              if(!r.end_time){
-                aEnd.setMinutes(aStart.getMinutes() + APPT_MINUTES);
-              }
+              if(!r.end_time) aEnd.setMinutes(aStart.getMinutes() + APPT_MINUTES);
               return overlaps(startTime, endTime, aStart, aEnd);
             });
-
-            if(!isConflict){
-              slots.push(makeSlot(startTime));
-            }
+            if(!isConflict) slots.push(makeSlot(startTime));
           }
         }
 
@@ -525,59 +529,50 @@
       end.setMinutes(end.getMinutes() + APPT_MINUTES);
       const endISO = end.toISOString();
 
-      try{
-        const { data, error } = await supa
-          .from("appointments")
-          .insert([{
-            client_name: name,
-            client_email: email,
-            service: service,
-            location: location,
-            start_time: startISO,
-            end_time: endISO,
-            status: "confirmed"
-          }])
-          .select("*")
-          .single();
-
-        if(error){
-          console.warn(error);
-          setMsg("bad", error.message || "Booking failed.");
-          confirmBtn.disabled = false;
-          return;
-        }
-
-        const manageLink = new URL("manage.html", window.location.href);
-        manageLink.searchParams.set("id", data.id);
-        manageLink.searchParams.set("email", email);
-
-        sendUpdateEmail({
-          type: "confirm",
-          appointment_id: data.id,
-          client_name: data.client_name,
+      const { data, error } = await supa
+        .from("appointments")
+        .insert([{
+          client_name: name,
           client_email: email,
-          service: data.service,
-          location: data.location,
-          start_time: data.start_time,
-          manage_url: manageLink.toString()
-        });
+          service,
+          location,
+          start_time: startISO,
+          end_time: endISO,
+          status: "confirmed"
+        }])
+        .select("*")
+        .single();
 
-        setMsg("ok", "✅ Booking confirmed! Check your email for details (admin notified).");
-        await renderSlots();
-      } catch(e){
-        console.warn(e);
-        setMsg("bad", "Booking failed (network). Try again.");
+      if(error){
+        console.warn(error);
+        setMsg("bad", "Booking failed: " + (error.message || "unknown"));
         confirmBtn.disabled = false;
+        return;
       }
+
+      const manageLink = new URL("manage.html", window.location.href);
+      manageLink.searchParams.set("id", data.id);
+      manageLink.searchParams.set("email", email);
+
+      sendUpdateEmail({
+        type: "confirm",
+        appointment_id: data.id,
+        client_name: data.client_name,
+        client_email: email,
+        service: data.service,
+        location: data.location,
+        start_time: data.start_time,
+        manage_url: manageLink.toString()
+      });
+
+      setMsg("ok", "✅ Booking confirmed!");
+      await renderSlots();
     });
 
     // Default date to today
     (function init(){
       const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth()+1).padStart(2,"0");
-      const dd = String(now.getDate()).padStart(2,"0");
-      datePick.value = `${yyyy}-${mm}-${dd}`;
+      datePick.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
       renderSlots();
     })();
   </script>
