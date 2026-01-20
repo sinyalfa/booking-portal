@@ -269,7 +269,6 @@
         <span class="badge">60 minutes</span>
       </div>
 
-      <!-- ✅ Visible health/status pills -->
       <div class="healthRow">
         <span id="pillJs" class="pill">JS: loading…</span>
         <span id="pillSb" class="pill">Supabase: loading…</span>
@@ -332,17 +331,12 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ===== Health pills
     const pillJs = document.getElementById("pillJs");
     const pillSb = document.getElementById("pillSb");
 
     function pillOK(el, text){ el.textContent = text; el.className = "pill ok"; }
     function pillBAD(el, text){ el.textContent = text; el.className = "pill bad"; }
 
-    // ✅ If this shows, JS is running
-    pillOK(pillJs, "JS: loaded");
-
-    // ===== Message helpers
     const msg = document.getElementById("msg");
     function clearMsg(){
       msg.style.display = "none";
@@ -355,28 +349,27 @@
       msg.textContent = text;
     }
 
-    // ===== Check Supabase library loaded
+    pillOK(pillJs, "JS: loaded");
+
     if (!window.supabase) {
       pillBAD(pillSb, "Supabase: NOT loaded");
-      setMsg("bad", "Supabase library failed to load. This page cannot book appointments.");
+      setMsg("bad", "Supabase library failed to load.");
       throw new Error("Supabase library missing");
     }
     pillOK(pillSb, "Supabase: loaded");
 
     // =========================
-    // SUPABASE
+    // ✅ SUPABASE (USE ANON PUBLIC KEY)
     // =========================
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs";
+    const supabaseKey =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs";
 
-    // ✅ Public page: never persist sessions
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey, {
       auth: { persistSession:false, autoRefreshToken:false, detectSessionInUrl:false }
     });
 
-    // =========================
-    // EMAIL ALERT (optional)
-    // =========================
+    // Optional admin email alert (won’t block booking if it fails)
     function sendUpdateEmail(payload) {
       fetch(`${supabaseUrl}/functions/v1/send-update`, {
         method: "POST",
@@ -437,7 +430,7 @@
 
       if(error){
         console.warn(error);
-        setMsg("bad", "Supabase error loading availability: " + (error.message || "unknown"));
+        setMsg("bad", "Error loading availability: " + (error.message || "unknown"));
         return [];
       }
       return (data || []).filter(r => (r.status || "confirmed").toLowerCase() !== "cancelled");
@@ -545,7 +538,7 @@
 
       if(error){
         console.warn(error);
-        setMsg("bad", "Booking failed: " + (error.message || "unknown"));
+        setMsg("bad", error.message || "Booking failed.");
         confirmBtn.disabled = false;
         return;
       }
@@ -569,7 +562,6 @@
       await renderSlots();
     });
 
-    // Default date to today
     (function init(){
       const now = new Date();
       datePick.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
