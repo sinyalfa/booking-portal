@@ -213,7 +213,7 @@
     .msg.bad{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
     .msg.warn{ background:#fef3c7; color:#92400e; border-color:#fde68a; }
 
-    /* ✅ Confirmation card */
+    /* Confirmation card */
     .confirmCard{
       display:none;
       margin-top:14px;
@@ -223,12 +223,7 @@
       padding:16px;
       box-shadow: 0 12px 30px rgba(0,0,0,.10);
     }
-    .confirmHeader{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin-bottom:12px;
-    }
+    .confirmHeader{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
     .checkIcon{
       width:44px;height:44px;border-radius:14px;
       display:flex;align-items:center;justify-content:center;
@@ -236,16 +231,9 @@
       background:#dcfce7;color:#166534;
       border:1px solid #86efac;
     }
-    .confirmTitle{
-      font-size:18px;font-weight:900;margin:0;color:#0f172a;
-      line-height:1.2;
-    }
-    .confirmSub{
-      margin:4px 0 0 0;
-      font-size:13px;
-      color:#475569;
-      font-weight:800;
-    }
+    .confirmTitle{ font-size:18px;font-weight:900;margin:0;color:#0f172a; line-height:1.2; }
+    .confirmSub{ margin:4px 0 0 0; font-size:13px; color:#475569; font-weight:800; }
+
     .confirmGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -261,22 +249,13 @@
       border-radius:14px;
       padding:10px 12px;
     }
-    .confirmItem .k{
-      font-size:12px;font-weight:900;color:#64748b;margin-bottom:4px;
-    }
-    .confirmItem .v{
-      font-size:14px;font-weight:900;color:#0f172a;
-      overflow-wrap:anywhere;
-    }
-    .confirmActions{
-      display:flex;
-      gap:10px;
-      margin-top:14px;
-      flex-wrap:wrap;
-    }
+    .confirmItem .k{ font-size:12px;font-weight:900;color:#64748b;margin-bottom:4px; }
+    .confirmItem .v{ font-size:14px;font-weight:900;color:#0f172a; overflow-wrap:anywhere; }
+
+    .confirmActions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
     .miniBtn{
       flex:1;
-      min-width: 180px;
+      min-width:180px;
       border:none;
       border-radius:14px;
       padding:12px 12px;
@@ -334,7 +313,7 @@
         <span id="pillSb" class="pill">Supabase: loading…</span>
       </div>
 
-      <!-- ✅ Booking Form -->
+      <!-- Booking Form -->
       <div id="bookingForm">
         <div class="grid2">
           <div>
@@ -390,7 +369,7 @@
         <div id="afterNote" class="note">Pick a time, then press Confirm Booking.</div>
       </div>
 
-      <!-- ✅ Confirmation Card -->
+      <!-- Confirmation Card -->
       <div id="confirmCard" class="confirmCard">
         <div class="confirmHeader">
           <div class="checkIcon">✓</div>
@@ -459,7 +438,7 @@
     }
     pillOK(pillSb, "Supabase: loaded");
 
-    // ✅ Supabase (anon public key)
+    // ✅ Supabase
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs";
 
@@ -477,10 +456,9 @@
     const datePick = document.getElementById("datePick");
     const slotsEl = document.getElementById("slots");
     const confirmBtn = document.getElementById("confirmBtn");
-
     const afterNote = document.getElementById("afterNote");
 
-    // confirmation card fields
+    // confirmation fields
     const ccClient = document.getElementById("ccClient");
     const ccEmail = document.getElementById("ccEmail");
     const ccDateTime = document.getElementById("ccDateTime");
@@ -647,34 +625,28 @@
         return;
       }
 
-      // ✅ Fill the confirmation card
+      // Fill confirmation card
       ccClient.textContent = data.client_name || name;
       ccEmail.textContent = data.client_email || email;
       ccDateTime.textContent = formatDateTimePretty(data.start_time || startISO);
       ccService.textContent = data.service || service;
       ccLocation.textContent = data.location || location;
 
-      // ✅ show confirmation card + hide form
+      // Show confirmation card + hide form
       bookingForm.style.display = "none";
       confirmCard.style.display = "block";
-
-      // optional: scroll it into view
-      confirmCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      confirmCard.scrollIntoView({ behavior:"smooth", block:"start" });
 
       clearMsg();
     });
 
     btnBookAnother.addEventListener("click", async () => {
-      // reset UI back to booking form
       confirmCard.style.display = "none";
       bookingForm.style.display = "block";
 
-      // clear inputs but keep email if you want (you can change this)
       clientName.value = "";
-      // clientEmail.value = ""; // uncomment if you want this cleared too
       selectedSlotISO = null;
 
-      // rerender slots
       await renderSlots();
       window.location.hash = "#booking";
     });
