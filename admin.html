@@ -17,6 +17,11 @@
       --okBg:#dcfce7; --okText:#166534; --okBorder:#86efac;
       --badBg:#fee2e2; --badText:#991b1b; --badBorder:#fecaca;
       --warnBg:#fef3c7; --warnText:#92400e; --warnBorder:#fde68a;
+
+      /* Calendar day highlights */
+      --dayGreenBg:#dcfce7;   --dayGreenBorder:#86efac; /* confirmed */
+      --dayRedBg:#fee2e2;     --dayRedBorder:#fecaca;   /* cancelled only */
+      --dayYellowBg:#fef3c7;  --dayYellowBorder:#fde68a;/* mixed */
     }
 
     *{ box-sizing:border-box; }
@@ -142,6 +147,12 @@
     }
     .dayCell:hover{ transform: translateY(-1px); box-shadow:0 12px 22px rgba(0,0,0,.08); }
     .dayCell.dim{ opacity:.35; cursor:default; }
+
+    /* NEW: status-based day coloring */
+    .dayCell.dayGreen{ background: var(--dayGreenBg); border-color: var(--dayGreenBorder); }
+    .dayCell.dayRed{ background: var(--dayRedBg); border-color: var(--dayRedBorder); }
+    .dayCell.dayYellow{ background: var(--dayYellowBg); border-color: var(--dayYellowBorder); }
+
     .dayNum{
       font-weight:900;
       font-size:13px;
@@ -303,7 +314,10 @@
           <div class="calGrid" id="calGrid"></div>
 
           <div class="muted" style="margin-top:10px;">
-            Color Key: <span class="badge ok">Confirmed</span> <span class="badge bad">Cancelled</span>
+            Color Key:
+            <span class="badge ok" style="margin-left:6px;">Confirmed</span>
+            <span class="badge bad" style="margin-left:6px;">Cancelled</span>
+            <span class="badge" style="margin-left:6px; background:var(--warnBg); border-color:var(--warnBorder);">Mixed</span>
           </div>
         </div>
 
@@ -416,8 +430,7 @@
       if(user){
         overlay.style.display = "none";
         whoami.textContent = `Signed in as ${user.email}`;
-        const role = data?.session?.user?.role || "authenticated";
-        debugLine.textContent = `DEBUG: role=${role} | email=${user.email}`;
+        debugLine.textContent = `DEBUG: role=authenticated | email=${user.email}`;
         await loadMonthData();
       } else {
         whoami.textContent = "Not signed in";
@@ -475,11 +488,7 @@
     });
 
     backToLoginBtn.addEventListener("click", showLogin);
-
-    logoutBtn.addEventListener("click", async () => {
-      await supa.auth.signOut();
-      showLogin();
-    });
+    logoutBtn.addEventListener("click", async () => { await supa.auth.signOut(); showLogin(); });
 
     // ========= Data =========
     let currentMonth = new Date();
@@ -524,18 +533,18 @@
 
       if(error){
         footerNote.innerHTML =
-          pill("bad", "Access error") + " " + escapeHtml(error.message) +
-          "<br/><br/>If you're logged in as columbuseast.taxservices@outlook.com and still see this, your admin RLS policy is not matching the email claim. Use the SQL fix I sent.";
+          pill("bad", "Access error") + " " + escapeHtml(error.message);
         return [];
       }
 
       const rows = data || [];
       footerNote.innerHTML = rows.length
         ? pill("ok", `Loaded ${rows.length} appointment(s)`)
-        : pill("warn", "Loaded 0 appointments") + " If Supabase has rows, your admin RLS policy is filtering them OR you're on the wrong month/range.";
+        : pill("warn", "Loaded 0 appointments");
       return rows;
     }
 
+    // Map dayKey -> { confirmed, cancelled, items }
     function summarizeByDay(rows){
       const map = new Map();
       for(const r of rows){
@@ -553,6 +562,16 @@
         entry.items.push(r);
       }
       return map;
+    }
+
+    function dayColorClass(entry){
+      if(!entry) return "";
+      const c = entry.confirmed || 0;
+      const x = entry.cancelled || 0;
+      if(c > 0 && x > 0) return "dayYellow";
+      if(c > 0) return "dayGreen";
+      if(x > 0) return "dayRed";
+      return "";
     }
 
     function buildCalendarGrid(monthDate, byDayMap){
@@ -578,16 +597,22 @@
         const isToday = ymd(cellDate) === ymd(new Date());
         const isSelected = selectedDay && ymd(cellDate) === ymd(selectedDay);
 
-        const box = document.createElement("div");
-        box.className = "dayCell" + (!isCurrent ? " dim" : "");
-        box.style.borderColor = isSelected ? "rgba(79,70,229,.55)" : "#e5e7eb";
-        box.style.boxShadow = isSelected ? "0 0 0 4px rgba(99,102,241,.20)" : "none";
-
         const confirmed = entry ? entry.confirmed : 0;
         const cancelled = entry ? entry.cancelled : 0;
+        const total = confirmed + cancelled;
 
-        const badgeHtml = (confirmed + cancelled) > 0
-          ? `<span class="badge ${confirmed>0 ? "ok" : "bad"}">${confirmed + cancelled}</span>`
+        const colorCls = dayColorClass(entry);
+
+        const box = document.createElement("div");
+        box.className = "dayCell" + (!isCurrent ? " dim" : "") + (colorCls ? " " + colorCls : "");
+
+        if(isSelected){
+          box.style.borderColor = "rgba(79,70,229,.55)";
+          box.style.boxShadow = "0 0 0 4px rgba(99,102,241,.20)";
+        }
+
+        const badgeHtml = total > 0
+          ? `<span class="badge ${confirmed>0 ? "ok" : "bad"}">${total}</span>`
           : (isToday ? `<span class="badge">Today</span>` : `<span class="badge">—</span>`);
 
         const mini = entry && entry.items.length
@@ -667,7 +692,6 @@
         const status = (r.status || "confirmed").toLowerCase();
         const label = status === "cancelled" ? "Cancelled" : "Confirmed";
         const pillCls = status === "cancelled" ? "pill bad" : "pill ok";
-
         const time = fmtNice(r.start_time);
 
         return `
@@ -694,7 +718,6 @@
         selectedDay = new Date();
         selectedDay.setHours(0,0,0,0);
       }
-
       allRows = await fetchAppointments();
       buildCalendarGrid(currentMonth, summarizeByDay(allRows));
       renderDayList();
