@@ -14,14 +14,23 @@
       --text:#0f172a;
       --ring:rgba(99,102,241,.35);
 
-      --okBg:#dcfce7; --okText:#166534; --okBorder:#86efac;
-      --badBg:#fee2e2; --badText:#991b1b; --badBorder:#fecaca;
-      --warnBg:#fef3c7; --warnText:#92400e; --warnBorder:#fde68a;
+      /* ✅ SOLID STATUS COLORS */
+      --okBg:#2563eb;     /* solid blue */
+      --okText:#ffffff;
+      --okBorder:#2563eb;
 
-      /* Calendar day highlights */
-      --dayGreenBg:#dcfce7;   --dayGreenBorder:#86efac; /* confirmed */
-      --dayRedBg:#fee2e2;     --dayRedBorder:#fecaca;   /* cancelled only */
-      --dayYellowBg:#fef3c7;  --dayYellowBorder:#fde68a;/* mixed */
+      --badBg:#dc2626;    /* solid red */
+      --badText:#ffffff;
+      --badBorder:#dc2626;
+
+      --warnBg:#f59e0b;   /* amber */
+      --warnText:#111827;
+      --warnBorder:#f59e0b;
+
+      /* ✅ Calendar day highlights (tints) */
+      --dayBlueBg:#dbeafe;     --dayBlueBorder:#2563eb;  /* confirmed days */
+      --dayRedBg:#fee2e2;      --dayRedBorder:#dc2626;   /* cancelled-only days */
+      --dayYellowBg:#fef3c7;   --dayYellowBorder:#f59e0b;/* mixed */
     }
 
     *{ box-sizing:border-box; }
@@ -70,6 +79,8 @@
       border: 1px solid transparent;
       white-space:nowrap;
     }
+
+    /* ✅ Confirmed = solid blue, Cancelled = solid red */
     .pill.ok{ background:var(--okBg); color:var(--okText); border-color:var(--okBorder); }
     .pill.bad{ background:var(--badBg); color:var(--badText); border-color:var(--badBorder); }
     .pill.warn{ background:var(--warnBg); color:var(--warnText); border-color:var(--warnBorder); }
@@ -148,10 +159,10 @@
     .dayCell:hover{ transform: translateY(-1px); box-shadow:0 12px 22px rgba(0,0,0,.08); }
     .dayCell.dim{ opacity:.35; cursor:default; }
 
-    /* NEW: status-based day coloring */
-    .dayCell.dayGreen{ background: var(--dayGreenBg); border-color: var(--dayGreenBorder); }
-    .dayCell.dayRed{ background: var(--dayRedBg); border-color: var(--dayRedBorder); }
-    .dayCell.dayYellow{ background: var(--dayYellowBg); border-color: var(--dayYellowBorder); }
+    /* ✅ status-based day coloring */
+    .dayCell.dayGreen{ background: var(--dayBlueBg); border-color: var(--dayBlueBorder); }      /* confirmed */
+    .dayCell.dayRed{ background: var(--dayRedBg); border-color: var(--dayRedBorder); }         /* cancelled-only */
+    .dayCell.dayYellow{ background: var(--dayYellowBg); border-color: var(--dayYellowBorder); }/* mixed */
 
     .dayNum{
       font-weight:900;
@@ -172,6 +183,8 @@
       background:#f8fafc;
       white-space:nowrap;
     }
+
+    /* ✅ badge colors match solid status */
     .badge.ok{ background:var(--okBg); border-color:var(--okBorder); color:var(--okText); }
     .badge.bad{ background:var(--badBg); border-color:var(--badBorder); color:var(--badText); }
 
@@ -315,9 +328,9 @@
 
           <div class="muted" style="margin-top:10px;">
             Color Key:
-            <span class="badge ok" style="margin-left:6px;">Confirmed</span>
-            <span class="badge bad" style="margin-left:6px;">Cancelled</span>
-            <span class="badge" style="margin-left:6px; background:var(--warnBg); border-color:var(--warnBorder);">Mixed</span>
+            <span class="pill ok" style="margin-left:6px;">Confirmed</span>
+            <span class="pill bad" style="margin-left:6px;">Cancelled</span>
+            <span class="pill warn" style="margin-left:6px;">Mixed</span>
           </div>
         </div>
 
@@ -544,7 +557,6 @@
       return rows;
     }
 
-    // Map dayKey -> { confirmed, cancelled, items }
     function summarizeByDay(rows){
       const map = new Map();
       for(const r of rows){
@@ -568,9 +580,10 @@
       if(!entry) return "";
       const c = entry.confirmed || 0;
       const x = entry.cancelled || 0;
+
       if(c > 0 && x > 0) return "dayYellow";
-      if(c > 0) return "dayGreen";
-      if(x > 0) return "dayRed";
+      if(c > 0) return "dayGreen";   // blue tint
+      if(x > 0) return "dayRed";     // red tint
       return "";
     }
 
@@ -681,6 +694,7 @@
       summaryPills.innerHTML = `
         <span class="pill ok">Confirmed: ${confirmed}</span>
         <span class="pill bad">Cancelled: ${cancelled}</span>
+        ${confirmed>0 && cancelled>0 ? `<span class="pill warn">Mixed</span>` : ""}
       `;
 
       if(!dayRows.length){
