@@ -13,7 +13,6 @@
       --muted:#6b7280;
       --text:#0f172a;
       --ring:rgba(99,102,241,.35);
-      --accent:#4f46e5;
 
       --okBg:#dcfce7; --okText:#166534; --okBorder:#86efac;
       --badBg:#fee2e2; --badText:#991b1b; --badBorder:#fecaca;
@@ -34,13 +33,7 @@
       color:#e5e7eb;
     }
 
-    .wrap{
-      width:100%;
-      max-width:1100px;
-      margin:0 auto;
-      display:grid;
-      gap:14px;
-    }
+    .wrap{ width:100%; max-width:1100px; margin:0 auto; display:grid; gap:14px; }
 
     .card{
       background: var(--card);
@@ -53,13 +46,7 @@
       overflow:hidden;
     }
 
-    .titleRow{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-    }
+    .titleRow{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
 
     .brand{ display:flex; align-items:center; gap:12px; }
     .logo{
@@ -76,19 +63,13 @@
       display:inline-flex; align-items:center; gap:8px;
       padding:6px 10px; border-radius:999px; font-weight:900; font-size:12px;
       border: 1px solid transparent;
+      white-space:nowrap;
     }
     .pill.ok{ background:var(--okBg); color:var(--okText); border-color:var(--okBorder); }
     .pill.bad{ background:var(--badBg); color:var(--badText); border-color:var(--badBorder); }
     .pill.warn{ background:var(--warnBg); color:var(--warnText); border-color:var(--warnBorder); }
 
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      width:100%;
-      min-width:0;
-      margin-top:12px;
-    }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; width:100%; min-width:0; margin-top:12px; }
 
     input, select, button{
       padding:12px 12px;
@@ -141,37 +122,13 @@
       .split{ grid-template-columns:1fr; }
     }
 
-    /* Calendar */
-    .calendarHeader{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
+    .calendarHeader{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
     .monthTitle{ font-weight:900; font-size:16px; color:#0f172a; }
 
-    .weekdays{
-      margin-top:10px;
-      display:grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap:8px;
-    }
-    .weekday{
-      text-align:center;
-      font-weight:900;
-      font-size:12px;
-      color:#6b7280;
-    }
+    .weekdays{ margin-top:10px; display:grid; grid-template-columns: repeat(7, 1fr); gap:8px; }
+    .weekday{ text-align:center; font-weight:900; font-size:12px; color:#6b7280; }
 
-    .calGrid{
-      margin-top:8px;
-      display:grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap:8px;
-      width:100%;
-      max-width:100%;
-    }
+    .calGrid{ margin-top:8px; display:grid; grid-template-columns: repeat(7, 1fr); gap:8px; width:100%; max-width:100%; }
 
     .dayCell{
       border:1px solid #e5e7eb;
@@ -228,9 +185,6 @@
     .apptName{ font-weight:900; color:#111827; font-size:14px; margin:0; }
     .apptMeta{ font-size:13px; color:#334155; line-height:1.5; margin-top:6px; }
     .apptMeta b{ color:#111827; }
-    .statusDot{ width:10px;height:10px;border-radius:999px; display:inline-block; margin-right:6px; vertical-align:middle; }
-    .dotOk{ background:#22c55e; }
-    .dotBad{ background:#ef4444; }
 
     .overlay{
       position:fixed; inset:0;
@@ -251,7 +205,6 @@
       color: var(--text);
       border:1px solid rgba(255,255,255,.12);
     }
-    a.link{ color: var(--accent); font-weight:900; text-decoration:none; }
   </style>
 </head>
 <body>
@@ -267,7 +220,6 @@
         </div>
       </div>
 
-      <!-- LOGIN FORM -->
       <div id="loginBox">
         <div class="row">
           <input id="email" type="email" placeholder="Admin email" aria-label="Admin email" />
@@ -282,7 +234,6 @@
         <div id="authStatus" class="muted" style="margin-top:10px;"></div>
       </div>
 
-      <!-- RESET FORM (when user arrives from recovery email) -->
       <div id="resetBox" style="display:none;">
         <div class="muted" style="margin-top:10px;">
           Set a new password for your admin account.
@@ -298,7 +249,7 @@
       </div>
 
       <div class="muted" style="margin-top:12px;">
-        Tip: Make sure your Supabase Auth Redirect URL includes this page.
+        Tip: Supabase Auth Redirect URL must include this page URL.
       </div>
     </div>
   </div>
@@ -311,6 +262,7 @@
           <div>
             <h1>Admin Dashboard</h1>
             <div class="muted" id="whoami">Not signed in</div>
+            <div class="muted" id="debugLine" style="margin-top:4px;"></div>
           </div>
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -325,6 +277,10 @@
           <option value="all">All</option>
           <option value="confirmed">Confirmed</option>
           <option value="cancelled">Cancelled</option>
+        </select>
+        <select id="rangeFilter" aria-label="Range filter">
+          <option value="90" selected>Last 90 days + future</option>
+          <option value="month">This month only</option>
         </select>
       </div>
 
@@ -370,17 +326,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ========= Supabase =========
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
-    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // ========= Auth UI =========
+    const supa = window.supabase.createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
+    });
+
     const overlay = document.getElementById("overlay");
-    const authTitle = document.getElementById("authTitle");
     const authStatus = document.getElementById("authStatus");
     const resetStatus = document.getElementById("resetStatus");
-
     const loginBox = document.getElementById("loginBox");
     const resetBox = document.getElementById("resetBox");
 
@@ -394,12 +349,13 @@
     const backToLoginBtn = document.getElementById("backToLoginBtn");
 
     const whoami = document.getElementById("whoami");
+    const debugLine = document.getElementById("debugLine");
     const refreshBtn = document.getElementById("refreshBtn");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    // ========= App UI =========
     const searchBox = document.getElementById("searchBox");
     const statusFilter = document.getElementById("statusFilter");
+    const rangeFilter = document.getElementById("rangeFilter");
 
     const monthTitle = document.getElementById("monthTitle");
     const calGrid = document.getElementById("calGrid");
@@ -424,6 +380,7 @@
     function pad(n){ return String(n).padStart(2,"0"); }
     function ymd(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
     function monthLabel(d){ return d.toLocaleDateString([], { month:"long", year:"numeric" }); }
+
     function fmtNice(iso){
       return new Intl.DateTimeFormat("en-US", {
         timeZone:"America/New_York",
@@ -441,16 +398,13 @@
       overlay.style.display = "flex";
       loginBox.style.display = "block";
       resetBox.style.display = "none";
-      authTitle.textContent = "Admin Login";
       authStatus.textContent = "";
       resetStatus.textContent = "";
     }
-
     function showReset(){
       overlay.style.display = "flex";
       loginBox.style.display = "none";
       resetBox.style.display = "block";
-      authTitle.textContent = "Reset Password";
       authStatus.textContent = "";
       resetStatus.textContent = "";
     }
@@ -462,14 +416,16 @@
       if(user){
         overlay.style.display = "none";
         whoami.textContent = `Signed in as ${user.email}`;
+        const role = data?.session?.user?.role || "authenticated";
+        debugLine.textContent = `DEBUG: role=${role} | email=${user.email}`;
         await loadMonthData();
       } else {
         whoami.textContent = "Not signed in";
+        debugLine.textContent = "";
         showLogin();
       }
     }
 
-    // ========= Auth Actions =========
     loginBtn.addEventListener("click", async () => {
       authStatus.innerHTML = pill("warn", "Signing in…");
       const email = (emailEl.value || "").trim();
@@ -492,10 +448,8 @@
       }
       authStatus.innerHTML = pill("warn", "Sending reset email…");
 
-      // Sends a reset email (redirects back to admin.html)
-      const redirectTo = window.location.origin + window.location.pathname; // admin.html
+      const redirectTo = window.location.origin + window.location.pathname;
       const { error } = await supa.auth.resetPasswordForEmail(email, { redirectTo });
-
       if(error){
         authStatus.innerHTML = pill("bad", error.message);
         return;
@@ -516,7 +470,7 @@
         resetStatus.innerHTML = pill("bad", error.message);
         return;
       }
-      resetStatus.innerHTML = pill("ok", "Password updated. You can continue.");
+      resetStatus.innerHTML = pill("ok", "Password updated. Loading…");
       setTimeout(() => setOverlayBySession(), 700);
     });
 
@@ -527,10 +481,11 @@
       showLogin();
     });
 
-    // ========= Calendar Data =========
+    // ========= Data =========
     let currentMonth = new Date();
     currentMonth.setDate(1);
     currentMonth.setHours(0,0,0,0);
+
     let allRows = [];
     let selectedDay = null;
 
@@ -542,8 +497,23 @@
       return { start, end };
     }
 
-    async function fetchMonthAppointments(monthDate){
-      const { start, end } = getMonthRange(monthDate);
+    async function fetchAppointments(){
+      footerNote.innerHTML = pill("warn", "Loading…");
+
+      const mode = rangeFilter.value;
+      let start, end;
+
+      if(mode === "90"){
+        start = new Date();
+        start.setDate(start.getDate() - 90);
+        start.setHours(0,0,0,0);
+
+        end = new Date();
+        end.setFullYear(end.getFullYear() + 2);
+        end.setHours(0,0,0,0);
+      } else {
+        ({ start, end } = getMonthRange(currentMonth));
+      }
 
       const { data, error } = await supa
         .from("appointments")
@@ -553,11 +523,17 @@
         .order("start_time", { ascending:true });
 
       if(error){
-        console.warn(error);
-        footerNote.innerHTML = pill("bad", "Access error") + " " + escapeHtml(error.message);
+        footerNote.innerHTML =
+          pill("bad", "Access error") + " " + escapeHtml(error.message) +
+          "<br/><br/>If you're logged in as columbuseast.taxservices@outlook.com and still see this, your admin RLS policy is not matching the email claim. Use the SQL fix I sent.";
         return [];
       }
-      return data || [];
+
+      const rows = data || [];
+      footerNote.innerHTML = rows.length
+        ? pill("ok", `Loaded ${rows.length} appointment(s)`)
+        : pill("warn", "Loaded 0 appointments") + " If Supabase has rows, your admin RLS policy is filtering them OR you're on the wrong month/range.";
+      return rows;
     }
 
     function summarizeByDay(rows){
@@ -617,7 +593,7 @@
         const mini = entry && entry.items.length
           ? entry.items.slice(0,2).map(a => {
               const t = new Date(a.start_time).toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
-              return `<div class="miniItem">${t} • ${escapeHtml(a.client_name || "")}</div>`;
+              return `<div class="miniItem">${escapeHtml(t)} • ${escapeHtml(a.client_name || "")}</div>`;
             }).join("")
           : "";
 
@@ -661,7 +637,6 @@
         daySub.textContent = "Tap a day on the calendar";
         apptList.innerHTML = "";
         summaryPills.innerHTML = "";
-        footerNote.textContent = "";
         return;
       }
 
@@ -685,16 +660,13 @@
 
       if(!dayRows.length){
         apptList.innerHTML = `<div class="muted">No appointments found for this day.</div>`;
-        footerNote.textContent = "Tip: change month, search, or status filter.";
         return;
       }
 
       apptList.innerHTML = dayRows.map(r => {
         const status = (r.status || "confirmed").toLowerCase();
-        const dot = status === "cancelled" ? "dotBad" : "dotOk";
-        const pillHtml = status === "cancelled"
-          ? `<span class="pill bad"><span class="statusDot ${dot}"></span>Cancelled</span>`
-          : `<span class="pill ok"><span class="statusDot ${dot}"></span>Confirmed</span>`;
+        const label = status === "cancelled" ? "Cancelled" : "Confirmed";
+        const pillCls = status === "cancelled" ? "pill bad" : "pill ok";
 
         const time = fmtNice(r.start_time);
 
@@ -710,13 +682,11 @@
                   <div><b>Email:</b> ${escapeHtml(r.client_email || "")}</div>
                 </div>
               </div>
-              <div>${pillHtml}</div>
+              <div><span class="${pillCls}">${label}</span></div>
             </div>
           </div>
         `;
       }).join("");
-
-      footerNote.textContent = "If you see an access error, confirm your RLS policy email matches your admin account.";
     }
 
     async function loadMonthData(){
@@ -724,7 +694,8 @@
         selectedDay = new Date();
         selectedDay.setHours(0,0,0,0);
       }
-      allRows = await fetchMonthAppointments(currentMonth);
+
+      allRows = await fetchAppointments();
       buildCalendarGrid(currentMonth, summarizeByDay(allRows));
       renderDayList();
     }
@@ -747,30 +718,25 @@
       selectedDay.setHours(0,0,0,0);
       await loadMonthData();
     });
+
     refreshBtn.addEventListener("click", loadMonthData);
     searchBox.addEventListener("input", renderDayList);
     statusFilter.addEventListener("change", renderDayList);
+    rangeFilter.addEventListener("change", loadMonthData);
 
-    // ========= Handle "recovery" reset links =========
-    // When user clicks the reset email link, Supabase can return a recovery session.
-    // We detect it and show the reset box.
     async function init(){
-      // If URL hash contains "recovery" (recommended redirect), show reset UI
-      if (window.location.hash.includes("recovery")) {
-        showReset();
-      }
-
-      // If Supabase sets a session (after redirect), hide overlay and load
+      if (window.location.hash.includes("recovery")) showReset();
       await setOverlayBySession();
 
-      // Also react to auth state changes
       supa.auth.onAuthStateChange(async (_event, session) => {
         if(session?.user){
           overlay.style.display = "none";
           whoami.textContent = `Signed in as ${session.user.email}`;
+          debugLine.textContent = `DEBUG: role=authenticated | email=${session.user.email}`;
           await loadMonthData();
         } else {
           whoami.textContent = "Not signed in";
+          debugLine.textContent = "";
           showLogin();
         }
       });
