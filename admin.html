@@ -1,680 +1,237 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin – Appointments</title>
-  <style>
-    body { font-family: Arial, Helvetica, sans-serif; background:#f4f6f8; margin:0; padding:24px; }
-    .wrap { max-width: 1200px; margin: 0 auto; }
-    .card { background:#fff; border-radius:14px; box-shadow:0 10px 26px rgba(0,0,0,.08); padding:18px; }
-    h1 { margin:0 0 6px 0; }
-    .muted { color:#6b7280; font-size:13px; line-height:1.4; }
-    .row { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; align-items:center; }
+// supabase/functions/send-update/index.ts
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
-    input, select, button { padding:10px 12px; border-radius:12px; border:1px solid #d1d5db; font-size:14px; }
-    button { cursor:pointer; font-weight:900; background:#111827; color:#fff; border:none; }
-    button.secondary { background:#fff; color:#111827; border:1px solid #d1d5db; }
-    button:disabled { opacity:.6; cursor:not-allowed; }
-
-    .login { max-width:420px; margin: 60px auto; }
-    .login .card { padding:22px; }
-    .hide { display:none; }
-
-    .toggle { display:flex; gap:8px; background:#f3f4f6; padding:6px; border-radius:14px; border:1px solid #e5e7eb; }
-    .toggle button { background:transparent; border:none; color:#111827; padding:10px 12px; border-radius:12px; font-weight:900; }
-    .toggle button.active { background:#111827; color:#fff; }
-
-    .pill { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:900; border:1px solid transparent; }
-    .confirmed { background:#dcfce7; color:#166534; border-color:#86efac; }
-    .cancelled { background:#fee2e2; color:#991b1b; border-color:#fecaca; }
-    .err { color:#dc2626; font-weight:900; }
-    .ok { color:#16a34a; font-weight:900; }
-
-    .locBadge{
-      display:inline-flex; align-items:center;
-      padding:4px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:900;
-      border:1px solid rgba(0,0,0,.08);
-      background:#f3f4f6;
-      color:#111827;
-      max-width: 320px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
+type Payload =
+  | {
+      type: "confirm";
+      appointment_id: string;
+      client_name: string;
+      client_email: string;
+      service: string;
+      location?: string | null;
+      start_time: string;
+      manage_url?: string;
     }
-
-    .calHeader { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
-    .calHeader .monthTitle { font-size:18px; font-weight:900; color:#111827; }
-    .calHeader .nav { display:flex; gap:8px; }
-
-    .calGrid { margin-top:12px; display:grid; grid-template-columns: repeat(7, 1fr); gap:10px; }
-    .dow { font-size:12px; color:#6b7280; font-weight:900; text-transform:uppercase; padding:0 6px; }
-    .day {
-      background:#fff; border:1px solid #e5e7eb; border-radius:16px; min-height:120px; padding:10px;
-      box-shadow:0 3px 10px rgba(0,0,0,.04); display:flex; flex-direction:column; gap:8px;
+  | {
+      type: "cancel";
+      appointment_id: string;
+      client_name: string;
+      client_email: string;
+      service: string;
+      location?: string | null;
+      start_time: string;
     }
-    .day.mutedDay { background:#f9fafb; color:#9ca3af; }
-    .dayNumRow { display:flex; justify-content:space-between; align-items:center; }
-    .dayNum { font-weight:900; color:#111827; }
-    .badgeToday { font-size:11px; font-weight:900; padding:4px 8px; border-radius:999px; background:#111827; color:#fff; }
-
-    .appt {
-      border-radius:14px; padding:10px 10px;
-      background:#eef2ff; border:1px solid #c7d2fe;
-      cursor:pointer;
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .appt:hover{ transform: translateY(-1px); box-shadow:0 10px 22px rgba(0,0,0,.08); }
-    .appt.cancelled { background:#fef2f2; border:1px solid #fecaca; opacity:0.75; }
-    .apptTop { display:flex; justify-content:space-between; gap:10px; align-items:center; }
-    .apptTime { font-weight:900; font-size:12px; color:#111827; }
-    .apptName { font-size:13px; font-weight:900; color:#111827; margin-top:6px; }
-    .apptSvc { font-size:12px; color:#4b5563; margin-top:2px; }
-    .apptLoc { font-size:12px; color:#374151; margin-top:6px; }
-
-    table { width:100%; border-collapse:collapse; margin-top:12px; background:#fff; }
-    th, td { text-align:left; padding:10px; border-bottom:1px solid #e5e7eb; font-size:14px; vertical-align:top; }
-    th { background:#f9fafb; position:sticky; top:0; z-index:1; }
-
-    .actions { display:flex; gap:8px; flex-wrap:wrap; }
-    .tinybtn { padding:8px 10px; border-radius:12px; font-size:12px; font-weight:900; cursor:pointer; border:none; color:#fff; }
-    .tinybtn.red { background:#dc2626; }
-    .tinybtn.blue { background:#2563eb; }
-    .tinybtn:disabled { opacity:.6; cursor:not-allowed; }
-
-    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; padding:18px; }
-    .modal{ width:100%; max-width:580px; background:#fff; border-radius:16px; box-shadow:0 12px 35px rgba(0,0,0,.25); padding:18px; }
-    .modal h2{ margin:0 0 8px 0; font-size:18px; }
-    .modal .grid{ display:grid; gap:10px; }
-    .modal label{ font-weight:900; color:#111827; }
-    .modal .btnrow{ display:flex; gap:10px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap; }
-    .modal .btnrow .close{ background:#fff; color:#111827; border:1px solid #d1d5db; }
-    .modal .btnrow .save{ background:#0f766e; color:#fff; border:none; }
-    .modal .btnrow .danger{ background:#dc2626; color:#fff; border:none; }
-    .meta { font-size:12px; color:#6b7280; line-height:1.6; }
-
-    @media (max-width: 700px){
-      body{ padding:14px; }
-      .card{ padding:14px; }
-      .locBadge{ max-width: 240px; }
-    }
-  </style>
-</head>
-<body>
-
-  <div id="loginView" class="login">
-    <div class="card">
-      <h1>Admin Login</h1>
-      <div class="muted">Enter your admin password to view appointments.</div>
-      <div class="row" style="margin-top:12px;">
-        <input id="adminPass" type="password" placeholder="Admin password" style="flex:1;" />
-        <button id="loginBtn">Enter</button>
-      </div>
-      <div id="loginMsg" class="muted"></div>
-    </div>
-  </div>
-
-  <div id="appView" class="wrap hide">
-    <div class="card">
-      <h1>Appointments</h1>
-      <div class="muted">
-        <span class="pill confirmed">Hours</span>
-        <b>Mon–Fri:</b> 10AM–8PM • <b>Sat:</b> 10AM–6PM • <b>Sun:</b> 12PM–6PM
-      </div>
-
-      <div class="row">
-        <div class="toggle">
-          <button id="viewMonth" class="active" type="button">Month View</button>
-          <button id="viewList" type="button">List View</button>
-        </div>
-
-        <input id="search" placeholder="Search name, email, or location…" style="flex:1; min-width:220px;" />
-        <select id="statusFilter">
-          <option value="all">All statuses</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-        <button class="secondary" id="refreshBtn" type="button">Refresh</button>
-        <button id="exportBtn" type="button">Export CSV</button>
-      </div>
-
-      <div id="msg" class="muted"></div>
-
-      <div id="monthViewWrap">
-        <div class="calHeader">
-          <div class="monthTitle" id="monthTitle"></div>
-          <div class="nav">
-            <button class="secondary" id="prevMonth" type="button">◀</button>
-            <button class="secondary" id="todayBtn" type="button">Today</button>
-            <button class="secondary" id="nextMonth" type="button">▶</button>
-          </div>
-        </div>
-
-        <div class="calGrid">
-          <div class="dow">Sun</div><div class="dow">Mon</div><div class="dow">Tue</div><div class="dow">Wed</div>
-          <div class="dow">Thu</div><div class="dow">Fri</div><div class="dow">Sat</div>
-        </div>
-
-        <div class="calGrid" id="calGrid"></div>
-      </div>
-
-      <div id="listViewWrap" class="hide" style="overflow:auto; border-radius:12px; margin-top:10px;">
-        <table>
-          <thead>
-            <tr>
-              <th style="min-width:160px;">Date & Time</th>
-              <th style="min-width:150px;">Client</th>
-              <th style="min-width:220px;">Email</th>
-              <th style="min-width:180px;">Service</th>
-              <th style="min-width:260px;">Location</th>
-              <th style="min-width:120px;">Status</th>
-              <th style="min-width:230px;">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div id="modalBackdrop" class="modal-backdrop">
-    <div class="modal">
-      <h2 id="modalTitle">Appointment</h2>
-      <div class="meta" id="modalInfo"></div>
-
-      <div class="grid" style="margin-top:12px;">
-        <label for="newTime">Reschedule Date & Time</label>
-        <input id="newTime" type="datetime-local" />
-        <div class="muted">
-          Allowed hours:
-          <b>Mon–Fri:</b> 10–8 • <b>Sat:</b> 10–6 • <b>Sun:</b> 12–6 • Duration: <b>60 minutes</b>
-        </div>
-      </div>
-
-      <div class="btnrow">
-        <button class="close" id="modalClose" type="button">Close</button>
-        <button class="danger" id="modalCancelAppt" type="button">Cancel Appointment</button>
-        <button class="save" id="modalSave" type="button">Save Reschedule</button>
-      </div>
-
-      <div id="modalMsg" class="muted" style="margin-top:10px;"></div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const APPOINTMENT_MINUTES = 60;
-
-    // NOTE: you asked for hardcoded password. Consider changing later.
-    const ADMIN_PASSWORD = "Alfusain42!";
-
-    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
-    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-    const loginView = document.getElementById("loginView");
-    const appView = document.getElementById("appView");
-    const loginBtn = document.getElementById("loginBtn");
-    const loginMsg = document.getElementById("loginMsg");
-    const adminPass = document.getElementById("adminPass");
-
-    const msg = document.getElementById("msg");
-    const search = document.getElementById("search");
-    const statusFilter = document.getElementById("statusFilter");
-    const refreshBtn = document.getElementById("refreshBtn");
-    const exportBtn = document.getElementById("exportBtn");
-
-    const viewMonth = document.getElementById("viewMonth");
-    const viewList = document.getElementById("viewList");
-    const monthViewWrap = document.getElementById("monthViewWrap");
-    const listViewWrap = document.getElementById("listViewWrap");
-
-    const monthTitle = document.getElementById("monthTitle");
-    const prevMonth = document.getElementById("prevMonth");
-    const nextMonth = document.getElementById("nextMonth");
-    const todayBtn = document.getElementById("todayBtn");
-    const calGrid = document.getElementById("calGrid");
-
-    const tbody = document.getElementById("tbody");
-
-    const modalBackdrop = document.getElementById("modalBackdrop");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalInfo = document.getElementById("modalInfo");
-    const newTime = document.getElementById("newTime");
-    const modalClose = document.getElementById("modalClose");
-    const modalSave = document.getElementById("modalSave");
-    const modalCancelAppt = document.getElementById("modalCancelAppt");
-    const modalMsg = document.getElementById("modalMsg");
-
-    let currentMonth = new Date();
-    currentMonth.setDate(1);
-    currentMonth.setHours(0,0,0,0);
-
-    let latestRows = [];
-    let activeRow = null;
-    let activeOldStart = null;
-
-    function sendUpdateEmail(payload) {
-      fetch(`${supabaseUrl}/functions/v1/send-update`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${supabaseKey}`,
-          "apikey": supabaseKey
-        },
-        body: JSON.stringify(payload)
-      }).catch(() => {});
-    }
-
-    function setMsg(text, cls="muted") { msg.className = cls; msg.textContent = text; }
-
-    function escapeHtml(s) {
-      return String(s ?? "")
-        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-    }
-
-    function formatLocation(raw){
-      const s = String(raw || "").trim();
-      if (!s) return "—";
-      return s
-        .replace(/^Columbus Metropolitan Library\s*[:\-]\s*/i, "CML – ")
-        .replace(/^Columbus Metropolitan Library/i, "CML");
-    }
-
-    function fmtDateTime(iso) {
-      const d = new Date(iso);
-      return d.toLocaleString([], { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
-    }
-
-    function fmtTime(iso) {
-      const d = new Date(iso);
-      return d.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
-    }
-
-    function toLocalInputValue(iso) {
-      const d = new Date(iso);
-      const pad = (n) => String(n).padStart(2,"0");
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    }
-
-    function pill(status) {
-      const s = (status || "confirmed").toLowerCase();
-      const cls = s === "cancelled" ? "pill cancelled" : "pill confirmed";
-      return `<span class="${cls}">${s}</span>`;
-    }
-
-    function locStyle(location) {
-      const str = String(location || "");
-      let h = 0;
-      for (let i=0; i<str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 360;
-      return `background:hsl(${h} 70% 92%); color:hsl(${h} 55% 22%); border-color:hsl(${h} 60% 78%);`;
-    }
-
-    function locBadge(location) {
-      const loc = formatLocation(location);
-      return `<span class="locBadge" style="${locStyle(loc)}" title="${escapeHtml(loc)}">${escapeHtml(loc)}</span>`;
-    }
-
-    function getDayRules(dateObj){
-      const dow = dateObj.getDay();
-      if (dow === 0) return { startHour: 12, endHour: 18 };
-      if (dow === 6) return { startHour: 10, endHour: 18 };
-      return { startHour: 10, endHour: 20 };
-    }
-
-    function isWithinWorkingHoursStart(startDateObj) {
-      const end = new Date(startDateObj.getTime() + APPOINTMENT_MINUTES * 60 * 1000);
-      const rules = getDayRules(startDateObj);
-
-      const startH = startDateObj.getHours() + startDateObj.getMinutes()/60;
-      const endH   = end.getHours() + end.getMinutes()/60;
-
-      return startH >= rules.startHour && endH <= rules.endHour;
-    }
-
-    function toCSV(rows) {
-      const header = ["start_time","client_name","client_email","service","location","status"];
-      const lines = [header.join(",")];
-      for (const r of rows) {
-        const line = [r.start_time,r.client_name,r.client_email,r.service,r.location,r.status]
-          .map(v => `"${String(v ?? "").replaceAll('"','""')}"`).join(",");
-        lines.push(line);
-      }
-      return lines.join("\n");
-    }
-
-    function download(filename, text) {
-      const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    function renderMonthTitle() {
-      monthTitle.textContent = currentMonth.toLocaleString([], { month:"long", year:"numeric" });
-    }
-
-    function groupByDay(rows) {
-      const map = new Map();
-      for (const r of rows) {
-        const d = new Date(r.start_time);
-        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-        if (!map.has(key)) map.set(key, []);
-        map.get(key).push(r);
-      }
-      for (const arr of map.values()) {
-        arr.sort((a,b) => new Date(a.start_time) - new Date(b.start_time));
-      }
-      return map;
-    }
-
-    async function fetchAppointmentsForMonth() {
-      const start = new Date(currentMonth);
-      start.setDate(1); start.setHours(0,0,0,0);
-
-      const gridStart = new Date(start);
-      gridStart.setDate(start.getDate() - start.getDay());
-
-      const end = new Date(start);
-      end.setMonth(end.getMonth() + 1);
-      end.setDate(0);
-      end.setHours(23,59,59,999);
-
-      const gridEnd = new Date(end);
-      gridEnd.setDate(end.getDate() + (6 - end.getDay()));
-      gridEnd.setHours(23,59,59,999);
-
-      let q = supa
-        .from("appointments")
-        .select("id, client_name, client_email, service, location, start_time, end_time, status")
-        .gte("start_time", gridStart.toISOString())
-        .lte("start_time", gridEnd.toISOString())
-        .order("start_time", { ascending:true });
-
-      if (statusFilter.value !== "all") q = q.eq("status", statusFilter.value);
-
-      const { data, error } = await q;
-      if (error) throw error;
-
-      const term = search.value.trim().toLowerCase();
-      latestRows = term
-        ? (data || []).filter(r =>
-            (r.client_name || "").toLowerCase().includes(term) ||
-            (r.client_email || "").toLowerCase().includes(term) ||
-            (formatLocation(r.location) || "").toLowerCase().includes(term)
-          )
-        : (data || []);
-
-      return { gridStart, monthStart: start };
-    }
-
-    function renderCalendar(gridStart, monthStart, rows) {
-      calGrid.innerHTML = "";
-      const today = new Date(); today.setHours(0,0,0,0);
-      const byDay = groupByDay(rows);
-
-      for (let i = 0; i < 42; i++) {
-        const dayDate = new Date(gridStart);
-        dayDate.setDate(gridStart.getDate() + i);
-        dayDate.setHours(0,0,0,0);
-
-        const isInMonth = dayDate.getMonth() === monthStart.getMonth();
-        const isToday = dayDate.getTime() === today.getTime();
-
-        const key = `${dayDate.getFullYear()}-${String(dayDate.getMonth()+1).padStart(2,"0")}-${String(dayDate.getDate()).padStart(2,"0")}`;
-        const appts = byDay.get(key) || [];
-
-        const dayEl = document.createElement("div");
-        dayEl.className = "day" + (isInMonth ? "" : " mutedDay");
-        dayEl.innerHTML = `
-          <div class="dayNumRow">
-            <div class="dayNum">${dayDate.getDate()}</div>
-            ${isToday ? `<div class="badgeToday">Today</div>` : ``}
-          </div>
-        `;
-
-        const maxShow = 4;
-        appts.slice(0, maxShow).forEach(r => {
-          const status = (r.status || "confirmed").toLowerCase();
-          const appt = document.createElement("div");
-          appt.className = "appt" + (status === "cancelled" ? " cancelled" : "");
-          appt.innerHTML = `
-            <div class="apptTop">
-              <div class="apptTime">${escapeHtml(fmtTime(r.start_time))}</div>
-              <div>${status === "cancelled" ? "❌" : "✅"}</div>
-            </div>
-            <div class="apptName">${escapeHtml(r.client_name)}</div>
-            <div class="apptSvc">${escapeHtml(r.service)}</div>
-            <div class="apptLoc">${locBadge(r.location)}</div>
-          `;
-          appt.addEventListener("click", () => openModalForRow(r));
-          dayEl.appendChild(appt);
-        });
-
-        if (appts.length > maxShow) {
-          const more = document.createElement("div");
-          more.className = "muted";
-          more.style.fontWeight = "900";
-          more.textContent = `+ ${appts.length - maxShow} more`;
-          dayEl.appendChild(more);
-        }
-
-        calGrid.appendChild(dayEl);
-      }
-    }
-
-    function renderList(rows) {
-      tbody.innerHTML = rows.map(r => {
-        const status = (r.status || "confirmed").toLowerCase();
-        const isCancelled = status === "cancelled";
-        return `
-          <tr>
-            <td>${escapeHtml(fmtDateTime(r.start_time))}</td>
-            <td>${escapeHtml(r.client_name)}</td>
-            <td>${escapeHtml(r.client_email)}</td>
-            <td>${escapeHtml(r.service)}</td>
-            <td>${locBadge(r.location)}</td>
-            <td>${pill(r.status)}</td>
-            <td>
-              <div class="actions">
-                <button class="tinybtn blue" data-action="reschedule" data-id="${escapeHtml(r.id)}" ${isCancelled ? "disabled" : ""}>Reschedule</button>
-                <button class="tinybtn red" data-action="cancel" data-id="${escapeHtml(r.id)}" ${isCancelled ? "disabled" : ""}>${isCancelled ? "Cancelled" : "Cancel"}</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join("");
-
-      tbody.querySelectorAll("button[data-action]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const id = btn.getAttribute("data-id");
-          const action = btn.getAttribute("data-action");
-          const row = latestRows.find(x => x.id === id);
-          if (!row) return;
-          if (action === "cancel") doCancel(row);
-          if (action === "reschedule") openModalForRow(row);
-        });
-      });
-    }
-
-    async function loadAll() {
-      try {
-        setMsg("Loading…");
-        renderMonthTitle();
-        const { gridStart, monthStart } = await fetchAppointmentsForMonth();
-        renderCalendar(gridStart, monthStart, latestRows);
-        renderList(latestRows);
-        setMsg(`✅ Loaded ${latestRows.length} appointment(s).`, "ok");
-      } catch (e) {
-        console.error(e);
-        setMsg("❌ " + (e?.message || e), "err");
-      }
-    }
-
-    function openModalForRow(row) {
-      activeRow = row;
-      activeOldStart = row.start_time;
-      modalMsg.textContent = "";
-
-      const isCancelled = (row.status || "confirmed").toLowerCase() === "cancelled";
-      modalTitle.textContent = isCancelled ? "Cancelled Appointment" : "Appointment";
-
-      modalInfo.innerHTML = `
-        <div><b>${escapeHtml(row.client_name)}</b> • ${escapeHtml(row.client_email)}</div>
-        <div>Service: <b>${escapeHtml(row.service)}</b></div>
-        <div>Location: ${locBadge(row.location)}</div>
-        <div>Time: <b>${escapeHtml(fmtDateTime(row.start_time))}</b></div>
-        <div>Status: <b>${escapeHtml((row.status || "confirmed").toLowerCase())}</b></div>
-      `;
-
-      newTime.value = toLocalInputValue(row.start_time);
-      modalCancelAppt.disabled = isCancelled;
-      modalSave.disabled = isCancelled;
-
-      modalBackdrop.style.display = "flex";
-    }
-
-    function closeModal() {
-      modalBackdrop.style.display = "none";
-      activeRow = null;
-      activeOldStart = null;
-    }
-
-    async function doCancel(row) {
-      const ok = confirm("Cancel this appointment?\n\nThis will mark it as cancelled AND email the client.");
-      if (!ok) return;
-
-      setMsg("Cancelling…", "muted");
-
-      const { error } = await supa.from("appointments")
-        .update({ status:"cancelled" })
-        .eq("id", row.id);
-
-      if (error) {
-        console.error(error);
-        setMsg("❌ Cancel failed: " + error.message, "err");
-        return;
-      }
-
-      sendUpdateEmail({
-        type: "cancel",
-        appointment_id: row.id,
-        client_name: row.client_name,
-        client_email: row.client_email,
-        service: row.service,
-        location: row.location,
-        start_time: row.start_time
-      });
-
-      setMsg("✅ Cancelled (email sent).", "ok");
-      closeModal();
-      await loadAll();
-    }
-
-    async function doReschedule() {
-      if (!activeRow) return;
-
-      const value = newTime.value;
-      if (!value) { modalMsg.textContent = "Please choose a date/time."; return; }
-
-      const start = new Date(value);
-
-      if (!isWithinWorkingHoursStart(start)) {
-        const label =
-          start.getDay() === 0 ? "Sunday 12PM–6PM" :
-          start.getDay() === 6 ? "Saturday 10AM–6PM" :
-          "Mon–Fri 10AM–8PM";
-        modalMsg.innerHTML = `<span class="err">❌ Not allowed:</span> ${label} only.`;
-        return;
-      }
-
-      const startISO = start.toISOString();
-      const endISO = new Date(start.getTime() + APPOINTMENT_MINUTES * 60 * 1000).toISOString();
-
-      modalSave.disabled = true;
-      modalMsg.textContent = "Saving…";
-
-      const { error } = await supa.from("appointments")
-        .update({ start_time: startISO, end_time: endISO, status:"confirmed" })
-        .eq("id", activeRow.id);
-
-      modalSave.disabled = false;
-
-      if (error) {
-        console.error(error);
-        modalMsg.textContent = "❌ Reschedule failed: " + error.message;
-        return;
-      }
-
-      sendUpdateEmail({
-        type: "reschedule",
-        appointment_id: activeRow.id,
-        client_name: activeRow.client_name,
-        client_email: activeRow.client_email,
-        service: activeRow.service,
-        location: activeRow.location,
-        old_start_time: activeOldStart,
-        new_start_time: startISO
-      });
-
-      setMsg("✅ Rescheduled (email sent).", "ok");
-      closeModal();
-      await loadAll();
-    }
-
-    function setView(mode) {
-      if (mode === "month") {
-        viewMonth.classList.add("active");
-        viewList.classList.remove("active");
-        monthViewWrap.classList.remove("hide");
-        listViewWrap.classList.add("hide");
-      } else {
-        viewList.classList.add("active");
-        viewMonth.classList.remove("active");
-        listViewWrap.classList.remove("hide");
-        monthViewWrap.classList.add("hide");
-      }
-    }
-
-    viewMonth.onclick = () => setView("month");
-    viewList.onclick = () => setView("list");
-
-    prevMonth.onclick = async () => { currentMonth.setMonth(currentMonth.getMonth()-1); currentMonth.setDate(1); await loadAll(); };
-    nextMonth.onclick = async () => { currentMonth.setMonth(currentMonth.getMonth()+1); currentMonth.setDate(1); await loadAll(); };
-    todayBtn.onclick = async () => { currentMonth = new Date(); currentMonth.setDate(1); currentMonth.setHours(0,0,0,0); await loadAll(); };
-
-    refreshBtn.onclick = loadAll;
-    statusFilter.onchange = loadAll;
-    search.oninput = () => loadAll();
-
-    exportBtn.onclick = () => {
-      const csv = toCSV(latestRows);
-      const stamp = new Date().toISOString().slice(0,10);
-      download(`appointments_${stamp}.csv`, csv);
+  | {
+      type: "reschedule";
+      appointment_id: string;
+      client_name: string;
+      client_email: string;
+      service: string;
+      location?: string | null;
+      old_start_time: string;
+      new_start_time: string;
     };
 
-    modalClose.onclick = closeModal;
-    modalSave.onclick = doReschedule;
-    modalCancelAppt.onclick = () => activeRow && doCancel(activeRow);
-    modalBackdrop.addEventListener("click", (e) => { if (e.target === modalBackdrop) closeModal(); });
+function formatLocation(raw?: string | null): string {
+  const s = String(raw ?? "").trim();
+  if (!s) return "—";
+  return s
+    .replace(/^Columbus Metropolitan Library\s*[:\-]\s*/i, "CML – ")
+    .replace(/^Columbus Metropolitan Library/i, "CML");
+}
 
-    loginBtn.onclick = async () => {
-      if (adminPass.value === ADMIN_PASSWORD) {
-        loginView.classList.add("hide");
-        appView.classList.remove("hide");
-        setView("month");
-        await loadAll();
-      } else {
-        loginMsg.textContent = "Wrong password.";
-      }
-    };
-    adminPass.addEventListener("keydown", (e) => { if (e.key === "Enter") loginBtn.click(); });
-  </script>
-</body>
-</html>
+function fmtDateTime(iso: string): string {
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/New_York",
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(new Date(iso));
+  } catch {
+    return iso;
+  }
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function emailShell(title: string, bodyHtml: string) {
+  return `
+  <div style="font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;padding:24px;">
+    <div style="max-width:640px;margin:0 auto;background:#fff;border-radius:16px;padding:20px;box-shadow:0 10px 26px rgba(0,0,0,.08);">
+      <div style="font-weight:900;font-size:18px;color:#111827;margin-bottom:6px;">${escapeHtml(title)}</div>
+      <div style="color:#4b5563;font-size:13px;margin-bottom:14px;">Columbus East Tax Services</div>
+      ${bodyHtml}
+      <div style="margin-top:18px;color:#6b7280;font-size:12px;line-height:1.5;">
+        Admin alert only • Call/Text 614-599-1185
+      </div>
+    </div>
+  </div>`;
+}
+
+function detailsBlock(p: {
+  name: string;
+  email: string;
+  service: string;
+  location: string;
+  when: string;
+  manageUrl?: string;
+  apptId: string;
+}) {
+  const manage = p.manageUrl
+    ? `<div style="margin-top:12px;">
+        <a href="${escapeHtml(p.manageUrl)}" style="display:inline-block;background:#111827;color:#fff;text-decoration:none;font-weight:900;padding:10px 14px;border-radius:12px;">
+          Open Manage Link
+        </a>
+      </div>`
+    : "";
+
+  return `
+    <div style="border:1px solid #e5e7eb;border-radius:14px;padding:14px;background:#fafafa;">
+      <div style="font-weight:900;color:#111827;margin-bottom:6px;">Appointment Details</div>
+      <div style="color:#111827;font-size:14px;line-height:1.6;">
+        <div><b>Client:</b> ${escapeHtml(p.name)}</div>
+        <div><b>Email:</b> ${escapeHtml(p.email)}</div>
+        <div><b>Service:</b> ${escapeHtml(p.service)}</div>
+        <div><b>Location:</b> ${escapeHtml(p.location)}</div>
+        <div><b>When:</b> ${escapeHtml(p.when)}</div>
+        <div style="margin-top:10px;color:#6b7280;font-size:12px;"><b>ID:</b> ${escapeHtml(p.apptId)}</div>
+      </div>
+      ${manage}
+    </div>
+  `;
+}
+
+async function sendWithResend(args: { to: string; subject: string; html: string }) {
+  const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
+  const FROM_EMAIL = Deno.env.get("FROM_EMAIL") ?? "";
+  if (!RESEND_API_KEY || !FROM_EMAIL) {
+    throw new Error("Missing RESEND_API_KEY or FROM_EMAIL env vars");
+  }
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: FROM_EMAIL,
+      to: args.to,
+      subject: args.subject,
+      html: args.html,
+    }),
+  });
+
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(`Resend error ${res.status}: ${txt}`);
+  }
+}
+
+serve(async (req) => {
+  // CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response("ok", {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "authorization, apikey, content-type",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+      },
+    });
+  }
+
+  try {
+    const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") ?? "";
+    if (!ADMIN_EMAIL) throw new Error("Missing ADMIN_EMAIL env var");
+
+    const payload = (await req.json()) as Payload;
+
+    const name = payload.client_name ?? "";
+    const email = payload.client_email ?? "";
+    const service = payload.service ?? "";
+    const location = formatLocation((payload as any).location);
+
+    // ADMIN ONLY — no client emails are sent
+    if (payload.type === "confirm") {
+      const when = fmtDateTime(payload.start_time);
+      const htmlAdmin = emailShell(
+        "📌 New Appointment Booked",
+        detailsBlock({
+          name,
+          email,
+          service,
+          location,
+          when,
+          manageUrl: payload.manage_url,
+          apptId: payload.appointment_id,
+        }),
+      );
+      await sendWithResend({ to: ADMIN_EMAIL, subject: "New booking received", html: htmlAdmin });
+    }
+
+    if (payload.type === "cancel") {
+      const when = fmtDateTime(payload.start_time);
+      const htmlAdmin = emailShell(
+        "❌ Appointment Cancelled",
+        detailsBlock({
+          name,
+          email,
+          service,
+          location,
+          when,
+          apptId: payload.appointment_id,
+        }),
+      );
+      await sendWithResend({ to: ADMIN_EMAIL, subject: "Booking cancelled", html: htmlAdmin });
+    }
+
+    if (payload.type === "reschedule") {
+      const oldWhen = fmtDateTime(payload.old_start_time);
+      const newWhen = fmtDateTime(payload.new_start_time);
+      const htmlAdmin = emailShell(
+        "🔁 Appointment Rescheduled",
+        `
+          ${detailsBlock({
+            name,
+            email,
+            service,
+            location,
+            when: newWhen,
+            apptId: payload.appointment_id,
+          })}
+          <div style="margin-top:12px;border:1px solid #e5e7eb;border-radius:14px;padding:12px;background:#fff;">
+            <div style="font-weight:900;color:#111827;">Previous time</div>
+            <div style="color:#4b5563;margin-top:4px;">${escapeHtml(oldWhen)}</div>
+          </div>
+        `,
+      );
+      await sendWithResend({ to: ADMIN_EMAIL, subject: "Booking rescheduled", html: htmlAdmin });
+    }
+
+    return new Response(JSON.stringify({ ok: true }), {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ ok: false, error: String(e?.message ?? e) }), {
+      status: 400,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  }
+});
