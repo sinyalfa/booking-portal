@@ -3,58 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Book an Appointment – Columbus East Tax Services</title>
+  <title>Columbus East Tax Services — Book Appointment</title>
 
   <style>
     :root{
       --bg1:#0b1220;
-      --bg2:#111827;
-      --card:rgba(255,255,255,.96);
-      --muted:#6b7280;
+      --bg2:#0f172a;
+
+      --card: rgba(255,255,255,.96);
+      --card2:#ffffff;
+
       --text:#0f172a;
-      --ring:rgba(99,102,241,.35);
-      --accent:#4f46e5;
+      --muted:#64748b;
 
-      --okBg:#dcfce7; --okText:#166534; --okBorder:#86efac;
-      --badBg:#fee2e2; --badText:#991b1b; --badBorder:#fecaca;
-      --infoBg:#dbeafe; --infoText:#1e3a8a; --infoBorder:#93c5fd;
+      --ring: rgba(34,197,94,.35);
 
-      --slotBg:#ecfdf5;
-      --slotBorder:#34d399;
-      --slotText:#065f46;
-
-      --slotSelBg:#e0e7ff;
-      --slotSelBorder:#6366f1;
-      --slotSelText:#111827;
+      --green:#16a34a;
+      --blue:#2563eb;
 
       --btnDark1:#111827;
       --btnDark2:#0b1220;
-      --btnGreen:#0f766e;
+
+      --slotBg:#eafff3;
+      --slotBorder:#57d38c;
+      --slotText:#065f46;
+
+      --shadow: 0 20px 55px rgba(0,0,0,.35);
     }
 
     *{ box-sizing:border-box; }
     html, body{ width:100%; max-width:100%; overflow-x:hidden; }
-
     body{
       margin:0;
       padding:14px;
       font-family: Arial, Helvetica, sans-serif;
       background:
-        radial-gradient(1200px 600px at 20% 0%, rgba(79,70,229,.25), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(16,185,129,.18), transparent 55%),
+        radial-gradient(1200px 600px at 20% 0%, rgba(59,130,246,.22), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(34,197,94,.18), transparent 55%),
         linear-gradient(180deg, var(--bg1), var(--bg2));
       color:#e5e7eb;
     }
 
     .wrap{
       width:100%;
-      max-width:1100px;
+      max-width:1180px;
       margin:0 auto;
-      display:grid;
-      gap:14px;
-    }
-
-    .grid{
       display:grid;
       grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
       gap:14px;
@@ -62,192 +55,361 @@
     }
 
     @media (max-width: 980px){
-      .grid{ grid-template-columns:1fr; }
-      body{ padding:10px; }
+      body{ padding:12px; }
+      .wrap{ grid-template-columns: 1fr; }
     }
 
     .card{
       background: var(--card);
       border: 1px solid rgba(255,255,255,.15);
-      border-radius: 20px;
-      box-shadow: 0 20px 55px rgba(0,0,0,.35);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
       padding:14px;
       color: var(--text);
       backdrop-filter: blur(8px);
       overflow:hidden;
     }
 
-    .brand{
-      display:flex; align-items:center; gap:12px;
-      margin-bottom:10px;
+    /* LEFT — LOGO AREA */
+    .logoHeader{
+      padding:10px;
+      border-radius:18px;
+      border:1px solid #e5e7eb;
+      background:#ffffff;
+      overflow:hidden;
     }
-    .logo{
-      width:52px;height:52px;border-radius:18px;
-      background: linear-gradient(135deg, rgba(79,70,229,1), rgba(16,185,129,1));
-      box-shadow: 0 14px 30px rgba(79,70,229,.35);
-      flex:0 0 auto;
-    }
-    h1{ margin:0; font-size:28px; font-weight:900; letter-spacing:.2px; }
-    h2{ margin:0; font-size:22px; font-weight:900; }
-    .muted{ color: var(--muted); font-size:13px; line-height:1.45; }
-    .bigmuted{ color:#334155; font-size:14px; line-height:1.5; }
-
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:6px 10px; border-radius:999px; font-weight:900; font-size:12px;
-      border: 1px solid transparent;
-      white-space:nowrap;
-    }
-    .pill.ok{ background:var(--okBg); color:var(--okText); border-color:var(--okBorder); }
-    .pill.bad{ background:var(--badBg); color:var(--badText); border-color:var(--badBorder); }
-    .pill.info{ background:var(--infoBg); color:var(--infoText); border-color:var(--infoBorder); }
-
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
+    .logoHeader img{
       width:100%;
-      min-width:0;
-      margin-top:10px;
-    }
-
-    label{
+      height:auto;
       display:block;
-      font-size:12px;
+      border-radius:14px;
+      object-fit:contain;
+    }
+
+    .infoCard{
+      margin-top:12px;
+      border-radius:18px;
+      border:1px solid #e5e7eb;
+      background:#f8fafc;
+      padding:14px;
+    }
+    .infoTitle{
+      margin:0 0 8px 0;
+      font-size:18px;
       font-weight:900;
-      color:#111827;
-      margin:12px 0 6px;
+      color:#0f172a;
     }
+    ul{ margin:0; padding-left:18px; color:#0f172a; }
+    li{ margin:8px 0; font-weight:800; color:#0f172a; }
 
-    input, select, button{
-      padding:12px 12px;
-      border-radius:12px;
-      border:1px solid #d1d5db;
-      font-size:14px;
-      outline:none;
-      background:#fff;
-      min-height:44px;
-      width:100%;
-      max-width:100%;
-    }
-
-    input:focus, select:focus{
-      border-color: rgba(79,70,229,.55);
-      box-shadow: 0 0 0 4px var(--ring);
-    }
-
-    .two{
+    .btnGrid{
+      margin-top:12px;
       display:grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: 1fr 1fr;
       gap:10px;
     }
-    @media (max-width: 520px){
-      .two{ grid-template-columns:1fr; }
+    @media (max-width: 420px){
+      .btnGrid{ grid-template-columns: 1fr; }
     }
-
     .btn{
-      border:none;
-      background: linear-gradient(135deg, var(--btnDark1), var(--btnDark2));
-      color:#fff;
-      font-weight:900;
-      cursor:pointer;
-      box-shadow: 0 10px 20px rgba(0,0,0,.12);
-      transition: transform .12s ease, opacity .12s ease;
-      min-height:50px;
-      border-radius:16px;
       display:flex;
       align-items:center;
       justify-content:center;
       gap:10px;
+      padding:14px 14px;
+      border-radius:16px;
+      border:1px solid rgba(15,23,42,.08);
+      font-weight:900;
+      cursor:pointer;
+      user-select:none;
+      text-decoration:none;
+      color:white;
+      box-shadow: 0 14px 24px rgba(0,0,0,.10);
+      transition: transform .12s ease, filter .12s ease;
+      min-height:54px;
     }
-    .btn:hover{ transform: translateY(-1px); }
-    .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.02); }
+    .btn:active{ transform: translateY(0px); filter: brightness(.99); }
 
-    .btnGreen{
-      background: linear-gradient(135deg, var(--btnGreen), #0b1220);
+    .btn.call{ background:#1f2937; }
+    .btn.text{ background:#16a34a; }
+    .btn.email{ background:#2563eb; }
+    .btn.book{ background:#0f766e; }
+
+    .tinyNote{
+      margin-top:10px;
+      text-align:center;
+      color:#475569;
+      font-weight:800;
     }
 
-    .ctaCol{
+    .statusRow{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+      padding:0 6px 6px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      font-weight:900;
+      font-size:12px;
+      border:1px solid transparent;
+      white-space:nowrap;
+    }
+    .badge.ok{ background:#dcfce7; border-color:#86efac; color:#166534; }
+    .badge.warn{ background:#e0f2fe; border-color:#7dd3fc; color:#075985; }
+    .badge.bad{ background:#fee2e2; border-color:#fecaca; color:#991b1b; }
+
+    /* RIGHT */
+    .rightHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:6px 6px 0;
+    }
+    .rightHeader h2{
+      margin:0;
+      font-size:26px;
+      font-weight:900;
+      color:#0f172a;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid #e5e7eb;
+      background:#f1f5f9;
+      color:#0f172a;
+      font-weight:900;
+    }
+
+    .pillsTop{
+      margin:12px 6px 2px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid #e5e7eb;
+      background:#eef2f7;
+      color:#0f172a;
+      font-weight:900;
+      min-width: 260px;
+      max-width:100%;
+    }
+    @media (max-width: 520px){
+      .pill{ min-width: 0; width:100%; }
+    }
+    .pill .pico{ width:18px; text-align:center; }
+
+    /* Accordion */
+    .accordion{
+      margin-top:12px;
+      border-radius:18px;
+      border:1px solid #e5e7eb;
+      background: var(--card2);
+      overflow:hidden;
+    }
+    .accHead{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 14px;
+      cursor:pointer;
+      border:none;
+      background:
+        radial-gradient(900px 300px at 80% 0%, rgba(34,197,94,.14), transparent 50%),
+        radial-gradient(900px 300px at 20% 0%, rgba(59,130,246,.12), transparent 50%),
+        #ffffff;
+      color:#0f172a;
+    }
+    .accHead .left{
       display:flex;
       flex-direction:column;
-      gap:10px;
-      margin-top:14px;
+      gap:4px;
+      text-align:left;
+    }
+    .accHead .title{
+      font-weight:900;
+      font-size:18px;
+    }
+    .accHead .sub{
+      margin:0;
+      color:#475569;
+      font-weight:800;
+      font-size:13px;
+    }
+    .chev{
+      font-weight:900;
+      font-size:18px;
+      width:34px;
+      height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:10px;
+      border:1px solid #e5e7eb;
+      background:#f8fafc;
+      flex:0 0 auto;
     }
 
-    .slotGrid{
+    .accBody{
+      padding:14px;
+      display:none;
+    }
+    .accBody.open{ display:block; }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
       margin-top:12px;
+    }
+    @media (max-width: 700px){
+      .grid2{ grid-template-columns: 1fr; }
+    }
+
+    label{
+      display:block;
+      font-weight:900;
+      color:#0f172a;
+      margin:0 0 6px 2px;
+    }
+
+    input, select{
+      width:100%;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid #d1d5db;
+      font-size:15px;
+      outline:none;
+      background:#fff;
+      min-height:46px;
+    }
+    input:focus, select:focus{
+      border-color: rgba(34,197,94,.55);
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    .hours{
+      margin-top:10px;
+      color:#334155;
+      font-weight:800;
+      line-height:1.55;
+    }
+
+    .slotsTitle{
+      margin-top:12px;
+      font-weight:900;
+      color:#0f172a;
+    }
+    .slots{
+      margin-top:10px;
       display:grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap:10px;
     }
     @media (max-width: 980px){
-      .slotGrid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .slots{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
-    @media (max-width: 520px){
-      .slotGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 560px){
+      .slots{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     .slot{
+      border-radius:16px;
       border:1px solid var(--slotBorder);
       background: var(--slotBg);
       color: var(--slotText);
       font-weight:900;
-      border-radius:16px;
       padding:14px 10px;
       text-align:center;
       cursor:pointer;
       user-select:none;
       transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
-      min-height:52px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      min-height:54px;
     }
-    .slot:hover{ transform: translateY(-1px); box-shadow:0 10px 18px rgba(0,0,0,.08); }
-    .slot.sel{
-      background: var(--slotSelBg);
-      border-color: var(--slotSelBorder);
-      color: var(--slotSelText);
-      box-shadow: 0 0 0 4px rgba(99,102,241,.18);
+    .slot:hover{ transform: translateY(-1px); box-shadow: 0 10px 22px rgba(0,0,0,.08); }
+    .slot.selected{
+      background:#e8e7ff;
+      border-color:#7c3aed;
+      color:#1f155a;
+      box-shadow: 0 0 0 4px rgba(124,58,237,.18);
     }
-    .slot.dis{
+    .slot.disabled{
       opacity:.35;
       cursor:not-allowed;
-      transform:none !important;
-      box-shadow:none !important;
-      background:#f8fafc;
+      text-decoration: line-through;
+      background:#f1f5f9;
       border-color:#e5e7eb;
-      color:#64748b;
-    }
-
-    .note{
-      margin-top:10px;
-      font-size:13px;
       color:#334155;
+      box-shadow:none;
+      transform:none;
     }
 
-    .alert{
-      margin-top:12px;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid #e5e7eb;
-      background:#f8fafc;
+    .confirmBtn{
+      margin-top:14px;
+      width:100%;
+      padding:16px 14px;
+      border-radius:16px;
+      border:none;
+      background: linear-gradient(135deg, var(--btnDark1), var(--btnDark2));
+      color:#fff;
       font-weight:900;
-      font-size:13px;
-      display:flex;
-      align-items:flex-start;
-      gap:10px;
+      font-size:16px;
+      cursor:pointer;
+      box-shadow: 0 14px 28px rgba(0,0,0,.16);
+      transition: transform .12s ease, opacity .12s ease;
+      min-height:56px;
     }
-    .alert.ok{ background:var(--okBg); border-color:var(--okBorder); color:var(--okText); }
-    .alert.bad{ background:var(--badBg); border-color:var(--badBorder); color:var(--badText); }
-    .alert.info{ background:var(--infoBg); border-color:var(--infoBorder); color:var(--infoText); }
+    .confirmBtn:hover{ transform: translateY(-1px); }
+    .confirmBtn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
 
+    .msg{
+      margin-top:10px;
+      border-radius:14px;
+      padding:12px 12px;
+      font-weight:900;
+      border:1px solid transparent;
+      display:none;
+    }
+    .msg.ok{ background:#dcfce7; border-color:#86efac; color:#166534; }
+    .msg.bad{ background:#fee2e2; border-color:#fecaca; color:#991b1b; }
+    .msg.warn{ background:#e0f2fe; border-color:#7dd3fc; color:#075985; }
+
+    .afterNote{
+      margin-top:10px;
+      text-align:center;
+      color:#475569;
+      font-weight:800;
+    }
+
+    /* Confirmation card */
     .confirmCard{
-      border:1px solid #e5e7eb;
-      border-radius:18px;
-      padding:14px;
-      background:#fff;
+      display:none;
       margin-top:12px;
+      border-radius:20px;
+      border:1px solid #e5e7eb;
+      background:#ffffff;
+      padding:16px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.10);
     }
     .confirmTop{
       display:flex;
@@ -255,205 +417,290 @@
       gap:12px;
       flex-wrap:wrap;
     }
-    .check{
-      width:44px;height:44px;border-radius:16px;
-      background:var(--okBg);
-      border:1px solid var(--okBorder);
-      color:var(--okText);
-      display:flex;align-items:center;justify-content:center;
+    .checkCircle{
+      width:44px; height:44px;
+      border-radius:999px;
+      background:#dcfce7;
+      border:1px solid #86efac;
+      color:#166534;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       font-size:22px;
       font-weight:900;
       flex:0 0 auto;
     }
+    .confirmTop h3{
+      margin:0;
+      font-size:22px;
+      font-weight:900;
+      color:#0f172a;
+      line-height:1.1;
+    }
+    .confirmTop .small{
+      width:100%;
+      color:#475569;
+      font-weight:800;
+      margin-top:2px;
+    }
+
     .confirmGrid{
       margin-top:12px;
       display:grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap:10px;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
     }
-    @media (max-width: 520px){
+    @media (max-width: 700px){
       .confirmGrid{ grid-template-columns:1fr; }
     }
-    .miniBox{
+    .cbox{
       border:1px solid #e5e7eb;
-      border-radius:14px;
-      padding:10px 12px;
       background:#f8fafc;
+      border-radius:16px;
+      padding:12px;
     }
-    .miniLabel{ font-size:12px; color:#64748b; font-weight:900; }
-    .miniValue{ margin-top:4px; font-weight:900; color:#0f172a; }
+    .cbox .k{
+      color:#64748b;
+      font-weight:900;
+      font-size:13px;
+      margin-bottom:6px;
+    }
+    .cbox .v{
+      color:#0f172a;
+      font-weight:900;
+      font-size:16px;
+      word-break:break-word;
+    }
+    .statusPill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:999px;
+      font-weight:900;
+      border:1px solid transparent;
+      background: var(--blue);
+      color:#fff;
+    }
 
-    a{ color:inherit; text-decoration:none; }
+    .confirmBtns{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 700px){
+      .confirmBtns{ grid-template-columns:1fr; }
+    }
+    .btn2{
+      border:none;
+      border-radius:16px;
+      padding:14px 14px;
+      font-weight:900;
+      cursor:pointer;
+      min-height:54px;
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .btn2:hover{ transform: translateY(-1px); filter:brightness(1.02); }
+    .btn2.primary{ background:#0f766e; color:#fff; }
+    .btn2.dark{ background: linear-gradient(135deg, var(--btnDark1), var(--btnDark2)); color:#fff; }
+
+    .helpLine{
+      margin-top:10px;
+      color:#475569;
+      font-weight:800;
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <div class="grid">
-      <!-- LEFT INFO CARD -->
-      <div class="card">
-        <div class="brand">
-          <div class="logo"></div>
-          <div>
-            <h1>Columbus East Tax Services</h1>
-            <div class="muted">Columbus, Ohio 43227</div>
-          </div>
-        </div>
 
-        <div class="bigmuted" style="display:grid; gap:6px; margin-top:8px;">
-          <div>📞 <b><a href="tel:16145991185">614-599-1185</a></b></div>
-          <div>📞 <b><a href="tel:16142597625">614-259-7625</a></b></div>
-          <div>✉️ <b><a href="mailto:columbuseast.taxservices@outlook.com">columbuseast.taxservices@outlook.com</a></b></div>
-        </div>
+    <!-- LEFT SIDE -->
+    <div class="card" id="leftCard">
 
-        <div class="card" style="margin-top:14px;">
-          <div style="font-weight:900; font-size:16px; margin-bottom:8px;">Services Offered</div>
-          <ul class="bigmuted" style="margin:0; padding-left:18px; display:grid; gap:6px;">
-            <li>W-2 &amp; Individual Tax Returns</li>
-            <li>1099 &amp; Self-Employed Taxes</li>
-            <li>LLC &amp; Small Business Filing</li>
-            <li>Audit Help &amp; IRS Letters</li>
-            <li>Amended Returns (1040-X)</li>
-          </ul>
-        </div>
-
-        <div class="ctaCol">
-          <a class="btn" href="tel:16145991185">📞 Call Now</a>
-          <a class="btn btnGreen" href="sms:16145991185">💬 Text Us</a>
-          <a class="btn" style="background:linear-gradient(135deg,#7c3aed,#0b1220)" href="mailto:columbuseast.taxservices@outlook.com">✉️ Email Us</a>
-          <a class="btn" style="background:linear-gradient(135deg,#0f766e,#0b1220)" href="#book">🗓️ Book Appointment</a>
-        </div>
-
-        <div class="muted" style="margin-top:10px;">Tap to call, text, email, or book online.</div>
+      <!-- LOGO REPLACING EVERYTHING -->
+      <div class="logoHeader">
+        <!-- Your uploaded logo is already named logo.png -->
+        <img src="logo.png" alt="Columbus East Tax Services Logo" />
       </div>
 
-      <!-- RIGHT BOOKING CARD -->
-      <div class="card" id="book">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;">
-          <div>
-            <h2>Book an Appointment</h2>
+      <div class="infoCard">
+        <div class="infoTitle">Services Offered</div>
+        <ul>
+          <li>W-2 &amp; Individual Tax Returns</li>
+          <li>1099 &amp; Self-Employed Taxes</li>
+          <li>LLC &amp; Small Business Filing</li>
+          <li>Audit Help &amp; IRS Letters</li>
+          <li>Amended Returns (1040-X)</li>
+        </ul>
+      </div>
 
-            <!-- LIVE CURRENT DATE/TIME (ET) -->
-            <div class="row" style="margin-top:6px;">
-              <span class="pill info" id="currentDate">📅 Loading date…</span>
-              <span class="pill info" id="currentTime">⏰ Loading time…</span>
-            </div>
+      <div class="btnGrid">
+        <a class="btn call" href="tel:6142597625" aria-label="Call Now">📞 Call Now</a>
+        <a class="btn text" href="sms:6142597625" aria-label="Text Us">💬 Text Us</a>
+        <a class="btn email" href="mailto:columbuseast.taxservices@outlook.com" aria-label="Email Us">✉️ Email Us</a>
+        <button class="btn book" id="openBookingBtn" type="button" aria-label="Book Appointment">🗓️ Book Us</button>
+      </div>
 
-            <div class="muted">Pick a date, choose a time, and confirm.</div>
-          </div>
-          <span class="pill info" id="durationPill">60 minutes</span>
-        </div>
+      <div class="tinyNote">Tap to call, text, email, or book online</div>
 
-        <div class="row" style="margin-top:10px;">
-          <span class="pill info" id="jsPill">JS: loading…</span>
-          <span class="pill info" id="sbPill">Supabase: loading…</span>
-        </div>
+      <div class="statusRow">
+        <span class="badge warn" id="jsBadge">⚙️ JS: loading…</span>
+        <span class="badge warn" id="sbBadge">🗄️ Supabase: loading…</span>
+      </div>
+    </div>
 
-        <!-- FORM -->
-        <div class="two" style="margin-top:10px;">
-          <div>
-            <label for="fullName">Full Name</label>
-            <input id="fullName" type="text" placeholder="Your name" autocomplete="name" />
-          </div>
-          <div>
-            <label for="email">Email Address</label>
-            <input id="email" type="email" placeholder="you@email.com" autocomplete="email" />
-          </div>
-        </div>
-
-        <div class="two">
-          <div>
-            <label for="service">Select Service</label>
-            <select id="service">
-              <option>W-2 / Individual Taxes</option>
-              <option>1099 / Self-Employed</option>
-              <option>LLC / Small Business Filing</option>
-              <option>Audit Help</option>
-              <option>Amended Returns (1040-X)</option>
-            </select>
-          </div>
-          <div>
-            <label for="location">Location</label>
-            <select id="location">
-              <!-- NEW LOCATION OPTION -->
-              <option value="Online / Phone / Text Appointment">Online / Phone / Text Appointment</option>
-
-              <option value="CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213">CML Whitehall Branch — 4445 E Broad St</option>
-              <option value="CML Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227">CML Barnett Branch — 3434 E Livingston Ave</option>
-              <option value="CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068">CML Reynoldsburg Branch — 1402 Brice Rd</option>
-              <option value="CML Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125">CML Southeast Branch — 3980 S Hamilton Rd</option>
-            </select>
-          </div>
-        </div>
-
+    <!-- RIGHT SIDE -->
+    <div class="card" id="rightCard">
+      <div class="rightHeader">
         <div>
-          <label for="date">Pick a Date</label>
-          <input id="date" type="date" />
-          <div class="note" id="hoursNote">
-            <b>Hours:</b><br>
-            Mon–Fri: 9:00 AM–8:00 PM (Blocked 2:00–5:00 PM)<br>
-            Sat: 10:00 AM–6:00 PM<br>
-            Sun: 12:00 PM–6:00 PM
+          <h2>Book an Appointment</h2>
+        </div>
+        <div class="chip" title="Appointment length">60 minutes</div>
+      </div>
+
+      <div class="pillsTop">
+        <div class="pill" id="todayPill"><span class="pico">📅</span><span>Today: —</span></div>
+        <div class="pill" id="timePill"><span class="pico">🕒</span><span>Current Time: —</span></div>
+      </div>
+
+      <!-- Collapsible booking panel -->
+      <div class="accordion">
+        <button class="accHead" id="accToggle" type="button" aria-expanded="false">
+          <div class="left">
+            <div class="title">Appointment Details</div>
+            <div class="sub" id="accSub">Click to open booking form</div>
           </div>
-        </div>
-
-        <div style="margin-top:10px;">
-          <div style="font-weight:900; font-size:14px; color:#0f172a;">Available Times</div>
-          <div class="slotGrid" id="slotGrid"></div>
-        </div>
-
-        <button class="btn" id="confirmBtn" type="button" style="margin-top:14px;" disabled>
-          Confirm Booking
+          <div class="chev" id="chev">▾</div>
         </button>
 
-        <div id="msgBox"></div>
-
-        <!-- AFTER NOTE (changes on success) -->
-        <div id="afterNote" class="note" style="margin-top:10px;">
-          Pick a time, then press Confirm Booking.
-        </div>
-
-        <!-- CONFIRMATION CARD (hidden until success) -->
-        <div id="confirmCard" class="confirmCard" style="display:none;">
-          <div class="confirmTop">
-            <div class="check">✓</div>
+        <div class="accBody" id="accBody">
+          <div class="grid2">
             <div>
-              <div style="font-weight:900; font-size:22px; color:#0f172a;">Booking Confirmed</div>
-              <div class="muted" style="font-weight:900;">You are scheduled successfully.</div>
+              <label for="fullName">Full Name</label>
+              <input id="fullName" type="text" placeholder="Your name" autocomplete="name" />
+            </div>
+            <div>
+              <label for="email">Email Address</label>
+              <input id="email" type="email" placeholder="you@email.com" autocomplete="email" />
+            </div>
+
+            <div>
+              <label for="service">Select Service</label>
+              <select id="service">
+                <option>W-2 / Individual Taxes</option>
+                <option>1099 / Self-Employed Taxes</option>
+                <option>LLC / Small Business Filing</option>
+                <option>Audit Help & IRS Letters</option>
+                <option>Amended Returns (1040-X)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="location">Location</label>
+              <select id="location">
+                <option value="CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213">CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213</option>
+                <option value="CML Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227">CML Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227</option>
+                <option value="CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068">CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068</option>
+                <option value="CML Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125">CML Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125</option>
+
+                <!-- ✅ NEW LOCATION -->
+                <option value="Online / Phone / Text Appointment">Online / Phone / Text Appointment</option>
+              </select>
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+              <label for="datePick">Pick a Date</label>
+              <input id="datePick" type="date" />
             </div>
           </div>
 
-          <div class="confirmGrid" id="confirmGrid"></div>
-
-          <div class="two" style="margin-top:12px;">
-            <button class="btn btnGreen" id="bookAnotherBtn" type="button">🗓️ Book Another Appointment</button>
-            <button class="btn" id="backTopBtn" type="button">⬆ Back to Top</button>
+          <div class="hours" id="hoursText">
+            Hours:<br/>
+            Mon–Fri: 9:00 AM–8:00 PM (Blocked 2:00–5:00 PM)<br/>
+            Sat: 10:00 AM–6:00 PM<br/>
+            Sun: 12:00 PM–6:00 PM
           </div>
 
-          <div class="muted" style="margin-top:10px;">Need changes? Call or text us anytime.</div>
+          <div class="slotsTitle">Available Times</div>
+          <div class="slots" id="slots"></div>
+
+          <button class="confirmBtn" id="confirmBtn" type="button" disabled>🗓️ Confirm Booking</button>
+
+          <div class="msg" id="msg"></div>
+          <div class="afterNote" id="afterNote">Pick a time, then press Confirm Booking.</div>
+
+          <!-- Confirmation card -->
+          <div class="confirmCard" id="confirmCard">
+            <div class="confirmTop">
+              <div class="checkCircle">✓</div>
+              <div>
+                <h3>Booking Confirmed</h3>
+                <div class="small">You are scheduled successfully.</div>
+              </div>
+            </div>
+
+            <div class="confirmGrid" id="confirmGrid"></div>
+
+            <div class="confirmBtns">
+              <button class="btn2 primary" id="bookAnotherBtn" type="button">🗓️ Book Another Appointment</button>
+              <button class="btn2 dark" id="backTopBtn" type="button">↑ Back to Top</button>
+            </div>
+
+            <div class="helpLine">Need changes? Call or text us anytime.</div>
+          </div>
         </div>
       </div>
     </div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ========= Supabase =========
-    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
-    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+    // =========================
+    // SUPABASE CONFIG
+    // =========================
+    const SUPABASE_URL = "https://zleztbdrxnqirccgkvqx.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
 
-    // ========= UI =========
-    const jsPill = document.getElementById("jsPill");
-    const sbPill = document.getElementById("sbPill");
+    const sbBadge = document.getElementById("sbBadge");
+    const jsBadge = document.getElementById("jsBadge");
 
-    const fullNameEl = document.getElementById("fullName");
-    const emailEl = document.getElementById("email");
-    const serviceEl = document.getElementById("service");
-    const locationEl = document.getElementById("location");
-    const dateEl = document.getElementById("date");
-    const slotGrid = document.getElementById("slotGrid");
+    let supa = null;
+    try{
+      supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      sbBadge.className = "badge ok";
+      sbBadge.textContent = "🗄️ Supabase: loaded";
+    }catch(e){
+      sbBadge.className = "badge bad";
+      sbBadge.textContent = "🗄️ Supabase: failed";
+      console.error(e);
+    }
+    jsBadge.className = "badge ok";
+    jsBadge.textContent = "⚙️ JS: loaded";
+
+    // =========================
+    // UI ELEMENTS
+    // =========================
+    const todayPill = document.getElementById("todayPill");
+    const timePill = document.getElementById("timePill");
+
+    const openBookingBtn = document.getElementById("openBookingBtn");
+    const accToggle = document.getElementById("accToggle");
+    const accBody = document.getElementById("accBody");
+    const accSub = document.getElementById("accSub");
+    const chev = document.getElementById("chev");
+
+    const fullName = document.getElementById("fullName");
+    const email = document.getElementById("email");
+    const service = document.getElementById("service");
+    const locationSel = document.getElementById("location");
+    const datePick = document.getElementById("datePick");
+
+    const slotsEl = document.getElementById("slots");
     const confirmBtn = document.getElementById("confirmBtn");
-    const msgBox = document.getElementById("msgBox");
+    const msgEl = document.getElementById("msg");
     const afterNote = document.getElementById("afterNote");
 
     const confirmCard = document.getElementById("confirmCard");
@@ -461,18 +708,211 @@
     const bookAnotherBtn = document.getElementById("bookAnotherBtn");
     const backTopBtn = document.getElementById("backTopBtn");
 
-    const currentDateEl = document.getElementById("currentDate");
-    const currentTimeEl = document.getElementById("currentTime");
-
+    // =========================
+    // HELPERS
+    // =========================
     const TZ = "America/New_York";
-    const SLOT_MINUTES = 30;        // show every 30 min
-    const DURATION_MINUTES = 60;    // appointment length
+    const SLOT_STEP_MIN = 30;
+    const APPT_MIN = 60;
 
-    let selectedStartISO = null;    // ISO string (UTC) that we insert
-    let selectedLabel = "";         // nice time label
+    function pad(n){ return String(n).padStart(2,"0"); }
+    function toYMD(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+
+    function parseYMD(ymd){
+      const [y,m,d] = ymd.split("-").map(Number);
+      const dt = new Date();
+      dt.setFullYear(y, m-1, d);
+      dt.setHours(0,0,0,0);
+      return dt;
+    }
+
+    function fmtToday(d){
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone: TZ, weekday:"long", month:"long", day:"numeric", year:"numeric"
+      }).format(d);
+    }
+
+    function fmtTime(d){
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone: TZ, hour:"numeric", minute:"2-digit", second:"2-digit"
+      }).format(d) + " ET";
+    }
+
+    function fmtSlotLabel(dateObj){
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone: TZ, hour:"numeric", minute:"2-digit"
+      }).format(dateObj);
+    }
+
+    function setMsg(type, text){
+      msgEl.style.display = "block";
+      msgEl.className = "msg " + type;
+      msgEl.textContent = text;
+    }
+
+    function clearMsg(){
+      msgEl.style.display = "none";
+      msgEl.textContent = "";
+    }
+
+    function openAccordion(){
+      accBody.classList.add("open");
+      accToggle.setAttribute("aria-expanded","true");
+      accSub.textContent = "Click to collapse booking form";
+      chev.textContent = "▴";
+    }
+
+    function closeAccordion(){
+      accBody.classList.remove("open");
+      accToggle.setAttribute("aria-expanded","false");
+      accSub.textContent = "Click to open booking form";
+      chev.textContent = "▾";
+    }
+
+    function toggleAccordion(){
+      if(accBody.classList.contains("open")) closeAccordion();
+      else openAccordion();
+    }
+
+    // =========================
+    // HOURS / SLOT RULES
+    // =========================
+    function getRulesForDay(d){
+      const dow = d.getDay(); // 0 Sun .. 6 Sat
+      if(dow >= 1 && dow <= 5){
+        return [
+          [9*60, 14*60],
+          [17*60, 20*60],
+        ];
+      }
+      if(dow === 6){
+        return [[10*60, 18*60]];
+      }
+      return [[12*60, 18*60]];
+    }
+
+    function buildSlotsForDate(ymd){
+      const day = parseYMD(ymd);
+      const rules = getRulesForDay(day);
+      const slots = [];
+
+      for(const [startMin, endMin] of rules){
+        for(let m = startMin; m <= (endMin - APPT_MIN); m += SLOT_STEP_MIN){
+          const dt = new Date(day);
+          dt.setHours(0,0,0,0);
+          dt.setMinutes(m);
+          slots.push(dt);
+        }
+      }
+      return slots;
+    }
+
+    // =========================
+    // LOAD BOOKED TIMES
+    // =========================
+    let selectedSlotISO = null;
+
+    async function fetchBookedSetForDay(dayYMD, locationValue){
+      if(!supa) return new Set();
+
+      const dayStart = parseYMD(dayYMD);
+      const dayEnd = new Date(dayStart);
+      dayEnd.setDate(dayEnd.getDate()+1);
+
+      const { data, error } = await supa
+        .from("appointments")
+        .select("start_time, status, location")
+        .gte("start_time", dayStart.toISOString())
+        .lt("start_time", dayEnd.toISOString())
+        .eq("location", locationValue);
+
+      if(error){
+        console.warn(error);
+        return new Set();
+      }
+
+      const set = new Set();
+      (data || []).forEach(r => {
+        const st = (r.status || "confirmed").toLowerCase();
+        if(st !== "cancelled" && r.start_time){
+          set.add(new Date(r.start_time).toISOString());
+        }
+      });
+      return set;
+    }
+
+    async function renderSlots(){
+      clearMsg();
+      confirmBtn.disabled = true;
+      selectedSlotISO = null;
+
+      const dayYMD = datePick.value;
+      if(!dayYMD){
+        slotsEl.innerHTML = "";
+        afterNote.textContent = "Pick a date to see times.";
+        return;
+      }
+
+      const loc = locationSel.value;
+      const slots = buildSlotsForDate(dayYMD);
+
+      if(!slots.length){
+        slotsEl.innerHTML = "";
+        afterNote.textContent = "No available times for this day.";
+        return;
+      }
+
+      afterNote.textContent = "Pick a time, then press Confirm Booking.";
+      const bookedSet = await fetchBookedSetForDay(dayYMD, loc);
+
+      slotsEl.innerHTML = "";
+      slots.forEach(dt => {
+        const iso = dt.toISOString();
+        const label = fmtSlotLabel(dt);
+
+        const div = document.createElement("div");
+        div.className = "slot";
+        div.textContent = label;
+
+        const isBooked = bookedSet.has(iso);
+        if(isBooked){
+          div.classList.add("disabled");
+        }else{
+          div.addEventListener("click", () => {
+            [...slotsEl.querySelectorAll(".slot")].forEach(s => s.classList.remove("selected"));
+            div.classList.add("selected");
+            selectedSlotISO = iso;
+            confirmBtn.disabled = false;
+          });
+        }
+
+        slotsEl.appendChild(div);
+      });
+    }
+
+    // =========================
+    // BOOKING (INSERT)
+    // =========================
+    function endTimeISO(startISO){
+      const d = new Date(startISO);
+      d.setMinutes(d.getMinutes() + APPT_MIN);
+      return d.toISOString();
+    }
+
+    function niceDateTime(iso){
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone: TZ,
+        weekday:"short",
+        month:"short",
+        day:"numeric",
+        year:"numeric",
+        hour:"numeric",
+        minute:"2-digit"
+      }).format(new Date(iso));
+    }
 
     function escapeHtml(s){
-      return String(s ?? "")
+      return String(s || "")
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
@@ -480,319 +920,164 @@
         .replaceAll("'","&#039;");
     }
 
-    function setMsg(type, text){
-      msgBox.innerHTML = "";
-      if(!text) return;
-      const div = document.createElement("div");
-      div.className = "alert " + (type === "ok" ? "ok" : type === "bad" ? "bad" : "info");
-      div.textContent = text;
-      msgBox.appendChild(div);
+    function showConfirmationCard(payload){
+      confirmGrid.innerHTML = `
+        <div class="cbox">
+          <div class="k">Client</div>
+          <div class="v">${escapeHtml(payload.client_name || "")}</div>
+        </div>
+        <div class="cbox">
+          <div class="k">Email</div>
+          <div class="v">${escapeHtml(payload.client_email || "")}</div>
+        </div>
+        <div class="cbox">
+          <div class="k">Date &amp; Time</div>
+          <div class="v">${escapeHtml(niceDateTime(payload.start_time))}</div>
+        </div>
+        <div class="cbox">
+          <div class="k">Service</div>
+          <div class="v">${escapeHtml(payload.service || "")}</div>
+        </div>
+        <div class="cbox" style="grid-column: 1 / -1;">
+          <div class="k">Location</div>
+          <div class="v">${escapeHtml(payload.location || "")}</div>
+        </div>
+        <div class="cbox">
+          <div class="k">Status</div>
+          <div class="v"><span class="statusPill">Confirmed ✓</span></div>
+        </div>
+      `;
+      confirmCard.style.display = "block";
     }
 
-    function pad(n){ return String(n).padStart(2,"0"); }
-
-    // ========= Live Clock (ET) =========
-    function updateClock(){
-      const now = new Date();
-
-      const dateStr = now.toLocaleDateString("en-US", {
-        timeZone: TZ,
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-      });
-
-      const timeStr = now.toLocaleTimeString("en-US", {
-        timeZone: TZ,
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-      });
-
-      currentDateEl.textContent = "📅 " + dateStr;
-      currentTimeEl.textContent = "⏰ " + timeStr + " ET";
-    }
-
-    // Build a "local" date-time and convert to ISO UTC.
-    // You already display in ET; this works fine for a simple booking portal.
-    function buildStartISO(yyyy, mm, dd, hh, min){
-      const d = new Date(yyyy, mm-1, dd, hh, min, 0, 0);
-      return d.toISOString();
-    }
-
-    function addMinutesISO(iso, mins){
-      const d = new Date(iso);
-      d.setMinutes(d.getMinutes() + mins);
-      return d.toISOString();
-    }
-
-    function fmtTimeLabel(hh, mm){
-      const d = new Date(2000,0,1,hh,mm,0,0);
-      return d.toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
-    }
-
-    // ========= Hours rules =========
-    // Mon–Fri: 9–8 (but block 2–5)
-    // Sat: 10–6
-    // Sun: 12–6
-    function getDailyWindows(dayOfWeek){
-      // 0=Sun..6=Sat
-      if(dayOfWeek >= 1 && dayOfWeek <= 5){
-        return [
-          { start:{h:9,m:0}, end:{h:14,m:0} },  // 9:00 -> 2:00
-          { start:{h:17,m:0}, end:{h:20,m:0} }, // 5:00 -> 8:00
-        ];
-      }
-      if(dayOfWeek === 6){
-        return [{ start:{h:10,m:0}, end:{h:18,m:0} }];
-      }
-      // Sunday
-      return [{ start:{h:12,m:0}, end:{h:18,m:0} }];
-    }
-
-    function generateSlotsForDate(dateObj){
-      const dow = dateObj.getDay();
-      const windows = getDailyWindows(dow);
-
-      const slots = [];
-      for(const w of windows){
-        let h = w.start.h, m = w.start.m;
-
-        while(true){
-          const start = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), h, m, 0, 0);
-          const end = new Date(start);
-          end.setMinutes(end.getMinutes() + DURATION_MINUTES);
-
-          const windowEnd = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), w.end.h, w.end.m, 0, 0);
-          if(end > windowEnd) break;
-
-          slots.push({ hh:h, mm:m, label: fmtTimeLabel(h,m) });
-
-          const next = new Date(start);
-          next.setMinutes(next.getMinutes() + SLOT_MINUTES);
-          h = next.getHours();
-          m = next.getMinutes();
-        }
-      }
-      return slots;
-    }
-
-    function dayStartEndISO(dateObj){
-      const start = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), 0,0,0,0);
-      const end = new Date(start);
-      end.setDate(end.getDate()+1);
-      return { startISO: start.toISOString(), endISO: end.toISOString() };
-    }
-
-    async function fetchBookedTimesForDate(dateObj){
-      const { startISO, endISO } = dayStartEndISO(dateObj);
-
-      const { data, error } = await supa
-        .from("appointments")
-        .select("start_time, status")
-        .gte("start_time", startISO)
-        .lt("start_time", endISO);
-
-      if(error){
-        setMsg("bad", error.message);
-        return new Set();
-      }
-
-      const booked = new Set();
-      for(const r of (data || [])){
-        const st = (r.status || "confirmed").toLowerCase();
-        if(st === "cancelled") continue;
-        const d = new Date(r.start_time);
-        booked.add(pad(d.getHours()) + ":" + pad(d.getMinutes()));
-      }
-      return booked;
-    }
-
-    function renderSlots(slots, bookedSet, dateObj){
-      slotGrid.innerHTML = "";
-      selectedStartISO = null;
-      selectedLabel = "";
-      confirmBtn.disabled = true;
-
-      const now = new Date();
-
-      for(const s of slots){
-        const key = pad(s.hh) + ":" + pad(s.mm);
-        const start = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), s.hh, s.mm, 0, 0);
-
-        const isBooked = bookedSet.has(key);
-        const isPast = start < now;
-
-        const div = document.createElement("div");
-        div.className = "slot" + (isBooked || isPast ? " dis" : "");
-        div.textContent = s.label;
-
-        if(!(isBooked || isPast)){
-          div.addEventListener("click", () => {
-            Array.from(slotGrid.children).forEach(el => el.classList.remove("sel"));
-            div.classList.add("sel");
-
-            selectedLabel = s.label;
-
-            const yyyy = dateObj.getFullYear();
-            const mm = dateObj.getMonth()+1;
-            const dd = dateObj.getDate();
-            selectedStartISO = buildStartISO(yyyy, mm, dd, s.hh, s.mm);
-
-            confirmBtn.disabled = false;
-            setMsg("", "");
-          });
-        }
-
-        slotGrid.appendChild(div);
-      }
-
-      if(!slots.length){
-        slotGrid.innerHTML = `<div class="muted">No slots for this day.</div>`;
-      }
-    }
-
-    async function refreshSlots(){
-      setMsg("", "");
+    function hideConfirmationCard(){
       confirmCard.style.display = "none";
-      afterNote.textContent = "Pick a time, then press Confirm Booking.";
+      confirmGrid.innerHTML = "";
+    }
 
-      const val = dateEl.value;
-      if(!val){
-        slotGrid.innerHTML = `<div class="muted">Select a date to see times.</div>`;
-        confirmBtn.disabled = true;
+    async function book(){
+      clearMsg();
+
+      if(!supa){
+        setMsg("bad", "Supabase is not ready.");
         return;
       }
 
-      const [yyyy, mm, dd] = val.split("-").map(Number);
-      const dateObj = new Date(yyyy, mm-1, dd, 0,0,0,0);
+      const name = (fullName.value || "").trim();
+      const em = (email.value || "").trim();
+      const svc = service.value;
+      const loc = locationSel.value;
+      const dayYMD = datePick.value;
 
-      const slots = generateSlotsForDate(dateObj);
-      const booked = await fetchBookedTimesForDate(dateObj);
-      renderSlots(slots, booked, dateObj);
-    }
-
-    function niceDateTimeFromISO(iso){
-      return new Intl.DateTimeFormat("en-US", {
-        timeZone: TZ,
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-      }).format(new Date(iso));
-    }
-
-    function showConfirmationCard(payload){
-      const rows = [
-        { label: "Client", value: payload.client_name },
-        { label: "Email", value: payload.client_email },
-        { label: "Date & Time", value: niceDateTimeFromISO(payload.start_time) },
-        { label: "Service", value: payload.service },
-        { label: "Location", value: payload.location },
-        { label: "Status", value: "Confirmed ✅" },
-      ];
-
-      confirmGrid.innerHTML = rows.map(r => `
-        <div class="miniBox">
-          <div class="miniLabel">${escapeHtml(r.label)}</div>
-          <div class="miniValue">${escapeHtml(r.value)}</div>
-        </div>
-      `).join("");
-
-      confirmCard.style.display = "block";
-      afterNote.textContent = "✅ Confirmed. Check your email or contact us if you need changes.";
-    }
-
-    // ========= Booking =========
-    confirmBtn.addEventListener("click", async () => {
-      setMsg("", "");
-
-      const client_name = (fullNameEl.value || "").trim();
-      const client_email = (emailEl.value || "").trim();
-      const service = serviceEl.value;
-      const location = locationEl.value;
-
-      if(!client_name){ setMsg("bad","Please enter your full name."); return; }
-      if(!client_email || !client_email.includes("@")){ setMsg("bad","Please enter a valid email address."); return; }
-      if(!dateEl.value){ setMsg("bad","Please pick a date."); return; }
-      if(!selectedStartISO){ setMsg("bad","Please select an available time."); return; }
+      if(!name || !em){
+        setMsg("bad", "Please enter your full name and email.");
+        return;
+      }
+      if(!dayYMD){
+        setMsg("bad", "Please pick a date.");
+        return;
+      }
+      if(!selectedSlotISO){
+        setMsg("bad", "Please select a time.");
+        return;
+      }
 
       confirmBtn.disabled = true;
-      setMsg("info", "Booking…");
+      setMsg("warn", "Booking…");
 
-      const end_time = addMinutesISO(selectedStartISO, DURATION_MINUTES);
+      const start_time = selectedSlotISO;
+      const end_time = endTimeISO(start_time);
 
-      const insertPayload = {
-        client_name,
-        client_email,
-        service,
-        location,
-        start_time: selectedStartISO,
-        end_time,
-        status: "confirmed"
-      };
-
-      const { data, error } = await supa
+      const { error } = await supa
         .from("appointments")
-        .insert([insertPayload])
-        .select("client_name, client_email, service, location, start_time, end_time, status")
-        .single();
+        .insert([{
+          client_name: name,
+          client_email: em,
+          service: svc,
+          location: loc,
+          start_time,
+          end_time,
+          status: "confirmed"
+        }]);
 
       if(error){
-        setMsg("bad", error.message);
+        console.warn(error);
+        setMsg("bad", error.message || "Booking failed.");
         confirmBtn.disabled = false;
         return;
       }
 
-      setMsg("ok", "✅ Booking confirmed! See you then.");
-      showConfirmationCard(data || insertPayload);
+      setMsg("ok", "✅ Booking confirmed!");
+      afterNote.textContent = "✅ Confirmed. If you need changes, call or text us.";
 
-      await refreshSlots();
+      showConfirmationCard({
+        client_name: name,
+        client_email: em,
+        service: svc,
+        location: loc,
+        start_time,
+        status: "confirmed"
+      });
+
+      await renderSlots();
+    }
+
+    // =========================
+    // CURRENT DATE/TIME (LIVE)
+    // =========================
+    function tick(){
+      const now = new Date();
+      todayPill.innerHTML = `<span class="pico">📅</span><span>Today: ${escapeHtml(fmtToday(now))}</span>`;
+      timePill.innerHTML = `<span class="pico">🕒</span><span>Current Time: ${escapeHtml(fmtTime(now))}</span>`;
+    }
+
+    // =========================
+    // EVENTS
+    // =========================
+    accToggle.addEventListener("click", toggleAccordion);
+
+    openBookingBtn.addEventListener("click", () => {
+      openAccordion();
+      document.getElementById("rightCard").scrollIntoView({ behavior:"smooth", block:"start" });
     });
 
-    // ========= Buttons =========
-    bookAnotherBtn.addEventListener("click", async () => {
-      confirmCard.style.display = "none";
-      setMsg("", "");
-      fullNameEl.focus();
-      await refreshSlots();
+    datePick.addEventListener("change", () => {
+      hideConfirmationCard();
+      renderSlots();
+    });
+
+    locationSel.addEventListener("change", () => {
+      hideConfirmationCard();
+      renderSlots();
+    });
+
+    confirmBtn.addEventListener("click", book);
+
+    bookAnotherBtn.addEventListener("click", () => {
+      hideConfirmationCard();
+      clearMsg();
+      selectedSlotISO = null;
+      confirmBtn.disabled = true;
+      [...slotsEl.querySelectorAll(".slot")].forEach(s => s.classList.remove("selected"));
+      afterNote.textContent = "Pick a time, then press Confirm Booking.";
+      openAccordion();
+      document.getElementById("rightCard").scrollIntoView({ behavior:"smooth", block:"start" });
     });
 
     backTopBtn.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      document.getElementById("leftCard").scrollIntoView({ behavior:"smooth", block:"start" });
     });
 
-    // ========= Init =========
-    async function init(){
-      // Start clock
-      updateClock();
-      setInterval(updateClock, 1000);
-
-      jsPill.textContent = "JS: loaded";
-      jsPill.className = "pill ok";
-
-      const { error } = await supa.from("appointments").select("start_time").limit(1);
-      if(error){
-        sbPill.textContent = "Supabase: error";
-        sbPill.className = "pill bad";
-        setMsg("bad", error.message);
-      } else {
-        sbPill.textContent = "Supabase: loaded";
-        sbPill.className = "pill ok";
-      }
-
-      const now = new Date();
-      dateEl.value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
-
-      await refreshSlots();
-    }
-
-    dateEl.addEventListener("change", refreshSlots);
-
-    init();
+    // =========================
+    // INIT
+    // =========================
+    (function init(){
+      datePick.value = toYMD(new Date());
+      tick();
+      setInterval(tick, 1000);
+      closeAccordion();     // ✅ start hidden like you asked
+      renderSlots();
+    })();
   </script>
 </body>
 </html>
