@@ -1,200 +1,810 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Columbus East Tax Services</title>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:radial-gradient(circle at top,#020617,#000);
-}
+  :root{
+    --bg1:#020617;
+    --bg2:#000;
+    --card:#fff;
+    --text:#0f172a;
+    --muted:#475569;
+    --ring:rgba(99,102,241,.25);
 
-.wrap{
-  max-width:900px;
-  margin:40px auto;
-  padding:20px;
-}
+    --btnCall:#2563eb;
+    --btnText:#16a34a;
+    --btnEmail:#9333ea;
+    --btnBook:#0f766e;
 
-.card{
-  background:#fff;
-  border-radius:26px;
-  padding:40px 30px;
-  box-shadow:0 30px 70px rgba(0,0,0,.5);
-  text-align:center;
-}
+    --slotBorder:#34d399;
+    --slotBg:#ecfdf5;
 
-/* LOGO */
-.logo{
-  width:340px;
-  max-width:90%;
-  margin:0 auto 20px;
-  display:block;
-}
+    --slotActiveBg:#c7d2fe;
+    --slotActiveBorder:#6366f1;
 
-/* CONTACT */
-.contact{
-  font-size:22px;
-  font-weight:700;
-  line-height:1.5;
-  margin-bottom:24px;
-}
+    --slotDisabledBg:#f1f5f9;
+    --slotDisabledBorder:#cbd5e1;
+    --slotDisabledText:#94a3b8;
 
-.btn{
-  width:100%;
-  padding:18px;
-  margin:14px 0;
-  border:none;
-  border-radius:18px;
-  font-size:20px;
-  font-weight:800;
-  color:white;
-  cursor:pointer;
-}
+    --okBg:#dcfce7; --okText:#166534; --okBorder:#86efac;
+    --badBg:#fee2e2; --badText:#991b1b; --badBorder:#fecaca;
+    --warnBg:#fef3c7; --warnText:#92400e; --warnBorder:#fde68a;
+  }
 
-.call{background:#2563eb}
-.text{background:#16a34a}
-.email{background:#9333ea}
-.book{background:#0f766e}
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+    padding:22px;
+  }
+  .wrap{
+    max-width:980px;
+    margin:0 auto;
+  }
+  .card{
+    background:var(--card);
+    border-radius:28px;
+    padding:38px 28px;
+    box-shadow:0 34px 85px rgba(0,0,0,.55);
+    text-align:center;
+  }
 
-.booking{
-  margin-top:26px;
-  max-height:0;
-  overflow:hidden;
-  transition:.45s ease;
-}
+  /* LOGO */
+  .logo{
+    width:360px;
+    max-width:92%;
+    margin:0 auto 14px;
+    display:block;
+  }
 
-.booking.open{
-  max-height:2000px;
-}
+  /* CONTACT */
+  .contact{
+    font-size:22px;
+    font-weight:900;
+    color:#0b1220;
+    line-height:1.5;
+    margin:10px 0 20px;
+  }
 
-input,select{
-  width:100%;
-  padding:14px;
-  border-radius:12px;
-  border:1px solid #ccc;
-  margin:10px 0;
-  font-size:16px;
-}
+  /* Buttons */
+  .btn{
+    width:100%;
+    padding:18px;
+    margin:14px 0;
+    border:none;
+    border-radius:18px;
+    font-size:20px;
+    font-weight:900;
+    color:#fff;
+    cursor:pointer;
+    transition:transform .12s ease, opacity .12s ease;
+  }
+  .btn:hover{ transform: translateY(-1px); }
+  .btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 
-.times{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
-  gap:10px;
-}
+  .call{ background:var(--btnCall); }
+  .text{ background:var(--btnText); }
+  .email{ background:var(--btnEmail); }
+  .book{ background:var(--btnBook); }
 
-.slot{
-  padding:14px;
-  border-radius:14px;
-  border:1px solid #34d399;
-  background:#ecfdf5;
-  cursor:pointer;
-  font-weight:bold;
-}
+  /* Expandable booking section */
+  .booking{
+    margin-top:18px;
+    text-align:left;
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .5s ease;
+  }
+  .booking.open{ max-height:2600px; }
 
-.slot.active{
-  background:#c7d2fe;
-  border-color:#6366f1;
-}
+  .section{
+    margin-top:18px;
+    border:1px solid #e5e7eb;
+    border-radius:20px;
+    padding:16px;
+    background:#fff;
+  }
 
-.confirm{
-  background:#020617;
-  margin-top:22px;
-}
+  .row{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+  }
+  @media (max-width:720px){
+    .row{ grid-template-columns: 1fr; }
+  }
 
-.now{
-  margin:12px 0;
-  font-weight:bold;
-  color:#2563eb;
-}
+  label{
+    font-size:13px;
+    font-weight:900;
+    color:#0f172a;
+    display:block;
+    margin:6px 0;
+  }
+  input, select{
+    width:100%;
+    padding:14px 14px;
+    border-radius:14px;
+    border:1px solid #cbd5e1;
+    font-size:16px;
+    outline:none;
+    background:#fff;
+  }
+  input:focus, select:focus{
+    border-color: rgba(99,102,241,.7);
+    box-shadow: 0 0 0 4px var(--ring);
+  }
+
+  .subline{
+    margin:8px 0 0;
+    color:var(--muted);
+    font-size:14px;
+    font-weight:700;
+  }
+  .now{
+    margin:6px 0 0;
+    font-weight:900;
+    color:#2563eb;
+    font-size:14px;
+  }
+
+  /* Slots */
+  .slotsTitle{
+    margin:14px 0 10px;
+    font-weight:900;
+    color:#0b1220;
+    font-size:16px;
+  }
+  .times{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+    gap:10px;
+  }
+  .slot{
+    padding:14px 12px;
+    border-radius:16px;
+    border:1px solid var(--slotBorder);
+    background:var(--slotBg);
+    cursor:pointer;
+    font-weight:900;
+    color:#065f46;
+    text-align:center;
+    user-select:none;
+    transition:transform .1s ease, box-shadow .1s ease;
+  }
+  .slot:hover{ transform: translateY(-1px); box-shadow:0 10px 18px rgba(0,0,0,.08); }
+  .slot.active{
+    background:var(--slotActiveBg);
+    border-color:var(--slotActiveBorder);
+    color:#1e1b4b;
+    box-shadow: 0 0 0 4px rgba(99,102,241,.18);
+  }
+  .slot.disabled{
+    background:var(--slotDisabledBg);
+    border-color:var(--slotDisabledBorder);
+    color:var(--slotDisabledText);
+    cursor:not-allowed;
+    box-shadow:none;
+    transform:none;
+  }
+
+  .confirm{
+    background:#020617;
+    margin-top:16px;
+    border-radius:18px;
+  }
+
+  /* Messages */
+  .msg{
+    margin-top:12px;
+    border-radius:14px;
+    padding:12px 12px;
+    font-weight:900;
+    display:none;
+  }
+  .msg.ok{ display:block; background:var(--okBg); color:var(--okText); border:1px solid var(--okBorder); }
+  .msg.bad{ display:block; background:var(--badBg); color:var(--badText); border:1px solid var(--badBorder); }
+  .msg.warn{ display:block; background:var(--warnBg); color:var(--warnText); border:1px solid var(--warnBorder); }
+
+  /* Confirmation screen */
+  .confirmCard{
+    display:none;
+    margin-top:18px;
+    border:1px solid #e5e7eb;
+    border-radius:22px;
+    padding:16px;
+    background:#fff;
+  }
+  .confirmCard.show{ display:block; }
+  .confirmHead{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding:10px 10px 14px;
+    border-bottom:1px solid #e5e7eb;
+  }
+  .check{
+    width:44px;height:44px;border-radius:16px;
+    background:var(--okBg);
+    border:1px solid var(--okBorder);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;color:var(--okText);
+    font-size:22px;
+    flex:0 0 auto;
+  }
+  .confirmTitle{
+    margin:0;
+    font-size:18px;
+    font-weight:900;
+    color:#0b1220;
+  }
+  .confirmSub{
+    margin:2px 0 0;
+    color:#334155;
+    font-weight:700;
+    font-size:14px;
+  }
+  .grid2{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+  }
+  @media (max-width:720px){
+    .grid2{ grid-template-columns: 1fr; }
+  }
+  .miniBox{
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    padding:12px;
+    background:#fff;
+  }
+  .miniLabel{
+    color:#64748b;
+    font-size:13px;
+    font-weight:900;
+    margin-bottom:6px;
+  }
+  .miniVal{
+    color:#0f172a;
+    font-size:15px;
+    font-weight:900;
+    word-break:break-word;
+  }
+  .actionsRow{
+    margin-top:14px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .secondary{
+    background:#fff;
+    color:#0b1220;
+    border:1px solid #cbd5e1;
+  }
 </style>
 </head>
 
 <body>
-
 <div class="wrap">
-<div class="card">
+  <div class="card">
 
-<!-- LOGO -->
-<img class="logo" src="logo.png" alt="Columbus East Tax Services">
+    <!-- LOGO -->
+    <img class="logo" src="logo.png" alt="Columbus East Tax Services" />
 
-<!-- PHONE NUMBERS -->
-<div class="contact">
-614-259-7625<br>
-614-599-1185
+    <!-- PHONE NUMBERS (email removed) -->
+    <div class="contact">
+      614-259-7625<br>
+      614-599-1185
+    </div>
+
+    <!-- Quick actions -->
+    <button class="btn call" id="callBtn">📞 Call Now</button>
+    <button class="btn text" id="textBtn">💬 Text Us</button>
+    <button class="btn email" id="emailBtn">✉️ Email Us</button>
+
+    <!-- Expand appointment -->
+    <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
+
+    <div id="booking" class="booking">
+      <div class="section">
+
+        <div class="subline">Book an Appointment</div>
+        <div class="now" id="nowLine"></div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label>Full Name</label>
+            <input id="fullName" placeholder="Your full name" />
+          </div>
+          <div>
+            <label>Email Address</label>
+            <input id="email" placeholder="you@example.com" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Select Service</label>
+            <select id="service">
+              <option>W-2 / Individual Taxes</option>
+              <option>1099 / Self-Employed Taxes</option>
+              <option>LLC / Small Business Filing</option>
+              <option>Audit Help & IRS Letters</option>
+              <option>Amended Returns (1040-X)</option>
+            </select>
+          </div>
+          <div>
+            <label>Location</label>
+            <select id="location">
+              <option>CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213</option>
+              <option>CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068</option>
+              <option>Online / Phone / Text</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Pick a Date</label>
+            <input id="date" type="date" />
+          </div>
+          <div>
+            <label>Appointment Length</label>
+            <select id="duration">
+              <option value="60">60 minutes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="slotsTitle">Available Times</div>
+        <div class="times" id="times"></div>
+
+        <button class="btn confirm" id="confirmBtn" disabled>Confirm Booking</button>
+
+        <div id="msg" class="msg"></div>
+
+        <!-- Confirmation Screen -->
+        <div id="confirmCard" class="confirmCard">
+          <div class="confirmHead">
+            <div class="check">✓</div>
+            <div>
+              <h3 class="confirmTitle">Booking Confirmed</h3>
+              <div class="confirmSub">You are scheduled successfully.</div>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div class="miniBox">
+              <div class="miniLabel">Client</div>
+              <div class="miniVal" id="cName">—</div>
+            </div>
+            <div class="miniBox">
+              <div class="miniLabel">Email</div>
+              <div class="miniVal" id="cEmail">—</div>
+            </div>
+            <div class="miniBox">
+              <div class="miniLabel">Date & Time</div>
+              <div class="miniVal" id="cWhen">—</div>
+            </div>
+            <div class="miniBox">
+              <div class="miniLabel">Service</div>
+              <div class="miniVal" id="cService">—</div>
+            </div>
+            <div class="miniBox">
+              <div class="miniLabel">Location</div>
+              <div class="miniVal" id="cLoc">—</div>
+            </div>
+            <div class="miniBox">
+              <div class="miniLabel">Status</div>
+              <div class="miniVal" style="color:#166534;">Confirmed ✓</div>
+            </div>
+          </div>
+
+          <div class="actionsRow">
+            <button class="btn" id="bookAnotherBtn" type="button">📅 Book Another Appointment</button>
+            <button class="btn secondary" id="backTopBtn" type="button">↑ Back to Top</button>
+          </div>
+
+          <div class="subline" style="margin-top:10px;">Need changes? Call or text us anytime.</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<button class="btn call">📞 Call Now</button>
-<button class="btn text">💬 Text Us</button>
-<button class="btn email">✉️ Email Us</button>
-<button class="btn book" onclick="toggle()">📅 Book Appointment</button>
-
-<!-- BOOKING SECTION -->
-<div id="book" class="booking">
-
-<div class="now" id="now"></div>
-
-<input placeholder="Full Name">
-<input placeholder="Email">
-
-<select>
-<option>W-2 / Individual Taxes</option>
-<option>1099 / Self-Employed</option>
-<option>LLC / Business Filing</option>
-<option>Audit Help & IRS Letters</option>
-</select>
-
-<select>
-<option>CML Whitehall Branch</option>
-<option>CML Reynoldsburg Branch</option>
-<option>Online / Phone / Text</option>
-</select>
-
-<input type="date">
-
-<h3>Available Times</h3>
-<div class="times" id="times"></div>
-
-<button class="btn confirm">Confirm Booking</button>
-
-</div>
-
-</div>
-</div>
-
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-function toggle(){
- document.getElementById("book").classList.toggle("open");
+/* =========================
+   Supabase Config
+========================= */
+const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
+const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+/* =========================
+   UI Elements
+========================= */
+const callBtn = document.getElementById("callBtn");
+const textBtn = document.getElementById("textBtn");
+const emailBtn = document.getElementById("emailBtn");
+
+const toggleBtn = document.getElementById("toggleBtn");
+const booking = document.getElementById("booking");
+
+const nowLine = document.getElementById("nowLine");
+const fullNameEl = document.getElementById("fullName");
+const emailEl = document.getElementById("email");
+const serviceEl = document.getElementById("service");
+const locationEl = document.getElementById("location");
+const dateEl = document.getElementById("date");
+const durationEl = document.getElementById("duration");
+
+const timesBox = document.getElementById("times");
+const confirmBtn = document.getElementById("confirmBtn");
+const msg = document.getElementById("msg");
+
+const confirmCard = document.getElementById("confirmCard");
+const cName = document.getElementById("cName");
+const cEmail = document.getElementById("cEmail");
+const cWhen = document.getElementById("cWhen");
+const cService = document.getElementById("cService");
+const cLoc = document.getElementById("cLoc");
+const bookAnotherBtn = document.getElementById("bookAnotherBtn");
+const backTopBtn = document.getElementById("backTopBtn");
+
+/* =========================
+   Quick action links
+========================= */
+callBtn.onclick = () => window.location.href = "tel:6142597625";
+textBtn.onclick = () => window.location.href = "sms:6142597625";
+emailBtn.onclick = () => window.location.href = "mailto:columbuseast.taxservices@outlook.com";
+
+/* =========================
+   Helpers
+========================= */
+function setMsg(type, text){
+  msg.className = "msg " + type;
+  msg.textContent = text;
 }
 
-const slots=[
-"10:00 AM","10:30 AM","11:00 AM","11:30 AM",
-"12:00 PM","12:30 PM","1:00 PM","1:30 PM",
-"2:00 PM","2:30 PM","3:00 PM","3:30 PM",
-"4:00 PM","4:30 PM","5:00 PM"
+function pad(n){ return String(n).padStart(2, "0"); }
+
+function todayYMD(){
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+function parseSlotTo24h(slot){
+  // "10:30 AM" -> {h:10,m:30} ; "04:30 PM" -> {h:16,m:30}
+  const [time, ampm] = slot.split(" ");
+  let [h, m] = time.split(":").map(Number);
+  const upper = (ampm || "").toUpperCase();
+  if(upper === "PM" && h !== 12) h += 12;
+  if(upper === "AM" && h === 12) h = 0;
+  return { h, m };
+}
+
+function makeLocalDateTime(ymdStr, slot){
+  // Builds a Date in the user's local timezone
+  const {h,m} = parseSlotTo24h(slot);
+  const [Y,M,D] = ymdStr.split("-").map(Number);
+  return new Date(Y, M-1, D, h, m, 0, 0);
+}
+
+function fmtNice(dt){
+  return new Intl.DateTimeFormat("en-US", {
+    weekday:"short", month:"short", day:"2-digit", year:"numeric",
+    hour:"numeric", minute:"2-digit"
+  }).format(dt);
+}
+
+/* =========================
+   Slots
+========================= */
+const slots = [
+  "10:00 AM","10:30 AM","11:00 AM","11:30 AM",
+  "12:00 PM","12:30 PM","01:00 PM","01:30 PM",
+  "02:00 PM","02:30 PM","03:00 PM","03:30 PM",
+  "04:00 PM","04:30 PM","05:00 PM"
 ];
 
-const box=document.getElementById("times");
-slots.forEach(t=>{
- let d=document.createElement("div");
- d.className="slot";
- d.textContent=t;
- d.onclick=()=>{
-   document.querySelectorAll(".slot").forEach(x=>x.classList.remove("active"));
-   d.classList.add("active");
- };
- box.appendChild(d);
+let selectedSlot = null;
+let bookedTimesSet = new Set(); // "10:00 AM" etc (for chosen date)
+
+/* =========================
+   Live clock
+========================= */
+function tick(){
+  nowLine.textContent = "Current date & time: " + new Date().toLocaleString();
+}
+tick();
+setInterval(tick, 1000);
+
+/* =========================
+   Expand / collapse booking
+========================= */
+toggleBtn.onclick = () => {
+  booking.classList.toggle("open");
+  if(booking.classList.contains("open")){
+    // default date to today if blank
+    if(!dateEl.value) dateEl.value = todayYMD();
+    refreshAvailability();
+  }
+};
+
+/* =========================
+   Fetch booked appointments for selected date
+========================= */
+async function fetchBookedForDate(ymdStr){
+  // We’ll consider booked = status != 'cancelled'
+  // and match by local date boundaries.
+  const start = new Date(ymdStr + "T00:00:00");
+  const end = new Date(ymdStr + "T23:59:59");
+
+  const { data, error } = await supa
+    .from("appointments")
+    .select("start_time, status")
+    .gte("start_time", start.toISOString())
+    .lte("start_time", end.toISOString());
+
+  if(error){
+    console.warn(error);
+    setMsg("bad", "Could not load booked slots: " + error.message);
+    return new Set();
+  }
+
+  const set = new Set();
+  for(const row of (data || [])){
+    const st = (row.status || "confirmed").toLowerCase();
+    if(st === "cancelled") continue;
+    // Convert the appointment time back to local "hh:mm AM/PM"
+    const dt = new Date(row.start_time);
+    const label = dt.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
+    // label sometimes returns "10:00 AM" or "10:00"
+    // Normalize to match our slot labels:
+    const normalized = dt.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit", hour12:true }).replace(/^0/,'');
+    set.add(normalized);
+  }
+  return set;
+}
+
+/* =========================
+   Auto-disable past + booked
+========================= */
+function isPastDate(ymdStr){
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const d = new Date(ymdStr + "T00:00:00");
+  d.setHours(0,0,0,0);
+  return d < today;
+}
+
+function isToday(ymdStr){
+  return ymdStr === todayYMD();
+}
+
+function isPastTimeToday(ymdStr, slot){
+  if(!isToday(ymdStr)) return false;
+  const slotDT = makeLocalDateTime(ymdStr, slot);
+  return slotDT <= new Date(); // past or current minute disabled
+}
+
+function renderSlots(){
+  timesBox.innerHTML = "";
+  selectedSlot = null;
+  confirmBtn.disabled = true;
+
+  const d = dateEl.value;
+  if(!d){
+    setMsg("warn", "Pick a date to see available times.");
+    return;
+  }
+
+  // Past date: disable everything
+  const pastDay = isPastDate(d);
+
+  let anyAvailable = false;
+
+  slots.forEach(slot => {
+    const div = document.createElement("div");
+    div.className = "slot";
+    div.textContent = slot;
+
+    const booked = bookedTimesSet.has(slot);
+    const pastTime = isPastTimeToday(d, slot);
+    const disabled = pastDay || booked || pastTime;
+
+    if(disabled){
+      div.classList.add("disabled");
+      if(booked) div.title = "Booked";
+      else if(pastDay) div.title = "Past date";
+      else div.title = "Past time";
+    } else {
+      anyAvailable = true;
+      div.onclick = () => {
+        document.querySelectorAll(".slot").forEach(x => x.classList.remove("active"));
+        div.classList.add("active");
+        selectedSlot = slot;
+        validateReady();
+      };
+    }
+
+    timesBox.appendChild(div);
+  });
+
+  if(pastDay){
+    setMsg("warn", "That date is in the past. Please choose a future date.");
+  } else if(!anyAvailable){
+    setMsg("warn", "No available times on this date (all booked or past). Try another day.");
+  } else {
+    setMsg("warn", "Pick a time, then press Confirm Booking.");
+  }
+}
+
+/* =========================
+   Validate form
+========================= */
+function validateEmail(v){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+function validateReady(){
+  const nameOk = (fullNameEl.value || "").trim().length >= 2;
+  const emailOk = validateEmail((emailEl.value || "").trim());
+  const dateOk = !!dateEl.value && !isPastDate(dateEl.value);
+  const timeOk = !!selectedSlot;
+
+  confirmBtn.disabled = !(nameOk && emailOk && dateOk && timeOk);
+
+  if(confirmBtn.disabled){
+    // don't overwrite success messages
+    if(!confirmCard.classList.contains("show")){
+      setMsg("warn", "Fill out name/email, pick a valid date, then select an available time.");
+    }
+  }
+}
+
+/* =========================
+   Refresh availability (live)
+========================= */
+let refreshTimer = null;
+
+async function refreshAvailability(){
+  confirmCard.classList.remove("show"); // hide confirm card when changing date/refresh
+  const d = dateEl.value;
+  if(!d) return;
+
+  setMsg("warn", "Loading availability…");
+
+  bookedTimesSet = await fetchBookedForDate(d);
+  renderSlots();
+  validateReady();
+
+  // keep it fresh while section open
+  if(refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(async () => {
+    if(!booking.classList.contains("open")) return;
+    bookedTimesSet = await fetchBookedForDate(dateEl.value);
+    // re-render but keep selected slot if still available
+    const prev = selectedSlot;
+    renderSlots();
+    if(prev && !bookedTimesSet.has(prev) && !isPastTimeToday(dateEl.value, prev)){
+      // reselect if still valid
+      const nodes = [...document.querySelectorAll(".slot")];
+      const n = nodes.find(x => x.textContent.trim() === prev && !x.classList.contains("disabled"));
+      if(n){
+        n.classList.add("active");
+        selectedSlot = prev;
+        validateReady();
+      }
+    }
+  }, 15000);
+}
+
+/* =========================
+   Booking Insert + Confirmation Screen
+========================= */
+confirmBtn.onclick = async () => {
+  const name = (fullNameEl.value || "").trim();
+  const email = (emailEl.value || "").trim();
+  const service = serviceEl.value;
+  const location = locationEl.value;
+  const ymdStr = dateEl.value;
+
+  if(!selectedSlot){
+    setMsg("bad", "Please select a time slot.");
+    return;
+  }
+  if(isPastDate(ymdStr) || isPastTimeToday(ymdStr, selectedSlot)){
+    setMsg("bad", "That time is no longer available. Please pick another.");
+    await refreshAvailability();
+    return;
+  }
+
+  // Make start_time local -> ISO
+  const startDT = makeLocalDateTime(ymdStr, selectedSlot);
+  const durationMin = Number(durationEl.value || "60");
+  const endDT = new Date(startDT.getTime() + durationMin * 60000);
+
+  setMsg("warn", "Booking…");
+
+  // Insert
+  const { error } = await supa.from("appointments").insert([{
+    client_name: name,
+    client_email: email,
+    service: service,
+    location: location,
+    start_time: startDT.toISOString(),
+    end_time: endDT.toISOString(),
+    status: "confirmed"
+  }]);
+
+  if(error){
+    console.warn(error);
+    setMsg("bad", "Booking failed: " + error.message);
+    return;
+  }
+
+  // Success: show confirmation card
+  setMsg("ok", "✅ Booking confirmed!");
+  confirmCard.classList.add("show");
+
+  cName.textContent = name;
+  cEmail.textContent = email;
+  cWhen.textContent = fmtNice(startDT);
+  cService.textContent = service;
+  cLoc.textContent = location;
+
+  // refresh to disable the slot now that it’s booked
+  await refreshAvailability();
+
+  // Scroll to confirmation
+  confirmCard.scrollIntoView({ behavior:"smooth", block:"start" });
+};
+
+bookAnotherBtn.onclick = async () => {
+  // reset form
+  fullNameEl.value = "";
+  emailEl.value = "";
+  serviceEl.selectedIndex = 0;
+  locationEl.selectedIndex = 0;
+  dateEl.value = todayYMD();
+  selectedSlot = null;
+  confirmCard.classList.remove("show");
+  await refreshAvailability();
+  validateReady();
+};
+
+backTopBtn.onclick = () => window.scrollTo({ top:0, behavior:"smooth" });
+
+/* =========================
+   Input listeners
+========================= */
+[fullNameEl, emailEl, serviceEl, locationEl, durationEl].forEach(el => {
+  el.addEventListener("input", validateReady);
+  el.addEventListener("change", validateReady);
 });
 
-function clock(){
- document.getElementById("now").innerText =
- "Current date & time: " + new Date().toLocaleString();
-}
-clock();
-setInterval(clock,1000);
-</script>
+dateEl.addEventListener("change", async () => {
+  selectedSlot = null;
+  await refreshAvailability();
+  validateReady();
+});
 
+/* =========================
+   Init default date
+========================= */
+dateEl.value = todayYMD();
+renderSlots();
+validateReady();
+</script>
 </body>
 </html>
