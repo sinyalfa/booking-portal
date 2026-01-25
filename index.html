@@ -7,78 +7,104 @@
 
 <style>
 /* -----------------------------------------------------------
-   GLOBAL RESET + BASE
+   GLOBAL RESET
 ----------------------------------------------------------- */
-* { box-sizing:border-box; margin:0; padding:0; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
 body {
   font-family: Arial, Helvetica, sans-serif;
   min-height:100vh;
   padding:22px;
   overflow-x:hidden;
-  transition: background 1.5s ease-in-out;
+  color:white;
   position:relative;
 }
 
-/* STARFIELD FOR NIGHT MODE */
-#stars {
+/* -----------------------------------------------------------
+   GALAXY BACKGROUND
+----------------------------------------------------------- */
+
+body {
+  background: radial-gradient(circle at 20% 20%, #183059, #0b0f29 60%, #000 100%);
+  background-attachment: fixed;
+}
+
+/* Floating nebula glow */
+#nebula {
   position:fixed;
   inset:0;
-  width:100%;
-  height:100%;
+  background: radial-gradient(circle at 70% 40%, rgba(80,180,255,0.25), transparent 70%),
+              radial-gradient(circle at 20% 80%, rgba(140,80,255,0.18), transparent 75%);
+  filter: blur(40px);
   pointer-events:none;
-  z-index:-1;
+  z-index:-3;
 }
-.star {
-  position:absolute;
-  width:3px;
-  height:3px;
-  background:white;
-  border-radius:50%;
-  opacity:0.8;
-  animation: twinkle 2.5s ease-in-out infinite;
+
+/* Twinkling stars */
+#stars, #stars2, #stars3 {
+  position:fixed; inset:0;
+  background-repeat: repeat;
+  background-size: contain;
+  pointer-events:none;
+  z-index:-2;
 }
-@keyframes twinkle {
-  0% { opacity:0.2; transform:scale(1); }
-  50% { opacity:1; transform:scale(1.7); }
-  100% { opacity:0.2; transform:scale(1); }
+#stars {
+  background-image: url("https://i.ibb.co/7QpKsCX/stars1.png");
+  animation: moveStars 180s linear infinite;
+}
+#stars2 {
+  background-image: url("https://i.ibb.co/9hM0H7k/stars2.png");
+  animation: moveStars 220s linear infinite;
+  opacity:.7;
+}
+#stars3 {
+  background-image: url("https://i.ibb.co/WyW7jS2/stars3.png");
+  animation: moveStars 260s linear infinite;
+  opacity:.5;
+}
+
+@keyframes moveStars {
+  from { transform: translateY(0); }
+  to { transform: translateY(-2000px); }
 }
 
 /* -----------------------------------------------------------
-   FROSTED GLASS CARD (Time-of-Day Tint Applied via JS)
+   FROSTED CARD
 ----------------------------------------------------------- */
 .card {
-  width:100%;
   max-width:980px;
   margin:0 auto;
   padding:38px 28px;
   border-radius:28px;
-  backdrop-filter: blur(18px) saturate(170%);
-  -webkit-backdrop-filter: blur(18px) saturate(170%);
-  background: rgba(255,255,255,0.35); /* default, replaced by JS */
-  box-shadow:0 34px 85px rgba(0,0,0,0.55);
-  transition: background 1.5s ease-in-out, color 1.5s ease-in-out;
-  color:#0f172a;
+
+  background: rgba(255,255,255,0.13);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
+  transition: background 1s, color 1s;
 }
 
 /* -----------------------------------------------------------
-   LOGO
+   TRANSPARENT LOGO (NO BACKGROUND)
 ----------------------------------------------------------- */
 .logo {
   width:360px;
   max-width:92%;
   margin:0 auto 14px;
   display:block;
+  filter: drop-shadow(0 0 12px rgba(255,255,255,0.4));
 }
 
 /* -----------------------------------------------------------
-   CONTACT TEXT (shows current date/time)
+   CONTACT BLOCK
 ----------------------------------------------------------- */
 .contact {
   text-align:center;
   font-size:22px;
   font-weight:900;
-  margin:10px 0 28px;
+  margin:14px 0 30px;
+  color:white;
 }
 
 /* -----------------------------------------------------------
@@ -94,9 +120,9 @@ body {
   font-weight:900;
   cursor:pointer;
   color:white;
-  transition: transform .15s ease;
+  transition: transform .15s ease, box-shadow .15s ease;
 }
-.btn:hover { transform: translateY(-2px); }
+.btn:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,0.3); }
 
 .call { background:#2563eb; }
 .text { background:#16a34a; }
@@ -104,7 +130,7 @@ body {
 .book { background:#0f766e; }
 
 /* -----------------------------------------------------------
-   BOOKING AREA
+   BOOKING SECTION
 ----------------------------------------------------------- */
 .booking {
   max-height:0;
@@ -114,15 +140,15 @@ body {
 .booking.open { max-height:2600px; }
 
 .section {
-  background:rgba(255,255,255,0.65);
-  border:1px solid rgba(255,255,255,0.55);
-  border-radius:22px;
+  background:rgba(255,255,255,0.10);
+  border:1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(12px);
   padding:18px;
+  border-radius:22px;
   margin-top:18px;
-  backdrop-filter: blur(10px);
+  color:white;
 }
 
-/* FORM ROWS */
 .row {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -132,23 +158,16 @@ body {
   .row { grid-template-columns:1fr; }
 }
 
-label {
-  font-size:13px;
-  font-weight:900;
-  margin-bottom:6px;
-}
+label { font-size:13px; font-weight:900; margin-bottom:6px; color:white; }
 input, select {
   width:100%;
   padding:14px;
   border-radius:14px;
-  border:1px solid #cbd5e1;
-  font-size:16px;
+  border:1px solid rgba(255,255,255,0.4);
+  background:rgba(255,255,255,0.18);
+  color:white;
 }
-
-input:focus, select:focus {
-  border-color:#6366f1;
-  box-shadow:0 0 0 4px rgba(99,102,241,0.3);
-}
+input::placeholder { color:#e2e8f0; }
 
 /* TIME SLOTS */
 .times {
@@ -158,24 +177,24 @@ input:focus, select:focus {
 }
 .slot {
   padding:14px;
-  text-align:center;
   border-radius:16px;
   font-weight:900;
+  text-align:center;
+  background:rgba(20,255,150,0.18);
+  border:1px solid rgba(20,255,150,0.45);
   cursor:pointer;
-  background:rgba(236,253,245,0.8);
-  border:1px solid #34d399;
 }
 .slot.disabled {
-  background:rgba(241,245,249,0.7);
+  background:rgba(255,255,255,0.10);
   color:#94a3b8;
   cursor:not-allowed;
 }
 .slot.active {
-  background:rgba(199,210,254,0.8);
+  background:rgba(120,140,255,0.30);
   border-color:#6366f1;
 }
 
-/* CONFIRM MESSAGES */
+/* CONFIRM MESSAGE */
 .msg {
   display:none;
   padding:12px;
@@ -187,44 +206,43 @@ input:focus, select:focus {
   display:block;
   background:#dcfce7;
   color:#166534;
-  border:1px solid #86efac;
 }
 .msg.bad {
   display:block;
   background:#fee2e2;
   color:#991b1b;
-  border:1px solid #fecaca;
 }
-
 </style>
 </head>
+
 <body>
 
+<div id="nebula"></div>
 <div id="stars"></div>
+<div id="stars2"></div>
+<div id="stars3"></div>
 
-<div class="card" id="cardBox">
+<div class="card">
 
-  <img class="logo"
-       src="https://raw.githubusercontent.com/sinyalfa/CETS/main/logo1.png"
-       alt="CETS Logo">
+  <!-- TRANSPARENT LOGO -->
+  <img class="logo" src="https://raw.githubusercontent.com/sinyalfa/CETS/main/logo1.png" />
 
-  <div class="contact" id="liveDateTime"></div>
+  <div class="contact" id="liveDT"></div>
 
   <button class="btn call" onclick="location='tel:6142597625'">📞 Call Now</button>
   <button class="btn text" onclick="location='sms:6142597625'">💬 Text Us</button>
   <button class="btn email" onclick="location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
-
   <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
 
-  <!-- BOOKING SECTION -->
+  <!-- BOOKING AREA -->
   <div id="booking" class="booking">
     <div class="section">
 
-      <div id="nowLine" style="font-weight:900;color:#2563eb;margin-bottom:10px;"></div>
+      <div id="nowLine" style="font-weight:900;color:#93c5fd;margin-bottom:10px;"></div>
 
       <div class="row">
-        <div><label>Full Name</label><input id="fullName"></div>
-        <div><label>Email</label><input id="email"></div>
+        <div><label>Full Name</label><input id="fullName" placeholder="Your full name"></div>
+        <div><label>Email</label><input id="email" placeholder="you@example.com"></div>
       </div>
 
       <div class="row">
@@ -235,7 +253,7 @@ input:focus, select:focus {
             <option>1099 / Self-Employed Taxes</option>
             <option>LLC / Small Business</option>
             <option>Audit Help</option>
-            <option>Amended Returns (1040-X)</option>
+            <option>Amended Returns</option>
           </select>
         </div>
 
@@ -253,13 +271,10 @@ input:focus, select:focus {
 
       <div class="row">
         <div><label>Date</label><input type="date" id="date"></div>
-        <div>
-          <label>Length</label>
-          <select id="duration"><option value="60">60 minutes</option></select>
-        </div>
+        <div><label>Length</label><select id="duration"><option value="60">60 minutes</option></select></div>
       </div>
 
-      <h3 style="margin:14px 0;">Available Times</h3>
+      <h3 style="margin:14px 0;color:white;">Available Times</h3>
       <div class="times" id="times"></div>
 
       <button class="btn book" id="confirmBtn" disabled>Confirm Booking</button>
@@ -270,90 +285,43 @@ input:focus, select:focus {
 
 </div>
 
-<!-- SUPABASE + BOOKING LOGIC -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// LIVE TIME
+function tick() {
+  liveDT.textContent = new Date().toLocaleString();
+  nowLine.textContent = "Current Time: " + new Date().toLocaleString();
+}
+tick();
+setInterval(tick, 1000);
+
+// OPEN BOOKING
+toggleBtn.onclick = () => booking.classList.toggle("open");
+
+// SUPABASE CLIENT
 const supa = supabase.createClient(
  "https://zleztbdrxnqirccgkvqx.supabase.co",
  "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR"
 );
 
-/* ---------------- LIVE DATE/TIME ---------------- */
-function updateDateTime() {
-  liveDateTime.innerHTML = new Date().toLocaleString("en-US", {
-    weekday:"long", month:"long", day:"numeric",
-    hour:"numeric", minute:"2-digit", second:"2-digit"
-  });
-}
-updateDateTime();
-setInterval(updateDateTime,1000);
+// AVAILABLE SLOTS
+const slots = [
+ "10:00 AM","10:30 AM","11:00 AM","11:30 AM",
+ "12:00 PM","12:30 PM","1:00 PM","1:30 PM",
+ "2:00 PM","2:30 PM","3:00 PM","3:30 PM",
+ "4:00 PM","4:30 PM","5:00 PM"
+];
 
-/* --------------- TIME OF DAY BACKGROUND + CARD THEME --------------- */
-function applyTheme() {
-  const hr = new Date().getHours();
-  const card = document.getElementById("cardBox");
-  const stars = document.getElementById("stars");
+const timesBox = document.getElementById("times");
+const dateEl = document.getElementById("date");
+const emailEl = document.getElementById("email");
+const fullNameEl = document.getElementById("fullName");
+const serviceEl = document.getElementById("service");
+const locationEl = document.getElementById("location");
+const confirmBtn = document.getElementById("confirmBtn");
+let selectedSlot = null;
 
-  stars.innerHTML = ""; // clear previous stars
-
-  if (hr >= 5 && hr < 11) {
-    /* 🌅 MORNING */
-    document.body.style.background =
-      "linear-gradient(#FFD9A0, #FFF1D6, #ffffff)";
-    card.style.background = "rgba(255, 245, 230, 0.55)";
-    card.style.color = "#1e293b";
-  }
-  else if (hr >= 11 && hr < 17) {
-    /* 🌞 AFTERNOON */
-    document.body.style.background =
-      "linear-gradient(#91D3FF, #e8f7ff, #ffffff)";
-    card.style.background = "rgba(230, 247, 255, 0.55)";
-    card.style.color = "#0f172a";
-  }
-  else if (hr >= 17 && hr < 20) {
-    /* 🌆 EVENING */
-    document.body.style.background =
-      "linear-gradient(#FF9F68, #FFD1A8, #FFEBDD)";
-    card.style.background = "rgba(255, 228, 204, 0.55)";
-    card.style.color = "#1e293b";
-  }
-  else {
-    /* 🌙 NIGHT */
-    document.body.style.background =
-      "linear-gradient(#000428, #004e92)";
-    card.style.background = "rgba(0,0,0,0.45)";
-    card.style.color = "white";
-
-    /* Add stars */
-    for(let i=0;i<90;i++){
-      let s=document.createElement("div");
-      s.className="star";
-      s.style.top = Math.random()*100+"%";
-      s.style.left = Math.random()*100+"%";
-      s.style.animationDuration = (2 + Math.random()*3) + "s";
-      stars.appendChild(s);
-    }
-  }
-}
-
-applyTheme();
-setInterval(applyTheme, 60000);
-
-/* --------------------- BOOKING PANEL TOGGLE --------------------- */
-toggleBtn.onclick = () => {
-  booking.classList.toggle("open");
-};
-
-/* ----------------- CURRENT TIME IN BOOKING FORM ----------------- */
-function tick(){
-  nowLine.textContent = "Current Time: " + new Date().toLocaleString();
-}
-tick();
-setInterval(tick,1000);
-
-/* --------------------------------------------------------------
-   KEEP YOUR EXISTING SUPABASE BOOKING LOGIC BELOW (unchanged)
--------------------------------------------------------------- */
+/* YOU KEEP YOUR EXISTING SUPABASE BOOKING FUNCTIONS HERE */
 </script>
 
 </body>
