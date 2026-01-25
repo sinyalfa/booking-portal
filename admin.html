@@ -76,6 +76,7 @@
       display:inline-flex; align-items:center; gap:8px;
       padding:6px 10px; border-radius:999px; font-weight:900; font-size:12px;
       border: 1px solid transparent;
+      white-space:nowrap;
     }
     .pill.ok{ background:var(--okBg); color:var(--okText); border-color:var(--okBorder); }
     .pill.bad{ background:var(--badBg); color:var(--badText); border-color:var(--badBorder); }
@@ -141,7 +142,6 @@
       .split{ grid-template-columns:1fr; }
     }
 
-    /* Calendar */
     .calendarHeader{
       display:flex;
       justify-content:space-between;
@@ -251,7 +251,6 @@
       color: var(--text);
       border:1px solid rgba(255,255,255,.12);
     }
-    a.link{ color: var(--accent); font-weight:900; text-decoration:none; }
   </style>
 </head>
 <body>
@@ -267,7 +266,6 @@
         </div>
       </div>
 
-      <!-- LOGIN FORM -->
       <div id="loginBox">
         <div class="row">
           <input id="email" type="email" placeholder="Admin email" aria-label="Admin email" />
@@ -282,7 +280,6 @@
         <div id="authStatus" class="muted" style="margin-top:10px;"></div>
       </div>
 
-      <!-- RESET FORM (when user arrives from recovery email) -->
       <div id="resetBox" style="display:none;">
         <div class="muted" style="margin-top:10px;">
           Set a new password for your admin account.
@@ -298,7 +295,7 @@
       </div>
 
       <div class="muted" style="margin-top:12px;">
-        Tip: Make sure your Supabase Auth Redirect URL includes this page.
+        Tip: Supabase Auth Redirect URL must include this page URL.
       </div>
     </div>
   </div>
@@ -325,6 +322,10 @@
           <option value="all">All</option>
           <option value="confirmed">Confirmed</option>
           <option value="cancelled">Cancelled</option>
+        </select>
+        <select id="rangeFilter" aria-label="Range filter">
+          <option value="month">This month</option>
+          <option value="90">Last 90 days + future</option>
         </select>
       </div>
 
@@ -373,7 +374,11 @@
     // ========= Supabase =========
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
-    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // IMPORTANT: keep sessions so admin stays logged in on refresh
+    const supa = window.supabase.createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
+    });
 
     // ========= Auth UI =========
     const overlay = document.getElementById("overlay");
@@ -400,6 +405,7 @@
     // ========= App UI =========
     const searchBox = document.getElementById("searchBox");
     const statusFilter = document.getElementById("statusFilter");
+    const rangeFilter = document.getElementById("rangeFilter");
 
     const monthTitle = document.getElementById("monthTitle");
     const calGrid = document.getElementById("calGrid");
@@ -424,6 +430,7 @@
     function pad(n){ return String(n).padStart(2,"0"); }
     function ymd(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
     function monthLabel(d){ return d.toLocaleDateString([], { month:"long", year:"numeric" }); }
+
     function fmtNice(iso){
       return new Intl.DateTimeFormat("en-US", {
         timeZone:"America/New_York",
@@ -492,8 +499,7 @@
       }
       authStatus.innerHTML = pill("warn", "Sending reset email…");
 
-      // Sends a reset email (redirects back to admin.html)
-      const redirectTo = window.location.origin + window.location.pathname; // admin.html
+      const redirectTo = window.location.origin + window.location.pathname;
       const { error } = await supa.auth.resetPasswordForEmail(email, { redirectTo });
 
       if(error){
@@ -516,7 +522,7 @@
         resetStatus.innerHTML = pill("bad", error.message);
         return;
       }
-      resetStatus.innerHTML = pill("ok", "Password updated. You can continue.");
+      resetStatus.innerHTML = pill("ok", "Password updated. Loading…");
       setTimeout(() => setOverlayBySession(), 700);
     });
 
@@ -531,6 +537,7 @@
     let currentMonth = new Date();
     currentMonth.setDate(1);
     currentMonth.setHours(0,0,0,0);
+
     let allRows = [];
     let selectedDay = null;
 
@@ -542,8 +549,23 @@
       return { start, end };
     }
 
-    async function fetchMonthAppointments(monthDate){
-      const { start, end } = getMonthRange(monthDate);
+    async function fetchAppointments(){
+      footerNote.innerHTML = pill("warn", "Loading…");
+
+      const mode = rangeFilter.value;
+
+      let start, end;
+      if(mode === "90"){
+        start = new Date();
+        start.setDate(start.getDate() - 90);
+        start.setHours(0,0,0,0);
+
+        end = new Date();
+        end.setFullYear(end.getFullYear() + 2);
+        end.setHours(0,0,0,0);
+      } else {
+        ({ start, end } = getMonthRange(currentMonth));
+      }
 
       const { data, error } = await supa
         .from("appointments")
@@ -554,10 +576,24 @@
 
       if(error){
         console.warn(error);
-        footerNote.innerHTML = pill("bad", "Access error") + " " + escapeHtml(error.message);
+        footerNote.innerHTML =
+          pill("bad", "Access error") +
+          " " +
+          escapeHtml(error.message) +
+          "<br/><br/>Most common cause: your RLS admin policy only allows one email. Make sure you're logged in with the allowed admin email (or use the admin_users allowlist fix).";
         return [];
       }
-      return data || [];
+
+      const rows = data || [];
+      if(rows.length === 0){
+        footerNote.innerHTML =
+          pill("warn", "Loaded 0 appointments") +
+          " Try switching months / range. If Supabase has rows but admin shows 0, your admin RLS policy is filtering them (email mismatch).";
+      } else {
+        footerNote.innerHTML = pill("ok", `Loaded ${rows.length} appointment(s)`);
+      }
+
+      return rows;
     }
 
     function summarizeByDay(rows){
@@ -617,7 +653,7 @@
         const mini = entry && entry.items.length
           ? entry.items.slice(0,2).map(a => {
               const t = new Date(a.start_time).toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
-              return `<div class="miniItem">${t} • ${escapeHtml(a.client_name || "")}</div>`;
+              return `<div class="miniItem">${escapeHtml(t)} • ${escapeHtml(a.client_name || "")}</div>`;
             }).join("")
           : "";
 
@@ -661,7 +697,6 @@
         daySub.textContent = "Tap a day on the calendar";
         apptList.innerHTML = "";
         summaryPills.innerHTML = "";
-        footerNote.textContent = "";
         return;
       }
 
@@ -685,7 +720,6 @@
 
       if(!dayRows.length){
         apptList.innerHTML = `<div class="muted">No appointments found for this day.</div>`;
-        footerNote.textContent = "Tip: change month, search, or status filter.";
         return;
       }
 
@@ -715,8 +749,6 @@
           </div>
         `;
       }).join("");
-
-      footerNote.textContent = "If you see an access error, confirm your RLS policy email matches your admin account.";
     }
 
     async function loadMonthData(){
@@ -724,7 +756,8 @@
         selectedDay = new Date();
         selectedDay.setHours(0,0,0,0);
       }
-      allRows = await fetchMonthAppointments(currentMonth);
+
+      allRows = await fetchAppointments();
       buildCalendarGrid(currentMonth, summarizeByDay(allRows));
       renderDayList();
     }
@@ -747,23 +780,20 @@
       selectedDay.setHours(0,0,0,0);
       await loadMonthData();
     });
+
     refreshBtn.addEventListener("click", loadMonthData);
     searchBox.addEventListener("input", renderDayList);
     statusFilter.addEventListener("change", renderDayList);
+    rangeFilter.addEventListener("change", loadMonthData);
 
     // ========= Handle "recovery" reset links =========
-    // When user clicks the reset email link, Supabase can return a recovery session.
-    // We detect it and show the reset box.
     async function init(){
-      // If URL hash contains "recovery" (recommended redirect), show reset UI
       if (window.location.hash.includes("recovery")) {
         showReset();
       }
 
-      // If Supabase sets a session (after redirect), hide overlay and load
       await setOverlayBySession();
 
-      // Also react to auth state changes
       supa.auth.onAuthStateChange(async (_event, session) => {
         if(session?.user){
           overlay.style.display = "none";
