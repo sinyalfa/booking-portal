@@ -7,20 +7,20 @@
 
 <style>
 /* -----------------------------------------------------------
-   GLOBAL BASE
+   GLOBAL RESET + BASE
 ----------------------------------------------------------- */
-* { box-sizing:border-box; }
+* { box-sizing:border-box; margin:0; padding:0; }
+
 body {
-  margin:0;
-  padding:22px;
   font-family: Arial, Helvetica, sans-serif;
-  color:#0f172a;
   min-height:100vh;
-  transition: background 1.5s ease-in-out;
+  padding:22px;
   overflow-x:hidden;
+  transition: background 1.5s ease-in-out;
+  position:relative;
 }
 
-/* STARFIELD (night mode only) */
+/* STARFIELD FOR NIGHT MODE */
 #stars {
   position:fixed;
   inset:0;
@@ -29,64 +29,72 @@ body {
   pointer-events:none;
   z-index:-1;
 }
-
 .star {
   position:absolute;
   width:3px;
   height:3px;
-  background:#fff;
+  background:white;
   border-radius:50%;
   opacity:0.8;
-  animation: twinkle 2s infinite ease-in-out;
+  animation: twinkle 2.5s ease-in-out infinite;
 }
-
 @keyframes twinkle {
   0% { opacity:0.2; transform:scale(1); }
-  50% { opacity:1; transform:scale(1.8); }
+  50% { opacity:1; transform:scale(1.7); }
   100% { opacity:0.2; transform:scale(1); }
 }
 
 /* -----------------------------------------------------------
-   MAIN CARD
+   FROSTED GLASS CARD (Time-of-Day Tint Applied via JS)
 ----------------------------------------------------------- */
-.wrap{ max-width:980px; margin:0 auto; }
-
 .card {
-  background: rgba(255,255,255,0.92);
-  border-radius:28px;
+  width:100%;
+  max-width:980px;
+  margin:0 auto;
   padding:38px 28px;
-  box-shadow:0 34px 85px rgba(0,0,0,.55);
-  text-align:center;
+  border-radius:28px;
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  background: rgba(255,255,255,0.35); /* default, replaced by JS */
+  box-shadow:0 34px 85px rgba(0,0,0,0.55);
+  transition: background 1.5s ease-in-out, color 1.5s ease-in-out;
+  color:#0f172a;
 }
 
-/* LOGO */
+/* -----------------------------------------------------------
+   LOGO
+----------------------------------------------------------- */
 .logo {
   width:360px;
   max-width:92%;
-  display:block;
   margin:0 auto 14px;
+  display:block;
 }
 
-/* CONTACT */
+/* -----------------------------------------------------------
+   CONTACT TEXT (shows current date/time)
+----------------------------------------------------------- */
 .contact {
+  text-align:center;
   font-size:22px;
   font-weight:900;
-  line-height:1.4;
-  margin-bottom:20px;
+  margin:10px 0 28px;
 }
 
-/* BUTTONS */
+/* -----------------------------------------------------------
+   BUTTONS
+----------------------------------------------------------- */
 .btn {
   width:100%;
   padding:18px;
   margin:14px 0;
+  border-radius:18px;
+  border:none;
   font-size:20px;
   font-weight:900;
-  border:none;
-  border-radius:18px;
-  color:white;
   cursor:pointer;
-  transition:transform .12s;
+  color:white;
+  transition: transform .15s ease;
 }
 .btn:hover { transform: translateY(-2px); }
 
@@ -95,35 +103,40 @@ body {
 .email { background:#9333ea; }
 .book { background:#0f766e; }
 
-/* BOOKING PANEL */
+/* -----------------------------------------------------------
+   BOOKING AREA
+----------------------------------------------------------- */
 .booking {
   max-height:0;
   overflow:hidden;
-  transition:max-height .5s ease;
+  transition:max-height .6s ease;
 }
-.booking.open {
-  max-height:2600px;
-}
+.booking.open { max-height:2600px; }
 
-/* FORM */
 .section {
-  background:#fff;
-  padding:16px;
-  border-radius:20px;
-  border:1px solid #e5e7eb;
-  margin-top:16px;
+  background:rgba(255,255,255,0.65);
+  border:1px solid rgba(255,255,255,0.55);
+  border-radius:22px;
+  padding:18px;
+  margin-top:18px;
+  backdrop-filter: blur(10px);
 }
 
+/* FORM ROWS */
 .row {
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:12px;
 }
-@media (max-width:720px){
-  .row{ grid-template-columns:1fr; }
+@media(max-width:720px){
+  .row { grid-template-columns:1fr; }
 }
 
-label { font-size:13px; font-weight:900; }
+label {
+  font-size:13px;
+  font-weight:900;
+  margin-bottom:6px;
+}
 input, select {
   width:100%;
   padding:14px;
@@ -131,9 +144,10 @@ input, select {
   border:1px solid #cbd5e1;
   font-size:16px;
 }
+
 input:focus, select:focus {
   border-color:#6366f1;
-  box-shadow:0 0 0 4px rgba(99,102,241,0.25);
+  box-shadow:0 0 0 4px rgba(99,102,241,0.3);
 }
 
 /* TIME SLOTS */
@@ -141,31 +155,46 @@ input:focus, select:focus {
   display:grid;
   gap:10px;
   grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
-  margin-top:10px;
 }
 .slot {
   padding:14px;
-  border-radius:16px;
   text-align:center;
+  border-radius:16px;
   font-weight:900;
   cursor:pointer;
-  background:#ecfdf5;
+  background:rgba(236,253,245,0.8);
   border:1px solid #34d399;
 }
 .slot.disabled {
-  background:#f1f5f9;
+  background:rgba(241,245,249,0.7);
   color:#94a3b8;
   cursor:not-allowed;
 }
 .slot.active {
-  background:#c7d2fe;
+  background:rgba(199,210,254,0.8);
   border-color:#6366f1;
 }
 
-/* CONFIRMATION MESSAGE */
-.msg { display:none; padding:12px; margin-top:14px; border-radius:12px; font-weight:900; }
-.msg.ok { display:block; background:#dcfce7; color:#166534; border:1px solid #86efac; }
-.msg.bad{ display:block; background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
+/* CONFIRM MESSAGES */
+.msg {
+  display:none;
+  padding:12px;
+  font-weight:900;
+  border-radius:12px;
+  margin-top:12px;
+}
+.msg.ok {
+  display:block;
+  background:#dcfce7;
+  color:#166534;
+  border:1px solid #86efac;
+}
+.msg.bad {
+  display:block;
+  background:#fee2e2;
+  color:#991b1b;
+  border:1px solid #fecaca;
+}
 
 </style>
 </head>
@@ -173,78 +202,75 @@ input:focus, select:focus {
 
 <div id="stars"></div>
 
-<div class="wrap">
-  <div class="card">
+<div class="card" id="cardBox">
 
-    <!-- Logo -->
-    <img class="logo" src="https://raw.githubusercontent.com/sinyalfa/CETS/main/logo1.png" />
+  <img class="logo"
+       src="https://raw.githubusercontent.com/sinyalfa/CETS/main/logo1.png"
+       alt="CETS Logo">
 
-    <!-- Contact -->
-    <div class="contact" id="liveDateTime"></div>
+  <div class="contact" id="liveDateTime"></div>
 
-    <!-- Quick buttons -->
-    <button class="btn call" onclick="location='tel:6142597625'">📞 Call Now</button>
-    <button class="btn text" onclick="location='sms:6142597625'">💬 Text Us</button>
-    <button class="btn email" onclick="location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
+  <button class="btn call" onclick="location='tel:6142597625'">📞 Call Now</button>
+  <button class="btn text" onclick="location='sms:6142597625'">💬 Text Us</button>
+  <button class="btn email" onclick="location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
 
-    <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
+  <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
 
-    <!-- BOOKING SECTION -->
-    <div id="booking" class="booking">
-      <div class="section">
+  <!-- BOOKING SECTION -->
+  <div id="booking" class="booking">
+    <div class="section">
 
-        <div id="nowLine" style="font-weight:900;color:#2563eb;margin-bottom:10px;"></div>
+      <div id="nowLine" style="font-weight:900;color:#2563eb;margin-bottom:10px;"></div>
 
-        <div class="row">
-          <div><label>Full Name</label><input id="fullName"></div>
-          <div><label>Email</label><input id="email"></div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Service</label>
-            <select id="service">
-              <option>W-2 / Individual Taxes</option>
-              <option>1099 / Self-Employed Taxes</option>
-              <option>LLC / Small Business</option>
-              <option>Audit Help</option>
-              <option>Amended Returns (1040-X)</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Location</label>
-            <select id="location">
-              <option>CML Whitehall — 4445 E Broad St</option>
-              <option>CML Reynoldsburg — 1402 Brice Rd</option>
-              <option>CML Livingston — 3434 E Livingston Ave</option>
-              <option>CML Groveport — 4980 S Hamilton Rd</option>
-              <option>Online / Phone / Text</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="row">
-          <div><label>Date</label><input type="date" id="date"></div>
-          <div>
-            <label>Length</label>
-            <select id="duration"><option value="60">60 minutes</option></select>
-          </div>
-        </div>
-
-        <h3>Available Times</h3>
-        <div class="times" id="times"></div>
-
-        <button class="btn book" id="confirmBtn" disabled>Confirm Booking</button>
-        <div id="msg" class="msg"></div>
-
+      <div class="row">
+        <div><label>Full Name</label><input id="fullName"></div>
+        <div><label>Email</label><input id="email"></div>
       </div>
-    </div>
 
+      <div class="row">
+        <div>
+          <label>Service</label>
+          <select id="service">
+            <option>W-2 / Individual Taxes</option>
+            <option>1099 / Self-Employed Taxes</option>
+            <option>LLC / Small Business</option>
+            <option>Audit Help</option>
+            <option>Amended Returns (1040-X)</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Location</label>
+          <select id="location">
+            <option>CML Whitehall — 4445 E Broad St</option>
+            <option>CML Reynoldsburg — 1402 Brice Rd</option>
+            <option>CML Livingston — 3434 E Livingston Ave</option>
+            <option>CML Groveport — 4980 S Hamilton Rd</option>
+            <option>Online / Phone / Text</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div><label>Date</label><input type="date" id="date"></div>
+        <div>
+          <label>Length</label>
+          <select id="duration"><option value="60">60 minutes</option></select>
+        </div>
+      </div>
+
+      <h3 style="margin:14px 0;">Available Times</h3>
+      <div class="times" id="times"></div>
+
+      <button class="btn book" id="confirmBtn" disabled>Confirm Booking</button>
+      <div id="msg" class="msg"></div>
+
+    </div>
   </div>
+
 </div>
 
-<!-- SUPABASE & BOOKING LOGIC -->
+<!-- SUPABASE + BOOKING LOGIC -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const supa = supabase.createClient(
@@ -252,80 +278,82 @@ const supa = supabase.createClient(
  "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR"
 );
 
-/* ------------------ LIVE DATE/TIME DISPLAY ------------------ */
+/* ---------------- LIVE DATE/TIME ---------------- */
 function updateDateTime() {
-  document.getElementById("liveDateTime").innerHTML =
-    new Date().toLocaleString("en-US", {
-      weekday:"long",
-      month:"long",
-      day:"numeric",
-      hour:"numeric",
-      minute:"2-digit",
-      second:"2-digit"
-    });
+  liveDateTime.innerHTML = new Date().toLocaleString("en-US", {
+    weekday:"long", month:"long", day:"numeric",
+    hour:"numeric", minute:"2-digit", second:"2-digit"
+  });
 }
 updateDateTime();
 setInterval(updateDateTime,1000);
 
-/* ------------------ TIME-OF-DAY BACKGROUND ------------------ */
-function applyTimeOfDayTheme() {
+/* --------------- TIME OF DAY BACKGROUND + CARD THEME --------------- */
+function applyTheme() {
   const hr = new Date().getHours();
+  const card = document.getElementById("cardBox");
   const stars = document.getElementById("stars");
-  stars.innerHTML = "";
+
+  stars.innerHTML = ""; // clear previous stars
 
   if (hr >= 5 && hr < 11) {
-    /* MORNING */
+    /* 🌅 MORNING */
     document.body.style.background =
-      "linear-gradient(#ffcf9f, #ffe7d4, #ffffff)";
+      "linear-gradient(#FFD9A0, #FFF1D6, #ffffff)";
+    card.style.background = "rgba(255, 245, 230, 0.55)";
+    card.style.color = "#1e293b";
   }
   else if (hr >= 11 && hr < 17) {
-    /* AFTERNOON */
+    /* 🌞 AFTERNOON */
     document.body.style.background =
-      "linear-gradient(#87CEEB, #e0f7ff, #ffffff)";
+      "linear-gradient(#91D3FF, #e8f7ff, #ffffff)";
+    card.style.background = "rgba(230, 247, 255, 0.55)";
+    card.style.color = "#0f172a";
   }
   else if (hr >= 17 && hr < 20) {
-    /* EVENING */
+    /* 🌆 EVENING */
     document.body.style.background =
-      "linear-gradient(#ff9f68, #ffb8a8, #ffe6d9)";
+      "linear-gradient(#FF9F68, #FFD1A8, #FFEBDD)";
+    card.style.background = "rgba(255, 228, 204, 0.55)";
+    card.style.color = "#1e293b";
   }
   else {
-    /* NIGHT */
+    /* 🌙 NIGHT */
     document.body.style.background =
       "linear-gradient(#000428, #004e92)";
-    
+    card.style.background = "rgba(0,0,0,0.45)";
+    card.style.color = "white";
+
     /* Add stars */
-    for(let i=0;i<80;i++){
+    for(let i=0;i<90;i++){
       let s=document.createElement("div");
       s.className="star";
-      s.style.top=Math.random()*100+"%";
-      s.style.left=Math.random()*100+"%";
-      s.style.animationDuration = (2+Math.random()*3)+"s";
+      s.style.top = Math.random()*100+"%";
+      s.style.left = Math.random()*100+"%";
+      s.style.animationDuration = (2 + Math.random()*3) + "s";
       stars.appendChild(s);
     }
   }
 }
 
-applyTimeOfDayTheme();
-setInterval(applyTimeOfDayTheme, 60000); // update every minute
+applyTheme();
+setInterval(applyTheme, 60000);
 
-/* ------------------ Booking Panel Toggle ------------------ */
-document.getElementById("toggleBtn").onclick = () => {
-  document.getElementById("booking").classList.toggle("open");
+/* --------------------- BOOKING PANEL TOGGLE --------------------- */
+toggleBtn.onclick = () => {
+  booking.classList.toggle("open");
 };
 
-/* ------------------ Current time inside form ------------------ */
-function tick() {
-  document.getElementById("nowLine").textContent =
-    "Current Time: " + new Date().toLocaleString();
+/* ----------------- CURRENT TIME IN BOOKING FORM ----------------- */
+function tick(){
+  nowLine.textContent = "Current Time: " + new Date().toLocaleString();
 }
 tick();
 setInterval(tick,1000);
 
 /* --------------------------------------------------------------
-   Your Supabase appointment logic continues here unchanged...
-   (Slots, availability, confirm booking, double-booking prevention)
+   KEEP YOUR EXISTING SUPABASE BOOKING LOGIC BELOW (unchanged)
 -------------------------------------------------------------- */
-
 </script>
 
 </body>
