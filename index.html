@@ -41,10 +41,7 @@
     background: radial-gradient(circle at top, var(--bg1), var(--bg2));
     padding:22px;
   }
-  .wrap{
-    max-width:980px;
-    margin:0 auto;
-  }
+  .wrap{ max-width:980px; margin:0 auto; }
   .card{
     background:var(--card);
     border-radius:28px;
@@ -53,7 +50,6 @@
     text-align:center;
   }
 
-  /* LOGO */
   .logo{
     width:360px;
     max-width:92%;
@@ -61,7 +57,6 @@
     display:block;
   }
 
-  /* CONTACT */
   .contact{
     font-size:22px;
     font-weight:900;
@@ -70,7 +65,6 @@
     margin:10px 0 20px;
   }
 
-  /* Buttons */
   .btn{
     width:100%;
     padding:18px;
@@ -91,7 +85,6 @@
   .email{ background:var(--btnEmail); }
   .book{ background:var(--btnBook); }
 
-  /* Expandable booking section */
   .booking{
     margin-top:18px;
     text-align:left;
@@ -152,7 +145,6 @@
     font-size:14px;
   }
 
-  /* Slots */
   .slotsTitle{
     margin:14px 0 10px;
     font-weight:900;
@@ -198,7 +190,6 @@
     border-radius:18px;
   }
 
-  /* Messages */
   .msg{
     margin-top:12px;
     border-radius:14px;
@@ -210,7 +201,6 @@
   .msg.bad{ display:block; background:var(--badBg); color:var(--badText); border:1px solid var(--badBorder); }
   .msg.warn{ display:block; background:var(--warnBg); color:var(--warnText); border:1px solid var(--warnBorder); }
 
-  /* Confirmation screen */
   .confirmCard{
     display:none;
     margin-top:18px;
@@ -293,26 +283,21 @@
 <div class="wrap">
   <div class="card">
 
-    <!-- LOGO -->
     <img class="logo" src="logo.png" alt="Columbus East Tax Services" />
 
-    <!-- PHONE NUMBERS (email removed) -->
     <div class="contact">
       614-259-7625<br>
       614-599-1185
     </div>
 
-    <!-- Quick actions -->
     <button class="btn call" id="callBtn">📞 Call Now</button>
     <button class="btn text" id="textBtn">💬 Text Us</button>
     <button class="btn email" id="emailBtn">✉️ Email Us</button>
 
-    <!-- Expand appointment -->
     <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
 
     <div id="booking" class="booking">
       <div class="section">
-
         <div class="subline">Book an Appointment</div>
         <div class="now" id="nowLine"></div>
 
@@ -343,6 +328,8 @@
             <select id="location">
               <option>CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213</option>
               <option>CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068</option>
+              <option>3434 East Livingston Ave</option>
+              <option>3980 S Hamilton Rd, Groveport</option>
               <option>Online / Phone / Text</option>
             </select>
           </div>
@@ -368,7 +355,6 @@
 
         <div id="msg" class="msg"></div>
 
-        <!-- Confirmation Screen -->
         <div id="confirmCard" class="confirmCard">
           <div class="confirmHead">
             <div class="check">✓</div>
@@ -412,26 +398,18 @@
 
           <div class="subline" style="margin-top:10px;">Need changes? Call or text us anytime.</div>
         </div>
-
       </div>
     </div>
 
   </div>
 </div>
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* =========================
-   Supabase Config
-========================= */
 const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
 const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
 const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-/* =========================
-   UI Elements
-========================= */
 const callBtn = document.getElementById("callBtn");
 const textBtn = document.getElementById("textBtn");
 const emailBtn = document.getElementById("emailBtn");
@@ -460,30 +438,20 @@ const cLoc = document.getElementById("cLoc");
 const bookAnotherBtn = document.getElementById("bookAnotherBtn");
 const backTopBtn = document.getElementById("backTopBtn");
 
-/* =========================
-   Quick action links
-========================= */
 callBtn.onclick = () => window.location.href = "tel:6142597625";
 textBtn.onclick = () => window.location.href = "sms:6142597625";
 emailBtn.onclick = () => window.location.href = "mailto:columbuseast.taxservices@outlook.com";
 
-/* =========================
-   Helpers
-========================= */
 function setMsg(type, text){
   msg.className = "msg " + type;
   msg.textContent = text;
 }
-
 function pad(n){ return String(n).padStart(2, "0"); }
-
 function todayYMD(){
   const d = new Date();
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 }
-
 function parseSlotTo24h(slot){
-  // "10:30 AM" -> {h:10,m:30} ; "04:30 PM" -> {h:16,m:30}
   const [time, ampm] = slot.split(" ");
   let [h, m] = time.split(":").map(Number);
   const upper = (ampm || "").toUpperCase();
@@ -491,14 +459,11 @@ function parseSlotTo24h(slot){
   if(upper === "AM" && h === 12) h = 0;
   return { h, m };
 }
-
 function makeLocalDateTime(ymdStr, slot){
-  // Builds a Date in the user's local timezone
   const {h,m} = parseSlotTo24h(slot);
   const [Y,M,D] = ymdStr.split("-").map(Number);
   return new Date(Y, M-1, D, h, m, 0, 0);
 }
-
 function fmtNice(dt){
   return new Intl.DateTimeFormat("en-US", {
     weekday:"short", month:"short", day:"2-digit", year:"numeric",
@@ -506,9 +471,6 @@ function fmtNice(dt){
   }).format(dt);
 }
 
-/* =========================
-   Slots
-========================= */
 const slots = [
   "10:00 AM","10:30 AM","11:00 AM","11:30 AM",
   "12:00 PM","12:30 PM","01:00 PM","01:30 PM",
@@ -517,35 +479,36 @@ const slots = [
 ];
 
 let selectedSlot = null;
-let bookedTimesSet = new Set(); // "10:00 AM" etc (for chosen date)
+let bookedTimesSet = new Set();
+let refreshTimer = null;
 
-/* =========================
-   Live clock
-========================= */
 function tick(){
   nowLine.textContent = "Current date & time: " + new Date().toLocaleString();
 }
 tick();
 setInterval(tick, 1000);
 
-/* =========================
-   Expand / collapse booking
-========================= */
 toggleBtn.onclick = () => {
   booking.classList.toggle("open");
   if(booking.classList.contains("open")){
-    // default date to today if blank
     if(!dateEl.value) dateEl.value = todayYMD();
     refreshAvailability();
   }
 };
 
-/* =========================
-   Fetch booked appointments for selected date
-========================= */
+function isPastDate(ymdStr){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(ymdStr + "T00:00:00"); d.setHours(0,0,0,0);
+  return d < today;
+}
+function isToday(ymdStr){ return ymdStr === todayYMD(); }
+function isPastTimeToday(ymdStr, slot){
+  if(!isToday(ymdStr)) return false;
+  const slotDT = makeLocalDateTime(ymdStr, slot);
+  return slotDT <= new Date();
+}
+
 async function fetchBookedForDate(ymdStr){
-  // We’ll consider booked = status != 'cancelled'
-  // and match by local date boundaries.
   const start = new Date(ymdStr + "T00:00:00");
   const end = new Date(ymdStr + "T23:59:59");
 
@@ -565,36 +528,12 @@ async function fetchBookedForDate(ymdStr){
   for(const row of (data || [])){
     const st = (row.status || "confirmed").toLowerCase();
     if(st === "cancelled") continue;
-    // Convert the appointment time back to local "hh:mm AM/PM"
+
     const dt = new Date(row.start_time);
-    const label = dt.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
-    // label sometimes returns "10:00 AM" or "10:00"
-    // Normalize to match our slot labels:
     const normalized = dt.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit", hour12:true }).replace(/^0/,'');
     set.add(normalized);
   }
   return set;
-}
-
-/* =========================
-   Auto-disable past + booked
-========================= */
-function isPastDate(ymdStr){
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const d = new Date(ymdStr + "T00:00:00");
-  d.setHours(0,0,0,0);
-  return d < today;
-}
-
-function isToday(ymdStr){
-  return ymdStr === todayYMD();
-}
-
-function isPastTimeToday(ymdStr, slot){
-  if(!isToday(ymdStr)) return false;
-  const slotDT = makeLocalDateTime(ymdStr, slot);
-  return slotDT <= new Date(); // past or current minute disabled
 }
 
 function renderSlots(){
@@ -608,9 +547,7 @@ function renderSlots(){
     return;
   }
 
-  // Past date: disable everything
   const pastDay = isPastDate(d);
-
   let anyAvailable = false;
 
   slots.forEach(slot => {
@@ -624,9 +561,6 @@ function renderSlots(){
 
     if(disabled){
       div.classList.add("disabled");
-      if(booked) div.title = "Booked";
-      else if(pastDay) div.title = "Past date";
-      else div.title = "Past time";
     } else {
       anyAvailable = true;
       div.onclick = () => {
@@ -640,81 +574,71 @@ function renderSlots(){
     timesBox.appendChild(div);
   });
 
-  if(pastDay){
-    setMsg("warn", "That date is in the past. Please choose a future date.");
-  } else if(!anyAvailable){
-    setMsg("warn", "No available times on this date (all booked or past). Try another day.");
-  } else {
-    setMsg("warn", "Pick a time, then press Confirm Booking.");
-  }
+  if(pastDay) setMsg("warn", "That date is in the past. Please choose a future date.");
+  else if(!anyAvailable) setMsg("warn", "No available times on this date (all booked or past). Try another day.");
+  else setMsg("warn", "Pick a time, then press Confirm Booking.");
 }
 
-/* =========================
-   Validate form
-========================= */
 function validateEmail(v){
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
-
 function validateReady(){
   const nameOk = (fullNameEl.value || "").trim().length >= 2;
   const emailOk = validateEmail((emailEl.value || "").trim());
   const dateOk = !!dateEl.value && !isPastDate(dateEl.value);
   const timeOk = !!selectedSlot;
-
   confirmBtn.disabled = !(nameOk && emailOk && dateOk && timeOk);
-
-  if(confirmBtn.disabled){
-    // don't overwrite success messages
-    if(!confirmCard.classList.contains("show")){
-      setMsg("warn", "Fill out name/email, pick a valid date, then select an available time.");
-    }
-  }
 }
 
-/* =========================
-   Refresh availability (live)
-========================= */
-let refreshTimer = null;
-
 async function refreshAvailability(){
-  confirmCard.classList.remove("show"); // hide confirm card when changing date/refresh
+  confirmCard.classList.remove("show");
   const d = dateEl.value;
   if(!d) return;
 
   setMsg("warn", "Loading availability…");
-
   bookedTimesSet = await fetchBookedForDate(d);
   renderSlots();
   validateReady();
 
-  // keep it fresh while section open
   if(refreshTimer) clearInterval(refreshTimer);
   refreshTimer = setInterval(async () => {
     if(!booking.classList.contains("open")) return;
     bookedTimesSet = await fetchBookedForDate(dateEl.value);
-    // re-render but keep selected slot if still available
-    const prev = selectedSlot;
     renderSlots();
-    if(prev && !bookedTimesSet.has(prev) && !isPastTimeToday(dateEl.value, prev)){
-      // reselect if still valid
-      const nodes = [...document.querySelectorAll(".slot")];
-      const n = nodes.find(x => x.textContent.trim() === prev && !x.classList.contains("disabled"));
-      if(n){
-        n.classList.add("active");
-        selectedSlot = prev;
-        validateReady();
-      }
-    }
   }, 15000);
 }
 
-/* =========================
-   Booking Insert + Confirmation Screen
-========================= */
+/* ✅ NEW: Prevent same client booking ANY other confirmed appt on the same day */
+async function clientAlreadyBookedSameDay(clientEmail, ymdStr){
+  const start = new Date(ymdStr + "T00:00:00");
+  const end = new Date(ymdStr + "T23:59:59");
+
+  const { data, error } = await supa
+    .from("appointments")
+    .select("id, status, start_time")
+    .eq("client_email", clientEmail)
+    .gte("start_time", start.toISOString())
+    .lte("start_time", end.toISOString())
+    .limit(1);
+
+  if(error){
+    console.warn(error);
+    return { blocked:true, reason:"Could not verify existing bookings: " + error.message };
+  }
+
+  if((data || []).length){
+    const st = (data[0].status || "confirmed").toLowerCase();
+    if(st !== "cancelled"){
+      const when = new Date(data[0].start_time);
+      return { blocked:true, reason:"You already have an appointment on this date at " + fmtNice(when) + "." };
+    }
+  }
+  return { blocked:false };
+}
+
 confirmBtn.onclick = async () => {
   const name = (fullNameEl.value || "").trim();
-  const email = (emailEl.value || "").trim();
+  const email = (emailEl.value || "").trim().toLowerCase();
   const service = serviceEl.value;
   const location = locationEl.value;
   const ymdStr = dateEl.value;
@@ -723,25 +647,40 @@ confirmBtn.onclick = async () => {
     setMsg("bad", "Please select a time slot.");
     return;
   }
+
   if(isPastDate(ymdStr) || isPastTimeToday(ymdStr, selectedSlot)){
     setMsg("bad", "That time is no longer available. Please pick another.");
     await refreshAvailability();
     return;
   }
 
-  // Make start_time local -> ISO
+  // Build times
   const startDT = makeLocalDateTime(ymdStr, selectedSlot);
   const durationMin = Number(durationEl.value || "60");
   const endDT = new Date(startDT.getTime() + durationMin * 60000);
 
-  setMsg("warn", "Booking…");
+  // ✅ Block same client booking same day
+  setMsg("warn", "Checking your existing bookings…");
+  const dupDay = await clientAlreadyBookedSameDay(email, ymdStr);
+  if(dupDay.blocked){
+    setMsg("bad", dupDay.reason);
+    return;
+  }
 
-  // Insert
+  // Live re-check slot
+  bookedTimesSet = await fetchBookedForDate(ymdStr);
+  if(bookedTimesSet.has(selectedSlot)){
+    setMsg("bad", "That slot was just booked by someone else. Pick another time.");
+    await refreshAvailability();
+    return;
+  }
+
+  setMsg("warn", "Booking…");
   const { error } = await supa.from("appointments").insert([{
     client_name: name,
     client_email: email,
-    service: service,
-    location: location,
+    service,
+    location,
     start_time: startDT.toISOString(),
     end_time: endDT.toISOString(),
     status: "confirmed"
@@ -753,7 +692,6 @@ confirmBtn.onclick = async () => {
     return;
   }
 
-  // Success: show confirmation card
   setMsg("ok", "✅ Booking confirmed!");
   confirmCard.classList.add("show");
 
@@ -763,15 +701,11 @@ confirmBtn.onclick = async () => {
   cService.textContent = service;
   cLoc.textContent = location;
 
-  // refresh to disable the slot now that it’s booked
   await refreshAvailability();
-
-  // Scroll to confirmation
   confirmCard.scrollIntoView({ behavior:"smooth", block:"start" });
 };
 
 bookAnotherBtn.onclick = async () => {
-  // reset form
   fullNameEl.value = "";
   emailEl.value = "";
   serviceEl.selectedIndex = 0;
@@ -785,23 +719,16 @@ bookAnotherBtn.onclick = async () => {
 
 backTopBtn.onclick = () => window.scrollTo({ top:0, behavior:"smooth" });
 
-/* =========================
-   Input listeners
-========================= */
 [fullNameEl, emailEl, serviceEl, locationEl, durationEl].forEach(el => {
   el.addEventListener("input", validateReady);
   el.addEventListener("change", validateReady);
 });
-
 dateEl.addEventListener("change", async () => {
   selectedSlot = null;
   await refreshAvailability();
   validateReady();
 });
 
-/* =========================
-   Init default date
-========================= */
 dateEl.value = todayYMD();
 renderSlots();
 validateReady();
