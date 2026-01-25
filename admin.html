@@ -1,306 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CETS Admin Panel</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-    <style>
-        body {
-            margin: 0;
-            display: flex;
-            font-family: "Inter", sans-serif;
-            background: #f5f6f8;
-        }
-
-        /* SIDEBAR */
-        #sidebar {
-            width: 260px;
-            background: #0f172a;
-            color: #fff;
-            height: 100vh;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        #sidebar img {
-            width: 150px;
-            margin-bottom: 20px;
-        }
-
-        .sidebar-menu .menu-item {
-            display: block;
-            color: white;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .menu-item:hover {
-            background: #1e293b;
-        }
-
-        .active {
-            background: #334155;
-        }
-
-        /* MAIN AREA */
-        #main {
-            flex: 1;
-            padding: 25px;
-        }
-
-        .page {
-            display: none;
-        }
-
-        .visible {
-            display: block;
-        }
-
-        /* CALENDAR */
-        #calendar-grid {
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 12px;
-        }
-
-        .day-cell {
-            background: white;
-            border-radius: 10px;
-            padding: 16px;
-            min-height: 90px;
-            border: 1px solid #d1d5db;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* DETAILS PANEL */
-        #details-panel {
-            position: fixed;
-            top: 0;
-            right: -420px;
-            width: 420px;
-            height: 100%;
-            background: #fff;
-            padding: 20px;
-            border-left: 1px solid #ddd;
-            transition: 0.3s ease;
-            overflow-y: auto;
-        }
-
-        #details-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #close-details {
-            border: none;
-            background: #ccc;
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        /* APPOINTMENTS TABLE */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        th {
-            background: #e5e7eb;
-            padding: 10px;
-            text-align: left;
-            font-weight: 700;
-        }
-
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-    </style>
-</head>
-
-<body>
-
-<!-- SIDEBAR -->
-<aside id="sidebar">
-    <img src="https://raw.githubusercontent.com/sinyalfa/CETS/main/logo1.png" alt="CETS Logo">
-
-    <nav class="sidebar-menu">
-        <a class="menu-item active" data-page="dashboard">Dashboard</a>
-        <a class="menu-item" data-page="calendar">Calendar</a>
-        <a class="menu-item" data-page="appointments">Appointments</a>
-        <a class="menu-item" data-page="locations">Locations</a>
-        <a class="menu-item logout">Logout</a>
-    </nav>
-</aside>
-
-<!-- MAIN CONTENT -->
-<main id="main">
-
-    <!-- DASHBOARD -->
-    <section id="page-dashboard" class="page visible">
-        <h1>Admin Dashboard</h1>
-        <p>Welcome to the Appointment Admin Panel.</p>
-    </section>
-
-    <!-- CALENDAR -->
-    <section id="page-calendar" class="page">
-        <h1>January 2026</h1>
-        <div id="calendar-grid"></div>
-
-        <div id="details-panel">
-            <div id="details-header">
-                <h2>Appointments</h2>
-                <button id="close-details">✕</button>
-            </div>
-            <div id="details-content"></div>
-        </div>
-    </section>
-
-    <!-- APPOINTMENT TABLE -->
-    <section id="page-appointments" class="page">
-        <h1>Appointments</h1>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Client</th>
-                    <th>Email</th>
-                    <th>Service</th>
-                    <th>Location</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                </tr>
-            </thead>
-            <tbody id="appt-table-body"></tbody>
-        </table>
-    </section>
-
-    <!-- LOCATIONS -->
-    <section id="page-locations" class="page">
-        <h1>Service Locations</h1>
-
-        <ul>
-            <li>CML Whitehall Branch — 4445 E Broad St</li>
-            <li>CML Southeast Branch — 3980 S Hamilton Rd</li>
-            <li>CML Livingston Branch — 3434 E Livingston Ave</li>
-            <li>CML Groveport Branch — 4980 S Hamilton Rd</li>
-            <li>Online / Phone / Text</li>
-        </ul>
-    </section>
-
-</main>
-
-
-
-<!-- ADMIN JS (RESTORED ORIGINAL) -->
-<script src="https://unpkg.com/@supabase/supabase-js"></script>
-
-<script>
-/* CONNECT SUPABASE */
-const supabase = window.supabase.createClient(
-    "https://zleztbdrxnqirccgkvqx.supabase.co",
-    "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR"
+// -------------------------
+// Supabase Client Connection
+// -------------------------
+const supabase = supabase.createClient(
+    "https://YOUR_URL.supabase.co",
+    "YOUR_ANON_KEY"
 );
 
-/* PAGE SWITCHING */
-document.querySelectorAll(".menu-item").forEach(btn => {
-    btn.onclick = () => {
-        document.querySelectorAll(".menu-item").forEach(a => a.classList.remove("active"));
-        btn.classList.add("active");
+// -------------------------
+// Build Calendar
+// -------------------------
+const calendar = document.getElementById("calendar");
+const appointmentsTable = document.getElementById("appointments-table");
+const appointmentsBody = document.getElementById("appointments-body");
+const dayTitle = document.getElementById("day-title");
 
-        const page = btn.dataset.page;
+let today = new Date();
+let year = today.getFullYear();
+let month = today.getMonth();
 
-        document.querySelectorAll(".page").forEach(p => p.classList.remove("visible"));
-        document.getElementById("page-" + page).classList.add("visible");
-    };
-});
+buildCalendar(month, year);
 
-/* BUILD CALENDAR (ORIGINAL STATIC JANUARY) */
-function buildCalendar() {
-    const cal = document.getElementById("calendar-grid");
-    cal.innerHTML = "";
+function buildCalendar(month, year) {
+    calendar.innerHTML = "";
 
-    for (let day = 1; day <= 31; day++) {
-        const cell = document.createElement("div");
-        cell.className = "day-cell";
-        cell.textContent = day;
+    let firstDay = new Date(year, month, 1).getDay();
+    let daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        cell.onclick = () => loadAppointments("2026-01-" + String(day).padStart(2, "0"));
+    // Empty slots before the 1st day
+    for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement("div");
+        empty.className = "day empty";
+        calendar.appendChild(empty);
+    }
 
-        cal.appendChild(cell);
+    // Actual calendar days
+    for (let day = 1; day <= daysInMonth; day++) {
+        const div = document.createElement("div");
+        div.className = "day";
+        div.textContent = day;
+        div.onclick = () => loadAppointments(year, month, day);
+        calendar.appendChild(div);
     }
 }
-buildCalendar();
 
-/* SLIDE PANEL */
-document.getElementById("close-details").onclick = () => {
-    document.getElementById("details-panel").style.right = "-420px";
-};
+// -------------------------
+// Load Appointments for Selected Day
+// -------------------------
+async function loadAppointments(year, month, day) {
+    const date = new Date(year, month, day);
+    const isoDate = date.toISOString().split("T")[0];
 
-/* LOAD APPOINTMENTS FOR SELECTED DAY */
-async function loadAppointments(dateStr) {
-    const panel = document.getElementById("details-panel");
-    const content = document.getElementById("details-content");
+    dayTitle.textContent = `Appointments for ${isoDate}`;
 
-    panel.style.right = "0";
-
-    const { data, error } = await supabase
+    let { data, error } = await supabase
         .from("appointments")
         .select("*")
-        .eq("start_time", dateStr);
+        .gte("start_time", isoDate + " 00:00")
+        .lte("start_time", isoDate + " 23:59");
 
     if (error) {
-        content.innerHTML = "<p>Error loading appointments.</p>";
+        console.error("Error:", error);
         return;
     }
+
+    appointmentsBody.innerHTML = "";
+    appointmentsTable.style.display = "table";
 
     if (data.length === 0) {
-        content.innerHTML = "<p>No appointments for this date.</p>";
+        appointmentsBody.innerHTML =
+            `<tr><td colspan="5" style="text-align:center;">No appointments</td></tr>`;
         return;
     }
 
-    content.innerHTML = data.map(a => `
-        <div style="border-bottom:1px solid #ddd; padding:10px 0;">
-            <div><b>${a.client_name}</b></div>
-            <div>${a.service}</div>
-            <div>${a.location}</div>
-            <div>${a.start_time}</div>
-        </div>
-    `).join("");
+    data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${row.client_name}</td>
+            <td>${row.client_email}</td>
+            <td>${row.service}</td>
+            <td>${row.location}</td>
+            <td>${row.start_time}</td>
+        `;
+        appointmentsBody.appendChild(tr);
+    });
 }
-
-/* LOAD TABLE OF ALL APPOINTMENTS */
-async function loadTable() {
-    const body = document.getElementById("appt-table-body");
-
-    const { data } = await supabase.from("appointments").select("*");
-
-    body.innerHTML = data.map(a => `
-        <tr>
-            <td>${a.client_name}</td>
-            <td>${a.client_email}</td>
-            <td>${a.service}</td>
-            <td>${a.location}</td>
-            <td>${a.start_time}</td>
-            <td>${a.start_time.slice(11,16)}</td>
-        </tr>
-    `).join("");
-}
-loadTable();
-</script>
-
-</body>
-</html>
