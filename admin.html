@@ -1,158 +1,305 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Admin Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CETS Admin Panel</title>
 
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-<script src="https://unpkg.com/@supabase/supabase-js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-<style>
-    body {
-        background: #f3f4f6;
-    }
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            font-family: "Inter", sans-serif;
+            background: #f5f6f8;
+        }
 
-    .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 12px;
-    }
+        /* SIDEBAR */
+        #sidebar {
+            width: 260px;
+            background: #0f172a;
+            color: #fff;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-    .day-cell {
-        background: white;
-        border-radius: 12px;
-        padding: 18px;
-        min-height: 100px;
-        font-weight: 600;
-        cursor: pointer;
-        border: 1px solid #e5e7eb;
-    }
+        #sidebar img {
+            width: 150px;
+            margin-bottom: 20px;
+        }
 
-    .sidepanel {
-        width: 280px;
-        background: #0f172a;
-        color: white;
-        height: 100vh;
-        padding: 20px;
-    }
+        .sidebar-menu .menu-item {
+            display: block;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
 
-    .sidepanel a {
-        display: block;
-        margin: 14px 0;
-        padding: 10px 12px;
-        border-radius: 8px;
-        text-decoration: none;
-        color: white;
-        font-size: 16px;
-    }
+        .menu-item:hover {
+            background: #1e293b;
+        }
 
-    .sidepanel a:hover {
-        background: #1e293b;
-    }
+        .active {
+            background: #334155;
+        }
 
-    #detailsPanel {
-        position: fixed;
-        top: 0;
-        right: -400px;
-        height: 100%;
-        width: 400px;
-        background: white;
-        border-left: 1px solid #ddd;
-        padding: 20px;
-        transition: 0.3s ease;
-        overflow-y: auto;
-    }
-</style>
+        /* MAIN AREA */
+        #main {
+            flex: 1;
+            padding: 25px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .visible {
+            display: block;
+        }
+
+        /* CALENDAR */
+        #calendar-grid {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px;
+        }
+
+        .day-cell {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            min-height: 90px;
+            border: 1px solid #d1d5db;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* DETAILS PANEL */
+        #details-panel {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 420px;
+            height: 100%;
+            background: #fff;
+            padding: 20px;
+            border-left: 1px solid #ddd;
+            transition: 0.3s ease;
+            overflow-y: auto;
+        }
+
+        #details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #close-details {
+            border: none;
+            background: #ccc;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* APPOINTMENTS TABLE */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #e5e7eb;
+            padding: 10px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+    </style>
 </head>
 
-<body class="flex">
+<body>
 
 <!-- SIDEBAR -->
-<div class="sidepanel">
+<aside id="sidebar">
+    <img src="https://raw.githubusercontent.com/sinyalfa/CETS/main/logo1.png" alt="CETS Logo">
 
-    <!-- ✅ WORKING LOGO FROM GITHUB RAW -->
-    <img 
-        src="https://raw.githubusercontent.com/sinyalfa/CETS/main/logo1.png"
-        class="mb-6 w-40"
-    >
-
-    <a href="#">Dashboard</a>
-    <a href="#">Calendar</a>
-    <a href="#">Appointments</a>
-    <a href="#">Locations</a>
-    <a href="#">Logout</a>
-</div>
+    <nav class="sidebar-menu">
+        <a class="menu-item active" data-page="dashboard">Dashboard</a>
+        <a class="menu-item" data-page="calendar">Calendar</a>
+        <a class="menu-item" data-page="appointments">Appointments</a>
+        <a class="menu-item" data-page="locations">Locations</a>
+        <a class="menu-item logout">Logout</a>
+    </nav>
+</aside>
 
 <!-- MAIN CONTENT -->
-<div class="flex-1 p-10">
+<main id="main">
 
-    <h1 class="text-3xl font-bold mb-6">Admin Calendar</h1>
+    <!-- DASHBOARD -->
+    <section id="page-dashboard" class="page visible">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome to the Appointment Admin Panel.</p>
+    </section>
 
-    <div id="calendar" class="calendar-grid"></div>
-</div>
+    <!-- CALENDAR -->
+    <section id="page-calendar" class="page">
+        <h1>January 2026</h1>
+        <div id="calendar-grid"></div>
 
-<!-- DETAILS PANEL -->
-<div id="detailsPanel"></div>
+        <div id="details-panel">
+            <div id="details-header">
+                <h2>Appointments</h2>
+                <button id="close-details">✕</button>
+            </div>
+            <div id="details-content"></div>
+        </div>
+    </section>
+
+    <!-- APPOINTMENT TABLE -->
+    <section id="page-appointments" class="page">
+        <h1>Appointments</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Email</th>
+                    <th>Service</th>
+                    <th>Location</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody id="appt-table-body"></tbody>
+        </table>
+    </section>
+
+    <!-- LOCATIONS -->
+    <section id="page-locations" class="page">
+        <h1>Service Locations</h1>
+
+        <ul>
+            <li>CML Whitehall Branch — 4445 E Broad St</li>
+            <li>CML Southeast Branch — 3980 S Hamilton Rd</li>
+            <li>CML Livingston Branch — 3434 E Livingston Ave</li>
+            <li>CML Groveport Branch — 4980 S Hamilton Rd</li>
+            <li>Online / Phone / Text</li>
+        </ul>
+    </section>
+
+</main>
+
+
+
+<!-- ADMIN JS (RESTORED ORIGINAL) -->
+<script src="https://unpkg.com/@supabase/supabase-js"></script>
 
 <script>
-// Initialize Supabase
-const supabase = supabase.createClient(
-    "https://zleztdbrxnqirccgkvqx.supabase.co",
-    "YOUR_PUBLIC_ANON_KEY"
+/* CONNECT SUPABASE */
+const supabase = window.supabase.createClient(
+    "https://zleztbdrxnqirccgkvqx.supabase.co",
+    "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR"
 );
 
-const calendarEl = document.getElementById("calendar");
-const details = document.getElementById("detailsPanel");
+/* PAGE SWITCHING */
+document.querySelectorAll(".menu-item").forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll(".menu-item").forEach(a => a.classList.remove("active"));
+        btn.classList.add("active");
 
-// Build simple calendar (original)
+        const page = btn.dataset.page;
+
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("visible"));
+        document.getElementById("page-" + page).classList.add("visible");
+    };
+});
+
+/* BUILD CALENDAR (ORIGINAL STATIC JANUARY) */
 function buildCalendar() {
-    const year = 2026;
-    const month = 0; // January
+    const cal = document.getElementById("calendar-grid");
+    cal.innerHTML = "";
 
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const totalDays = lastDay.getDate();
-
-    for (let day = 1; day <= totalDays; day++) {
+    for (let day = 1; day <= 31; day++) {
         const cell = document.createElement("div");
         cell.className = "day-cell";
         cell.textContent = day;
 
-        cell.onclick = () => loadAppointments(year, month + 1, day);
+        cell.onclick = () => loadAppointments("2026-01-" + String(day).padStart(2, "0"));
 
-        calendarEl.appendChild(cell);
+        cal.appendChild(cell);
     }
 }
+buildCalendar();
 
-// Load appointments into right panel
-async function loadAppointments(y, m, d) {
+/* SLIDE PANEL */
+document.getElementById("close-details").onclick = () => {
+    document.getElementById("details-panel").style.right = "-420px";
+};
 
-    const dateStr = `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+/* LOAD APPOINTMENTS FOR SELECTED DAY */
+async function loadAppointments(dateStr) {
+    const panel = document.getElementById("details-panel");
+    const content = document.getElementById("details-content");
+
+    panel.style.right = "0";
 
     const { data, error } = await supabase
         .from("appointments")
         .select("*")
         .eq("start_time", dateStr);
 
-    details.style.right = "0px";
+    if (error) {
+        content.innerHTML = "<p>Error loading appointments.</p>";
+        return;
+    }
 
-    details.innerHTML = `
-        <h2 class="text-xl font-bold mb-4">Appointments for ${dateStr}</h2>
-        ${data.length === 0 ? `<p>No appointments.</p>` : ""}
-        ${data.map(a => `
-            <div class="border p-3 mb-3 rounded">
-                <div><b>${a.client_name}</b></div>
-                <div>${a.service}</div>
-                <div>${a.start_time}</div>
-                <div>${a.location}</div>
-                <div>Status: ${a.status}</div>
-            </div>
-        `).join("")}
-    `;
+    if (data.length === 0) {
+        content.innerHTML = "<p>No appointments for this date.</p>";
+        return;
+    }
+
+    content.innerHTML = data.map(a => `
+        <div style="border-bottom:1px solid #ddd; padding:10px 0;">
+            <div><b>${a.client_name}</b></div>
+            <div>${a.service}</div>
+            <div>${a.location}</div>
+            <div>${a.start_time}</div>
+        </div>
+    `).join("");
 }
 
-buildCalendar();
+/* LOAD TABLE OF ALL APPOINTMENTS */
+async function loadTable() {
+    const body = document.getElementById("appt-table-body");
+
+    const { data } = await supabase.from("appointments").select("*");
+
+    body.innerHTML = data.map(a => `
+        <tr>
+            <td>${a.client_name}</td>
+            <td>${a.client_email}</td>
+            <td>${a.service}</td>
+            <td>${a.location}</td>
+            <td>${a.start_time}</td>
+            <td>${a.start_time.slice(11,16)}</td>
+        </tr>
+    `).join("");
+}
+loadTable();
 </script>
 
 </body>
