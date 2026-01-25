@@ -2,135 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Columbus East Tax Services – Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book an Appointment – Columbus East Tax Services</title>
 
   <style>
+    :root{
+      --bg1:#0b1220;
+      --bg2:#111827;
+      --card:rgba(255,255,255,.96);
+      --muted:#6b7280;
+      --text:#0f172a;
+      --ring:rgba(99,102,241,.35);
+      --accent:#4f46e5;
+
+      --okBg:#dcfce7; --okText:#166534; --okBorder:#86efac;
+      --badBg:#fee2e2; --badText:#991b1b; --badBorder:#fecaca;
+      --infoBg:#dbeafe; --infoText:#1e3a8a; --infoBorder:#93c5fd;
+
+      --slotBg:#ecfdf5;
+      --slotBorder:#34d399;
+      --slotText:#065f46;
+
+      --slotSelBg:#e0e7ff;
+      --slotSelBorder:#6366f1;
+      --slotSelText:#111827;
+
+      --btnDark1:#111827;
+      --btnDark2:#0b1220;
+      --btnGreen:#0f766e;
+    }
+
     *{ box-sizing:border-box; }
     html, body{ width:100%; max-width:100%; overflow-x:hidden; }
 
     body{
       margin:0;
+      padding:14px;
       font-family: Arial, Helvetica, sans-serif;
       background:
-        radial-gradient(1200px 600px at 20% 0%, rgba(79,70,229,.22), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(16,185,129,.16), transparent 55%),
-        linear-gradient(180deg, #0b1220, #111827);
-      padding:16px;
+        radial-gradient(1200px 600px at 20% 0%, rgba(79,70,229,.25), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(16,185,129,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
       color:#e5e7eb;
     }
 
     .wrap{
       width:100%;
-      max-width:1040px;
+      max-width:1100px;
       margin:0 auto;
       display:grid;
-      grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+      gap:14px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
       gap:14px;
       align-items:start;
     }
+
     @media (max-width: 980px){
-      .wrap{ grid-template-columns:1fr; }
+      .grid{ grid-template-columns:1fr; }
+      body{ padding:10px; }
     }
 
-    .card, .panel{
-      background: rgba(255,255,255,.96);
-      color:#0f172a;
-      border:1px solid rgba(255,255,255,.15);
-      border-radius:18px;
+    .card{
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 20px;
       box-shadow: 0 20px 55px rgba(0,0,0,.35);
+      padding:14px;
+      color: var(--text);
+      backdrop-filter: blur(8px);
       overflow:hidden;
     }
-    .card{ padding:16px; text-align:center; }
-    .panel{ padding:16px; }
 
-    .logo{
-      width:56px;height:56px;border-radius:18px;
-      margin:0 auto 10px auto;
-      background: linear-gradient(135deg, rgba(79,70,229,1), rgba(16,185,129,1));
-      box-shadow: 0 14px 30px rgba(79,70,229,.28);
-    }
-
-    h1{ margin:0; font-size:22px; font-weight:900; }
-    .sub{ margin-top:8px; color:#475569; font-size:14px; line-height:1.45; }
-    .info{ margin-top:10px; font-size:15px; color:#334155; line-height:1.6; }
-    .info a{ color:#0f172a; font-weight:800; text-decoration:none; }
-    .info a:hover{ text-decoration:underline; }
-
-    .servicesBox{
-      margin-top:14px;
-      text-align:left;
-      background:#f8fafc;
-      border:1px solid #e5e7eb;
-      border-radius:14px;
-      padding:12px 14px;
-    }
-    .servicesBox h2{ margin:0 0 10px 0; font-size:16px; font-weight:900; }
-    .servicesBox ul{ margin:0; padding-left:18px; color:#334155; font-weight:700; }
-    .servicesBox li{ margin:6px 0; }
-
-    .btns{ margin-top:14px; display:flex; flex-direction:column; gap:10px; }
-    .btn{
-      display:flex; align-items:center; justify-content:center; gap:10px;
-      border:none; cursor:pointer;
-      font-weight:900;
-      padding:14px 14px;
-      border-radius:14px;
-      text-decoration:none;
-      color:white;
-      transition: transform .12s ease, opacity .12s ease;
-      min-height:48px;
-    }
-    .btn:hover{ transform: translateY(-1px); opacity:.98; }
-    .btn.call{ background:#2563eb; }
-    .btn.text{ background:#16a34a; }
-    .btn.email{ background:#9333ea; }
-    .btn.book{ background:#0f766e; }
-
-    .footer{ margin-top:12px; color:#64748b; font-size:13px; }
-
-    .panelTitle{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px; flex-wrap:wrap;
+    .brand{
+      display:flex; align-items:center; gap:12px;
       margin-bottom:10px;
     }
-    .panelTitle h2{ margin:0; font-size:18px; font-weight:900; color:#0f172a; }
-    .badge{
-      font-size:12px;
-      font-weight:900;
-      border-radius:999px;
-      padding:6px 10px;
-      border:1px solid #e5e7eb;
-      background:#f8fafc;
-      color:#111827;
+    .logo{
+      width:52px;height:52px;border-radius:18px;
+      background: linear-gradient(135deg, rgba(79,70,229,1), rgba(16,185,129,1));
+      box-shadow: 0 14px 30px rgba(79,70,229,.35);
+      flex:0 0 auto;
     }
+    h1{ margin:0; font-size:28px; font-weight:900; letter-spacing:.2px; }
+    h2{ margin:0; font-size:22px; font-weight:900; }
+    .muted{ color: var(--muted); font-size:13px; line-height:1.45; }
+    .bigmuted{ color:#334155; font-size:14px; line-height:1.5; }
 
-    /* Hidden by default unless DEBUG or error */
-    .healthRow{ display:none; gap:8px; flex-wrap:wrap; margin:10px 0 2px 0; }
     .pill{
-      font-size:12px;
-      font-weight:900;
-      border-radius:999px;
-      padding:6px 10px;
-      border:1px solid #e5e7eb;
-      background:#f8fafc;
-      color:#111827;
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; border-radius:999px; font-weight:900; font-size:12px;
+      border: 1px solid transparent;
+      white-space:nowrap;
     }
-    .pill.ok{ background:#dcfce7; border-color:#86efac; color:#166534; }
-    .pill.bad{ background:#fee2e2; border-color:#fecaca; color:#991b1b; }
+    .pill.ok{ background:var(--okBg); color:var(--okText); border-color:var(--okBorder); }
+    .pill.bad{ background:var(--badBg); color:var(--badText); border-color:var(--badBorder); }
+    .pill.info{ background:var(--infoBg); color:var(--infoText); border-color:var(--infoBorder); }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      width:100%;
+      min-width:0;
+      margin-top:10px;
+    }
 
     label{
       display:block;
-      text-align:left;
-      font-size:13px;
+      font-size:12px;
       font-weight:900;
-      color:#0f172a;
-      margin:12px 0 6px 2px;
+      color:#111827;
+      margin:12px 0 6px;
     }
 
     input, select, button{
-      max-width:100%;
-      width:100%;
       padding:12px 12px;
       border-radius:12px;
       border:1px solid #d1d5db;
@@ -138,352 +127,309 @@
       outline:none;
       background:#fff;
       min-height:44px;
+      width:100%;
+      max-width:100%;
     }
+
     input:focus, select:focus{
       border-color: rgba(79,70,229,.55);
-      box-shadow: 0 0 0 4px rgba(99,102,241,.20);
+      box-shadow: 0 0 0 4px var(--ring);
     }
 
-    .grid2{
+    .two{
       display:grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap:10px;
     }
     @media (max-width: 520px){
-      .grid2{ grid-template-columns:1fr; }
+      .two{ grid-template-columns:1fr; }
     }
 
-    .slots{
-      margin-top:12px;
-      display:grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
-      gap:10px;
-    }
-    @media (max-width: 920px){
-      .slots{ grid-template-columns: repeat(3, minmax(0,1fr)); }
-    }
-    @media (max-width: 520px){
-      .slots{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-    }
-
-    .slotBtn{
-      border-radius:14px;
-      border:1px solid rgba(16,185,129,.55);
-      background: rgba(16,185,129,.08);
-      color:#065f46;
-      font-weight:900;
-      padding:12px 10px;
-      cursor:pointer;
-      transition: transform .12s ease, box-shadow .12s ease;
-      min-height:46px;
-      white-space:nowrap;
-    }
-    .slotBtn:hover{ transform: translateY(-1px); box-shadow:0 10px 18px rgba(0,0,0,.10); }
-    .slotBtn.selected{
-      border-color: rgba(79,70,229,.65);
-      background: rgba(79,70,229,.10);
-      color:#1e1b4b;
-      box-shadow: 0 0 0 4px rgba(99,102,241,.18);
-    }
-
-    .confirmBtn{
-      margin-top:14px;
+    .btn{
       border:none;
-      border-radius:14px;
-      background: linear-gradient(135deg, #111827, #0b1220);
+      background: linear-gradient(135deg, var(--btnDark1), var(--btnDark2));
       color:#fff;
       font-weight:900;
       cursor:pointer;
-      padding:14px;
-      min-height:52px;
-    }
-    .confirmBtn:disabled{ opacity:.6; cursor:not-allowed; }
-
-    .note{ margin-top:10px; font-size:13px; color:#475569; line-height:1.4; }
-
-    .msg{
-      margin-top:12px;
-      padding:10px 12px;
-      border-radius:14px;
-      font-weight:900;
-      font-size:13px;
-      border:1px solid transparent;
-      display:none;
-    }
-    .msg.ok{ background:#dcfce7; color:#166534; border-color:#86efac; }
-    .msg.bad{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
-    .msg.warn{ background:#fef3c7; color:#92400e; border-color:#fde68a; }
-
-    /* Confirmation card (phone-optimized) */
-    .confirmCard{
-      display:none;
-      margin-top:14px;
-      border-radius:18px;
-      border:1px solid #e5e7eb;
-      background: linear-gradient(180deg, #ffffff, #f8fafc);
-      padding:16px;
-      box-shadow: 0 12px 30px rgba(0,0,0,.10);
-    }
-    @media (max-width: 520px){
-      .confirmCard{ padding:14px; }
-    }
-
-    .confirmHeader{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-    .checkIcon{
-      width:44px;height:44px;border-radius:14px;
-      display:flex;align-items:center;justify-content:center;
-      font-size:22px;font-weight:900;
-      background:#dcfce7;color:#166534;
-      border:1px solid #86efac;
-      flex: 0 0 auto;
-    }
-    .confirmTitle{ font-size:18px;font-weight:900;margin:0;color:#0f172a; line-height:1.2; }
-    .confirmSub{ margin:4px 0 0 0; font-size:13px; color:#475569; font-weight:800; }
-
-    .confirmGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      margin-top:10px;
-    }
-    @media (max-width: 520px){
-      .confirmGrid{ grid-template-columns:1fr; }
-    }
-    .confirmItem{
-      border:1px solid #e5e7eb;
-      background:#fff;
-      border-radius:14px;
-      padding:10px 12px;
-    }
-    .confirmItem .k{ font-size:12px;font-weight:900;color:#64748b;margin-bottom:4px; }
-    .confirmItem .v{ font-size:14px;font-weight:900;color:#0f172a; overflow-wrap:anywhere; }
-
-    .confirmActions{
-      display:flex;
-      gap:10px;
-      margin-top:14px;
-      flex-wrap:wrap;
-    }
-    .miniBtn{
-      flex:1;
-      border:none;
-      border-radius:14px;
-      padding:12px 12px;
-      font-weight:900;
-      cursor:pointer;
-      min-height:44px;
-      min-width: 240px;
-    }
-    @media (max-width: 520px){
-      .miniBtn{ min-width: 100%; }
-    }
-    .miniBtn.primary{ background:#0f766e; color:#fff; }
-    .miniBtn.secondary{ background:#111827; color:#fff; }
-
-    /* Calendar actions */
-    .calWrap{
-      margin-top:12px;
-      border:1px solid #e5e7eb;
-      background:#fff;
-      border-radius:14px;
-      padding:12px;
-    }
-    .calTitle{
-      font-weight:900;
-      color:#0f172a;
-      margin:0 0 10px 0;
-      font-size:14px;
-    }
-    .calBtns{
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap:10px;
-    }
-    @media (max-width: 520px){
-      .calBtns{ grid-template-columns:1fr; }
-    }
-    .calBtn{
+      box-shadow: 0 10px 20px rgba(0,0,0,.12);
+      transition: transform .12s ease, opacity .12s ease;
+      min-height:50px;
+      border-radius:16px;
       display:flex;
       align-items:center;
       justify-content:center;
       gap:10px;
-      text-decoration:none;
-      border-radius:14px;
-      padding:12px 12px;
-      min-height:44px;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .btnGreen{
+      background: linear-gradient(135deg, var(--btnGreen), #0b1220);
+    }
+
+    .ctaCol{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .slotGrid{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:10px;
+    }
+    @media (max-width: 980px){
+      .slotGrid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 520px){
+      .slotGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    .slot{
+      border:1px solid var(--slotBorder);
+      background: var(--slotBg);
+      color: var(--slotText);
       font-weight:900;
+      border-radius:16px;
+      padding:14px 10px;
+      text-align:center;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      min-height:52px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .slot:hover{ transform: translateY(-1px); box-shadow:0 10px 18px rgba(0,0,0,.08); }
+    .slot.sel{
+      background: var(--slotSelBg);
+      border-color: var(--slotSelBorder);
+      color: var(--slotSelText);
+      box-shadow: 0 0 0 4px rgba(99,102,241,.18);
+    }
+    .slot.dis{
+      opacity:.35;
+      cursor:not-allowed;
+      transform:none !important;
+      box-shadow:none !important;
+      background:#f8fafc;
+      border-color:#e5e7eb;
+      color:#64748b;
+    }
+
+    .note{
+      margin-top:10px;
+      font-size:13px;
+      color:#334155;
+    }
+
+    .alert{
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:14px;
       border:1px solid #e5e7eb;
       background:#f8fafc;
-      color:#0f172a;
-      cursor:pointer;
+      font-weight:900;
+      font-size:13px;
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
     }
-    .calBtn:hover{ filter:brightness(0.98); }
-    .calBtn.google{ background:#eef2ff; border-color:#c7d2fe; }
-    .calBtn.outlook{ background:#ecfeff; border-color:#a5f3fc; }
-    .calBtn.ics{ background:#dcfce7; border-color:#86efac; }
+    .alert.ok{ background:var(--okBg); border-color:var(--okBorder); color:var(--okText); }
+    .alert.bad{ background:var(--badBg); border-color:var(--badBorder); color:var(--badText); }
+    .alert.info{ background:var(--infoBg); border-color:var(--infoBorder); color:var(--infoText); }
 
+    .confirmCard{
+      border:1px solid #e5e7eb;
+      border-radius:18px;
+      padding:14px;
+      background:#fff;
+      margin-top:12px;
+    }
+    .confirmTop{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .check{
+      width:44px;height:44px;border-radius:16px;
+      background:var(--okBg);
+      border:1px solid var(--okBorder);
+      color:var(--okText);
+      display:flex;align-items:center;justify-content:center;
+      font-size:22px;
+      font-weight:900;
+      flex:0 0 auto;
+    }
+    .confirmGrid{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 520px){
+      .confirmGrid{ grid-template-columns:1fr; }
+    }
+    .miniBox{
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      padding:10px 12px;
+      background:#f8fafc;
+    }
+    .miniLabel{ font-size:12px; color:#64748b; font-weight:900; }
+    .miniValue{ margin-top:4px; font-weight:900; color:#0f172a; }
+
+    a{ color:inherit; text-decoration:none; }
   </style>
 </head>
-
 <body>
   <div class="wrap">
-    <div class="card">
-      <div class="logo"></div>
-      <h1>Columbus East Tax Services</h1>
-      <div class="sub">Columbus, Ohio 43227</div>
-
-      <div class="info" style="margin-top:12px;">
-        📞 <a href="tel:16145991185">614-599-1185</a><br/>
-        📞 <a href="tel:16142597625">614-259-7625</a><br/>
-        ✉️ <a href="mailto:Columbuseast.taxservices@outlook.com">Columbuseast.taxservices@outlook.com</a>
-      </div>
-
-      <div class="servicesBox">
-        <h2>Services Offered</h2>
-        <ul>
-          <li>W-2 & Individual Tax Returns</li>
-          <li>1099 & Self-Employed Taxes</li>
-          <li>LLC & Small Business Filing</li>
-          <li>Audit Help & IRS Letters</li>
-          <li>Amended Returns (1040-X)</li>
-        </ul>
-      </div>
-
-      <div class="btns">
-        <a class="btn call" href="tel:16145991185">📞 Call Now</a>
-        <a class="btn text" href="sms:16145991185">💬 Text Us</a>
-        <a class="btn email" href="mailto:Columbuseast.taxservices@outlook.com">✉️ Email Us</a>
-        <a class="btn book" href="#booking">📅 Book Appointment</a>
-      </div>
-
-      <div class="footer">Tap to call, text, email, or book online</div>
-    </div>
-
-    <div class="panel" id="booking">
-      <div class="panelTitle">
-        <h2>Book an Appointment</h2>
-        <span class="badge">60 minutes</span>
-      </div>
-
-      <!-- Hidden unless ?debug=1 or error -->
-      <div id="healthRow" class="healthRow">
-        <span id="pillJs" class="pill">JS: loading…</span>
-        <span id="pillSb" class="pill">Supabase: loading…</span>
-      </div>
-
-      <!-- Booking Form -->
-      <div id="bookingForm">
-        <div class="grid2">
+    <div class="grid">
+      <!-- LEFT INFO CARD -->
+      <div class="card">
+        <div class="brand">
+          <div class="logo"></div>
           <div>
-            <label for="clientName">Full Name</label>
-            <input id="clientName" type="text" placeholder="Your name" aria-label="Full name" />
-          </div>
-
-          <div>
-            <label for="clientEmail">Email Address</label>
-            <input id="clientEmail" type="email" placeholder="you@email.com" aria-label="Email address" />
+            <h1>Columbus East Tax Services</h1>
+            <div class="muted">Columbus, Ohio 43227</div>
           </div>
         </div>
 
-        <div class="grid2">
+        <div class="bigmuted" style="display:grid; gap:6px; margin-top:8px;">
+          <div>📞 <b><a href="tel:16145991185">614-599-1185</a></b></div>
+          <div>📞 <b><a href="tel:16142597625">614-259-7625</a></b></div>
+          <div>✉️ <b><a href="mailto:columbuseast.taxservices@outlook.com">columbuseast.taxservices@outlook.com</a></b></div>
+        </div>
+
+        <div class="card" style="margin-top:14px;">
+          <div style="font-weight:900; font-size:16px; margin-bottom:8px;">Services Offered</div>
+          <ul class="bigmuted" style="margin:0; padding-left:18px; display:grid; gap:6px;">
+            <li>W-2 &amp; Individual Tax Returns</li>
+            <li>1099 &amp; Self-Employed Taxes</li>
+            <li>LLC &amp; Small Business Filing</li>
+            <li>Audit Help &amp; IRS Letters</li>
+            <li>Amended Returns (1040-X)</li>
+          </ul>
+        </div>
+
+        <div class="ctaCol">
+          <a class="btn" href="tel:16145991185">📞 Call Now</a>
+          <a class="btn btnGreen" href="sms:16145991185">💬 Text Us</a>
+          <a class="btn" style="background:linear-gradient(135deg,#7c3aed,#0b1220)" href="mailto:columbuseast.taxservices@outlook.com">✉️ Email Us</a>
+          <a class="btn" style="background:linear-gradient(135deg,#0f766e,#0b1220)" href="#book">🗓️ Book Appointment</a>
+        </div>
+
+        <div class="muted" style="margin-top:10px;">Tap to call, text, email, or book online.</div>
+      </div>
+
+      <!-- RIGHT BOOKING CARD -->
+      <div class="card" id="book">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;">
           <div>
-            <label for="serviceSelect">Select Service</label>
-            <select id="serviceSelect" aria-label="Select service">
-              <option value="W-2 / Individual Taxes">W-2 / Individual Taxes</option>
-              <option value="1099 / Self-Employed">1099 / Self-Employed</option>
-              <option value="LLC / Small Business Filing">LLC / Small Business Filing</option>
-              <option value="Audit Help">Audit Help</option>
-              <option value="Amended Return (1040-X)">Amended Return (1040-X)</option>
+            <h2>Book an Appointment</h2>
+
+            <!-- LIVE CURRENT DATE/TIME (ET) -->
+            <div class="row" style="margin-top:6px;">
+              <span class="pill info" id="currentDate">📅 Loading date…</span>
+              <span class="pill info" id="currentTime">⏰ Loading time…</span>
+            </div>
+
+            <div class="muted">Pick a date, choose a time, and confirm.</div>
+          </div>
+          <span class="pill info" id="durationPill">60 minutes</span>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <span class="pill info" id="jsPill">JS: loading…</span>
+          <span class="pill info" id="sbPill">Supabase: loading…</span>
+        </div>
+
+        <!-- FORM -->
+        <div class="two" style="margin-top:10px;">
+          <div>
+            <label for="fullName">Full Name</label>
+            <input id="fullName" type="text" placeholder="Your name" autocomplete="name" />
+          </div>
+          <div>
+            <label for="email">Email Address</label>
+            <input id="email" type="email" placeholder="you@email.com" autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="two">
+          <div>
+            <label for="service">Select Service</label>
+            <select id="service">
+              <option>W-2 / Individual Taxes</option>
+              <option>1099 / Self-Employed</option>
+              <option>LLC / Small Business Filing</option>
+              <option>Audit Help</option>
+              <option>Amended Returns (1040-X)</option>
             </select>
           </div>
-
           <div>
-            <label for="locationSelect">Location</label>
-            <select id="locationSelect" aria-label="Location">
-              <option value="CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213">CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213</option>
-              <option value="CML Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227">CML Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227</option>
-              <option value="CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068">CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068</option>
-              <option value="CML Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125">CML Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125</option>
+            <label for="location">Location</label>
+            <select id="location">
+              <!-- NEW LOCATION OPTION -->
+              <option value="Online / Phone / Text Appointment">Online / Phone / Text Appointment</option>
+
+              <option value="CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213">CML Whitehall Branch — 4445 E Broad St</option>
+              <option value="CML Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227">CML Barnett Branch — 3434 E Livingston Ave</option>
+              <option value="CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068">CML Reynoldsburg Branch — 1402 Brice Rd</option>
+              <option value="CML Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125">CML Southeast Branch — 3980 S Hamilton Rd</option>
             </select>
           </div>
         </div>
 
-        <label for="datePick">Pick a Date</label>
-        <input id="datePick" type="date" aria-label="Pick a date" />
-
-        <div class="note">
-          <b>Hours:</b><br/>
-          Mon–Fri: 9:00 AM–8:00 PM (Blocked 2:00–5:00 PM)<br/>
-          Sat: 10:00 AM–6:00 PM<br/>
-          Sun: 12:00 PM–6:00 PM
-        </div>
-
-        <label>Available Times</label>
-        <div id="slots" class="slots"></div>
-
-        <button id="confirmBtn" class="confirmBtn" type="button" disabled>Confirm Booking</button>
-
-        <div id="msg" class="msg"></div>
-        <div id="afterNote" class="note">Pick a time, then press Confirm Booking.</div>
-      </div>
-
-      <!-- Confirmation Card -->
-      <div id="confirmCard" class="confirmCard">
-        <div class="confirmHeader">
-          <div class="checkIcon">✓</div>
-          <div>
-            <p class="confirmTitle">Booking Confirmed</p>
-            <p class="confirmSub">You are scheduled successfully.</p>
+        <div>
+          <label for="date">Pick a Date</label>
+          <input id="date" type="date" />
+          <div class="note" id="hoursNote">
+            <b>Hours:</b><br>
+            Mon–Fri: 9:00 AM–8:00 PM (Blocked 2:00–5:00 PM)<br>
+            Sat: 10:00 AM–6:00 PM<br>
+            Sun: 12:00 PM–6:00 PM
           </div>
         </div>
 
-        <div class="confirmGrid">
-          <div class="confirmItem">
-            <div class="k">Client</div>
-            <div id="ccClient" class="v">—</div>
-          </div>
-          <div class="confirmItem">
-            <div class="k">Email</div>
-            <div id="ccEmail" class="v">—</div>
-          </div>
-          <div class="confirmItem">
-            <div class="k">Date & Time</div>
-            <div id="ccDateTime" class="v">—</div>
-          </div>
-          <div class="confirmItem">
-            <div class="k">Service</div>
-            <div id="ccService" class="v">—</div>
-          </div>
-          <div class="confirmItem">
-            <div class="k">Location</div>
-            <div id="ccLocation" class="v">—</div>
-          </div>
-          <div class="confirmItem">
-            <div class="k">Status</div>
-            <div class="v" style="color:#166534;">Confirmed ✅</div>
-          </div>
+        <div style="margin-top:10px;">
+          <div style="font-weight:900; font-size:14px; color:#0f172a;">Available Times</div>
+          <div class="slotGrid" id="slotGrid"></div>
         </div>
 
-        <!-- Add to Calendar -->
-        <div class="calWrap">
-          <div class="calTitle">Add to Calendar</div>
-          <div class="calBtns">
-            <a id="calGoogle" class="calBtn google" href="#" target="_blank" rel="noopener">📅 Google</a>
-            <a id="calOutlook" class="calBtn outlook" href="#" target="_blank" rel="noopener">🗓️ Outlook</a>
-            <a id="calIcs" class="calBtn ics" href="#" download="appointment.ics">⬇️ Download .ICS</a>
-          </div>
-          <div class="note" style="margin-top:10px;">
-            Tip: iPhone/Mac users can tap <b>Download .ICS</b> to add it to Apple Calendar.
-          </div>
+        <button class="btn" id="confirmBtn" type="button" style="margin-top:14px;" disabled>
+          Confirm Booking
+        </button>
+
+        <div id="msgBox"></div>
+
+        <!-- AFTER NOTE (changes on success) -->
+        <div id="afterNote" class="note" style="margin-top:10px;">
+          Pick a time, then press Confirm Booking.
         </div>
 
-        <div class="confirmActions">
-          <button id="btnBookAnother" class="miniBtn primary" type="button">📅 Book Another Appointment</button>
-          <button id="btnBackTop" class="miniBtn secondary" type="button">⬆ Back to Top</button>
-        </div>
+        <!-- CONFIRMATION CARD (hidden until success) -->
+        <div id="confirmCard" class="confirmCard" style="display:none;">
+          <div class="confirmTop">
+            <div class="check">✓</div>
+            <div>
+              <div style="font-weight:900; font-size:22px; color:#0f172a;">Booking Confirmed</div>
+              <div class="muted" style="font-weight:900;">You are scheduled successfully.</div>
+            </div>
+          </div>
 
-        <div class="note" style="margin-top:12px;">
-          Need changes? Call or text us anytime.
+          <div class="confirmGrid" id="confirmGrid"></div>
+
+          <div class="two" style="margin-top:12px;">
+            <button class="btn btnGreen" id="bookAnotherBtn" type="button">🗓️ Book Another Appointment</button>
+            <button class="btn" id="backTopBtn" type="button">⬆ Back to Top</button>
+          </div>
+
+          <div class="muted" style="margin-top:10px;">Need changes? Call or text us anytime.</div>
         </div>
       </div>
     </div>
@@ -491,360 +437,362 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Show pills only in debug mode OR if there's an error.
-    const DEBUG = new URLSearchParams(location.search).get("debug") === "1";
-    const healthRow = document.getElementById("healthRow");
-    const pillJs = document.getElementById("pillJs");
-    const pillSb = document.getElementById("pillSb");
-
-    function showHealth(){ healthRow.style.display = "flex"; }
-    function pillOK(el, text){ el.textContent = text; el.className = "pill ok"; }
-    function pillBAD(el, text){ el.textContent = text; el.className = "pill bad"; }
-
-    const msg = document.getElementById("msg");
-    function clearMsg(){ msg.style.display="none"; msg.textContent=""; msg.className="msg"; }
-    function setMsg(type, text){ msg.style.display="block"; msg.className="msg "+type; msg.textContent=text; }
-
-    if (DEBUG) showHealth();
-    pillOK(pillJs, "JS: loaded");
-
-    if (!window.supabase) {
-      showHealth();
-      pillBAD(pillSb, "Supabase: NOT loaded");
-      setMsg("bad", "Supabase library failed to load.");
-      throw new Error("Supabase library missing");
-    }
-
-    pillOK(pillSb, "Supabase: loaded");
-
-    // ✅ Supabase
+    // ========= Supabase =========
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs";
+    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    const supa = window.supabase.createClient(supabaseUrl, supabaseKey, {
-      auth: { persistSession:false, autoRefreshToken:false, detectSessionInUrl:false }
-    });
+    // ========= UI =========
+    const jsPill = document.getElementById("jsPill");
+    const sbPill = document.getElementById("sbPill");
 
-    const bookingForm = document.getElementById("bookingForm");
-    const confirmCard = document.getElementById("confirmCard");
-
-    const clientName = document.getElementById("clientName");
-    const clientEmail = document.getElementById("clientEmail");
-    const serviceSelect = document.getElementById("serviceSelect");
-    const locationSelect = document.getElementById("locationSelect");
-    const datePick = document.getElementById("datePick");
-    const slotsEl = document.getElementById("slots");
+    const fullNameEl = document.getElementById("fullName");
+    const emailEl = document.getElementById("email");
+    const serviceEl = document.getElementById("service");
+    const locationEl = document.getElementById("location");
+    const dateEl = document.getElementById("date");
+    const slotGrid = document.getElementById("slotGrid");
     const confirmBtn = document.getElementById("confirmBtn");
+    const msgBox = document.getElementById("msgBox");
     const afterNote = document.getElementById("afterNote");
 
-    // confirmation fields
-    const ccClient = document.getElementById("ccClient");
-    const ccEmail = document.getElementById("ccEmail");
-    const ccDateTime = document.getElementById("ccDateTime");
-    const ccService = document.getElementById("ccService");
-    const ccLocation = document.getElementById("ccLocation");
+    const confirmCard = document.getElementById("confirmCard");
+    const confirmGrid = document.getElementById("confirmGrid");
+    const bookAnotherBtn = document.getElementById("bookAnotherBtn");
+    const backTopBtn = document.getElementById("backTopBtn");
 
-    const btnBookAnother = document.getElementById("btnBookAnother");
-    const btnBackTop = document.getElementById("btnBackTop");
+    const currentDateEl = document.getElementById("currentDate");
+    const currentTimeEl = document.getElementById("currentTime");
 
-    // Calendar links
-    const calGoogle = document.getElementById("calGoogle");
-    const calOutlook = document.getElementById("calOutlook");
-    const calIcs = document.getElementById("calIcs");
+    const TZ = "America/New_York";
+    const SLOT_MINUTES = 30;        // show every 30 min
+    const DURATION_MINUTES = 60;    // appointment length
 
-    const SLOT_MINUTES = 30;
-    const APPT_MINUTES = 60;
+    let selectedStartISO = null;    // ISO string (UTC) that we insert
+    let selectedLabel = "";         // nice time label
 
-    function dayRules(d){
-      const dow = d.getDay(); // 0 Sun ... 6 Sat
-      if(dow >= 1 && dow <= 5) return { startHour:9, endHour:20, blocks:[{start:14,end:17}] };
-      if(dow === 6) return { startHour:10, endHour:18, blocks:[] };
-      return { startHour:12, endHour:18, blocks:[] };
-    }
-    function inBlockedHours(hour, blocks){ return blocks.some(b => hour >= b.start && hour < b.end); }
-    function makeSlot(dateObj){
-      return { iso: dateObj.toISOString(), label: dateObj.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" }) };
-    }
-    function localDateFromYMD(ymdStr){
-      const [y,m,dd] = ymdStr.split("-").map(Number);
-      const d = new Date();
-      d.setFullYear(y); d.setMonth(m-1); d.setDate(dd);
-      d.setHours(0,0,0,0);
-      return d;
-    }
-    function overlaps(aStart, aEnd, bStart, bEnd){ return aStart < bEnd && bStart < aEnd; }
-
-    // YYYYMMDDTHHMMSSZ for calendar
-    function toCalUTC(d){
-      const pad = n => String(n).padStart(2,"0");
-      return (
-        d.getUTCFullYear() +
-        pad(d.getUTCMonth()+1) +
-        pad(d.getUTCDate()) + "T" +
-        pad(d.getUTCHours()) +
-        pad(d.getUTCMinutes()) +
-        pad(d.getUTCSeconds()) + "Z"
-      );
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
 
-    function escICS(s){
-      return String(s || "")
-        .replace(/\\/g, "\\\\")
-        .replace(/\n/g, "\\n")
-        .replace(/,/g, "\\,")
-        .replace(/;/g, "\\;");
+    function setMsg(type, text){
+      msgBox.innerHTML = "";
+      if(!text) return;
+      const div = document.createElement("div");
+      div.className = "alert " + (type === "ok" ? "ok" : type === "bad" ? "bad" : "info");
+      div.textContent = text;
+      msgBox.appendChild(div);
     }
 
-    function buildICS({ title, description, location, start, end }){
-      const uid = "cets-" + Math.random().toString(16).slice(2) + "@booking";
-      const dtstamp = toCalUTC(new Date());
-      const dtstart = toCalUTC(start);
-      const dtend = toCalUTC(end);
+    function pad(n){ return String(n).padStart(2,"0"); }
 
-      return [
-        "BEGIN:VCALENDAR",
-        "VERSION:2.0",
-        "PRODID:-//Columbus East Tax Services//Booking//EN",
-        "CALSCALE:GREGORIAN",
-        "METHOD:PUBLISH",
-        "BEGIN:VEVENT",
-        "UID:" + uid,
-        "DTSTAMP:" + dtstamp,
-        "DTSTART:" + dtstart,
-        "DTEND:" + dtend,
-        "SUMMARY:" + escICS(title),
-        "DESCRIPTION:" + escICS(description),
-        "LOCATION:" + escICS(location),
-        "END:VEVENT",
-        "END:VCALENDAR"
-      ].join("\r\n");
-    }
+    // ========= Live Clock (ET) =========
+    function updateClock(){
+      const now = new Date();
 
-    function setCalendarLinks({ title, details, location, start, end }){
-      const startUTC = toCalUTC(start);
-      const endUTC = toCalUTC(end);
-
-      // Google Calendar
-      const gParams = new URLSearchParams({
-        action: "TEMPLATE",
-        text: title,
-        dates: `${startUTC}/${endUTC}`,
-        details,
-        location
+      const dateStr = now.toLocaleDateString("en-US", {
+        timeZone: TZ,
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
       });
-      calGoogle.href = "https://calendar.google.com/calendar/render?" + gParams.toString();
 
-      // Outlook Web (accepts ISO)
-      const oParams = new URLSearchParams({
-        subject: title,
-        startdt: start.toISOString(),
-        enddt: end.toISOString(),
-        body: details,
-        location
+      const timeStr = now.toLocaleTimeString("en-US", {
+        timeZone: TZ,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
       });
-      calOutlook.href = "https://outlook.live.com/calendar/0/deeplink/compose?" + oParams.toString();
 
-      // ICS download
-      const ics = buildICS({ title, description: details, location, start, end });
-      const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      calIcs.href = url;
-      calIcs.download = "appointment.ics";
+      currentDateEl.textContent = "📅 " + dateStr;
+      currentTimeEl.textContent = "⏰ " + timeStr + " ET";
     }
 
-    async function fetchDayAppointments(day){
-      const start = new Date(day); start.setHours(0,0,0,0);
-      const end = new Date(day); end.setDate(end.getDate()+1); end.setHours(0,0,0,0);
+    // Build a "local" date-time and convert to ISO UTC.
+    // You already display in ET; this works fine for a simple booking portal.
+    function buildStartISO(yyyy, mm, dd, hh, min){
+      const d = new Date(yyyy, mm-1, dd, hh, min, 0, 0);
+      return d.toISOString();
+    }
+
+    function addMinutesISO(iso, mins){
+      const d = new Date(iso);
+      d.setMinutes(d.getMinutes() + mins);
+      return d.toISOString();
+    }
+
+    function fmtTimeLabel(hh, mm){
+      const d = new Date(2000,0,1,hh,mm,0,0);
+      return d.toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
+    }
+
+    // ========= Hours rules =========
+    // Mon–Fri: 9–8 (but block 2–5)
+    // Sat: 10–6
+    // Sun: 12–6
+    function getDailyWindows(dayOfWeek){
+      // 0=Sun..6=Sat
+      if(dayOfWeek >= 1 && dayOfWeek <= 5){
+        return [
+          { start:{h:9,m:0}, end:{h:14,m:0} },  // 9:00 -> 2:00
+          { start:{h:17,m:0}, end:{h:20,m:0} }, // 5:00 -> 8:00
+        ];
+      }
+      if(dayOfWeek === 6){
+        return [{ start:{h:10,m:0}, end:{h:18,m:0} }];
+      }
+      // Sunday
+      return [{ start:{h:12,m:0}, end:{h:18,m:0} }];
+    }
+
+    function generateSlotsForDate(dateObj){
+      const dow = dateObj.getDay();
+      const windows = getDailyWindows(dow);
+
+      const slots = [];
+      for(const w of windows){
+        let h = w.start.h, m = w.start.m;
+
+        while(true){
+          const start = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), h, m, 0, 0);
+          const end = new Date(start);
+          end.setMinutes(end.getMinutes() + DURATION_MINUTES);
+
+          const windowEnd = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), w.end.h, w.end.m, 0, 0);
+          if(end > windowEnd) break;
+
+          slots.push({ hh:h, mm:m, label: fmtTimeLabel(h,m) });
+
+          const next = new Date(start);
+          next.setMinutes(next.getMinutes() + SLOT_MINUTES);
+          h = next.getHours();
+          m = next.getMinutes();
+        }
+      }
+      return slots;
+    }
+
+    function dayStartEndISO(dateObj){
+      const start = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), 0,0,0,0);
+      const end = new Date(start);
+      end.setDate(end.getDate()+1);
+      return { startISO: start.toISOString(), endISO: end.toISOString() };
+    }
+
+    async function fetchBookedTimesForDate(dateObj){
+      const { startISO, endISO } = dayStartEndISO(dateObj);
 
       const { data, error } = await supa
         .from("appointments")
-        .select("start_time, end_time, status")
-        .gte("start_time", start.toISOString())
-        .lt("start_time", end.toISOString());
+        .select("start_time, status")
+        .gte("start_time", startISO)
+        .lt("start_time", endISO);
 
       if(error){
-        // If this ever happens, show debug pills automatically
-        showHealth();
-        pillBAD(pillSb, "Supabase: error");
-        setMsg("bad", "Availability load failed: " + (error.message || "unknown"));
-        return [];
+        setMsg("bad", error.message);
+        return new Set();
       }
-      return (data || []).filter(r => (r.status || "confirmed").toLowerCase() !== "cancelled");
+
+      const booked = new Set();
+      for(const r of (data || [])){
+        const st = (r.status || "confirmed").toLowerCase();
+        if(st === "cancelled") continue;
+        const d = new Date(r.start_time);
+        booked.add(pad(d.getHours()) + ":" + pad(d.getMinutes()));
+      }
+      return booked;
     }
 
-    let selectedSlotISO = null;
-
-    function formatDateTimePretty(iso){
-      const d = new Date(iso);
-      return d.toLocaleString([], {
-        weekday:"short", year:"numeric", month:"short", day:"2-digit",
-        hour:"2-digit", minute:"2-digit"
-      });
-    }
-
-    async function renderSlots(){
-      selectedSlotISO = null;
+    function renderSlots(slots, bookedSet, dateObj){
+      slotGrid.innerHTML = "";
+      selectedStartISO = null;
+      selectedLabel = "";
       confirmBtn.disabled = true;
-      slotsEl.innerHTML = "";
-      clearMsg();
-      if(afterNote) afterNote.textContent = "Pick a time, then press Confirm Booking.";
 
-      const ymdStr = datePick.value;
-      if(!ymdStr) return;
+      const now = new Date();
 
-      const day = localDateFromYMD(ymdStr);
-      const rules = dayRules(day);
-      const existing = await fetchDayAppointments(day);
+      for(const s of slots){
+        const key = pad(s.hh) + ":" + pad(s.mm);
+        const start = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), s.hh, s.mm, 0, 0);
 
-      const slots = [];
-      const base = new Date(day);
-      base.setHours(rules.startHour, 0, 0, 0);
+        const isBooked = bookedSet.has(key);
+        const isPast = start < now;
 
-      const endBoundary = new Date(day);
-      endBoundary.setHours(rules.endHour, 0, 0, 0);
+        const div = document.createElement("div");
+        div.className = "slot" + (isBooked || isPast ? " dis" : "");
+        div.textContent = s.label;
 
-      while(base < endBoundary){
-        const h = base.getHours();
+        if(!(isBooked || isPast)){
+          div.addEventListener("click", () => {
+            Array.from(slotGrid.children).forEach(el => el.classList.remove("sel"));
+            div.classList.add("sel");
 
-        if(!inBlockedHours(h, rules.blocks)){
-          const startTime = new Date(base);
-          const endTime = new Date(base);
-          endTime.setMinutes(endTime.getMinutes() + APPT_MINUTES);
+            selectedLabel = s.label;
 
-          if(endTime <= endBoundary){
-            const isConflict = existing.some(r => {
-              const aStart = new Date(r.start_time);
-              const aEnd = new Date(r.end_time || r.start_time);
-              if(!r.end_time) aEnd.setMinutes(aStart.getMinutes() + APPT_MINUTES);
-              return overlaps(startTime, endTime, aStart, aEnd);
-            });
-            if(!isConflict) slots.push(makeSlot(startTime));
-          }
+            const yyyy = dateObj.getFullYear();
+            const mm = dateObj.getMonth()+1;
+            const dd = dateObj.getDate();
+            selectedStartISO = buildStartISO(yyyy, mm, dd, s.hh, s.mm);
+
+            confirmBtn.disabled = false;
+            setMsg("", "");
+          });
         }
 
-        base.setMinutes(base.getMinutes() + SLOT_MINUTES);
+        slotGrid.appendChild(div);
       }
 
       if(!slots.length){
-        slotsEl.innerHTML = `<div class="note">No available times for that date. Try another day.</div>`;
-        return;
+        slotGrid.innerHTML = `<div class="muted">No slots for this day.</div>`;
       }
-
-      slots.forEach(s => {
-        const b = document.createElement("button");
-        b.type = "button";
-        b.className = "slotBtn";
-        b.textContent = s.label;
-        b.addEventListener("click", () => {
-          document.querySelectorAll(".slotBtn").forEach(x => x.classList.remove("selected"));
-          b.classList.add("selected");
-          selectedSlotISO = s.iso;
-          confirmBtn.disabled = false;
-          clearMsg();
-          if(afterNote) afterNote.textContent = "✅ Selected: " + formatDateTimePretty(selectedSlotISO);
-        });
-        slotsEl.appendChild(b);
-      });
     }
 
-    datePick.addEventListener("change", renderSlots);
+    async function refreshSlots(){
+      setMsg("", "");
+      confirmCard.style.display = "none";
+      afterNote.textContent = "Pick a time, then press Confirm Booking.";
 
-    confirmBtn.addEventListener("click", async () => {
-      const name = (clientName.value || "").trim();
-      const email = (clientEmail.value || "").trim();
-      const service = serviceSelect.value;
-      const location = locationSelect.value;
-
-      if(!name || !email || !selectedSlotISO){
-        setMsg("bad", "Please fill name, email, and choose a time.");
+      const val = dateEl.value;
+      if(!val){
+        slotGrid.innerHTML = `<div class="muted">Select a date to see times.</div>`;
+        confirmBtn.disabled = true;
         return;
       }
 
-      confirmBtn.disabled = true;
-      setMsg("warn", "Submitting…");
+      const [yyyy, mm, dd] = val.split("-").map(Number);
+      const dateObj = new Date(yyyy, mm-1, dd, 0,0,0,0);
 
-      const startISO = selectedSlotISO;
-      const end = new Date(startISO);
-      end.setMinutes(end.getMinutes() + APPT_MINUTES);
-      const endISO = end.toISOString();
+      const slots = generateSlotsForDate(dateObj);
+      const booked = await fetchBookedTimesForDate(dateObj);
+      renderSlots(slots, booked, dateObj);
+    }
+
+    function niceDateTimeFromISO(iso){
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone: TZ,
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(new Date(iso));
+    }
+
+    function showConfirmationCard(payload){
+      const rows = [
+        { label: "Client", value: payload.client_name },
+        { label: "Email", value: payload.client_email },
+        { label: "Date & Time", value: niceDateTimeFromISO(payload.start_time) },
+        { label: "Service", value: payload.service },
+        { label: "Location", value: payload.location },
+        { label: "Status", value: "Confirmed ✅" },
+      ];
+
+      confirmGrid.innerHTML = rows.map(r => `
+        <div class="miniBox">
+          <div class="miniLabel">${escapeHtml(r.label)}</div>
+          <div class="miniValue">${escapeHtml(r.value)}</div>
+        </div>
+      `).join("");
+
+      confirmCard.style.display = "block";
+      afterNote.textContent = "✅ Confirmed. Check your email or contact us if you need changes.";
+    }
+
+    // ========= Booking =========
+    confirmBtn.addEventListener("click", async () => {
+      setMsg("", "");
+
+      const client_name = (fullNameEl.value || "").trim();
+      const client_email = (emailEl.value || "").trim();
+      const service = serviceEl.value;
+      const location = locationEl.value;
+
+      if(!client_name){ setMsg("bad","Please enter your full name."); return; }
+      if(!client_email || !client_email.includes("@")){ setMsg("bad","Please enter a valid email address."); return; }
+      if(!dateEl.value){ setMsg("bad","Please pick a date."); return; }
+      if(!selectedStartISO){ setMsg("bad","Please select an available time."); return; }
+
+      confirmBtn.disabled = true;
+      setMsg("info", "Booking…");
+
+      const end_time = addMinutesISO(selectedStartISO, DURATION_MINUTES);
+
+      const insertPayload = {
+        client_name,
+        client_email,
+        service,
+        location,
+        start_time: selectedStartISO,
+        end_time,
+        status: "confirmed"
+      };
 
       const { data, error } = await supa
         .from("appointments")
-        .insert([{
-          client_name: name,
-          client_email: email,
-          service,
-          location,
-          start_time: startISO,
-          end_time: endISO,
-          status: "confirmed"
-        }])
-        .select("*")
+        .insert([insertPayload])
+        .select("client_name, client_email, service, location, start_time, end_time, status")
         .single();
 
       if(error){
-        // show pills if an error happens
-        showHealth();
-        pillBAD(pillSb, "Supabase: error");
-        console.warn(error);
-        setMsg("bad", error.message || "Booking failed.");
+        setMsg("bad", error.message);
         confirmBtn.disabled = false;
         return;
       }
 
-      // Fill confirmation card
-      ccClient.textContent = data.client_name || name;
-      ccEmail.textContent = data.client_email || email;
-      ccDateTime.textContent = formatDateTimePretty(data.start_time || startISO);
-      ccService.textContent = data.service || service;
-      ccLocation.textContent = data.location || location;
+      setMsg("ok", "✅ Booking confirmed! See you then.");
+      showConfirmationCard(data || insertPayload);
 
-      // Build calendar buttons
-      const title = "Columbus East Tax Services Appointment";
-      const details =
-        `Service: ${data.service || service}\n` +
-        `Client: ${data.client_name || name}\n` +
-        `Email: ${data.client_email || email}\n` +
-        `Location: ${data.location || location}\n\n` +
-        `If you need changes, call or text: 614-599-1185`;
-
-      setCalendarLinks({
-        title,
-        details,
-        location: (data.location || location),
-        start: new Date(data.start_time || startISO),
-        end: new Date(data.end_time || endISO)
-      });
-
-      // Show confirmation card + hide form
-      bookingForm.style.display = "none";
-      confirmCard.style.display = "block";
-      confirmCard.scrollIntoView({ behavior:"smooth", block:"start" });
-
-      clearMsg();
+      await refreshSlots();
     });
 
-    btnBookAnother.addEventListener("click", async () => {
+    // ========= Buttons =========
+    bookAnotherBtn.addEventListener("click", async () => {
       confirmCard.style.display = "none";
-      bookingForm.style.display = "block";
-
-      clientName.value = "";
-      clientEmail.value = "";
-      selectedSlotISO = null;
-
-      await renderSlots();
-      window.location.hash = "#booking";
+      setMsg("", "");
+      fullNameEl.focus();
+      await refreshSlots();
     });
 
-    btnBackTop.addEventListener("click", () => {
-      window.scrollTo({ top:0, behavior:"smooth" });
+    backTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
-    (function init(){
+    // ========= Init =========
+    async function init(){
+      // Start clock
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      jsPill.textContent = "JS: loaded";
+      jsPill.className = "pill ok";
+
+      const { error } = await supa.from("appointments").select("start_time").limit(1);
+      if(error){
+        sbPill.textContent = "Supabase: error";
+        sbPill.className = "pill bad";
+        setMsg("bad", error.message);
+      } else {
+        sbPill.textContent = "Supabase: loaded";
+        sbPill.className = "pill ok";
+      }
+
       const now = new Date();
-      datePick.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
-      renderSlots();
-    })();
+      dateEl.value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+
+      await refreshSlots();
+    }
+
+    dateEl.addEventListener("change", refreshSlots);
+
+    init();
   </script>
 </body>
 </html>
