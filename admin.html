@@ -3,520 +3,145 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CETS Admin Dashboard</title>
+<title>Admin Dashboard</title>
 
-<!-- Google Font -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap">
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/@supabase/supabase-js"></script>
 
 <style>
+    body {
+        background: #f3f4f6;
+    }
 
-/* ============================================================
-   GLOBAL PAGE STYLE
-   ============================================================ */
-body {
-  margin: 0;
-  font-family: "Inter", sans-serif;
-  background: #f3f4f6;
-  overflow: hidden;
-}
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 12px;
+    }
 
-.container {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-}
+    .day-cell {
+        background: white;
+        border-radius: 12px;
+        padding: 18px;
+        min-height: 100px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid #e5e7eb;
+    }
 
-/* ============================================================
-   SIDEBAR
-   ============================================================ */
-.sidebar {
-  width: 260px;
-  background: #111827;
-  color: #fff;
-  padding: 24px 18px;
-  display: flex;
-  flex-direction: column;
-}
+    .sidepanel {
+        width: 280px;
+        background: #0f172a;
+        color: white;
+        height: 100vh;
+        padding: 20px;
+    }
 
-.sidebar .logoBox {
-  text-align: center;
-  margin-bottom: 28px;
-}
+    .sidepanel a {
+        display: block;
+        margin: 14px 0;
+        padding: 10px 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: white;
+        font-size: 16px;
+    }
 
-.sidebar img {
-  width: 160px;
-  max-width: 90%;
-}
+    .sidepanel a:hover {
+        background: #1e293b;
+    }
 
-.menuItem {
-  padding: 12px 14px;
-  color: #e5e7eb;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-bottom: 8px;
-  transition: 0.2s;
-}
-
-.menuItem:hover {
-  background: #1f2937;
-}
-
-.menuItem.active {
-  background: #2563eb;
-  color: #fff;
-}
-
-/* ============================================================
-   MAIN PANEL
-   ============================================================ */
-.main {
-  flex: 1;
-  background: #f9fafb;
-  padding: 22px;
-  overflow-y: auto;
-}
-
-.header {
-  font-size: 22px;
-  font-weight: 900;
-  margin-bottom: 22px;
-}
-
-/* ============================================================
-   CALENDAR GRID
-   ============================================================ */
-.calendarGrid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 12px;
-}
-
-.dayCell {
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px;
-  min-height: 100px;
-  cursor: pointer;
-  border: 1px solid #e5e7eb;
-  transition: 0.2s;
-}
-
-.dayCell:hover {
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-}
-
-.dayCell.inactive {
-  opacity: 0.4;
-}
-
-.dayNumber {
-  font-weight: 700;
-  font-size: 16px;
-}
-
-/* 7 location colors */
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.dot.whitehall      { background: #2563eb; }
-.dot.reynoldsburg   { background: #7c3aed; }
-.dot.livingston     { background: #16a34a; }
-.dot.groveport      { background: #ea580c; }
-.dot.online         { background: #0d9488; }
-.dot.audit          { background: #b91c1c; }
-
-/* ============================================================
-   APPOINTMENT DRAWER
-   ============================================================ */
-.drawer {
-  position: fixed;
-  top: 0;
-  right: -420px;
-  width: 420px;
-  height: 100vh;
-  background: #fff;
-  border-left: 1px solid #e5e7eb;
-  padding: 22px;
-  box-shadow: -4px 0 14px rgba(0,0,0,0.1);
-  overflow-y: auto;
-  transition: 0.35s;
-}
-
-.drawer.open {
-  right: 0;
-}
-
-.drawer h2 {
-  font-size: 20px;
-  font-weight: 900;
-}
-
-/* Close Button */
-.closeBtn {
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
-  float: right;
-  cursor: pointer;
-}
-
-/* Inputs */
-input,
-select {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #d1d5db;
-  margin-top: 8px;
-  margin-bottom: 16px;
-}
-
-label {
-  font-size: 14px;
-  font-weight: 700;
-}
-
-/* Save Changes Button */
-.btnSave {
-  background: #2563eb;
-  color: #fff;
-  padding: 14px;
-  width: 100%;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 12px;
-}
-
-/* Delete Button */
-.btnDelete {
-  background: #dc2626;
-  color: #fff;
-  padding: 14px;
-  width: 100%;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 12px;
-}
-
+    #detailsPanel {
+        position: fixed;
+        top: 0;
+        right: -400px;
+        height: 100%;
+        width: 400px;
+        background: white;
+        border-left: 1px solid #ddd;
+        padding: 20px;
+        transition: 0.3s ease;
+        overflow-y: auto;
+    }
 </style>
 </head>
 
-<body>
-<div class="container">
+<body class="flex">
 
-  <!-- ==========================
-       SIDEBAR
-       ========================== -->
-  <div class="sidebar">
-    <div class="logoBox">
-      <img src="https://raw.githubusercontent.com/sinyalfa/CETS/main/logo1.png" alt="CETS Logo" />
-    </div>
+<!-- SIDEBAR -->
+<div class="sidepanel">
+    <img src="https://sinyalfa.github.io/CETS/logo1.png" class="mb-6 w-40">
 
-    <div class="menuItem active">Dashboard</div>
-    <div class="menuItem">Calendar</div>
-    <div class="menuItem">Appointments</div>
-    <div class="menuItem">Locations</div>
-    <div class="menuItem" id="logoutBtn">Logout</div>
-  </div>
+    <a href="#">Dashboard</a>
+    <a href="#">Calendar</a>
+    <a href="#">Appointments</a>
+    <a href="#">Logout</a>
+</div>
 
-  <!-- ==========================
-       MAIN PANEL
-       ========================== -->
-  <div class="main">
-    <div class="header" id="monthLabel">Loading Calendar…</div>
-    <div class="calendarGrid" id="calendarGrid"></div>
-  </div>
+<!-- MAIN CONTENT -->
+<div class="flex-1 p-10">
 
-</div> <!-- END .container -->
+    <h1 class="text-3xl font-bold mb-6">Admin Calendar</h1>
 
+    <div id="calendar" class="calendar-grid"></div>
+</div>
 
-<!-- ==========================
-     APPOINTMENT DRAWER
-     ========================== -->
-<div class="drawer" id="drawer">
-
-  <button class="closeBtn" onclick="closeDrawer()">Close</button>
-
-  <h2>Appointment Details</h2>
-
-  <!-- Editable Date -->
-  <label>Date</label>
-  <input type="date" id="editDate">
-
-  <!-- Editable Time -->
-  <label>Time</label>
-  <select id="editTime"></select>
-
-  <!-- Editable Status -->
-  <label>Status</label>
-  <select id="editStatus">
-    <option value="confirmed">Confirmed</option>
-    <option value="cancelled">Cancelled</option>
-  </select>
-
-  <!-- Save & Delete Buttons -->
-  <button class="btnSave" onclick="saveChanges()">Save Changes</button>
-  <button class="btnDelete" onclick="deleteAppointment()">Delete Appointment</button>
-
-</div> <!-- END DRAWER -->
-
-
-<!-- ==========================
-     SUPABASE + DASHBOARD SCRIPT
-     ========================== -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- DETAILS PANEL -->
+<div id="detailsPanel"></div>
 
 <script>
-/* ============================================================
-   SUPABASE INITIALIZATION
-   ============================================================ */
-const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
-const supa = supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = supabase.createClient(
+    "https://zleztdbrxnqirccgkvqx.supabase.co",
+    "YOUR_PUBLIC_ANON_KEY"
+);
 
-/* ============================================================
-   GLOBAL STATE
-   ============================================================ */
-let currentMonth = new Date();
-let appointments = [];
-let selectedAppt = null;
+const calendarEl = document.getElementById("calendar");
+const details = document.getElementById("detailsPanel");
 
+// Build month
+function buildCalendar() {
+    const year = 2026;
+    const month = 0; // January
 
-/* ============================================================
-   LOAD ALL APPOINTMENTS
-   ============================================================ */
-async function loadAppointments() {
-  const { data, error } = await supa
-    .from("appointments")
-    .select("*")
-    .order("start_time", { ascending: true });
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const totalDays = lastDay.getDate();
 
-  if (error) {
-    console.error("Error loading appointments:", error);
-    return;
-  }
+    for (let day = 1; day <= totalDays; day++) {
+        const cell = document.createElement("div");
+        cell.className = "day-cell";
+        cell.textContent = day;
 
-  appointments = data || [];
-  renderCalendar();
+        cell.onclick = () => loadAppointments(year, month + 1, day);
+
+        calendarEl.appendChild(cell);
+    }
 }
 
+async function loadAppointments(y, m, d) {
 
-/* ============================================================
-   RENDER CALENDAR
-   ============================================================ */
-function renderCalendar() {
+    const dateStr = `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
 
-  const grid = document.getElementById("calendarGrid");
-  grid.innerHTML = "";
+    const { data, error } = await supabase
+        .from("appointments")
+        .select("*")
+        .eq("date", dateStr);
 
-  const year = currentMonth.getFullYear();
-  const month = currentMonth.getMonth();
-
-  document.getElementById("monthLabel").textContent =
-    currentMonth.toLocaleString("default", {
-      month: "long",
-      year: "numeric"
-    });
-
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-
-  /* --- Leading empty cells --- */
-  for (let i = 0; i < firstDay; i++) {
-    const cell = document.createElement("div");
-    cell.classList.add("dayCell", "inactive");
-    grid.appendChild(cell);
-  }
-
-
-  /* --- Actual days --- */
-  for (let d = 1; d <= daysInMonth; d++) {
-
-    const cell = document.createElement("div");
-    cell.classList.add("dayCell");
-
-    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-
-    const dailyAppointments = appointments.filter(a =>
-      a.start_time.startsWith(dateStr)
-    );
-
-    /* Day Number */
-    const num = document.createElement("div");
-    num.classList.add("dayNumber");
-    num.textContent = d;
-
-    cell.appendChild(num);
-
-
-    /* Colored Dots for Each Appointment */
-    dailyAppointments.forEach(a => {
-
-      const dot = document.createElement("span");
-      dot.classList.add("dot");
-
-      const loc = (a.location || "").toLowerCase();
-
-      if (loc.includes("whitehall"))      dot.classList.add("whitehall");
-      else if (loc.includes("reynolds"))  dot.classList.add("reynoldsburg");
-      else if (loc.includes("living"))    dot.classList.add("livingston");
-      else if (loc.includes("grove"))     dot.classList.add("groveport");
-      else if (loc.includes("online"))    dot.classList.add("online");
-      else if (loc.includes("audit"))     dot.classList.add("audit");
-
-      cell.appendChild(dot);
-
-      /* Clicking any dot opens drawer for that appointment */
-      cell.onclick = () => openDrawer(a);
-    });
-
-
-    grid.appendChild(cell);
-  }
+    details.style.right = "0px";
+    details.innerHTML = `
+        <h2 class="text-xl font-bold mb-4">Appointments for ${dateStr}</h2>
+        ${data.map(a => `
+            <div class="border p-3 mb-3 rounded">
+                <div><b>${a.client_name}</b></div>
+                <div>${a.service}</div>
+                <div>${a.time}</div>
+                <div>${a.location}</div>
+            </div>
+        `).join("")}
+    `;
 }
 
-
-
-/* ============================================================
-   OPEN APPOINTMENT DRAWER
-   ============================================================ */
-function openDrawer(appt) {
-
-  selectedAppt = appt;
-
-  /* Set Date */
-  document.getElementById("editDate").value =
-    appt.start_time.split("T")[0];
-
-  /* Populate Time Options */
-  const timeSelect = document.getElementById("editTime");
-  timeSelect.innerHTML = "";
-
-  const times = [
-    "10:00", "11:00", "12:00",
-    "13:00", "14:00", "15:00",
-    "16:00", "17:00"
-  ];
-
-  times.forEach(t => {
-    const opt = document.createElement("option");
-    opt.value = t;
-    opt.textContent = t;
-
-    if (appt.start_time.includes(t)) opt.selected = true;
-
-    timeSelect.appendChild(opt);
-  });
-
-  /* Set Status */
-  document.getElementById("editStatus").value = appt.status;
-
-  /* Show Drawer */
-  document.getElementById("drawer").classList.add("open");
-}
-
-
-
-/* ============================================================
-   CLOSE DRAWER
-   ============================================================ */
-function closeDrawer() {
-  document.getElementById("drawer").classList.remove("open");
-}
-
-
-
-/* ============================================================
-   SAVE CHANGES
-   (Only date, time, status because you chose NOT editable: name/email/service/location)
-   ============================================================ */
-async function saveChanges() {
-
-  if (!selectedAppt) return;
-
-  const newDate  = document.getElementById("editDate").value;
-  const newTime  = document.getElementById("editTime").value;
-  const newStatus = document.getElementById("editStatus").value;
-
-  const updatedStart = `${newDate}T${newTime}:00`;
-
-  const newEnd = new Date(new Date(updatedStart).getTime() + 3600000).toISOString();
-
-  const { error } = await supa
-    .from("appointments")
-    .update({
-      start_time: updatedStart,
-      end_time:   newEnd,
-      status:     newStatus
-    })
-    .eq("id", selectedAppt.id);
-
-  if (error) {
-    alert("Error saving changes.");
-    console.error(error);
-  }
-
-  closeDrawer();
-  loadAppointments();
-}
-
-
-
-/* ============================================================
-   DELETE APPOINTMENT
-   ============================================================ */
-async function deleteAppointment() {
-
-  if (!selectedAppt) return;
-
-  if (!confirm("Are you sure you want to delete this appointment?")) return;
-
-  const { error } = await supa
-    .from("appointments")
-    .delete()
-    .eq("id", selectedAppt.id);
-
-  if (error) {
-    alert("Error deleting appointment.");
-    console.error(error);
-  }
-
-  closeDrawer();
-  loadAppointments();
-}
-
-
-
-/* ============================================================
-   LOGOUT
-   ============================================================ */
-document.getElementById("logoutBtn").onclick = async () => {
-  await supa.auth.signOut();
-  alert("Logged out.");
-  window.location.href = "index.html";
-};
-
-
-
-/* ============================================================
-   INITIALIZE APPLICATION
-   ============================================================ */
-loadAppointments();
-
+buildCalendar();
 </script>
 
 </body>
