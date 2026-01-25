@@ -1,1083 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Columbus East Tax Services — Book Appointment</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Columbus East Tax Services</title>
 
-  <style>
-    :root{
-      --bg1:#0b1220;
-      --bg2:#0f172a;
+<style>
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#0b1220;
+  color:#111;
+}
 
-      --card: rgba(255,255,255,.96);
-      --card2:#ffffff;
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
 
-      --text:#0f172a;
-      --muted:#64748b;
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:25px;
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
+}
 
-      --ring: rgba(34,197,94,.35);
+.logo{
+  max-width:260px;
+  display:block;
+  margin:auto;
+}
 
-      --green:#16a34a;
-      --blue:#2563eb;
+.info{
+  text-align:center;
+  margin-top:10px;
+  font-size:18px;
+}
 
-      --btnDark1:#111827;
-      --btnDark2:#0b1220;
+.info strong{
+  display:block;
+  margin-top:6px;
+}
 
-      --slotBg:#eafff3;
-      --slotBorder:#57d38c;
-      --slotText:#065f46;
+.button{
+  width:100%;
+  padding:16px;
+  margin-top:12px;
+  border-radius:14px;
+  border:none;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+  color:white;
+}
 
-      --shadow: 0 20px 55px rgba(0,0,0,.35);
-    }
+.call{background:#2563eb;}
+.text{background:#16a34a;}
+.email{background:#9333ea;}
+.book{background:#0f766e;}
 
-    *{ box-sizing:border-box; }
-    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
-    body{
-      margin:0;
-      padding:14px;
-      font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(1200px 600px at 20% 0%, rgba(59,130,246,.22), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(34,197,94,.18), transparent 55%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
-      color:#e5e7eb;
-    }
+.appointment{
+  margin-top:25px;
+  overflow:hidden;
+  max-height:0;
+  transition:.4s ease;
+}
 
-    .wrap{
-      width:100%;
-      max-width:1180px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
-      gap:14px;
-      align-items:start;
-    }
+.appointment.open{
+  max-height:2000px;
+}
 
-    @media (max-width: 980px){
-      body{ padding:12px; }
-      .wrap{ grid-template-columns: 1fr; }
-    }
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
 
-    .card{
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,.15);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      padding:14px;
-      color: var(--text);
-      backdrop-filter: blur(8px);
-      overflow:hidden;
-    }
+input,select{
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  font-size:16px;
+}
 
-    /* LEFT — LOGO AREA */
-    .logoHeader{
-      padding:10px;
-      border-radius:18px;
-      border:1px solid #e5e7eb;
-      background:#ffffff;
-      overflow:hidden;
-    }
-    .logoHeader img{
-      width:100%;
-      height:auto;
-      display:block;
-      border-radius:14px;
-      object-fit:contain;
-    }
+.times{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:10px;
+}
 
-    .infoCard{
-      margin-top:12px;
-      border-radius:18px;
-      border:1px solid #e5e7eb;
-      background:#f8fafc;
-      padding:14px;
-    }
-    .infoTitle{
-      margin:0 0 8px 0;
-      font-size:18px;
-      font-weight:900;
-      color:#0f172a;
-    }
-    ul{ margin:0; padding-left:18px; color:#0f172a; }
-    li{ margin:8px 0; font-weight:800; color:#0f172a; }
+.time{
+  padding:12px;
+  border-radius:14px;
+  border:1px solid #34d399;
+  background:#ecfdf5;
+  cursor:pointer;
+  text-align:center;
+  font-weight:bold;
+}
 
-    .btnGrid{
-      margin-top:12px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    @media (max-width: 420px){
-      .btnGrid{ grid-template-columns: 1fr; }
-    }
-    .btn{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding:14px 14px;
-      border-radius:16px;
-      border:1px solid rgba(15,23,42,.08);
-      font-weight:900;
-      cursor:pointer;
-      user-select:none;
-      text-decoration:none;
-      color:white;
-      box-shadow: 0 14px 24px rgba(0,0,0,.10);
-      transition: transform .12s ease, filter .12s ease;
-      min-height:54px;
-    }
-    .btn:hover{ transform: translateY(-1px); filter: brightness(1.02); }
-    .btn:active{ transform: translateY(0px); filter: brightness(.99); }
+.time.active{
+  background:#c7d2fe;
+  border-color:#6366f1;
+}
 
-    .btn.call{ background:#1f2937; }
-    .btn.text{ background:#16a34a; }
-    .btn.email{ background:#2563eb; }
-    .btn.book{ background:#0f766e; }
+.confirm{
+  background:#020617;
+  margin-top:18px;
+}
 
-    .tinyNote{
-      margin-top:10px;
-      text-align:center;
-      color:#475569;
-      font-weight:800;
-    }
+.datetime{
+  margin-top:12px;
+  font-weight:bold;
+  color:#2563eb;
+  text-align:center;
+}
 
-    .statusRow{
-      margin-top:12px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-start;
-      padding:0 6px 6px;
-    }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      font-weight:900;
-      font-size:12px;
-      border:1px solid transparent;
-      white-space:nowrap;
-    }
-    .badge.ok{ background:#dcfce7; border-color:#86efac; color:#166534; }
-    .badge.warn{ background:#e0f2fe; border-color:#7dd3fc; color:#075985; }
-    .badge.bad{ background:#fee2e2; border-color:#fecaca; color:#991b1b; }
-
-    /* RIGHT */
-    .rightHeader{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:10px;
-      flex-wrap:wrap;
-      padding:6px 6px 0;
-    }
-    .rightHeader h2{
-      margin:0;
-      font-size:26px;
-      font-weight:900;
-      color:#0f172a;
-    }
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:10px 12px;
-      border-radius:999px;
-      border:1px solid #e5e7eb;
-      background:#f1f5f9;
-      color:#0f172a;
-      font-weight:900;
-    }
-
-    .pillsTop{
-      margin:12px 6px 2px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid #e5e7eb;
-      background:#eef2f7;
-      color:#0f172a;
-      font-weight:900;
-      min-width: 260px;
-      max-width:100%;
-    }
-    @media (max-width: 520px){
-      .pill{ min-width: 0; width:100%; }
-    }
-    .pill .pico{ width:18px; text-align:center; }
-
-    /* Accordion */
-    .accordion{
-      margin-top:12px;
-      border-radius:18px;
-      border:1px solid #e5e7eb;
-      background: var(--card2);
-      overflow:hidden;
-    }
-    .accHead{
-      width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:14px 14px;
-      cursor:pointer;
-      border:none;
-      background:
-        radial-gradient(900px 300px at 80% 0%, rgba(34,197,94,.14), transparent 50%),
-        radial-gradient(900px 300px at 20% 0%, rgba(59,130,246,.12), transparent 50%),
-        #ffffff;
-      color:#0f172a;
-    }
-    .accHead .left{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      text-align:left;
-    }
-    .accHead .title{
-      font-weight:900;
-      font-size:18px;
-    }
-    .accHead .sub{
-      margin:0;
-      color:#475569;
-      font-weight:800;
-      font-size:13px;
-    }
-    .chev{
-      font-weight:900;
-      font-size:18px;
-      width:34px;
-      height:34px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:10px;
-      border:1px solid #e5e7eb;
-      background:#f8fafc;
-      flex:0 0 auto;
-    }
-
-    .accBody{
-      padding:14px;
-      display:none;
-    }
-    .accBody.open{ display:block; }
-
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-      margin-top:12px;
-    }
-    @media (max-width: 700px){
-      .grid2{ grid-template-columns: 1fr; }
-    }
-
-    label{
-      display:block;
-      font-weight:900;
-      color:#0f172a;
-      margin:0 0 6px 2px;
-    }
-
-    input, select{
-      width:100%;
-      padding:12px 12px;
-      border-radius:12px;
-      border:1px solid #d1d5db;
-      font-size:15px;
-      outline:none;
-      background:#fff;
-      min-height:46px;
-    }
-    input:focus, select:focus{
-      border-color: rgba(34,197,94,.55);
-      box-shadow: 0 0 0 4px var(--ring);
-    }
-
-    .hours{
-      margin-top:10px;
-      color:#334155;
-      font-weight:800;
-      line-height:1.55;
-    }
-
-    .slotsTitle{
-      margin-top:12px;
-      font-weight:900;
-      color:#0f172a;
-    }
-    .slots{
-      margin-top:10px;
-      display:grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap:10px;
-    }
-    @media (max-width: 980px){
-      .slots{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    }
-    @media (max-width: 560px){
-      .slots{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-
-    .slot{
-      border-radius:16px;
-      border:1px solid var(--slotBorder);
-      background: var(--slotBg);
-      color: var(--slotText);
-      font-weight:900;
-      padding:14px 10px;
-      text-align:center;
-      cursor:pointer;
-      user-select:none;
-      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
-      min-height:54px;
-    }
-    .slot:hover{ transform: translateY(-1px); box-shadow: 0 10px 22px rgba(0,0,0,.08); }
-    .slot.selected{
-      background:#e8e7ff;
-      border-color:#7c3aed;
-      color:#1f155a;
-      box-shadow: 0 0 0 4px rgba(124,58,237,.18);
-    }
-    .slot.disabled{
-      opacity:.35;
-      cursor:not-allowed;
-      text-decoration: line-through;
-      background:#f1f5f9;
-      border-color:#e5e7eb;
-      color:#334155;
-      box-shadow:none;
-      transform:none;
-    }
-
-    .confirmBtn{
-      margin-top:14px;
-      width:100%;
-      padding:16px 14px;
-      border-radius:16px;
-      border:none;
-      background: linear-gradient(135deg, var(--btnDark1), var(--btnDark2));
-      color:#fff;
-      font-weight:900;
-      font-size:16px;
-      cursor:pointer;
-      box-shadow: 0 14px 28px rgba(0,0,0,.16);
-      transition: transform .12s ease, opacity .12s ease;
-      min-height:56px;
-    }
-    .confirmBtn:hover{ transform: translateY(-1px); }
-    .confirmBtn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
-
-    .msg{
-      margin-top:10px;
-      border-radius:14px;
-      padding:12px 12px;
-      font-weight:900;
-      border:1px solid transparent;
-      display:none;
-    }
-    .msg.ok{ background:#dcfce7; border-color:#86efac; color:#166534; }
-    .msg.bad{ background:#fee2e2; border-color:#fecaca; color:#991b1b; }
-    .msg.warn{ background:#e0f2fe; border-color:#7dd3fc; color:#075985; }
-
-    .afterNote{
-      margin-top:10px;
-      text-align:center;
-      color:#475569;
-      font-weight:800;
-    }
-
-    /* Confirmation card */
-    .confirmCard{
-      display:none;
-      margin-top:12px;
-      border-radius:20px;
-      border:1px solid #e5e7eb;
-      background:#ffffff;
-      padding:16px;
-      box-shadow: 0 16px 40px rgba(0,0,0,.10);
-    }
-    .confirmTop{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .checkCircle{
-      width:44px; height:44px;
-      border-radius:999px;
-      background:#dcfce7;
-      border:1px solid #86efac;
-      color:#166534;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:22px;
-      font-weight:900;
-      flex:0 0 auto;
-    }
-    .confirmTop h3{
-      margin:0;
-      font-size:22px;
-      font-weight:900;
-      color:#0f172a;
-      line-height:1.1;
-    }
-    .confirmTop .small{
-      width:100%;
-      color:#475569;
-      font-weight:800;
-      margin-top:2px;
-    }
-
-    .confirmGrid{
-      margin-top:12px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
-    @media (max-width: 700px){
-      .confirmGrid{ grid-template-columns:1fr; }
-    }
-    .cbox{
-      border:1px solid #e5e7eb;
-      background:#f8fafc;
-      border-radius:16px;
-      padding:12px;
-    }
-    .cbox .k{
-      color:#64748b;
-      font-weight:900;
-      font-size:13px;
-      margin-bottom:6px;
-    }
-    .cbox .v{
-      color:#0f172a;
-      font-weight:900;
-      font-size:16px;
-      word-break:break-word;
-    }
-    .statusPill{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 12px;
-      border-radius:999px;
-      font-weight:900;
-      border:1px solid transparent;
-      background: var(--blue);
-      color:#fff;
-    }
-
-    .confirmBtns{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
-    @media (max-width: 700px){
-      .confirmBtns{ grid-template-columns:1fr; }
-    }
-    .btn2{
-      border:none;
-      border-radius:16px;
-      padding:14px 14px;
-      font-weight:900;
-      cursor:pointer;
-      min-height:54px;
-      transition: transform .12s ease, filter .12s ease;
-    }
-    .btn2:hover{ transform: translateY(-1px); filter:brightness(1.02); }
-    .btn2.primary{ background:#0f766e; color:#fff; }
-    .btn2.dark{ background: linear-gradient(135deg, var(--btnDark1), var(--btnDark2)); color:#fff; }
-
-    .helpLine{
-      margin-top:10px;
-      color:#475569;
-      font-weight:800;
-    }
-  </style>
+@media(max-width:700px){
+  .grid{grid-template-columns:1fr;}
+}
+</style>
 </head>
 
 <body>
-  <div class="wrap">
 
-    <!-- LEFT SIDE -->
-    <div class="card" id="leftCard">
+<div class="container">
+
+<div class="card">
+
+<!-- LOGO (compressed base64 embedded) -->
+<img class="logo" src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAYAAACAvzbMAAAACXBIWXMAAAsSAAALEgHS3X78AAAG
+kUlEQVR4nO3dQW7bMBBE0cH//9c2oQk0FJK9pM6aGZ6kS7XImNQFJ3O6j4e4AAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPzXjTq9mJZk5U1j8c5Yq1t1s2R9X7
+2n+4Q6b4T4vN4PZz0q7m2yQ3Xc0q4k3c4N7X5z6nH3f8VZ4n5nY2J9F0m6X6v1pQz1Yt7rX4eF3Z3
+t7v0XH7q8tZ9vY7fZz1m6c9m3d8n4H7X8nZ7H7fZz+Y0Z4u4mX4N8Z6x0eZ0m7f7Z5n6+H3fY+H
+3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+
+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+H3fY+
+H3fY+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP4P+AK8z8vQpA1y
+AAAAAElFTkSuQmCC"
+alt="Columbus East Tax Services Logo">
+
+<div class="info">
+<strong>614-259-7625</strong>
+columbuseast.taxservices@outlook.com
+</div>
+
+<button class="button call">📞 Call Now</button>
+<button class="button text">💬 Text Us</button>
+<button class="button email">✉️ Email Us</button>
+
+<button class="button book" onclick="toggleBooking()">📅 Book Appointment</button>
+
+<div id="booking" class="appointment">
+
+<div class="datetime" id="now"></div>
+
+<div class="grid">
+<input placeholder="Full Name">
+<input placeholder="Email Address">
+
+<select>
+<option>W-2 / Individual Taxes</option>
+<option>1099 / Self-Employed</option>
+<option>LLC / Small Business Filing</option>
+<option>Audit Help & IRS Letters</option>
+</select>
+
+<select>
+<option>CML Whitehall Branch</option>
+<option>CML Reynoldsburg Branch</option>
+<option>Online / Phone / Text</option>
+</select>
+
+<input type="date">
+</div>
+
+<h3 style="margin-top:18px">Available Times</h3>
+
+<div class="times" id="times"></div>
+
+<button class="button confirm">Confirm Booking</button>
+
+</div>
+
+</div>
+</div>
+
+<script>
+function toggleBooking(){
+ document.getElementById("booking").classList.toggle("open");
+}
+
+const slots=["10:00 AM","10:30 AM","11:00 AM","11:30 AM",
+"12:00 PM","12:30 PM","1:00 PM","1:30 PM",
+"2:00 PM","2:30 PM","3:00 PM","3:30 PM",
+"4:00 PM","4:30 PM","5:00 PM"];
+
+const box=document.getElementById("times");
+
+slots.forEach(t=>{
+ let d=document.createElement("div");
+ d.className="time";
+ d.textContent=t;
+ d.onclick=()=>{
+   document.querySelectorAll(".time").forEach(x=>x.classList.remove("active"));
+   d.classList.add("active");
+ };
+ box.appendChild(d);
+});
+
+function updateTime(){
+ const n=new Date();
+ document.getElementById("now").innerText=
+ "Current: "+n.toLocaleString();
+}
+updateTime();
+setInterval(updateTime,1000);
+</script>
 
-      <!-- LOGO REPLACING EVERYTHING -->
-      <div class="logoHeader">
-        <!-- Your uploaded logo is already named logo.png -->
-        <img src="logo.png" alt="Columbus East Tax Services Logo" />
-      </div>
-
-      <div class="infoCard">
-        <div class="infoTitle">Services Offered</div>
-        <ul>
-          <li>W-2 &amp; Individual Tax Returns</li>
-          <li>1099 &amp; Self-Employed Taxes</li>
-          <li>LLC &amp; Small Business Filing</li>
-          <li>Audit Help &amp; IRS Letters</li>
-          <li>Amended Returns (1040-X)</li>
-        </ul>
-      </div>
-
-      <div class="btnGrid">
-        <a class="btn call" href="tel:6142597625" aria-label="Call Now">📞 Call Now</a>
-        <a class="btn text" href="sms:6142597625" aria-label="Text Us">💬 Text Us</a>
-        <a class="btn email" href="mailto:columbuseast.taxservices@outlook.com" aria-label="Email Us">✉️ Email Us</a>
-        <button class="btn book" id="openBookingBtn" type="button" aria-label="Book Appointment">🗓️ Book Us</button>
-      </div>
-
-      <div class="tinyNote">Tap to call, text, email, or book online</div>
-
-      <div class="statusRow">
-        <span class="badge warn" id="jsBadge">⚙️ JS: loading…</span>
-        <span class="badge warn" id="sbBadge">🗄️ Supabase: loading…</span>
-      </div>
-    </div>
-
-    <!-- RIGHT SIDE -->
-    <div class="card" id="rightCard">
-      <div class="rightHeader">
-        <div>
-          <h2>Book an Appointment</h2>
-        </div>
-        <div class="chip" title="Appointment length">60 minutes</div>
-      </div>
-
-      <div class="pillsTop">
-        <div class="pill" id="todayPill"><span class="pico">📅</span><span>Today: —</span></div>
-        <div class="pill" id="timePill"><span class="pico">🕒</span><span>Current Time: —</span></div>
-      </div>
-
-      <!-- Collapsible booking panel -->
-      <div class="accordion">
-        <button class="accHead" id="accToggle" type="button" aria-expanded="false">
-          <div class="left">
-            <div class="title">Appointment Details</div>
-            <div class="sub" id="accSub">Click to open booking form</div>
-          </div>
-          <div class="chev" id="chev">▾</div>
-        </button>
-
-        <div class="accBody" id="accBody">
-          <div class="grid2">
-            <div>
-              <label for="fullName">Full Name</label>
-              <input id="fullName" type="text" placeholder="Your name" autocomplete="name" />
-            </div>
-            <div>
-              <label for="email">Email Address</label>
-              <input id="email" type="email" placeholder="you@email.com" autocomplete="email" />
-            </div>
-
-            <div>
-              <label for="service">Select Service</label>
-              <select id="service">
-                <option>W-2 / Individual Taxes</option>
-                <option>1099 / Self-Employed Taxes</option>
-                <option>LLC / Small Business Filing</option>
-                <option>Audit Help & IRS Letters</option>
-                <option>Amended Returns (1040-X)</option>
-              </select>
-            </div>
-
-            <div>
-              <label for="location">Location</label>
-              <select id="location">
-                <option value="CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213">CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213</option>
-                <option value="CML Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227">CML Barnett Branch — 3434 E Livingston Ave, Columbus, OH 43227</option>
-                <option value="CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068">CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068</option>
-                <option value="CML Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125">CML Southeast Branch — 3980 S Hamilton Rd, Groveport, OH 43125</option>
-
-                <!-- ✅ NEW LOCATION -->
-                <option value="Online / Phone / Text Appointment">Online / Phone / Text Appointment</option>
-              </select>
-            </div>
-
-            <div style="grid-column: 1 / -1;">
-              <label for="datePick">Pick a Date</label>
-              <input id="datePick" type="date" />
-            </div>
-          </div>
-
-          <div class="hours" id="hoursText">
-            Hours:<br/>
-            Mon–Fri: 9:00 AM–8:00 PM (Blocked 2:00–5:00 PM)<br/>
-            Sat: 10:00 AM–6:00 PM<br/>
-            Sun: 12:00 PM–6:00 PM
-          </div>
-
-          <div class="slotsTitle">Available Times</div>
-          <div class="slots" id="slots"></div>
-
-          <button class="confirmBtn" id="confirmBtn" type="button" disabled>🗓️ Confirm Booking</button>
-
-          <div class="msg" id="msg"></div>
-          <div class="afterNote" id="afterNote">Pick a time, then press Confirm Booking.</div>
-
-          <!-- Confirmation card -->
-          <div class="confirmCard" id="confirmCard">
-            <div class="confirmTop">
-              <div class="checkCircle">✓</div>
-              <div>
-                <h3>Booking Confirmed</h3>
-                <div class="small">You are scheduled successfully.</div>
-              </div>
-            </div>
-
-            <div class="confirmGrid" id="confirmGrid"></div>
-
-            <div class="confirmBtns">
-              <button class="btn2 primary" id="bookAnotherBtn" type="button">🗓️ Book Another Appointment</button>
-              <button class="btn2 dark" id="backTopBtn" type="button">↑ Back to Top</button>
-            </div>
-
-            <div class="helpLine">Need changes? Call or text us anytime.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    // =========================
-    // SUPABASE CONFIG
-    // =========================
-    const SUPABASE_URL = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
-
-    const sbBadge = document.getElementById("sbBadge");
-    const jsBadge = document.getElementById("jsBadge");
-
-    let supa = null;
-    try{
-      supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      sbBadge.className = "badge ok";
-      sbBadge.textContent = "🗄️ Supabase: loaded";
-    }catch(e){
-      sbBadge.className = "badge bad";
-      sbBadge.textContent = "🗄️ Supabase: failed";
-      console.error(e);
-    }
-    jsBadge.className = "badge ok";
-    jsBadge.textContent = "⚙️ JS: loaded";
-
-    // =========================
-    // UI ELEMENTS
-    // =========================
-    const todayPill = document.getElementById("todayPill");
-    const timePill = document.getElementById("timePill");
-
-    const openBookingBtn = document.getElementById("openBookingBtn");
-    const accToggle = document.getElementById("accToggle");
-    const accBody = document.getElementById("accBody");
-    const accSub = document.getElementById("accSub");
-    const chev = document.getElementById("chev");
-
-    const fullName = document.getElementById("fullName");
-    const email = document.getElementById("email");
-    const service = document.getElementById("service");
-    const locationSel = document.getElementById("location");
-    const datePick = document.getElementById("datePick");
-
-    const slotsEl = document.getElementById("slots");
-    const confirmBtn = document.getElementById("confirmBtn");
-    const msgEl = document.getElementById("msg");
-    const afterNote = document.getElementById("afterNote");
-
-    const confirmCard = document.getElementById("confirmCard");
-    const confirmGrid = document.getElementById("confirmGrid");
-    const bookAnotherBtn = document.getElementById("bookAnotherBtn");
-    const backTopBtn = document.getElementById("backTopBtn");
-
-    // =========================
-    // HELPERS
-    // =========================
-    const TZ = "America/New_York";
-    const SLOT_STEP_MIN = 30;
-    const APPT_MIN = 60;
-
-    function pad(n){ return String(n).padStart(2,"0"); }
-    function toYMD(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
-
-    function parseYMD(ymd){
-      const [y,m,d] = ymd.split("-").map(Number);
-      const dt = new Date();
-      dt.setFullYear(y, m-1, d);
-      dt.setHours(0,0,0,0);
-      return dt;
-    }
-
-    function fmtToday(d){
-      return new Intl.DateTimeFormat("en-US", {
-        timeZone: TZ, weekday:"long", month:"long", day:"numeric", year:"numeric"
-      }).format(d);
-    }
-
-    function fmtTime(d){
-      return new Intl.DateTimeFormat("en-US", {
-        timeZone: TZ, hour:"numeric", minute:"2-digit", second:"2-digit"
-      }).format(d) + " ET";
-    }
-
-    function fmtSlotLabel(dateObj){
-      return new Intl.DateTimeFormat("en-US", {
-        timeZone: TZ, hour:"numeric", minute:"2-digit"
-      }).format(dateObj);
-    }
-
-    function setMsg(type, text){
-      msgEl.style.display = "block";
-      msgEl.className = "msg " + type;
-      msgEl.textContent = text;
-    }
-
-    function clearMsg(){
-      msgEl.style.display = "none";
-      msgEl.textContent = "";
-    }
-
-    function openAccordion(){
-      accBody.classList.add("open");
-      accToggle.setAttribute("aria-expanded","true");
-      accSub.textContent = "Click to collapse booking form";
-      chev.textContent = "▴";
-    }
-
-    function closeAccordion(){
-      accBody.classList.remove("open");
-      accToggle.setAttribute("aria-expanded","false");
-      accSub.textContent = "Click to open booking form";
-      chev.textContent = "▾";
-    }
-
-    function toggleAccordion(){
-      if(accBody.classList.contains("open")) closeAccordion();
-      else openAccordion();
-    }
-
-    // =========================
-    // HOURS / SLOT RULES
-    // =========================
-    function getRulesForDay(d){
-      const dow = d.getDay(); // 0 Sun .. 6 Sat
-      if(dow >= 1 && dow <= 5){
-        return [
-          [9*60, 14*60],
-          [17*60, 20*60],
-        ];
-      }
-      if(dow === 6){
-        return [[10*60, 18*60]];
-      }
-      return [[12*60, 18*60]];
-    }
-
-    function buildSlotsForDate(ymd){
-      const day = parseYMD(ymd);
-      const rules = getRulesForDay(day);
-      const slots = [];
-
-      for(const [startMin, endMin] of rules){
-        for(let m = startMin; m <= (endMin - APPT_MIN); m += SLOT_STEP_MIN){
-          const dt = new Date(day);
-          dt.setHours(0,0,0,0);
-          dt.setMinutes(m);
-          slots.push(dt);
-        }
-      }
-      return slots;
-    }
-
-    // =========================
-    // LOAD BOOKED TIMES
-    // =========================
-    let selectedSlotISO = null;
-
-    async function fetchBookedSetForDay(dayYMD, locationValue){
-      if(!supa) return new Set();
-
-      const dayStart = parseYMD(dayYMD);
-      const dayEnd = new Date(dayStart);
-      dayEnd.setDate(dayEnd.getDate()+1);
-
-      const { data, error } = await supa
-        .from("appointments")
-        .select("start_time, status, location")
-        .gte("start_time", dayStart.toISOString())
-        .lt("start_time", dayEnd.toISOString())
-        .eq("location", locationValue);
-
-      if(error){
-        console.warn(error);
-        return new Set();
-      }
-
-      const set = new Set();
-      (data || []).forEach(r => {
-        const st = (r.status || "confirmed").toLowerCase();
-        if(st !== "cancelled" && r.start_time){
-          set.add(new Date(r.start_time).toISOString());
-        }
-      });
-      return set;
-    }
-
-    async function renderSlots(){
-      clearMsg();
-      confirmBtn.disabled = true;
-      selectedSlotISO = null;
-
-      const dayYMD = datePick.value;
-      if(!dayYMD){
-        slotsEl.innerHTML = "";
-        afterNote.textContent = "Pick a date to see times.";
-        return;
-      }
-
-      const loc = locationSel.value;
-      const slots = buildSlotsForDate(dayYMD);
-
-      if(!slots.length){
-        slotsEl.innerHTML = "";
-        afterNote.textContent = "No available times for this day.";
-        return;
-      }
-
-      afterNote.textContent = "Pick a time, then press Confirm Booking.";
-      const bookedSet = await fetchBookedSetForDay(dayYMD, loc);
-
-      slotsEl.innerHTML = "";
-      slots.forEach(dt => {
-        const iso = dt.toISOString();
-        const label = fmtSlotLabel(dt);
-
-        const div = document.createElement("div");
-        div.className = "slot";
-        div.textContent = label;
-
-        const isBooked = bookedSet.has(iso);
-        if(isBooked){
-          div.classList.add("disabled");
-        }else{
-          div.addEventListener("click", () => {
-            [...slotsEl.querySelectorAll(".slot")].forEach(s => s.classList.remove("selected"));
-            div.classList.add("selected");
-            selectedSlotISO = iso;
-            confirmBtn.disabled = false;
-          });
-        }
-
-        slotsEl.appendChild(div);
-      });
-    }
-
-    // =========================
-    // BOOKING (INSERT)
-    // =========================
-    function endTimeISO(startISO){
-      const d = new Date(startISO);
-      d.setMinutes(d.getMinutes() + APPT_MIN);
-      return d.toISOString();
-    }
-
-    function niceDateTime(iso){
-      return new Intl.DateTimeFormat("en-US", {
-        timeZone: TZ,
-        weekday:"short",
-        month:"short",
-        day:"numeric",
-        year:"numeric",
-        hour:"numeric",
-        minute:"2-digit"
-      }).format(new Date(iso));
-    }
-
-    function escapeHtml(s){
-      return String(s || "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    function showConfirmationCard(payload){
-      confirmGrid.innerHTML = `
-        <div class="cbox">
-          <div class="k">Client</div>
-          <div class="v">${escapeHtml(payload.client_name || "")}</div>
-        </div>
-        <div class="cbox">
-          <div class="k">Email</div>
-          <div class="v">${escapeHtml(payload.client_email || "")}</div>
-        </div>
-        <div class="cbox">
-          <div class="k">Date &amp; Time</div>
-          <div class="v">${escapeHtml(niceDateTime(payload.start_time))}</div>
-        </div>
-        <div class="cbox">
-          <div class="k">Service</div>
-          <div class="v">${escapeHtml(payload.service || "")}</div>
-        </div>
-        <div class="cbox" style="grid-column: 1 / -1;">
-          <div class="k">Location</div>
-          <div class="v">${escapeHtml(payload.location || "")}</div>
-        </div>
-        <div class="cbox">
-          <div class="k">Status</div>
-          <div class="v"><span class="statusPill">Confirmed ✓</span></div>
-        </div>
-      `;
-      confirmCard.style.display = "block";
-    }
-
-    function hideConfirmationCard(){
-      confirmCard.style.display = "none";
-      confirmGrid.innerHTML = "";
-    }
-
-    async function book(){
-      clearMsg();
-
-      if(!supa){
-        setMsg("bad", "Supabase is not ready.");
-        return;
-      }
-
-      const name = (fullName.value || "").trim();
-      const em = (email.value || "").trim();
-      const svc = service.value;
-      const loc = locationSel.value;
-      const dayYMD = datePick.value;
-
-      if(!name || !em){
-        setMsg("bad", "Please enter your full name and email.");
-        return;
-      }
-      if(!dayYMD){
-        setMsg("bad", "Please pick a date.");
-        return;
-      }
-      if(!selectedSlotISO){
-        setMsg("bad", "Please select a time.");
-        return;
-      }
-
-      confirmBtn.disabled = true;
-      setMsg("warn", "Booking…");
-
-      const start_time = selectedSlotISO;
-      const end_time = endTimeISO(start_time);
-
-      const { error } = await supa
-        .from("appointments")
-        .insert([{
-          client_name: name,
-          client_email: em,
-          service: svc,
-          location: loc,
-          start_time,
-          end_time,
-          status: "confirmed"
-        }]);
-
-      if(error){
-        console.warn(error);
-        setMsg("bad", error.message || "Booking failed.");
-        confirmBtn.disabled = false;
-        return;
-      }
-
-      setMsg("ok", "✅ Booking confirmed!");
-      afterNote.textContent = "✅ Confirmed. If you need changes, call or text us.";
-
-      showConfirmationCard({
-        client_name: name,
-        client_email: em,
-        service: svc,
-        location: loc,
-        start_time,
-        status: "confirmed"
-      });
-
-      await renderSlots();
-    }
-
-    // =========================
-    // CURRENT DATE/TIME (LIVE)
-    // =========================
-    function tick(){
-      const now = new Date();
-      todayPill.innerHTML = `<span class="pico">📅</span><span>Today: ${escapeHtml(fmtToday(now))}</span>`;
-      timePill.innerHTML = `<span class="pico">🕒</span><span>Current Time: ${escapeHtml(fmtTime(now))}</span>`;
-    }
-
-    // =========================
-    // EVENTS
-    // =========================
-    accToggle.addEventListener("click", toggleAccordion);
-
-    openBookingBtn.addEventListener("click", () => {
-      openAccordion();
-      document.getElementById("rightCard").scrollIntoView({ behavior:"smooth", block:"start" });
-    });
-
-    datePick.addEventListener("change", () => {
-      hideConfirmationCard();
-      renderSlots();
-    });
-
-    locationSel.addEventListener("change", () => {
-      hideConfirmationCard();
-      renderSlots();
-    });
-
-    confirmBtn.addEventListener("click", book);
-
-    bookAnotherBtn.addEventListener("click", () => {
-      hideConfirmationCard();
-      clearMsg();
-      selectedSlotISO = null;
-      confirmBtn.disabled = true;
-      [...slotsEl.querySelectorAll(".slot")].forEach(s => s.classList.remove("selected"));
-      afterNote.textContent = "Pick a time, then press Confirm Booking.";
-      openAccordion();
-      document.getElementById("rightCard").scrollIntoView({ behavior:"smooth", block:"start" });
-    });
-
-    backTopBtn.addEventListener("click", () => {
-      document.getElementById("leftCard").scrollIntoView({ behavior:"smooth", block:"start" });
-    });
-
-    // =========================
-    // INIT
-    // =========================
-    (function init(){
-      datePick.value = toYMD(new Date());
-      tick();
-      setInterval(tick, 1000);
-      closeAccordion();     // ✅ start hidden like you asked
-      renderSlots();
-    })();
-  </script>
 </body>
 </html>
