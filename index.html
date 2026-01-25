@@ -1,1008 +1,656 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Columbus East Tax Services – Booking</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Columbus East Tax Services</title>
 
-  <style>
-    :root{
-      --bg1:#020617;
-      --bg2:#000000;
+<style>
+  :root{
+    --bg1:#020617;
+    --bg2:#000;
+    --card:#fff;
+    --text:#0f172a;
+    --muted:#475569;
+    --ring:rgba(99,102,241,.25);
 
-      --card:#ffffff;
-      --muted:#64748b;
-      --text:#0f172a;
+    --btnCall:#2563eb;
+    --btnText:#16a34a;
+    --btnEmail:#9333ea;
+    --btnBook:#0f766e;
 
-      --ring:rgba(99,102,241,.35);
-      --shadow:0 30px 80px rgba(0,0,0,.45);
+    --slotBorder:#34d399;
+    --slotBg:#ecfdf5;
 
-      --blue:#2563eb;
-      --green:#16a34a;
-      --purple:#9333ea;
-      --teal:#0f766e;
+    --slotActiveBg:#c7d2fe;
+    --slotActiveBorder:#6366f1;
 
-      --okBg:#dcfce7; --okText:#166534; --okBorder:#86efac;
-      --badBg:#fee2e2; --badText:#991b1b; --badBorder:#fecaca;
-      --warnBg:#fef3c7; --warnText:#92400e; --warnBorder:#fde68a;
+    --slotDisabledBg:#f1f5f9;
+    --slotDisabledBorder:#cbd5e1;
+    --slotDisabledText:#94a3b8;
 
-      --slotBg:#ecfdf5;
-      --slotBorder:#6ee7b7;
-      --slotText:#065f46;
+    --okBg:#dcfce7; --okText:#166534; --okBorder:#86efac;
+    --badBg:#fee2e2; --badText:#991b1b; --badBorder:#fecaca;
+    --warnBg:#fef3c7; --warnText:#92400e; --warnBorder:#fde68a;
+  }
 
-      --slotDisabledBg:#f1f5f9;
-      --slotDisabledBorder:#cbd5e1;
-      --slotDisabledText:#94a3b8;
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+    padding:22px;
+  }
+  .wrap{ max-width:980px; margin:0 auto; }
+  .card{
+    background:var(--card);
+    border-radius:28px;
+    padding:38px 28px;
+    box-shadow:0 34px 85px rgba(0,0,0,.55);
+    text-align:center;
+  }
 
-      --slotSelectedBg:#e0e7ff;
-      --slotSelectedBorder:#6366f1;
-      --slotSelectedText:#111827;
+  .logo{
+    width:360px;
+    max-width:92%;
+    margin:0 auto 14px;
+    display:block;
+  }
 
-      --dayHasApptBg:#dcfce7;
-      --dayHasApptBorder:#86efac;
+  .contact{
+    font-size:22px;
+    font-weight:900;
+    color:#0b1220;
+    line-height:1.5;
+    margin:10px 0 20px;
+  }
 
-      --confirmBlue:#1d4ed8;
-      --cancelRed:#dc2626;
-    }
+  .btn{
+    width:100%;
+    padding:18px;
+    margin:14px 0;
+    border:none;
+    border-radius:18px;
+    font-size:20px;
+    font-weight:900;
+    color:#fff;
+    cursor:pointer;
+    transition:transform .12s ease, opacity .12s ease;
+  }
+  .btn:hover{ transform: translateY(-1px); }
+  .btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(1200px 600px at 20% 0%, rgba(79,70,229,.28), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(16,185,129,.18), transparent 55%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
-      color:#e5e7eb;
-      padding:18px;
-    }
+  .call{ background:var(--btnCall); }
+  .text{ background:var(--btnText); }
+  .email{ background:var(--btnEmail); }
+  .book{ background:var(--btnBook); }
 
-    .wrap{
-      max-width:1100px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap:18px;
-      align-items:start;
-    }
-    @media (max-width: 980px){
-      .wrap{ grid-template-columns:1fr; }
-    }
+  .booking{
+    margin-top:18px;
+    text-align:left;
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .5s ease;
+  }
+  .booking.open{ max-height:2600px; }
 
-    .panel{
-      background:var(--card);
-      color:var(--text);
-      border-radius:26px;
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
+  .section{
+    margin-top:18px;
+    border:1px solid #e5e7eb;
+    border-radius:20px;
+    padding:16px;
+    background:#fff;
+  }
 
-    /* LEFT CARD */
-    .leftPad{ padding:22px 22px 18px; }
-    .logoWrap{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      margin-top:8px;
-      margin-bottom:10px;
-    }
-    .logo{
-      width:min(520px, 92%);
-      height:auto;
-      display:block;
-      image-rendering:auto;
-    }
+  .row{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+  }
+  @media (max-width:720px){
+    .row{ grid-template-columns: 1fr; }
+  }
 
-    .contactCenter{
-      text-align:center;
-      margin-top:10px;
-      margin-bottom:14px;
-    }
-    .phone{
-      font-weight:900;
-      font-size:22px;
-      margin:0;
-      letter-spacing:.2px;
-    }
-    .phone2{
-      font-weight:900;
-      font-size:18px;
-      margin:6px 0 0;
-      letter-spacing:.2px;
-      color:#111827;
-    }
+  label{
+    font-size:13px;
+    font-weight:900;
+    color:#0f172a;
+    display:block;
+    margin:6px 0;
+  }
+  input, select{
+    width:100%;
+    padding:14px 14px;
+    border-radius:14px;
+    border:1px solid #cbd5e1;
+    font-size:16px;
+    outline:none;
+    background:#fff;
+  }
+  input:focus, select:focus{
+    border-color: rgba(99,102,241,.7);
+    box-shadow: 0 0 0 4px var(--ring);
+  }
 
-    .btns{ display:flex; flex-direction:column; gap:14px; padding:0 22px 22px; }
-    .btn{
-      border:none;
-      border-radius:18px;
-      padding:18px 16px;
-      font-size:22px;
-      font-weight:900;
-      cursor:pointer;
-      color:#fff;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:12px;
-      transition: transform .12s ease, filter .12s ease;
-      user-select:none;
-    }
-    .btn:hover{ transform: translateY(-1px); filter:brightness(1.03); }
-    .btn:active{ transform: translateY(0px); }
+  .subline{
+    margin:8px 0 0;
+    color:var(--muted);
+    font-size:14px;
+    font-weight:700;
+  }
+  .now{
+    margin:6px 0 0;
+    font-weight:900;
+    color:#2563eb;
+    font-size:14px;
+  }
 
-    .btn.call{ background: var(--blue); }
-    .btn.text{ background: var(--green); }
-    .btn.email{ background: var(--purple); }
-    .btn.book{ background: var(--teal); }
+  .slotsTitle{
+    margin:14px 0 10px;
+    font-weight:900;
+    color:#0b1220;
+    font-size:16px;
+  }
+  .times{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+    gap:10px;
+  }
+  .slot{
+    padding:14px 12px;
+    border-radius:16px;
+    border:1px solid var(--slotBorder);
+    background:var(--slotBg);
+    cursor:pointer;
+    font-weight:900;
+    color:#065f46;
+    text-align:center;
+    user-select:none;
+    transition:transform .1s ease, box-shadow .1s ease;
+  }
+  .slot:hover{ transform: translateY(-1px); box-shadow:0 10px 18px rgba(0,0,0,.08); }
+  .slot.active{
+    background:var(--slotActiveBg);
+    border-color:var(--slotActiveBorder);
+    color:#1e1b4b;
+    box-shadow: 0 0 0 4px rgba(99,102,241,.18);
+  }
+  .slot.disabled{
+    background:var(--slotDisabledBg);
+    border-color:var(--slotDisabledBorder);
+    color:var(--slotDisabledText);
+    cursor:not-allowed;
+  }
 
-    /* RIGHT / BOOKING CARD */
-    .rightPad{ padding:18px; }
-    .topRow{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
-    }
-    h2{
-      margin:0;
-      font-size:22px;
-      font-weight:900;
-      color:#0f172a;
-    }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:900;
-      border:1px solid #e5e7eb;
-      background:#f8fafc;
-      color:#0f172a;
-      white-space:nowrap;
-    }
+  .confirm{
+    background:#020617;
+    margin-top:16px;
+    border-radius:18px;
+  }
 
-    .pillRow{ display:flex; gap:10px; flex-wrap:wrap; margin:8px 0 14px; }
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:7px 12px;
-      border-radius:999px;
-      font-weight:900;
-      font-size:12px;
-      border:1px solid transparent;
-    }
-    .pill.ok{ background:var(--okBg); color:var(--okText); border-color:var(--okBorder); }
-    .pill.bad{ background:var(--badBg); color:var(--badText); border-color:var(--badBorder); }
-    .pill.warn{ background:var(--warnBg); color:var(--warnText); border-color:var(--warnBorder); }
+  .msg{
+    margin-top:12px;
+    border-radius:14px;
+    padding:12px 12px;
+    font-weight:900;
+    display:none;
+  }
+  .msg.ok{ display:block; background:var(--okBg); color:var(--okText); border:1px solid var(--okBorder); }
+  .msg.bad{ display:block; background:var(--badBg); color:var(--badText); border:1px solid var(--badBorder); }
+  .msg.warn{ display:block; background:var(--warnBg); color:var(--warnText); border:1px solid var(--warnBorder); }
 
-    .muted{ color:var(--muted); font-size:13px; line-height:1.45; }
-
-    .accordion{
-      border:1px solid #e5e7eb;
-      border-radius:18px;
-      overflow:hidden;
-      background:#fff;
-    }
-    .accHeader{
-      padding:14px 14px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      cursor:pointer;
-      user-select:none;
-      background: linear-gradient(180deg, #ffffff, #fbfdff);
-    }
-    .accHeader b{ font-size:14px; }
-    .chev{ font-weight:900; color:#0f172a; }
-
-    .accBody{
-      max-height:0;
-      overflow:hidden;
-      transition:max-height .28s ease;
-    }
-    .accBodyInner{ padding:14px; border-top:1px solid #eef2f7; }
-    .accordion.open .accBody{ max-height: 2400px; }
-
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
-    @media (max-width: 520px){
-      .grid2{ grid-template-columns:1fr; }
-    }
-
-    input, select, button{
-      font: inherit;
-    }
-    label{
-      display:block;
-      font-size:12px;
-      font-weight:900;
-      color:#0f172a;
-      margin-bottom:6px;
-    }
-    .field{
-      width:100%;
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid #d1d5db;
-      outline:none;
-      background:#fff;
-      min-height:44px;
-    }
-    .field:focus{
-      border-color: rgba(79,70,229,.55);
-      box-shadow: 0 0 0 4px var(--ring);
-    }
-
-    .hoursBox{
-      margin-top:10px;
-      border:1px solid #e5e7eb;
-      border-radius:14px;
-      padding:10px 12px;
-      background:#f8fafc;
-    }
-
-    .slotsTitle{
-      margin:12px 0 10px;
-      font-weight:900;
-      color:#0f172a;
-      font-size:14px;
-    }
-    .slots{
-      display:grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap:10px;
-    }
-    @media (max-width: 980px){
-      .slots{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    }
-    @media (max-width: 520px){
-      .slots{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-
-    .slotBtn{
-      border-radius:16px;
-      border:1px solid var(--slotBorder);
-      background: var(--slotBg);
-      color: var(--slotText);
-      padding:14px 10px;
-      font-weight:900;
-      cursor:pointer;
-      transition: transform .1s ease, filter .1s ease;
-    }
-    .slotBtn:hover{ transform: translateY(-1px); filter:brightness(1.02); }
-    .slotBtn:disabled{
-      background: var(--slotDisabledBg);
-      border-color: var(--slotDisabledBorder);
-      color: var(--slotDisabledText);
-      cursor:not-allowed;
-      transform:none;
-      filter:none;
-    }
-    .slotBtn.selected{
-      background: var(--slotSelectedBg);
-      border-color: var(--slotSelectedBorder);
-      color: var(--slotSelectedText);
-      box-shadow: 0 0 0 4px rgba(99,102,241,.15);
-    }
-
-    .cta{
-      width:100%;
-      border:none;
-      border-radius:18px;
-      padding:16px 14px;
-      font-size:18px;
-      font-weight:900;
-      cursor:pointer;
-      color:#fff;
-      background: linear-gradient(135deg, #111827, #0b1220);
-      box-shadow: 0 14px 30px rgba(0,0,0,.14);
-      margin-top:12px;
-    }
-    .cta:disabled{ opacity:.55; cursor:not-allowed; }
-
-    .msg{
-      margin-top:12px;
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid transparent;
-      font-weight:900;
-      font-size:13px;
-    }
-    .msg.ok{ background:var(--okBg); color:var(--okText); border-color:var(--okBorder); }
-    .msg.bad{ background:var(--badBg); color:var(--badText); border-color:var(--badBorder); }
-    .msg.warn{ background:var(--warnBg); color:var(--warnText); border-color:var(--warnBorder); }
-
-    /* Confirmation card */
-    .confirmCard{
-      border:1px solid #e5e7eb;
-      border-radius:20px;
-      padding:14px;
-      background:#fff;
-      margin-top:14px;
-    }
-    .confirmTop{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin-bottom:10px;
-    }
-    .check{
-      width:44px;height:44px;border-radius:16px;
-      display:flex;align-items:center;justify-content:center;
-      background: var(--okBg);
-      border:1px solid var(--okBorder);
-      color: var(--okText);
-      font-weight:900;
-      font-size:22px;
-      flex:0 0 auto;
-    }
-    .confirmTop b{ font-size:20px; color:#0f172a; }
-    .confirmGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-      margin-top:10px;
-    }
-    @media (max-width: 520px){ .confirmGrid{ grid-template-columns:1fr; } }
-    .miniCard{
-      border:1px solid #e5e7eb;
-      border-radius:16px;
-      padding:12px;
-      background:#fff;
-    }
-    .miniLabel{ color:#64748b; font-weight:900; font-size:13px; }
-    .miniVal{ margin-top:6px; font-weight:900; color:#0f172a; }
-
-    .statusPill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
-      font-weight:900;
-      color:#fff;
-      font-size:12px;
-    }
-    .statusConfirmed{ background: var(--confirmBlue); }
-    .statusCancelled{ background: var(--cancelRed); }
-
-    .confirmBtns{
-      display:flex;
-      gap:12px;
-      margin-top:14px;
-      flex-wrap:wrap;
-    }
-    .btnSmall{
-      flex:1;
-      min-width:220px;
-      border:none;
-      border-radius:16px;
-      padding:14px 12px;
-      font-weight:900;
-      cursor:pointer;
-      color:#fff;
-    }
-    .btnAgain{ background: var(--teal); }
-    .btnTop{ background: #111827; }
-
-    .nowLine{
-      margin-top:6px;
-      font-size:12px;
-      color:#334155;
-      font-weight:900;
-    }
-
-    .hidden{ display:none !important; }
-  </style>
+  .confirmCard{
+    display:none;
+    margin-top:18px;
+    border:1px solid #e5e7eb;
+    border-radius:22px;
+    padding:16px;
+    background:#fff;
+  }
+  .confirmCard.show{ display:block; }
+  .confirmHead{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding:10px 10px 14px;
+    border-bottom:1px solid #e5e7eb;
+  }
+  .check{
+    width:44px;height:44px;border-radius:16px;
+    background:var(--okBg);
+    border:1px solid var(--okBorder);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;color:var(--okText);
+    font-size:22px;
+  }
+  .confirmTitle{
+    margin:0;
+    font-size:18px;
+    font-weight:900;
+    color:#0b1220;
+  }
+  .confirmSub{
+    margin:2px 0 0;
+    color:#334155;
+    font-weight:700;
+    font-size:14px;
+  }
+  .grid2{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  @media (max-width:720px){
+    .grid2{ grid-template-columns:1fr; }
+  }
+  .miniBox{
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    padding:12px;
+    background:#fff;
+  }
+  .miniLabel{
+    color:#64748b;
+    font-size:13px;
+    font-weight:900;
+  }
+  .miniVal{
+    color:#0f172a;
+    font-size:15px;
+    font-weight:900;
+    word-break:break-word;
+  }
+</style>
 </head>
 
 <body>
-  <div class="wrap">
+<div class="wrap">
+  <div class="card">
 
-    <!-- LEFT: ACTIONS -->
-    <div class="panel">
-      <div class="leftPad">
-        <div class="logoWrap">
-          <!-- Embedded (compressed) logo -->
-          <img class="logo" alt="Columbus East Tax Services Logo"
-               src="data:image/webp;base64,UklGRsxeAABXRUJQVlA4ILReAABwJgCdASqEBIQAPpE8oUikIiGQJ6iGqdoOQqfJbYp0x8yJ4r0lKxJ0qZk0B7c8rQyOq2u0x8qzW+Z9m8zU3aCk3sV+G2xUeX8rW5O3iQ9dUo2mJfO0j6QKcR3OQ6e2kq7r8E0wJYj3cQe0oZQ8b0v2Ew8w2v9zQyM3p8n2jVv0v7W0m9Zp8s4nGQx5qTtGf8v5vVwqj7w5x8m2c0n1oU8r9pQmS1yqk7i2y0m9c8aT2m4qzGq3zqkEJQ7pKc2xEJw7u8u8o0bQbQm1m3c2m3a0X0l3b2o0g9cB4r9B8k9WkK6wS+7u9nqH7H9B8A8q1lYwz5y4dY7v0bq4r8m2HkHq3VdHf3VvD1m9R6lq9+Qq9o2QhS0o0l8kHfV2y7lJx2dJd0vP5b8bJ7c3w0xJH8y2m9Qf3m+z2gW6nU1sJ7bq2vV8Bv3F5Rr0u0tQ2Gk3PzR3oJt6Oa2TQbqgJ2eH0hHkQW9r2v0Ck2mQZlXj5x0E9xg3cR1l7+Qv8Q8d7h3o0bGQd1+o8mBqvQm1o9i+gXy8A0r6m3eB7vY7W7o7D7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7m7c7l7c7"/>
-        </div>
+    <!-- ⭐ Your RAW GitHub Logo -->
+    <img class="logo" 
+         src="https://raw.githubusercontent.com/sinyalfa/CETS/main/logo1.png"
+         alt="Columbus East Tax Services Logo" />
 
-        <div class="contactCenter">
-          <p class="phone">614-259-7625</p>
-          <p class="phone2">614-599-1185</p>
-        </div>
-      </div>
-
-      <div class="btns">
-        <button class="btn call" id="callBtn" type="button">📞&nbsp; Call Now</button>
-        <button class="btn text" id="textBtn" type="button">💬&nbsp; Text Us</button>
-        <button class="btn email" id="emailBtn" type="button">✉️&nbsp; Email Us</button>
-        <button class="btn book" id="toggleBook" type="button">🗓️&nbsp; Book Appointment</button>
-      </div>
+    <div class="contact">
+      614-259-7625<br>
+      614-599-1185
     </div>
 
-    <!-- RIGHT: BOOKING -->
-    <div class="panel">
-      <div class="rightPad">
-        <div class="topRow">
+    <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
+    <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
+    <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
+
+    <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
+
+    <div id="booking" class="booking">
+      <div class="section">
+
+        <div class="subline">Book an Appointment</div>
+        <div class="now" id="nowLine"></div>
+
+        <div class="row">
           <div>
-            <h2>Book an Appointment</h2>
-            <div class="muted">Pick a date and time. Bookings update live.</div>
-            <div class="nowLine" id="nowLine">Now: —</div>
+            <label>Full Name</label>
+            <input id="fullName" placeholder="Your full name" />
           </div>
-          <div class="badge" title="Duration">⏱️ <span id="durBadge">60 minutes</span></div>
+          <div>
+            <label>Email Address</label>
+            <input id="email" placeholder="you@example.com" />
+          </div>
         </div>
 
-        <div class="pillRow">
-          <span class="pill ok" id="jsPill">JS: loaded</span>
-          <span class="pill warn" id="sbPill">Supabase: connecting…</span>
-        </div>
-
-        <!-- Accordion: hidden until clicked -->
-        <div class="accordion" id="accordion">
-          <div class="accHeader" id="accHeader">
-            <b>Appointment Details</b>
-            <span class="chev" id="chev">+</span>
+        <div class="row">
+          <div>
+            <label>Select Service</label>
+            <select id="service">
+              <option>W-2 / Individual Taxes</option>
+              <option>1099 / Self-Employed Taxes</option>
+              <option>LLC / Small Business Filing</option>
+              <option>Audit Help & IRS Letters</option>
+              <option>Amended Returns (1040-X)</option>
+            </select>
           </div>
 
-          <div class="accBody" id="accBody">
-            <div class="accBodyInner">
+          <div>
+            <label>Location</label>
+            <select id="location">
 
-              <div id="formArea">
-                <div class="grid2">
-                  <div>
-                    <label for="fullName">Full Name</label>
-                    <input class="field" id="fullName" placeholder="Your name" />
-                  </div>
-                  <div>
-                    <label for="email">Email Address</label>
-                    <input class="field" id="email" type="email" placeholder="you@email.com" />
-                  </div>
-                </div>
+              <option>
+                CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213
+              </option>
 
-                <div class="grid2" style="margin-top:12px;">
-                  <div>
-                    <label for="service">Select Service</label>
-                    <select class="field" id="service">
-                      <option>W-2 / Individual Taxes</option>
-                      <option>1099 & Self-Employed Taxes</option>
-                      <option>LLC & Small Business Filing</option>
-                      <option>Audit Help & IRS Letters</option>
-                      <option>Amended Returns (1040-X)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label for="location">Location</label>
-                    <select class="field" id="location">
-                      <option>CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213</option>
-                      <option>CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068</option>
-                      <option>CML Livingston Branch — 3434 E Livingston Ave, Columbus, OH</option>
-                      <option>CML Groveport Branch — 4980 S. Hamilton Rd, Groveport, OH</option>
-                      <option>Online / Phone / Text</option>
-                    </select>
-                  </div>
-                </div>
+              <option>
+                CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068
+              </option>
 
-                <div style="margin-top:12px;">
-                  <label for="datePick">Pick a Date</label>
-                  <input class="field" id="datePick" type="date" />
-                </div>
+              <!-- FIXED new locations -->
+              <option>
+                CML Livingston Branch — 3434 E Livingston Ave, Columbus, OH 43227
+              </option>
 
-                <div class="hoursBox">
-                  <div class="muted" style="font-weight:900; color:#0f172a;">Hours:</div>
-                  <div class="muted" style="color:#334155;">
-                    Mon–Fri: 9:00 AM–8:00 PM (Blocked 2:00–5:00 PM)<br/>
-                    Sat: 10:00 AM–6:00 PM<br/>
-                    Sun: 12:00 PM–6:00 PM
-                  </div>
-                </div>
+              <option>
+                CML Groveport Branch — 4980 S Hamilton Rd, Groveport, OH 43125
+              </option>
 
-                <div class="slotsTitle">Available Times</div>
-                <div class="slots" id="slots"></div>
+              <option>Online / Phone / Text</option>
 
-                <button class="cta" id="confirmBtn" type="button" disabled>Confirm Booking</button>
+            </select>
+          </div>
+        </div>
 
-                <div id="msg" class="msg warn hidden"></div>
-                <div class="muted" style="margin-top:10px;">
-                  You’ll be added to our schedule after confirmation.
-                </div>
-              </div>
+        <div class="row">
+          <div>
+            <label>Pick a Date</label>
+            <input id="date" type="date" />
+          </div>
+          <div>
+            <label>Appointment Length</label>
+            <select id="duration">
+              <option value="60">60 minutes</option>
+            </select>
+          </div>
+        </div>
 
-              <!-- Confirmation -->
-              <div id="confirmArea" class="hidden">
-                <div class="confirmCard">
-                  <div class="confirmTop">
-                    <div class="check">✓</div>
-                    <div>
-                      <b>Booking Confirmed</b>
-                      <div class="muted" style="margin-top:4px;">You are scheduled successfully.</div>
-                    </div>
-                  </div>
+        <div class="slotsTitle">Available Times</div>
+        <div class="times" id="times"></div>
 
-                  <div class="confirmGrid">
-                    <div class="miniCard">
-                      <div class="miniLabel">Client</div>
-                      <div class="miniVal" id="cName">—</div>
-                    </div>
-                    <div class="miniCard">
-                      <div class="miniLabel">Email</div>
-                      <div class="miniVal" id="cEmail">—</div>
-                    </div>
-                    <div class="miniCard">
-                      <div class="miniLabel">Date & Time</div>
-                      <div class="miniVal" id="cWhen">—</div>
-                    </div>
-                    <div class="miniCard">
-                      <div class="miniLabel">Service</div>
-                      <div class="miniVal" id="cService">—</div>
-                    </div>
-                    <div class="miniCard">
-                      <div class="miniLabel">Location</div>
-                      <div class="miniVal" id="cLoc">—</div>
-                    </div>
-                    <div class="miniCard">
-                      <div class="miniLabel">Status</div>
-                      <div class="miniVal">
-                        <span class="statusPill statusConfirmed">Confirmed ✓</span>
-                      </div>
-                    </div>
-                  </div>
+        <button class="btn confirm" id="confirmBtn" disabled>Confirm Booking</button>
 
-                  <div class="confirmBtns">
-                    <button class="btnSmall btnAgain" id="bookAnother" type="button">🗓️ Book Another Appointment</button>
-                    <button class="btnSmall btnTop" id="backTop" type="button">⬆️ Back to Top</button>
-                  </div>
+        <div id="msg" class="msg"></div>
 
-                  <div class="muted" style="margin-top:10px;">
-                    Need changes? Call or text us anytime.
-                  </div>
-                </div>
-              </div>
-
+        <div id="confirmCard" class="confirmCard">
+          <div class="confirmHead">
+            <div class="check">✓</div>
+            <div>
+              <h3 class="confirmTitle">Booking Confirmed!</h3>
+              <div class="confirmSub">Your appointment has been scheduled.</div>
             </div>
           </div>
-        </div><!-- /accordion -->
+
+          <div class="grid2">
+            <div class="miniBox"><div class="miniLabel">Client</div><div class="miniVal" id="cName"></div></div>
+            <div class="miniBox"><div class="miniLabel">Email</div><div class="miniVal" id="cEmail"></div></div>
+            <div class="miniBox"><div class="miniLabel">Date & Time</div><div class="miniVal" id="cWhen"></div></div>
+            <div class="miniBox"><div class="miniLabel">Service</div><div class="miniVal" id="cService"></div></div>
+            <div class="miniBox"><div class="miniLabel">Location</div><div class="miniVal" id="cLoc"></div></div>
+          </div>
+
+        </div>
+
       </div>
     </div>
 
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    // ========= Supabase =========
-    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR"; // publishable anon key
-    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+<!-- ========================= -->
+<!--       JAVASCRIPT        -->
+<!-- ========================= -->
 
-    const sbPill = document.getElementById("sbPill");
-    sbPill.className = "pill warn";
-    sbPill.textContent = "Supabase: loaded";
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
+const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // ========= Helpers =========
-    const TZ = "America/New_York";
-    const pad = (n) => String(n).padStart(2,"0");
 
-    function setMsg(type, text){
-      const el = document.getElementById("msg");
-      el.className = "msg " + (type || "warn");
-      el.textContent = text || "";
-      el.classList.toggle("hidden", !text);
-    }
+// ----------------------
+// BOOKING PANEL TOGGLE
+// ----------------------
+const toggleBtn = document.getElementById("toggleBtn");
+const booking = document.getElementById("booking");
+toggleBtn.onclick = () => {
+  booking.classList.toggle("open");
+  if (booking.classList.contains("open")) {
+    if (!dateEl.value) dateEl.value = todayYMD();
+    refreshAvailability();
+  }
+};
 
-    function parseDateInputToLocalMidnight(dateStr){
-      // dateStr = "YYYY-MM-DD" from input
-      const [y,m,d] = dateStr.split("-").map(Number);
-      const dt = new Date(y, m-1, d, 0,0,0,0);
-      return dt;
-    }
 
-    function niceTime(d){
-      return d.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
-    }
+// ----------------------
+// DATE & TIME UTILS
+// ----------------------
+function pad(n){ return String(n).padStart(2,"0"); }
+function todayYMD(){
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function fmtNice(dt){
+  return new Intl.DateTimeFormat("en-US",{
+    weekday:"short", month:"short", day:"numeric",
+    hour:"numeric", minute:"2-digit"
+  }).format(dt);
+}
+function parseSlotTo24h(slot){
+  const [time,ampm] = slot.split(" ");
+  let [h,m] = time.split(":").map(Number);
+  if(ampm==="PM" && h!==12) h+=12;
+  if(ampm==="AM" && h===12) h=0;
+  return {h,m};
+}
+function makeLocalDateTime(ymdStr, slot){
+  const {h,m} = parseSlotTo24h(slot);
+  const [Y,M,D] = ymdStr.split("-").map(Number);
+  return new Date(Y, M-1, D, h, m, 0);
+}
 
-    function niceDateTime(d){
-      return new Intl.DateTimeFormat("en-US", {
-        timeZone: TZ,
-        weekday:"short", month:"short", day:"2-digit", year:"numeric",
-        hour:"numeric", minute:"2-digit"
-      }).format(d);
-    }
 
-    function nowInTZ(){
-      // approximate "now" in the user's browser, but formatted and compared with local Date
-      // (Ohio is ET; this works fine as long as the browser is in ET)
-      return new Date();
-    }
+// ----------------------
+// CURRENT TIME DISPLAY
+// ----------------------
+function tick(){
+  nowLine.textContent = "Current date & time: " + new Date().toLocaleString();
+}
+tick();
+setInterval(tick,1000);
 
-    function isSameDay(a,b){
-      return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
-    }
 
-    // ========= UI refs =========
-    const callBtn = document.getElementById("callBtn");
-    const textBtn = document.getElementById("textBtn");
-    const emailBtn = document.getElementById("emailBtn");
-    const toggleBook = document.getElementById("toggleBook");
+// ----------------------
+// AVAILABLE SLOTS
+// ----------------------
+const timesBox = document.getElementById("times");
+const confirmBtn = document.getElementById("confirmBtn");
+const msg = document.getElementById("msg");
 
-    const accordion = document.getElementById("accordion");
-    const accHeader = document.getElementById("accHeader");
-    const chev = document.getElementById("chev");
+const slots = [
+  "10:00 AM","10:30 AM","11:00 AM","11:30 AM",
+  "12:00 PM","12:30 PM","01:00 PM","01:30 PM",
+  "02:00 PM","02:30 PM","03:00 PM","03:30 PM",
+  "04:00 PM","04:30 PM","05:00 PM"
+];
 
-    const fullName = document.getElementById("fullName");
-    const email = document.getElementById("email");
-    const service = document.getElementById("service");
-    const locationSel = document.getElementById("location");
-    const datePick = document.getElementById("datePick");
-    const slotsEl = document.getElementById("slots");
-    const confirmBtn = document.getElementById("confirmBtn");
-    const nowLine = document.getElementById("nowLine");
+let selectedSlot = null;
+let bookedTimesSet = new Set();
 
-    const formArea = document.getElementById("formArea");
-    const confirmArea = document.getElementById("confirmArea");
 
-    const cName = document.getElementById("cName");
-    const cEmail = document.getElementById("cEmail");
-    const cWhen = document.getElementById("cWhen");
-    const cService = document.getElementById("cService");
-    const cLoc = document.getElementById("cLoc");
+// -------------------------------
+// FETCH BOOKED SLOTS FOR A DATE
+// -------------------------------
+async function fetchBookedForDate(ymd){
 
-    const bookAnother = document.getElementById("bookAnother");
-    const backTop = document.getElementById("backTop");
+  const start = new Date(ymd+"T00:00:00");
+  const end = new Date(ymd+"T23:59:59");
 
-    // ========= Collapsible booking =========
-    function openBooking(){
-      accordion.classList.add("open");
-      chev.textContent = "–";
-    }
-    function closeBooking(){
-      accordion.classList.remove("open");
-      chev.textContent = "+";
-    }
-    function toggleBooking(){
-      accordion.classList.toggle("open");
-      chev.textContent = accordion.classList.contains("open") ? "–" : "+";
-    }
+  const {data,error} = await supa
+    .from("appointments")
+    .select("start_time,status")
+    .gte("start_time",start.toISOString())
+    .lte("start_time",end.toISOString());
 
-    accHeader.addEventListener("click", toggleBooking);
-    toggleBook.addEventListener("click", () => {
-      openBooking();
-      accordion.scrollIntoView({ behavior:"smooth", block:"start" });
-    });
+  const set = new Set();
 
-    // ========= Contact actions =========
-    callBtn.addEventListener("click", () => {
-      window.location.href = "tel:6142597625";
-    });
-    textBtn.addEventListener("click", () => {
-      window.location.href = "sms:6142597625";
-    });
-    emailBtn.addEventListener("click", () => {
-      window.location.href = "mailto:columbuseast.taxservices@outlook.com";
-    });
+  (data||[]).forEach(row=>{
+    if(row.status==="cancelled") return;
+    const dt = new Date(row.start_time);
+    const t = dt.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",hour12:true}).replace(/^0/,'');
+    set.add(t);
+  });
 
-    // ========= Booking logic =========
-    const DURATION_MIN = 60; // keep 60 minutes
-    let selectedStart = null; // Date
-    let bookedRows = [];      // {start_time,end_time,status,client_email}
-    let liveChannel = null;
+  return set;
+}
 
-    function setDefaultDate(){
-      const n = nowInTZ();
-      const y = n.getFullYear();
-      const m = pad(n.getMonth()+1);
-      const d = pad(n.getDate());
-      datePick.value = `${y}-${m}-${d}`;
-    }
 
-    function buildSlotsForDay(dayMidnight){
-      // Returns array of Date starts in LOCAL time (ET), based on your rules
-      const dow = dayMidnight.getDay(); // 0 Sun ... 6 Sat
-      let startHour, endHour;
+// -------------------------------
+// RENDER SLOTS
+// -------------------------------
+function renderSlots(){
+  timesBox.innerHTML = "";
+  selectedSlot = null;
+  confirmBtn.disabled = true;
 
-      if(dow === 6){ // Sat
-        startHour = 10; endHour = 18;
-      } else if(dow === 0){ // Sun
-        startHour = 12; endHour = 18;
-      } else { // Mon-Fri
-        startHour = 9; endHour = 20;
-      }
+  const d = dateEl.value;
+  if(!d){ msg.textContent="Pick a date."; return; }
 
-      const slots = [];
-      const endLimit = new Date(dayMidnight);
-      endLimit.setHours(endHour, 0, 0, 0);
+  let any = false;
 
-      for(let h=startHour; h<=endHour; h++){
-        for(const mm of [0,30]){
-          const t = new Date(dayMidnight);
-          t.setHours(h, mm, 0, 0);
+  slots.forEach(slot=>{
+    const div = document.createElement("div");
+    div.className="slot";
+    div.textContent=slot;
 
-          // must finish before endHour
-          const tEnd = new Date(t.getTime() + DURATION_MIN*60000);
-          if(tEnd > endLimit) continue;
-
-          // Blocked window (Mon-Fri 2pm-5pm)
-          if(dow>=1 && dow<=5){
-            const blockStart = new Date(dayMidnight); blockStart.setHours(14,0,0,0);
-            const blockEnd   = new Date(dayMidnight); blockEnd.setHours(17,0,0,0);
-            // if the appointment overlaps the blocked period, skip it
-            if(t < blockEnd && tEnd > blockStart) continue;
-          }
-
-          slots.push(t);
-        }
-      }
-      return slots;
-    }
-
-    function overlaps(aStart, aEnd, bStart, bEnd){
-      return aStart < bEnd && aEnd > bStart;
-    }
-
-    function slotIsBooked(slotStart){
-      const slotEnd = new Date(slotStart.getTime() + DURATION_MIN*60000);
-      for(const r of bookedRows){
-        if((r.status || "confirmed").toLowerCase() === "cancelled") continue;
-        const rs = new Date(r.start_time);
-        const re = r.end_time ? new Date(r.end_time) : new Date(rs.getTime() + DURATION_MIN*60000);
-        if(overlaps(slotStart, slotEnd, rs, re)) return true;
-      }
-      return false;
-    }
-
-    function slotIsPast(slotStart){
-      const n = nowInTZ();
-      // if chosen date is today, disable past times
-      return slotStart.getTime() < n.getTime();
-    }
-
-    function renderSlots(dayMidnight){
-      selectedStart = null;
-      confirmBtn.disabled = true;
-
-      const slots = buildSlotsForDay(dayMidnight);
-      slotsEl.innerHTML = "";
-
-      if(!slots.length){
-        slotsEl.innerHTML = `<div class="muted">No slots available for this day.</div>`;
-        return;
-      }
-
-      for(const s of slots){
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "slotBtn";
-        btn.textContent = niceTime(s);
-
-        const disabled = slotIsBooked(s) || slotIsPast(s);
-        btn.disabled = disabled;
-
-        btn.addEventListener("click", () => {
-          // clear previous selection
-          [...slotsEl.querySelectorAll(".slotBtn")].forEach(x => x.classList.remove("selected"));
-          btn.classList.add("selected");
-          selectedStart = s;
-          confirmBtn.disabled = false;
-          setMsg("", "");
-        });
-
-        slotsEl.appendChild(btn);
-      }
-    }
-
-    async function fetchBookedForDay(dayMidnight){
-      const start = new Date(dayMidnight);
-      const end = new Date(dayMidnight);
-      end.setDate(end.getDate()+1);
-
-      const { data, error } = await supa
-        .from("appointments")
-        .select("start_time,end_time,status,client_email")
-        .gte("start_time", start.toISOString())
-        .lt("start_time", end.toISOString());
-
-      if(error){
-        setMsg("bad", "Could not load booked slots: " + error.message);
-        bookedRows = [];
-        return;
-      }
-      bookedRows = data || [];
-    }
-
-    function clearLive(){
-      if(liveChannel){
-        supa.removeChannel(liveChannel);
-        liveChannel = null;
-      }
-    }
-
-    function startLiveForDay(dayMidnight){
-      clearLive();
-
-      const start = new Date(dayMidnight);
-      const end = new Date(dayMidnight);
-      end.setDate(end.getDate()+1);
-
-      liveChannel = supa
-        .channel("live-appointments")
-        .on("postgres_changes",
-          { event:"*", schema:"public", table:"appointments" },
-          async () => {
-            // refresh booked list and rerender slots (keep selection if still valid)
-            const prev = selectedStart ? selectedStart.getTime() : null;
-            await fetchBookedForDay(dayMidnight);
-            renderSlots(dayMidnight);
-
-            if(prev){
-              const btns = [...slotsEl.querySelectorAll(".slotBtn")];
-              for(const b of btns){
-                const t = b.textContent;
-                // reselect by matching the time string (simple + fine)
-                if(!b.disabled && t === new Date(prev).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"}) ){
-                  b.click();
-                  break;
-                }
-              }
-            }
-          }
-        )
-        .subscribe();
-    }
-
-    function validateForm(){
-      const n = (fullName.value || "").trim();
-      const e = (email.value || "").trim();
-      if(n.length < 2) return "Enter your full name.";
-      if(!e || !e.includes("@")) return "Enter a valid email address.";
-      if(!datePick.value) return "Pick a date.";
-      if(!selectedStart) return "Pick a time slot.";
-      return "";
-    }
-
-    async function confirmBooking(){
-      setMsg("warn", "Checking availability…");
-
-      const err = validateForm();
-      if(err){
-        setMsg("bad", err);
-        return;
-      }
-
-      const dayMidnight = parseDateInputToLocalMidnight(datePick.value);
-
-      // Re-fetch before insert (prevents double booking / race)
-      await fetchBookedForDay(dayMidnight);
-
-      const slotStart = selectedStart;
-      const slotEnd = new Date(slotStart.getTime() + DURATION_MIN*60000);
-
-      // 1) prevent booking if slot already taken
-      if(slotIsBooked(slotStart)){
-        setMsg("bad", "That time was just booked. Please pick another time.");
-        renderSlots(dayMidnight);
-        return;
-      }
-
-      // 2) prevent double booking for same client at same time
-      const e = (email.value || "").trim().toLowerCase();
-      const dup = bookedRows.some(r =>
-        (r.client_email || "").toLowerCase() === e &&
-        new Date(r.start_time).getTime() === slotStart.getTime() &&
-        (r.status || "confirmed").toLowerCase() !== "cancelled"
-      );
-      if(dup){
-        setMsg("bad", "You already have a booking for that exact time.");
-        return;
-      }
-
-      setMsg("warn", "Booking…");
-
-      const payload = {
-        client_name: (fullName.value || "").trim(),
-        client_email: e,
-        service: service.value,
-        location: locationSel.value,
-        start_time: slotStart.toISOString(),
-        end_time: slotEnd.toISOString(),
-        status: "confirmed"
+    const taken = bookedTimesSet.has(slot);
+    if(taken){
+      div.classList.add("disabled");
+    } else {
+      any=true;
+      div.onclick=()=>{
+        document.querySelectorAll(".slot").forEach(x=>x.classList.remove("active"));
+        div.classList.add("active");
+        selectedSlot = slot;
+        validateReady();
       };
-
-      const { error } = await supa.from("appointments").insert(payload);
-
-      if(error){
-        setMsg("bad", error.message);
-        return;
-      }
-
-      // Success UI
-      setMsg("", "");
-      showConfirmation(payload);
-      await fetchBookedForDay(dayMidnight);
-      renderSlots(dayMidnight);
     }
 
-    function showConfirmation(payload){
-      formArea.classList.add("hidden");
-      confirmArea.classList.remove("hidden");
+    timesBox.appendChild(div);
+  });
 
-      cName.textContent = payload.client_name || "Client";
-      cEmail.textContent = payload.client_email || "";
-      cWhen.textContent = niceDateTime(new Date(payload.start_time));
-      cService.textContent = payload.service || "";
-      cLoc.textContent = payload.location || "";
+  if(!any) msg.textContent="No available times on this date.";
+  else msg.textContent="Select a time.";
+}
 
-      // Keep the accordion open so they can see it
-      openBooking();
-      confirmArea.scrollIntoView({ behavior:"smooth", block:"start" });
+
+// -------------------------------
+// AUTO REFRESH AVAILABILITY
+// -------------------------------
+async function refreshAvailability(){
+  const d = dateEl.value;
+  bookedTimesSet = await fetchBookedForDate(d);
+  renderSlots();
+}
+
+
+// -------------------------------
+// VALIDATION
+// -------------------------------
+function validateEmail(v){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+function validateReady(){
+  const nameOK = fullNameEl.value.length>1;
+  const emailOK = validateEmail(emailEl.value);
+  confirmBtn.disabled = !(nameOK && emailOK && selectedSlot);
+}
+
+
+// -------------------------------
+// PREVENT DOUBLE BOOKING SAME DAY
+// -------------------------------
+async function clientAlreadyBookedSameDay(email, ymd){
+
+  const start = new Date(ymd+"T00:00:00");
+  const end = new Date(ymd+"T23:59:59");
+
+  const {data,error} = await supa
+    .from("appointments")
+    .select("start_time,status")
+    .eq("client_email",email)
+    .gte("start_time",start.toISOString())
+    .lte("start_time",end.toISOString());
+
+  if((data||[]).length){
+    let row = data[0];
+    if(row.status!=="cancelled"){
+      return {blocked:true};
     }
+  }
+  return {blocked:false};
+}
 
-    function resetToForm(){
-      confirmArea.classList.add("hidden");
-      formArea.classList.remove("hidden");
-      setMsg("", "");
 
-      // Clear selection
-      selectedStart = null;
-      confirmBtn.disabled = true;
-      [...slotsEl.querySelectorAll(".slotBtn")].forEach(x => x.classList.remove("selected"));
-    }
+// -------------------------------
+// CONFIRM BOOKING
+// -------------------------------
+confirmBtn.onclick = async ()=>{
 
-    bookAnother.addEventListener("click", () => {
-      resetToForm();
-      openBooking();
-    });
-    backTop.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior:"smooth" });
-    });
+  const name = fullNameEl.value;
+  const email = emailEl.value.toLowerCase();
+  const service = serviceEl.value;
+  const location = locationEl.value;
+  const d = dateEl.value;
 
-    confirmBtn.addEventListener("click", confirmBooking);
+  // same-day double booking check
+  const dup = await clientAlreadyBookedSameDay(email,d);
+  if(dup.blocked){
+    msg.className="msg bad";
+    msg.textContent="You already have an appointment this day.";
+    return;
+  }
 
-    // ========= Date changes =========
-    async function onDateChange(){
-      setMsg("", "");
-      resetToForm();
+  const startDT = makeLocalDateTime(d,selectedSlot);
+  const endDT = new Date(startDT.getTime()+60*60000);
 
-      if(!datePick.value){
-        slotsEl.innerHTML = "";
-        return;
-      }
+  const {error} = await supa
+    .from("appointments")
+    .insert([{
+      client_name:name,
+      client_email:email,
+      service:service,
+      location:location,
+      start_time:startDT.toISOString(),
+      end_time:endDT.toISOString(),
+      status:"confirmed"
+    }]);
 
-      const dayMidnight = parseDateInputToLocalMidnight(datePick.value);
-      await fetchBookedForDay(dayMidnight);
-      renderSlots(dayMidnight);
-      startLiveForDay(dayMidnight);
-    }
+  if(error){
+    msg.className="msg bad";
+    msg.textContent="Booking failed.";
+    return;
+  }
 
-    datePick.addEventListener("change", onDateChange);
+  msg.className="msg ok";
+  msg.textContent="Appointment confirmed!";
 
-    // ========= Now clock =========
-    function updateNow(){
-      const n = new Date();
-      nowLine.textContent = "Now: " + new Intl.DateTimeFormat("en-US", {
-        timeZone: TZ,
-        weekday:"short", month:"short", day:"2-digit",
-        hour:"numeric", minute:"2-digit", second:"2-digit"
-      }).format(n);
-    }
-    setInterval(updateNow, 1000);
-    updateNow();
+  confirmCard.classList.add("show");
+  cName.textContent=name;
+  cEmail.textContent=email;
+  cWhen.textContent=fmtNice(startDT);
+  cService.textContent=service;
+  cLoc.textContent=location;
 
-    // ========= Init =========
-    (function init(){
-      setDefaultDate();
-      // keep booking closed until they click
-      closeBooking();
-      onDateChange();
-    })();
+  refreshAvailability();
+};
 
-    // Clean up live channel if you leave
-    window.addEventListener("beforeunload", () => clearLive());
-  </script>
+
+// -------------------------------
+// INITIALIZE
+// -------------------------------
+const fullNameEl = document.getElementById("fullName");
+const emailEl = document.getElementById("email");
+const dateEl = document.getElementById("date");
+
+fullNameEl.oninput=validateReady;
+emailEl.oninput=validateReady;
+dateEl.onchange=()=>{
+  refreshAvailability();
+  validateReady();
+};
+
+dateEl.value = todayYMD();
+refreshAvailability();
+
+</script>
 </body>
 </html>
