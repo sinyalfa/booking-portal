@@ -13,11 +13,14 @@
       --muted:#6b7280;
       --text:#0f172a;
       --ring:rgba(99,102,241,.35);
-      --accent:#4f46e5;
 
       --okBg:#dcfce7; --okText:#166534; --okBorder:#86efac;
       --badBg:#fee2e2; --badText:#991b1b; --badBorder:#fecaca;
       --warnBg:#fef3c7; --warnText:#92400e; --warnBorder:#fde68a;
+
+      /* NEW: highlight for days with appointments */
+      --dayHasBg:#dcfce7;        /* light green */
+      --dayHasBorder:#86efac;    /* green border */
     }
 
     *{ box-sizing:border-box; }
@@ -34,13 +37,7 @@
       color:#e5e7eb;
     }
 
-    .wrap{
-      width:100%;
-      max-width:1100px;
-      margin:0 auto;
-      display:grid;
-      gap:14px;
-    }
+    .wrap{ width:100%; max-width:1100px; margin:0 auto; display:grid; gap:14px; }
 
     .card{
       background: var(--card);
@@ -53,13 +50,7 @@
       overflow:hidden;
     }
 
-    .titleRow{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-    }
+    .titleRow{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
 
     .brand{ display:flex; align-items:center; gap:12px; }
     .logo{
@@ -82,14 +73,7 @@
     .pill.bad{ background:var(--badBg); color:var(--badText); border-color:var(--badBorder); }
     .pill.warn{ background:var(--warnBg); color:var(--warnText); border-color:var(--warnBorder); }
 
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      width:100%;
-      min-width:0;
-      margin-top:12px;
-    }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; width:100%; min-width:0; margin-top:12px; }
 
     input, select, button{
       padding:12px 12px;
@@ -142,36 +126,13 @@
       .split{ grid-template-columns:1fr; }
     }
 
-    .calendarHeader{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
+    .calendarHeader{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
     .monthTitle{ font-weight:900; font-size:16px; color:#0f172a; }
 
-    .weekdays{
-      margin-top:10px;
-      display:grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap:8px;
-    }
-    .weekday{
-      text-align:center;
-      font-weight:900;
-      font-size:12px;
-      color:#6b7280;
-    }
+    .weekdays{ margin-top:10px; display:grid; grid-template-columns: repeat(7, 1fr); gap:8px; }
+    .weekday{ text-align:center; font-weight:900; font-size:12px; color:#6b7280; }
 
-    .calGrid{
-      margin-top:8px;
-      display:grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap:8px;
-      width:100%;
-      max-width:100%;
-    }
+    .calGrid{ margin-top:8px; display:grid; grid-template-columns: repeat(7, 1fr); gap:8px; width:100%; max-width:100%; }
 
     .dayCell{
       border:1px solid #e5e7eb;
@@ -185,6 +146,13 @@
     }
     .dayCell:hover{ transform: translateY(-1px); box-shadow:0 12px 22px rgba(0,0,0,.08); }
     .dayCell.dim{ opacity:.35; cursor:default; }
+
+    /* NEW: light green highlight */
+    .dayCell.hasAppts{
+      background: var(--dayHasBg);
+      border-color: var(--dayHasBorder);
+    }
+
     .dayNum{
       font-weight:900;
       font-size:13px;
@@ -228,9 +196,6 @@
     .apptName{ font-weight:900; color:#111827; font-size:14px; margin:0; }
     .apptMeta{ font-size:13px; color:#334155; line-height:1.5; margin-top:6px; }
     .apptMeta b{ color:#111827; }
-    .statusDot{ width:10px;height:10px;border-radius:999px; display:inline-block; margin-right:6px; vertical-align:middle; }
-    .dotOk{ background:#22c55e; }
-    .dotBad{ background:#ef4444; }
 
     .overlay{
       position:fixed; inset:0;
@@ -308,6 +273,7 @@
           <div>
             <h1>Admin Dashboard</h1>
             <div class="muted" id="whoami">Not signed in</div>
+            <div class="muted" id="debugLine" style="margin-top:4px;"></div>
           </div>
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -324,8 +290,8 @@
           <option value="cancelled">Cancelled</option>
         </select>
         <select id="rangeFilter" aria-label="Range filter">
-          <option value="month">This month</option>
-          <option value="90">Last 90 days + future</option>
+          <option value="90" selected>Last 90 days + future</option>
+          <option value="month">This month only</option>
         </select>
       </div>
 
@@ -348,7 +314,7 @@
           <div class="calGrid" id="calGrid"></div>
 
           <div class="muted" style="margin-top:10px;">
-            Color Key: <span class="badge ok">Confirmed</span> <span class="badge bad">Cancelled</span>
+            Days with appointments are highlighted <span class="badge ok">Light Green</span>.
           </div>
         </div>
 
@@ -371,21 +337,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ========= Supabase =========
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
 
-    // IMPORTANT: keep sessions so admin stays logged in on refresh
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey, {
       auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
     });
 
-    // ========= Auth UI =========
     const overlay = document.getElementById("overlay");
-    const authTitle = document.getElementById("authTitle");
     const authStatus = document.getElementById("authStatus");
     const resetStatus = document.getElementById("resetStatus");
-
     const loginBox = document.getElementById("loginBox");
     const resetBox = document.getElementById("resetBox");
 
@@ -399,10 +360,10 @@
     const backToLoginBtn = document.getElementById("backToLoginBtn");
 
     const whoami = document.getElementById("whoami");
+    const debugLine = document.getElementById("debugLine");
     const refreshBtn = document.getElementById("refreshBtn");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    // ========= App UI =========
     const searchBox = document.getElementById("searchBox");
     const statusFilter = document.getElementById("statusFilter");
     const rangeFilter = document.getElementById("rangeFilter");
@@ -448,16 +409,13 @@
       overlay.style.display = "flex";
       loginBox.style.display = "block";
       resetBox.style.display = "none";
-      authTitle.textContent = "Admin Login";
       authStatus.textContent = "";
       resetStatus.textContent = "";
     }
-
     function showReset(){
       overlay.style.display = "flex";
       loginBox.style.display = "none";
       resetBox.style.display = "block";
-      authTitle.textContent = "Reset Password";
       authStatus.textContent = "";
       resetStatus.textContent = "";
     }
@@ -469,14 +427,15 @@
       if(user){
         overlay.style.display = "none";
         whoami.textContent = `Signed in as ${user.email}`;
+        debugLine.textContent = `DEBUG: role=authenticated | email=${user.email}`;
         await loadMonthData();
       } else {
         whoami.textContent = "Not signed in";
+        debugLine.textContent = "";
         showLogin();
       }
     }
 
-    // ========= Auth Actions =========
     loginBtn.addEventListener("click", async () => {
       authStatus.innerHTML = pill("warn", "Signing in…");
       const email = (emailEl.value || "").trim();
@@ -501,7 +460,6 @@
 
       const redirectTo = window.location.origin + window.location.pathname;
       const { error } = await supa.auth.resetPasswordForEmail(email, { redirectTo });
-
       if(error){
         authStatus.innerHTML = pill("bad", error.message);
         return;
@@ -527,13 +485,9 @@
     });
 
     backToLoginBtn.addEventListener("click", showLogin);
+    logoutBtn.addEventListener("click", async () => { await supa.auth.signOut(); showLogin(); });
 
-    logoutBtn.addEventListener("click", async () => {
-      await supa.auth.signOut();
-      showLogin();
-    });
-
-    // ========= Calendar Data =========
+    // ========= Data =========
     let currentMonth = new Date();
     currentMonth.setDate(1);
     currentMonth.setHours(0,0,0,0);
@@ -553,8 +507,8 @@
       footerNote.innerHTML = pill("warn", "Loading…");
 
       const mode = rangeFilter.value;
-
       let start, end;
+
       if(mode === "90"){
         start = new Date();
         start.setDate(start.getDate() - 90);
@@ -575,24 +529,15 @@
         .order("start_time", { ascending:true });
 
       if(error){
-        console.warn(error);
         footerNote.innerHTML =
-          pill("bad", "Access error") +
-          " " +
-          escapeHtml(error.message) +
-          "<br/><br/>Most common cause: your RLS admin policy only allows one email. Make sure you're logged in with the allowed admin email (or use the admin_users allowlist fix).";
+          pill("bad", "Access error") + " " + escapeHtml(error.message);
         return [];
       }
 
       const rows = data || [];
-      if(rows.length === 0){
-        footerNote.innerHTML =
-          pill("warn", "Loaded 0 appointments") +
-          " Try switching months / range. If Supabase has rows but admin shows 0, your admin RLS policy is filtering them (email mismatch).";
-      } else {
-        footerNote.innerHTML = pill("ok", `Loaded ${rows.length} appointment(s)`);
-      }
-
+      footerNote.innerHTML = rows.length
+        ? pill("ok", `Loaded ${rows.length} appointment(s)`)
+        : pill("warn", "Loaded 0 appointments");
       return rows;
     }
 
@@ -638,16 +583,21 @@
         const isToday = ymd(cellDate) === ymd(new Date());
         const isSelected = selectedDay && ymd(cellDate) === ymd(selectedDay);
 
-        const box = document.createElement("div");
-        box.className = "dayCell" + (!isCurrent ? " dim" : "");
-        box.style.borderColor = isSelected ? "rgba(79,70,229,.55)" : "#e5e7eb";
-        box.style.boxShadow = isSelected ? "0 0 0 4px rgba(99,102,241,.20)" : "none";
-
         const confirmed = entry ? entry.confirmed : 0;
         const cancelled = entry ? entry.cancelled : 0;
+        const total = confirmed + cancelled;
 
-        const badgeHtml = (confirmed + cancelled) > 0
-          ? `<span class="badge ${confirmed>0 ? "ok" : "bad"}">${confirmed + cancelled}</span>`
+        const box = document.createElement("div");
+        box.className = "dayCell" + (!isCurrent ? " dim" : "") + (total > 0 ? " hasAppts" : "");
+
+        // Selected styling always wins
+        if(isSelected){
+          box.style.borderColor = "rgba(79,70,229,.55)";
+          box.style.boxShadow = "0 0 0 4px rgba(99,102,241,.20)";
+        }
+
+        const badgeHtml = total > 0
+          ? `<span class="badge ${confirmed>0 ? "ok" : "bad"}">${total}</span>`
           : (isToday ? `<span class="badge">Today</span>` : `<span class="badge">—</span>`);
 
         const mini = entry && entry.items.length
@@ -725,11 +675,8 @@
 
       apptList.innerHTML = dayRows.map(r => {
         const status = (r.status || "confirmed").toLowerCase();
-        const dot = status === "cancelled" ? "dotBad" : "dotOk";
-        const pillHtml = status === "cancelled"
-          ? `<span class="pill bad"><span class="statusDot ${dot}"></span>Cancelled</span>`
-          : `<span class="pill ok"><span class="statusDot ${dot}"></span>Confirmed</span>`;
-
+        const label = status === "cancelled" ? "Cancelled" : "Confirmed";
+        const pillCls = status === "cancelled" ? "pill bad" : "pill ok";
         const time = fmtNice(r.start_time);
 
         return `
@@ -744,7 +691,7 @@
                   <div><b>Email:</b> ${escapeHtml(r.client_email || "")}</div>
                 </div>
               </div>
-              <div>${pillHtml}</div>
+              <div><span class="${pillCls}">${label}</span></div>
             </div>
           </div>
         `;
@@ -756,7 +703,6 @@
         selectedDay = new Date();
         selectedDay.setHours(0,0,0,0);
       }
-
       allRows = await fetchAppointments();
       buildCalendarGrid(currentMonth, summarizeByDay(allRows));
       renderDayList();
@@ -786,21 +732,19 @@
     statusFilter.addEventListener("change", renderDayList);
     rangeFilter.addEventListener("change", loadMonthData);
 
-    // ========= Handle "recovery" reset links =========
     async function init(){
-      if (window.location.hash.includes("recovery")) {
-        showReset();
-      }
-
+      if (window.location.hash.includes("recovery")) showReset();
       await setOverlayBySession();
 
       supa.auth.onAuthStateChange(async (_event, session) => {
         if(session?.user){
           overlay.style.display = "none";
           whoami.textContent = `Signed in as ${session.user.email}`;
+          debugLine.textContent = `DEBUG: role=authenticated | email=${session.user.email}`;
           await loadMonthData();
         } else {
           whoami.textContent = "Not signed in";
+          debugLine.textContent = "";
           showLogin();
         }
       });
