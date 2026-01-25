@@ -20,33 +20,36 @@ body{
 
 .card{
   background:#fff;
-  border-radius:24px;
+  border-radius:26px;
   padding:40px 30px;
-  box-shadow:0 30px 60px rgba(0,0,0,.45);
+  box-shadow:0 30px 70px rgba(0,0,0,.5);
   text-align:center;
 }
 
 /* LOGO */
 .logo{
-  width:320px;
+  width:340px;
   max-width:90%;
-  margin:0 auto 25px;
+  margin:0 auto 20px;
   display:block;
 }
 
+/* CONTACT */
 .contact{
-  font-size:20px;
-  margin-bottom:22px;
+  font-size:22px;
+  font-weight:700;
+  line-height:1.5;
+  margin-bottom:24px;
 }
 
 .btn{
   width:100%;
   padding:18px;
-  margin:12px 0;
+  margin:14px 0;
   border:none;
-  border-radius:16px;
+  border-radius:18px;
   font-size:20px;
-  font-weight:700;
+  font-weight:800;
   color:white;
   cursor:pointer;
 }
@@ -57,10 +60,10 @@ body{
 .book{background:#0f766e}
 
 .booking{
-  margin-top:25px;
+  margin-top:26px;
   max-height:0;
   overflow:hidden;
-  transition:.4s ease;
+  transition:.45s ease;
 }
 
 .booking.open{
@@ -98,7 +101,7 @@ input,select{
 
 .confirm{
   background:#020617;
-  margin-top:20px;
+  margin-top:22px;
 }
 
 .now{
@@ -114,12 +117,13 @@ input,select{
 <div class="wrap">
 <div class="card">
 
-<!-- BASE64 LOGO (clear + visible) -->
-<img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAGQCAYAAACAvzbMAAAACXBIWXMAAAsSAAALEgHS3X78AAAFZElEQVR4nO3dMQEAAAgDINc/9K3hHBQgQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4N8E7gABq2PpFAAAAABJRU5ErkJggg==" />
+<!-- LOGO -->
+<img class="logo" src="logo.png" alt="Columbus East Tax Services">
 
+<!-- PHONE NUMBERS -->
 <div class="contact">
-<strong>614-259-7625</strong><br>
-columbuseast.taxservices@outlook.com
+614-259-7625<br>
+614-599-1185
 </div>
 
 <button class="btn call">📞 Call Now</button>
@@ -127,6 +131,7 @@ columbuseast.taxservices@outlook.com
 <button class="btn email">✉️ Email Us</button>
 <button class="btn book" onclick="toggle()">📅 Book Appointment</button>
 
+<!-- BOOKING SECTION -->
 <div id="book" class="booking">
 
 <div class="now" id="now"></div>
@@ -184,8 +189,8 @@ slots.forEach(t=>{
 });
 
 function clock(){
- document.getElementById("now").innerText=
- "Current: " + new Date().toLocaleString();
+ document.getElementById("now").innerText =
+ "Current date & time: " + new Date().toLocaleString();
 }
 clock();
 setInterval(clock,1000);
