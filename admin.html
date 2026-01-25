@@ -1,86 +1,37 @@
-// -------------------------
-// Supabase Client Connection
-// -------------------------
-const supabase = supabase.createClient(
-    "https://YOUR_URL.supabase.co",
-    "YOUR_ANON_KEY"
-);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin – Appointments</title>
+    <link rel="stylesheet" href="admin.css">
 
-// -------------------------
-// Build Calendar
-// -------------------------
-const calendar = document.getElementById("calendar");
-const appointmentsTable = document.getElementById("appointments-table");
-const appointmentsBody = document.getElementById("appointments-body");
-const dayTitle = document.getElementById("day-title");
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
 
-let today = new Date();
-let year = today.getFullYear();
-let month = today.getMonth();
+<body>
 
-buildCalendar(month, year);
+    <h1>Appointment Admin Calendar</h1>
 
-function buildCalendar(month, year) {
-    calendar.innerHTML = "";
+    <div id="calendar"></div>
 
-    let firstDay = new Date(year, month, 1).getDay();
-    let daysInMonth = new Date(year, month + 1, 0).getDate();
+    <h2 id="day-title"></h2>
 
-    // Empty slots before the 1st day
-    for (let i = 0; i < firstDay; i++) {
-        const empty = document.createElement("div");
-        empty.className = "day empty";
-        calendar.appendChild(empty);
-    }
+    <table id="appointments-table" style="display:none;">
+        <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Client Email</th>
+                <th>Service</th>
+                <th>Location</th>
+                <th>Start Time</th>
+            </tr>
+        </thead>
+        <tbody id="appointments-body"></tbody>
+    </table>
 
-    // Actual calendar days
-    for (let day = 1; day <= daysInMonth; day++) {
-        const div = document.createElement("div");
-        div.className = "day";
-        div.textContent = day;
-        div.onclick = () => loadAppointments(year, month, day);
-        calendar.appendChild(div);
-    }
-}
+    <!-- LOAD ADMIN.JS LAST -->
+    <script src="admin.js"></script>
 
-// -------------------------
-// Load Appointments for Selected Day
-// -------------------------
-async function loadAppointments(year, month, day) {
-    const date = new Date(year, month, day);
-    const isoDate = date.toISOString().split("T")[0];
-
-    dayTitle.textContent = `Appointments for ${isoDate}`;
-
-    let { data, error } = await supabase
-        .from("appointments")
-        .select("*")
-        .gte("start_time", isoDate + " 00:00")
-        .lte("start_time", isoDate + " 23:59");
-
-    if (error) {
-        console.error("Error:", error);
-        return;
-    }
-
-    appointmentsBody.innerHTML = "";
-    appointmentsTable.style.display = "table";
-
-    if (data.length === 0) {
-        appointmentsBody.innerHTML =
-            `<tr><td colspan="5" style="text-align:center;">No appointments</td></tr>`;
-        return;
-    }
-
-    data.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${row.client_name}</td>
-            <td>${row.client_email}</td>
-            <td>${row.service}</td>
-            <td>${row.location}</td>
-            <td>${row.start_time}</td>
-        `;
-        appointmentsBody.appendChild(tr);
-    });
-}
+</body>
+</html>
