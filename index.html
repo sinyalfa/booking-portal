@@ -62,7 +62,8 @@
     font-weight:900;
     color:#0b1220;
     line-height:1.5;
-    margin:10px 0 20px;
+    margin:10px auto 20px;
+    text-align:center;
   }
 
   .btn{
@@ -268,15 +269,13 @@
 <div class="wrap">
   <div class="card">
 
-    <!-- ⭐ Your RAW GitHub Logo -->
+    <!-- ⭐ RAW GITHUB LOGO -->
     <img class="logo" 
          src="https://raw.githubusercontent.com/sinyalfa/CETS/main/logo1.png"
          alt="Columbus East Tax Services Logo" />
 
-    <div class="contact">
-      614-259-7625<br>
-      614-599-1185
-    </div>
+    <!-- ⭐ CENTERED LIVE DATE & TIME -->
+    <div class="contact" id="liveDateTime"></div>
 
     <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
     <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
@@ -316,26 +315,11 @@
           <div>
             <label>Location</label>
             <select id="location">
-
-              <option>
-                CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213
-              </option>
-
-              <option>
-                CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068
-              </option>
-
-              <!-- FIXED new locations -->
-              <option>
-                CML Livingston Branch — 3434 E Livingston Ave, Columbus, OH 43227
-              </option>
-
-              <option>
-                CML Groveport Branch — 4980 S Hamilton Rd, Groveport, OH 43125
-              </option>
-
+              <option>CML Whitehall Branch — 4445 E Broad St, Columbus, OH 43213</option>
+              <option>CML Reynoldsburg Branch — 1402 Brice Rd, Reynoldsburg, OH 43068</option>
+              <option>CML Livingston Branch — 3434 E Livingston Ave, Columbus, OH 43227</option>
+              <option>CML Groveport Branch — 4980 S Hamilton Rd, Groveport, OH 43125</option>
               <option>Online / Phone / Text</option>
-
             </select>
           </div>
         </div>
@@ -390,10 +374,37 @@
 <!-- ========================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
 const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
 const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+
+// ----------------------
+// LIVE CENTERED DATE & TIME
+// ----------------------
+function updateContactTime() {
+  const box = document.getElementById("liveDateTime");
+  const now = new Date();
+
+  const dateStr = now.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric"
+  });
+
+  const timeStr = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+
+  box.innerHTML = `${dateStr}<br>${timeStr}`;
+}
+
+updateContactTime();
+setInterval(updateContactTime, 1000);
 
 
 // ----------------------
@@ -439,7 +450,7 @@ function makeLocalDateTime(ymdStr, slot){
 
 
 // ----------------------
-// CURRENT TIME DISPLAY
+// Auto-updating header time
 // ----------------------
 function tick(){
   nowLine.textContent = "Current date & time: " + new Date().toLocaleString();
@@ -466,9 +477,9 @@ let selectedSlot = null;
 let bookedTimesSet = new Set();
 
 
-// -------------------------------
+// ---------------------------------
 // FETCH BOOKED SLOTS FOR A DATE
-// -------------------------------
+// ---------------------------------
 async function fetchBookedForDate(ymd){
 
   const start = new Date(ymd+"T00:00:00");
@@ -555,9 +566,9 @@ function validateReady(){
 }
 
 
-// -------------------------------
+// --------------------------------
 // PREVENT DOUBLE BOOKING SAME DAY
-// -------------------------------
+// --------------------------------
 async function clientAlreadyBookedSameDay(email, ymd){
 
   const start = new Date(ymd+"T00:00:00");
@@ -591,7 +602,6 @@ confirmBtn.onclick = async ()=>{
   const location = locationEl.value;
   const d = dateEl.value;
 
-  // same-day double booking check
   const dup = await clientAlreadyBookedSameDay(email,d);
   if(dup.blocked){
     msg.className="msg bad";
