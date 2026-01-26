@@ -1,166 +1,1073 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Columbus East Tax Services – Booking</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Columbus East Tax Services – Booking Portal (Design)</title>
 
-<style>
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background:#0f172a;
-  color:#0f172a;
-  display:flex;
-  justify-content:center;
-  padding:40px;
-}
+  <style>
+    /* ============================================================
+       1) GLOBAL RESETS + VARIABLES
+       ============================================================ */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --galaxy-hue: 220;
 
-.card {
-  background:#fff;
-  padding:24px;
-  max-width:520px;
-  width:100%;
-  border-radius:18px;
-  box-shadow:0 30px 70px rgba(0,0,0,.5);
-}
+      --glass: rgba(170, 215, 255, 0.18);
+      --glass-2: rgba(210, 235, 255, 0.24);
+      --glass-border: rgba(210, 235, 255, 0.40);
+      --shadow: 0 34px 96px rgba(0, 0, 0, 0.62);
 
-h1 { margin-bottom:12px }
+      --text: #0b1220;
+      --muted: #64748b;
 
-input, select, button {
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border-radius:10px;
-  border:1px solid #cbd5e1;
-  font-size:15px;
-}
+      --ring: rgba(96, 165, 250, 0.45);
 
-button {
-  background:#020617;
-  color:#fff;
-  font-weight:900;
-  border:none;
-  cursor:pointer;
-}
+      --btn-call: #2563eb;
+      --btn-text: #16a34a;
+      --btn-email: #9333ea;
+      --btn-book: #0f766e;
 
-button:disabled { opacity:.6 }
+      --chip-bg: rgba(255,255,255,0.75);
+      --chip-border: rgba(148,163,184,0.35);
 
-.msg {
-  margin-top:10px;
-  padding:10px;
-  border-radius:10px;
-  font-weight:700;
-  display:none;
-}
+      --slot-border: rgba(16,185,129,0.65);
+      --slot-bg: rgba(236,253,245,0.95);
+      --slot-text: #065f46;
 
-.ok { background:#dcfce7; color:#166534 }
-.bad { background:#fee2e2; color:#991b1b }
-</style>
+      --slot-active-bg: rgba(199,210,254,0.95);
+      --slot-active-border: rgba(99,102,241,0.95);
+      --slot-active-text: #1e1b4b;
+
+      --slot-disabled-bg: rgba(241,245,249,0.95);
+      --slot-disabled-border: rgba(203,213,225,0.95);
+      --slot-disabled-text: #94a3b8;
+
+      --clock-anim-speed: 2.4s;
+      --radius: 26px;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      background: radial-gradient(circle at 30% 20%, #0b1a3c, #020617 70%);
+      transition: background 1.4s ease, filter 1.2s ease;
+      position: relative;
+    }
+
+    body[data-theme="day"] { filter: brightness(1.06) saturate(1.08); }
+    body[data-theme="night"] { filter: brightness(0.98) saturate(1.0); }
+
+    /* ============================================================
+       2) CANVAS STARFIELD
+       ============================================================ */
+    canvas#starfield {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -3;
+      display: block;
+    }
+
+    /* ============================================================
+       3) ORBITING GLASS PLANETS
+       ============================================================ */
+    .space-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .planet-orbit {
+      position: absolute;
+      border-radius: 50%;
+      width: 560px;
+      height: 560px;
+      transform-origin: center center;
+      animation: orbit-slow 26s linear infinite;
+      opacity: 0.95;
+      filter: saturate(1.1);
+    }
+
+    .planet-orbit.fast {
+      width: 380px;
+      height: 380px;
+      animation-duration: 16s;
+    }
+
+    .planet-orbit.medium {
+      width: 480px;
+      height: 480px;
+      animation-duration: 20s;
+    }
+
+    .planet-orbit.orbit-1 { top: 6%; left: calc(50% - 280px); }
+    .planet-orbit.orbit-2 { top: 62%; left: calc(50% - 240px); }
+    .planet-orbit.orbit-3 { top: 26%; left: calc(50% - 190px); }
+
+    .planet-glass {
+      position: absolute;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 30%,
+          rgba(255, 255, 255, 0.95),
+          rgba(255, 255, 255, 0.12) 40%,
+          rgba(0, 0, 0, 0) 70%
+        ),
+        conic-gradient(from 120deg,
+          hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%),
+          hsl(calc((var(--galaxy-hue) + 70) * 1deg), 90%, 60%),
+          hsl(calc((var(--galaxy-hue) + 140) * 1deg), 90%, 62%),
+          hsl(calc((var(--galaxy-hue) + 210) * 1deg), 90%, 60%),
+          hsl(calc((var(--galaxy-hue) + 280) * 1deg), 90%, 60%),
+          hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%)
+        );
+      box-shadow:
+        0 0 22px hsla(calc(var(--galaxy-hue) * 1deg), 90%, 65%, 0.75),
+        0 0 70px hsla(calc((var(--galaxy-hue) + 110) * 1deg), 90%, 62%, 0.50);
+      opacity: 0.78;
+      animation: floaty 5.2s ease-in-out infinite;
+    }
+
+    .planet-orbit.fast .planet-glass { animation-duration: 4.5s; }
+    .planet-orbit.medium .planet-glass { animation-duration: 6.0s; }
+
+    .planet-glass.big {
+      width: 160px; height: 160px;
+      top: -80px; left: calc(50% - 80px);
+    }
+    .planet-glass.medium {
+      width: 110px; height: 110px;
+      top: calc(50% - 55px); left: -55px;
+    }
+    .planet-glass.small {
+      width: 86px; height: 86px;
+      top: calc(100% - 43px); left: calc(50% - 43px);
+    }
+
+    @keyframes orbit-slow { to { transform: rotate(360deg); } }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+
+    /* ============================================================
+       4) LAYOUT: CARD
+       ============================================================ */
+    .wrap {
+      position: relative;
+      z-index: 5;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    .card {
+      position: relative;
+      background: linear-gradient(180deg, var(--glass-2), var(--glass));
+      border-radius: var(--radius);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      padding: 36px 24px 28px;
+      text-align: center;
+      color: var(--text);
+      backdrop-filter: blur(18px) saturate(185%);
+      -webkit-backdrop-filter: blur(18px) saturate(185%);
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background:
+        radial-gradient(circle at 20% 0%,
+          rgba(255, 255, 255, 0.45),
+          rgba(255, 255, 255, 0.08) 45%,
+          rgba(255, 255, 255, 0) 70%
+        ),
+        radial-gradient(circle at 80% 10%,
+          rgba(59, 130, 246, 0.20),
+          rgba(59, 130, 246, 0) 60%
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .card > * { position: relative; z-index: 1; }
+
+    @media (max-width: 640px) {
+      .card { padding: 26px 16px 18px; }
+    }
+
+    /* ============================================================
+       5) HEADER
+       ============================================================ */
+    .logo {
+      width: 340px;
+      max-width: 92%;
+      display: block;
+      margin: 0 auto 10px;
+      filter: drop-shadow(0 0 22px rgba(255, 255, 255, 0.22));
+    }
+
+    .headline {
+      margin: 8px auto 6px;
+      font-size: 18px;
+      font-weight: 900;
+      color: #0b1220;
+      letter-spacing: 0.2px;
+    }
+
+    .subhead {
+      margin: 0 auto 14px;
+      font-size: 13px;
+      font-weight: 750;
+      color: #475569;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow:
+          0 0 14px rgba(59, 130, 246, 0.55),
+          0 0 40px rgba(37, 99, 235, 0.45);
+        transform: translateY(0);
+      }
+      50% {
+        box-shadow:
+          0 0 24px rgba(59, 130, 246, 0.85),
+          0 0 70px rgba(37, 99, 235, 0.75);
+        transform: translateY(-1px);
+      }
+    }
+
+    .clock-line {
+      margin: 10px auto 18px;
+      max-width: 520px;
+      font-size: 15px;
+      font-weight: 900;
+      color: #e5f0ff;
+      text-align: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: radial-gradient(
+        circle at 50% 0%,
+        hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.20),
+        rgba(15, 23, 42, 0.95)
+      );
+      border: 1px solid rgba(191, 219, 254, 0.30);
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      animation: glowPulse var(--clock-anim-speed) ease-in-out infinite;
+    }
+
+    /* ============================================================
+       6) MAIN CTA BUTTONS
+       ============================================================ */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 18px;
+      font-size: 16px;
+      font-weight: 900;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.55);
+      letter-spacing: 0.2px;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 16px 34px rgba(15, 23, 42, 0.72); }
+    .btn:active { transform: translateY(0); box-shadow: 0 8px 18px rgba(15, 23, 42, 0.55); }
+
+    .btn.call { background: var(--btn-call); }
+    .btn.text { background: var(--btn-text); }
+    .btn.email { background: var(--btn-email); }
+    .btn.book { background: var(--btn-book); }
+
+    /* ============================================================
+       7) BOOKING PANEL
+       ============================================================ */
+    .booking {
+      margin-top: 14px;
+      text-align: left;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+    }
+    .booking.open { max-height: 2600px; }
+
+    .section {
+      margin-top: 12px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(226,232,240,0.9);
+      padding: 16px;
+      box-shadow: 0 16px 40px rgba(15,23,42,0.10);
+    }
+
+    .section-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .subline { font-size: 15px; font-weight: 1000; color: #0f172a; }
+    .now { margin-top: 3px; font-weight: 800; font-size: 12px; color: #2563eb; }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--chip-border);
+      background: var(--chip-bg);
+      font-size: 12px;
+      font-weight: 900;
+      color: #0b1220;
+      box-shadow: 0 10px 18px rgba(15,23,42,0.08);
+    }
+
+    .chip .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(34,197,94,0.85);
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.18);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    @media (max-width: 720px) {
+      .section-top { flex-direction: column; align-items: flex-start; }
+      .chips { justify-content: flex-start; }
+      .row { grid-template-columns: 1fr; }
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 950;
+      color: #0f172a;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.2px;
+    }
+
+    .today-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 950;
+      color: #0b1220;
+      background: rgba(34, 197, 94, 0.18);
+      border: 1px solid rgba(34, 197, 94, 0.45);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(203,213,225,0.95);
+      font-size: 14px;
+      outline: none;
+      background: rgba(255,255,255,0.96);
+      transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.10s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: rgba(37, 99, 235, 0.85);
+      box-shadow: 0 0 0 4px var(--ring);
+      transform: translateY(-1px);
+    }
+
+    input.today {
+      border-color: rgba(34, 197, 94, 0.7);
+      box-shadow:
+        0 0 0 4px rgba(34, 197, 94, 0.18),
+        0 0 18px rgba(34, 197, 94, 0.14);
+    }
+
+    .slots-title {
+      margin: 16px 0 10px;
+      font-weight: 950;
+      color: #0f172a;
+      font-size: 13px;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .slots-title .hint {
+      font-size: 12px;
+      font-weight: 850;
+      color: #64748b;
+    }
+
+    .times {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .slot {
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid var(--slot-border);
+      background: var(--slot-bg);
+      font-size: 14px;
+      font-weight: 1000;
+      color: var(--slot-text);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease, border-color 0.1s ease;
+      user-select: none;
+    }
+
+    .slot:hover { transform: translateY(-1px); box-shadow: 0 10px 18px rgba(15, 23, 42, 0.12); }
+
+    .slot.active {
+      background: var(--slot-active-bg);
+      border-color: var(--slot-active-border);
+      color: var(--slot-active-text);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.22);
+    }
+
+    .slot.disabled {
+      background: var(--slot-disabled-bg);
+      border-color: var(--slot-disabled-border);
+      color: var(--slot-disabled-text);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+      opacity: 0.95;
+    }
+
+    .btn.confirm {
+      margin-top: 14px;
+      background: linear-gradient(180deg, rgba(2,6,23,1), rgba(15,23,42,1));
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn.confirm::after{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: radial-gradient(circle at 30% 30%, rgba(59,130,246,0.45), rgba(59,130,246,0) 55%);
+      transform: translateX(-30%);
+      opacity: 0.55;
+      pointer-events:none;
+    }
+
+    .btn.confirm:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      filter: grayscale(0.15);
+    }
+
+    .msg {
+      margin-top: 12px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 950;
+      display: none;
+      border: 1px solid transparent;
+    }
+
+    .msg.ok { display: block; background: #dcfce7; color: #166534; border-color: #86efac; }
+    .msg.bad { display: block; background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+    .msg.warn { display: block; background: #fef3c7; color: #92400e; border-color: #fde68a; }
+
+    /* confirmation card */
+    .confirm-card {
+      display: none;
+      margin-top: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(226,232,240,0.95);
+      background: rgba(255,255,255,0.96);
+      padding: 14px;
+      box-shadow: 0 14px 30px rgba(15,23,42,0.10);
+    }
+    .confirm-card.show { display: block; }
+
+    .confirm-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(226,232,240,0.95);
+    }
+
+    .check {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 1000;
+      color: #166534;
+      font-size: 20px;
+    }
+
+    .confirm-title { font-size: 16px; font-weight: 1000; color: #0f172a; }
+    .confirm-sub { font-size: 12px; color: #475569; font-weight: 800; }
+
+    .grid2 {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
+
+    .mini-box {
+      border-radius: 14px;
+      border: 1px solid rgba(226,232,240,0.95);
+      padding: 10px;
+      background: rgba(255,255,255,0.98);
+    }
+
+    .mini-label { font-size: 11px; font-weight: 950; color: #64748b; margin-bottom: 4px; }
+    .mini-val { font-size: 13px; font-weight: 950; color: #0f172a; word-break: break-word; }
+
+    /* Small footer note */
+    .note {
+      margin-top: 12px;
+      text-align: center;
+      color: rgba(226,232,240,0.92);
+      font-weight: 850;
+      font-size: 12px;
+      letter-spacing: 0.2px;
+      text-shadow: 0 10px 28px rgba(0,0,0,0.55);
+    }
+  </style>
 </head>
 
 <body>
+  <canvas id="starfield"></canvas>
 
-<div class="card">
-<h1>Book Appointment</h1>
+  <div class="space-layer">
+    <div class="planet-orbit orbit-1">
+      <div class="planet-glass big"></div>
+    </div>
+    <div class="planet-orbit orbit-2 medium">
+      <div class="planet-glass medium"></div>
+    </div>
+    <div class="planet-orbit orbit-3 fast">
+      <div class="planet-glass small"></div>
+    </div>
+  </div>
 
-<input id="name" placeholder="Full name">
-<input id="email" placeholder="Email">
+  <div class="wrap">
+    <div class="card">
+      <img class="logo" src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png" alt="Columbus East Tax Services Logo" />
 
-<select id="service">
-  <option>W-2 / Individual Taxes</option>
-  <option>1099 / Self-Employed</option>
-  <option>LLC / Business Filing</option>
-  <option>Audit Help</option>
-</select>
+      <div class="headline">Appointments & Support</div>
+      <div class="subhead">Call, text, email — or book a time below.</div>
 
-<select id="location">
-  <option>Whitehall Branch</option>
-  <option>Reynoldsburg Branch</option>
-  <option>Livingston Branch</option>
-  <option>Online / Phone</option>
-</select>
+      <div id="clockLine" class="clock-line"></div>
 
-<input id="date" type="date">
-<input id="time" type="time">
+      <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
+      <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
+      <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
 
-<button id="bookBtn">Confirm Booking</button>
+      <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
 
-<div id="msg" class="msg"></div>
-</div>
+      <div id="booking" class="booking">
+        <div class="section">
+          <div class="section-top">
+            <div>
+              <div class="subline">Book an Appointment</div>
+              <div id="nowLine" class="now"></div>
+            </div>
+            <div class="chips">
+              <div class="chip"><span class="dot"></span> Live availability</div>
+              <div class="chip">60 min slots</div>
+            </div>
+          </div>
 
-<script>
-const FUNCTION_URL =
-  "https://zleztbdrxnqirccgkvqx.supabase.co/functions/v1/book-appointment";
+          <div class="row">
+            <div>
+              <label for="fullName">Full Name</label>
+              <input id="fullName" placeholder="Your full name" autocomplete="name" />
+            </div>
+            <div>
+              <label for="email">Email</label>
+              <input id="email" placeholder="you@example.com" autocomplete="email" />
+            </div>
+          </div>
 
-const btn = document.getElementById("bookBtn");
-const msg = document.getElementById("msg");
+          <div class="row">
+            <div>
+              <label for="service">Service</label>
+              <select id="service">
+                <option>W-2 / Individual Taxes</option>
+                <option>1099 / Self-Employed Taxes</option>
+                <option>LLC / Small Business Filing</option>
+                <option>Audit Help & IRS Letters</option>
+                <option>Amended Returns (1040-X)</option>
+              </select>
+            </div>
 
-function show(type, text) {
-  msg.className = "msg " + type;
-  msg.textContent = text;
-  msg.style.display = "block";
-}
+            <div>
+              <label for="location">Location</label>
+              <select id="location">
+                <option>CML Whitehall Branch — 4445 E Broad St</option>
+                <option>CML Reynoldsburg Branch — 1402 Brice Rd</option>
+                <option>CML Livingston Branch — 3434 E Livingston Ave</option>
+                <option>CML Groveport Branch — 4980 S Hamilton Rd</option>
+                <option>Online / Phone / Text</option>
+              </select>
+            </div>
+          </div>
 
-btn.onclick = async () => {
-  msg.style.display = "none";
-  btn.disabled = true;
+          <div class="row">
+            <div>
+              <label for="date">Date <span id="todayBadge" class="today-pill" style="display:none;">Today</span></label>
+              <input id="date" type="date" />
+            </div>
+            <div>
+              <label for="duration">Length</label>
+              <select id="duration">
+                <option value="60">60 minutes</option>
+              </select>
+            </div>
+          </div>
 
-  const name = nameEl.value.trim();
-  const email = emailEl.value.trim();
-  const service = serviceEl.value;
-  const location = locationEl.value;
-  const date = dateEl.value;
-  const time = timeEl.value;
+          <div class="slots-title">
+            <span>Available Times</span>
+            <span class="hint" id="slotHint">Pick a time to continue</span>
+          </div>
 
-  if (!name || !email || !date || !time) {
-    show("bad", "Please fill all fields");
-    btn.disabled = false;
-    return;
-  }
+          <div id="times" class="times"></div>
 
-  const start = new Date(`${date}T${time}:00`);
-  const end = new Date(start.getTime() + 60 * 60000);
+          <button id="confirmBtn" class="btn confirm" disabled>Confirm Booking</button>
 
-  try {
-    const res = await fetch(FUNCTION_URL, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        client_name: name,
-        client_email: email,
-        service,
-        location,
-        start_time: start.toISOString(),
-        end_time: end.toISOString()
-      })
-    });
+          <div id="msg" class="msg"></div>
 
-    const out = await res.json();
+          <div id="confirmCard" class="confirm-card">
+            <div class="confirm-head">
+              <div class="check">✓</div>
+              <div>
+                <div class="confirm-title">Design Preview</div>
+                <div class="confirm-sub">This is a UI-only confirmation card.</div>
+              </div>
+            </div>
 
-    if (!res.ok || !out.success) {
-      console.error(out);
-      show("bad", "Booking failed. Try again.");
-      btn.disabled = false;
-      return;
+            <div class="grid2">
+              <div class="mini-box">
+                <div class="mini-label">Client</div>
+                <div id="cName" class="mini-val"></div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Email</div>
+                <div id="cEmail" class="mini-val"></div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Date & Time</div>
+                <div id="cWhen" class="mini-val"></div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Service</div>
+                <div id="cService" class="mini-val"></div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Location</div>
+                <div id="cLoc" class="mini-val"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="note">Design mode: no database writes • safe to test</div>
+    </div>
+  </div>
+
+  <script>
+    /* ------------------------------------------------------------
+       DESIGN MODE JS (no Supabase)
+       ------------------------------------------------------------ */
+
+    // UTIL
+    function pad(n) { return String(n).padStart(2, "0"); }
+    function todayYMD() {
+      const d = new Date();
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }
+    function fmtNice(dt) {
+      return dt.toLocaleString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    }
+    function makeLocalDateTimeFrom24(dateStr, hm) {
+      const [H, M] = hm.split(":").map(Number);
+      const [Y, m, D] = dateStr.split("-").map(Number);
+      return new Date(Y, m - 1, D, H, M, 0, 0);
+    }
+    function isValidEmail(v) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    }
+    function to12hLabel(hm) {
+      let [H, M] = hm.split(":").map(Number);
+      const ampm = H >= 12 ? "PM" : "AM";
+      H = H % 12; if (H === 0) H = 12;
+      return `${pad(H)}:${pad(M)} ${ampm}`;
     }
 
-    show("ok", "✅ Appointment booked & confirmation sent!");
-  } catch (e) {
-    console.error(e);
-    show("bad", "Server error. Try again.");
-    btn.disabled = false;
-  }
-};
+    /* ------------------------------------------------------------
+       THEME + GALAXY HUE
+       ------------------------------------------------------------ */
+    function applyThemeAndGalaxy() {
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const s = now.getSeconds();
 
-const nameEl = document.getElementById("name");
-const emailEl = document.getElementById("email");
-const serviceEl = document.getElementById("service");
-const locationEl = document.getElementById("location");
-const dateEl = document.getElementById("date");
-const timeEl = document.getElementById("time");
+      document.body.dataset.theme = (h >= 7 && h < 19) ? "day" : "night";
 
-dateEl.valueAsDate = new Date();
-</script>
+      const hue = (h * 15 + m * 0.25 + s * (0.25 / 60)) % 360;
+      document.documentElement.style.setProperty("--galaxy-hue", hue.toFixed(2));
 
+      const c1 = `hsl(${hue.toFixed(1)}, 72%, ${(h >= 7 && h < 19) ? "26%" : "18%"})`;
+      const c2 = `hsl(${((hue + 55) % 360).toFixed(1)}, 78%, 10%)`;
+      const c3 = `hsl(${((hue + 120) % 360).toFixed(1)}, 82%, 6%)`;
+      document.body.style.background = `radial-gradient(circle at 30% 20%, ${c1}, ${c2} 55%, ${c3} 100%)`;
+    }
+    applyThemeAndGalaxy();
+    setInterval(applyThemeAndGalaxy, 10000);
+
+    /* ------------------------------------------------------------
+       CLOCK
+       ------------------------------------------------------------ */
+    const clockLine = document.getElementById("clockLine");
+    const nowLine = document.getElementById("nowLine");
+
+    function updateClock() {
+      const now = new Date();
+      const datePart = new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      }).format(now);
+
+      const timePart = new Intl.DateTimeFormat("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }).format(now);
+
+      clockLine.textContent = `${datePart} • ${timePart}`;
+      nowLine.textContent = `Now: ${datePart} • ${timePart}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    /* ------------------------------------------------------------
+       COLLAPSIBLE
+       ------------------------------------------------------------ */
+    const toggleBtn = document.getElementById("toggleBtn");
+    const booking = document.getElementById("booking");
+
+    /* ------------------------------------------------------------
+       FORM REFS
+       ------------------------------------------------------------ */
+    const timesBox = document.getElementById("times");
+    const confirmBtn = document.getElementById("confirmBtn");
+    const msg = document.getElementById("msg");
+    const confirmCard = document.getElementById("confirmCard");
+    const todayBadge = document.getElementById("todayBadge");
+    const slotHint = document.getElementById("slotHint");
+
+    const fullNameEl = document.getElementById("fullName");
+    const emailEl = document.getElementById("email");
+    const serviceEl = document.getElementById("service");
+    const locationEl = document.getElementById("location");
+    const dateEl = document.getElementById("date");
+
+    const cName = document.getElementById("cName");
+    const cEmail = document.getElementById("cEmail");
+    const cWhen = document.getElementById("cWhen");
+    const cService = document.getElementById("cService");
+    const cLoc = document.getElementById("cLoc");
+
+    let selectedSlot = null;
+
+    function updateTodayHighlight() {
+      const isToday = dateEl.value === todayYMD();
+      todayBadge.style.display = isToday ? "inline-flex" : "none";
+      dateEl.classList.toggle("today", isToday);
+    }
+
+    function getAllowedHours(dow) {
+      if (dow >= 1 && dow <= 5) return [9, 10, 11, 12, 17, 18, 19, 20];
+      if (dow === 6) return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+      return [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+    }
+
+    function refreshSlotsDesignMode() {
+      const ymd = dateEl.value;
+      timesBox.innerHTML = "";
+      selectedSlot = null;
+      confirmBtn.disabled = true;
+      confirmCard.classList.remove("show");
+      msg.className = "msg";
+      msg.textContent = "";
+      updateTodayHighlight();
+
+      if (!ymd) {
+        msg.className = "msg warn";
+        msg.textContent = "Please pick a date.";
+        slotHint.textContent = "Pick a date first";
+        return;
+      }
+
+      const dateObj = new Date(ymd + "T00:00:00");
+      const dow = dateObj.getDay();
+      const allowedHours = getAllowedHours(dow);
+
+      // DESIGN MODE: fake “some booked”
+      const fakeBooked = new Set();
+      if (dow === 1) fakeBooked.add("11:00");
+      if (dow === 2) fakeBooked.add("17:00");
+      if (dow === 6) fakeBooked.add("12:00");
+
+      const now = new Date();
+      let anyAvailable = false;
+
+      allowedHours.forEach((H) => {
+        const hm = `${pad(H)}:00`;
+        const slotDate = makeLocalDateTimeFrom24(ymd, hm);
+        const isPast = slotDate <= now && ymd === todayYMD();
+        const isBooked = fakeBooked.has(hm);
+
+        const div = document.createElement("div");
+        div.className = "slot";
+        div.textContent = to12hLabel(hm);
+
+        if (isBooked || isPast) {
+          div.classList.add("disabled");
+        } else {
+          anyAvailable = true;
+          div.addEventListener("click", () => {
+            document.querySelectorAll(".slot").forEach((x) => x.classList.remove("active"));
+            div.classList.add("active");
+            selectedSlot = hm;
+            validateForm();
+          });
+        }
+
+        timesBox.appendChild(div);
+      });
+
+      if (!anyAvailable) {
+        msg.className = "msg warn";
+        msg.textContent = "No available times for this date (design mode).";
+        slotHint.textContent = "No times available";
+      } else {
+        msg.className = "msg warn";
+        msg.textContent = "Select a time to continue.";
+        slotHint.textContent = "Choose a time";
+      }
+    }
+
+    function validateForm() {
+      const nameOk = (fullNameEl.value || "").trim().length > 1;
+      const emailOk = isValidEmail((emailEl.value || "").trim());
+      const slotOk = !!selectedSlot;
+      confirmBtn.disabled = !(nameOk && emailOk && slotOk);
+      if (slotOk) slotHint.textContent = "Ready to confirm";
+    }
+
+    fullNameEl.addEventListener("input", validateForm);
+    emailEl.addEventListener("input", validateForm);
+    dateEl.addEventListener("change", () => { refreshSlotsDesignMode(); validateForm(); });
+
+    toggleBtn.addEventListener("click", () => {
+      booking.classList.toggle("open");
+      if (booking.classList.contains("open")) {
+        if (!dateEl.value) dateEl.value = todayYMD();
+        refreshSlotsDesignMode();
+      }
+    });
+
+    confirmBtn.addEventListener("click", async () => {
+      msg.className = "msg warn";
+      msg.textContent = "Design mode: showing confirmation UI...";
+      confirmBtn.disabled = true;
+
+      const name = (fullNameEl.value || "").trim();
+      const email = (emailEl.value || "").trim().toLowerCase();
+      const service = serviceEl.value;
+      const location = locationEl.value;
+      const ymd = dateEl.value;
+
+      const startDT = makeLocalDateTimeFrom24(ymd, selectedSlot);
+
+      // Show UI confirmation (no backend)
+      msg.className = "msg ok";
+      msg.textContent = "✅ Design preview confirmed (no booking created).";
+      confirmCard.classList.add("show");
+
+      cName.textContent = name;
+      cEmail.textContent = email;
+      cWhen.textContent = fmtNice(startDT);
+      cService.textContent = service;
+      cLoc.textContent = location;
+
+      // re-enable for further design testing
+      setTimeout(() => validateForm(), 350);
+    });
+
+    // Init
+    dateEl.value = todayYMD();
+    updateTodayHighlight();
+    refreshSlotsDesignMode();
+
+    /* ------------------------------------------------------------
+       STARFIELD (same vibe)
+       ------------------------------------------------------------ */
+    const canvas = document.getElementById("starfield");
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      initStars();
+    }
+    window.addEventListener("resize", resizeCanvas);
+
+    function initStars() {
+      const count = Math.min(240, Math.floor((width * height) / 11000));
+      stars = [];
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: Math.random() * 1.5 + 0.4,
+          o: Math.random(),
+          tw: Math.random() * 2 + 1,
+        });
+      }
+    }
+
+    let shootingStars = [];
+
+    function spawnShootingStar() {
+      const startX = Math.random() * width * 0.6;
+      const startY = Math.random() * height * 0.3;
+      const len = Math.random() * 260 + 140;
+      shootingStars.push({
+        x: startX,
+        y: startY,
+        vx: 6 + Math.random() * 4,
+        vy: 3 + Math.random() * 3,
+        life: 0,
+        maxLife: 35 + Math.random() * 20,
+        length: len,
+      });
+    }
+
+    function drawStarfield() {
+      ctx.clearRect(0, 0, width, height);
+
+      const hue = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--galaxy-hue")) || 220;
+      ctx.fillStyle = `hsla(${hue}, 55%, 6%, 0.92)`;
+      ctx.fillRect(0, 0, width, height);
+
+      const t = Date.now() * 0.001;
+      for (const s of stars) {
+        const pulse = 0.5 + 0.5 * Math.sin(t * s.tw + s.x);
+        ctx.globalAlpha = s.o * pulse;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = "#e5f2ff";
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const sh = shootingStars[i];
+        sh.life++;
+        sh.x += sh.vx;
+        sh.y += sh.vy;
+        const p = sh.life / sh.maxLife;
+        if (p >= 1) {
+          shootingStars.splice(i, 1);
+          continue;
+        }
+        const alpha = 1 - p;
+        const tailX = sh.x - sh.vx * sh.length * 0.1;
+        const tailY = sh.y - sh.vy * sh.length * 0.1;
+
+        const grad = ctx.createLinearGradient(sh.x, sh.y, tailX, tailY);
+        grad.addColorStop(0, `hsla(${(hue + 10) % 360}, 90%, 78%, ${alpha})`);
+        grad.addColorStop(1, "rgba(37, 99, 235, 0)");
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(sh.x, sh.y);
+        ctx.lineTo(tailX, tailY);
+        ctx.stroke();
+      }
+
+      requestAnimationFrame(drawStarfield);
+    }
+
+    setInterval(() => { if (Math.random() < 0.7) spawnShootingStar(); }, 7000);
+    resizeCanvas();
+    drawStarfield();
+  </script>
 </body>
 </html>
