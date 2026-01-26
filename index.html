@@ -1,1085 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Columbus East Tax Services — Luxury Booking (Design)</title>
-
-  <style>
-    /* ============================================================
-       1) RESET + TOKENS (LUXURY THEME)
-       ============================================================ */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    :root{
-      --galaxy-hue: 220;
-
-      /* Luxury palette */
-      --bg0: #05070f;
-      --bg1: #070a14;
-      --ink: #e9eefc;
-      --muted: rgba(233, 238, 252, 0.72);
-
-      /* Gold accent */
-      --gold-1: #f7e7b1;
-      --gold-2: #d7b86a;
-      --gold-3: #9b7b2f;
-
-      /* Glass card */
-      --glass: rgba(8, 10, 18, 0.64);
-      --glass2: rgba(12, 16, 28, 0.58);
-      --glass-border: rgba(255, 255, 255, 0.10);
-
-      --shadow: 0 40px 120px rgba(0,0,0,0.75);
-      --ring: rgba(215, 184, 106, 0.26);
-
-      /* Controls */
-      --field-bg: rgba(255,255,255,0.06);
-      --field-border: rgba(255,255,255,0.12);
-
-      /* Slot chips */
-      --slot-bg: rgba(255,255,255,0.06);
-      --slot-border: rgba(215, 184, 106, 0.38);
-      --slot-text: rgba(247, 231, 177, 0.92);
-
-      --slot-active-bg: rgba(215, 184, 106, 0.16);
-      --slot-active-border: rgba(247, 231, 177, 0.78);
-      --slot-active-text: rgba(255,255,255,0.95);
-
-      --slot-disabled-bg: rgba(255,255,255,0.04);
-      --slot-disabled-border: rgba(255,255,255,0.10);
-      --slot-disabled-text: rgba(233, 238, 252, 0.35);
-
-      --radius: 28px;
-      --radius2: 18px;
-
-      --clock-anim-speed: 2.8s;
-    }
-
-    html, body { height: 100%; }
-    body{
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
-      color: #fff;
-      overflow-x: hidden;
-      background: radial-gradient(circle at 30% 20%, #0b1a3c, #020617 70%);
-      transition: background 1.2s ease, filter 1.2s ease;
-      position: relative;
-    }
-
-    /* ============================================================
-       2) CANVAS BACKGROUND
-       ============================================================ */
-    canvas#starfield{
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -3;
-      display: block;
-    }
-
-    /* ============================================================
-       3) ORBITING GLASS PLANETS (KEEP YOUR VIBE)
-       ============================================================ */
-    .space-layer{
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: -2;
-      opacity: 0.9;
-      filter: saturate(1.1);
-    }
-
-    .planet-orbit{
-      position: absolute;
-      border-radius: 50%;
-      width: 560px;
-      height: 560px;
-      transform-origin: center center;
-      animation: orbit-slow 28s linear infinite;
-    }
-    .planet-orbit.fast { width: 380px; height: 380px; animation-duration: 18s; }
-    .planet-orbit.medium { width: 480px; height: 480px; animation-duration: 22s; }
-
-    .planet-orbit.orbit-1 { top: 6%; left: calc(50% - 280px); }
-    .planet-orbit.orbit-2 { top: 62%; left: calc(50% - 240px); }
-    .planet-orbit.orbit-3 { top: 26%; left: calc(50% - 190px); }
-
-    .planet-glass{
-      position: absolute;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 30% 30%,
-          rgba(255,255,255,0.92),
-          rgba(255,255,255,0.10) 40%,
-          rgba(0,0,0,0) 70%
-        ),
-        conic-gradient(from 120deg,
-          hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%),
-          hsl(calc((var(--galaxy-hue) + 70) * 1deg), 90%, 60%),
-          hsl(calc((var(--galaxy-hue) + 140) * 1deg), 90%, 62%),
-          hsl(calc((var(--galaxy-hue) + 210) * 1deg), 90%, 60%),
-          hsl(calc((var(--galaxy-hue) + 280) * 1deg), 90%, 60%),
-          hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%)
-        );
-      box-shadow:
-        0 0 18px hsla(calc(var(--galaxy-hue) * 1deg), 90%, 65%, 0.55),
-        0 0 60px hsla(calc((var(--galaxy-hue) + 110) * 1deg), 90%, 62%, 0.40);
-      opacity: 0.72;
-      animation: floaty 5.6s ease-in-out infinite;
-    }
-    .planet-orbit.fast .planet-glass { animation-duration: 4.8s; }
-    .planet-orbit.medium .planet-glass { animation-duration: 6.2s; }
-
-    .planet-glass.big { width: 160px; height: 160px; top: -80px; left: calc(50% - 80px); }
-    .planet-glass.medium { width: 110px; height: 110px; top: calc(50% - 55px); left: -55px; }
-    .planet-glass.small { width: 86px; height: 86px; top: calc(100% - 43px); left: calc(50% - 43px); }
-
-    @keyframes orbit-slow { to { transform: rotate(360deg); } }
-    @keyframes floaty { 0%,100%{ transform: translateY(0)} 50%{ transform: translateY(-12px)} }
-
-    /* ============================================================
-       4) LAYOUT
-       ============================================================ */
-    .wrap{
-      position: relative;
-      z-index: 5;
-      max-width: 1020px;
-      margin: 0 auto;
-      padding: 24px;
-    }
-
-    .card{
-      position: relative;
-      border-radius: var(--radius);
-      overflow: hidden;
-      padding: 34px 24px 22px;
-      background:
-        radial-gradient(circle at 12% 10%, rgba(215,184,106,0.14), rgba(215,184,106,0) 40%),
-        radial-gradient(circle at 88% 0%, rgba(121,91,255,0.14), rgba(121,91,255,0) 40%),
-        linear-gradient(180deg, var(--glass2), var(--glass));
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px) saturate(160%);
-      -webkit-backdrop-filter: blur(18px) saturate(160%);
-    }
-
-    /* Gold frame glow */
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      background:
-        radial-gradient(circle at 30% 0%, rgba(247,231,177,0.18), rgba(247,231,177,0) 55%),
-        linear-gradient(135deg, rgba(247,231,177,0.22), rgba(0,0,0,0) 35%, rgba(215,184,106,0.18));
-      pointer-events:none;
-      z-index:0;
-    }
-
-    /* Subtle border shimmer */
-    .card::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      border-radius: var(--radius);
-      padding:1px;
-      background: linear-gradient(135deg, rgba(247,231,177,0.65), rgba(255,255,255,0.06), rgba(215,184,106,0.45));
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity: 0.35;
-      pointer-events:none;
-      z-index:0;
-    }
-
-    .card > *{ position: relative; z-index: 1; }
-
-    @media (max-width: 640px){
-      .card{ padding: 26px 16px 16px; }
-    }
-
-    /* ============================================================
-       5) HEADER
-       ============================================================ */
-    .logo{
-      width: 330px;
-      max-width: 92%;
-      display:block;
-      margin: 0 auto 10px;
-      filter: drop-shadow(0 0 26px rgba(0,0,0,0.6));
-      opacity: 0.95;
-    }
-
-    .topline{
-      text-align:center;
-      margin-bottom: 10px;
-    }
-
-    .title{
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: 0.3px;
-      color: rgba(255,255,255,0.95);
-    }
-
-    .subtitle{
-      margin-top: 6px;
-      font-size: 13px;
-      font-weight: 800;
-      color: var(--muted);
-    }
-
-    /* Luxury gold divider */
-    .divider{
-      width: 180px;
-      height: 1px;
-      margin: 12px auto 14px;
-      background: linear-gradient(90deg, rgba(247,231,177,0), rgba(247,231,177,0.65), rgba(215,184,106,0.35), rgba(247,231,177,0));
-      opacity: 0.9;
-    }
-
-    @keyframes glowPulse{
-      0%,100%{
-        box-shadow: 0 0 14px rgba(215,184,106,0.28), 0 0 48px rgba(121,91,255,0.18);
-        transform: translateY(0);
-      }
-      50%{
-        box-shadow: 0 0 22px rgba(215,184,106,0.40), 0 0 72px rgba(121,91,255,0.25);
-        transform: translateY(-1px);
-      }
-    }
-
-    .clock-line{
-      margin: 10px auto 18px;
-      max-width: 560px;
-      font-size: 14px;
-      font-weight: 950;
-      color: rgba(255,255,255,0.92);
-      text-align:center;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(215,184,106,0.20), rgba(9,11,20,0.86)),
-        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-      border: 1px solid rgba(247,231,177,0.18);
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      animation: glowPulse var(--clock-anim-speed) ease-in-out infinite;
-    }
-
-    /* ============================================================
-       6) CTA BUTTONS (LUXURY)
-       ============================================================ */
-    .btn{
-      width: 100%;
-      border: 0;
-      cursor: pointer;
-      border-radius: 18px;
-      padding: 15px 16px;
-      font-weight: 950;
-      font-size: 15px;
-      letter-spacing: 0.2px;
-      color: rgba(255,255,255,0.95);
-      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
-      box-shadow: 0 14px 30px rgba(0,0,0,0.55);
-      margin: 10px 0;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn:hover{ transform: translateY(-1px); box-shadow: 0 18px 40px rgba(0,0,0,0.70); }
-    .btn:active{ transform: translateY(0); box-shadow: 0 10px 24px rgba(0,0,0,0.55); }
-
-    .btn::after{
-      content:"";
-      position:absolute;
-      inset:-50%;
-      background: radial-gradient(circle at 30% 30%, rgba(247,231,177,0.26), rgba(247,231,177,0) 55%);
-      opacity: 0.55;
-      transform: translateX(-25%);
-      pointer-events:none;
-    }
-
-    .btn.call{
-      background: linear-gradient(135deg, rgba(37,99,235,0.95), rgba(99,102,241,0.75));
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-    .btn.text{
-      background: linear-gradient(135deg, rgba(22,163,74,0.95), rgba(34,197,94,0.70));
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-    .btn.email{
-      background: linear-gradient(135deg, rgba(147,51,234,0.95), rgba(236,72,153,0.55));
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-
-    /* Primary luxury gold button */
-    .btn.book{
-      background: linear-gradient(135deg, rgba(247,231,177,0.95), rgba(215,184,106,0.85), rgba(155,123,47,0.80));
-      color: rgba(10,12,18,0.92);
-      border: 1px solid rgba(247,231,177,0.42);
-      box-shadow: 0 18px 44px rgba(215,184,106,0.20), 0 22px 60px rgba(0,0,0,0.60);
-    }
-    .btn.book::after{
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.38), rgba(255,255,255,0) 55%);
-      opacity: 0.75;
-    }
-
-    /* ============================================================
-       7) BOOKING PANEL
-       ============================================================ */
-    .booking{
-      margin-top: 12px;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height .55s ease;
-    }
-    .booking.open{ max-height: 2600px; }
-
-    .section{
-      margin-top: 12px;
-      border-radius: 22px;
-      padding: 16px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      border: 1px solid rgba(247,231,177,0.14);
-      box-shadow: 0 18px 52px rgba(0,0,0,0.45);
-    }
-
-    .section-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-
-    .subline{
-      font-size: 14px;
-      font-weight: 1000;
-      color: rgba(255,255,255,0.92);
-      letter-spacing: 0.3px;
-    }
-
-    .now{
-      margin-top: 3px;
-      font-size: 12px;
-      font-weight: 850;
-      color: rgba(247,231,177,0.75);
-    }
-
-    .chips{
-      display:flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(247,231,177,0.18);
-      background: rgba(255,255,255,0.05);
-      color: rgba(255,255,255,0.82);
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .chip .dot{
-      width: 9px; height: 9px;
-      border-radius: 999px;
-      background: rgba(215,184,106,0.95);
-      box-shadow: 0 0 0 3px rgba(215,184,106,0.18);
-    }
-
-    .row{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 10px;
-    }
-    @media (max-width: 720px){
-      .section-top{ flex-direction: column; align-items: flex-start; }
-      .chips{ justify-content:flex-start; }
-      .row{ grid-template-columns: 1fr; }
-    }
-
-    label{
-      font-size: 12px;
-      font-weight: 950;
-      color: rgba(255,255,255,0.86);
-      margin-bottom: 6px;
-      display:flex;
-      align-items:center;
-      gap: 8px;
-      letter-spacing: 0.2px;
-    }
-
-    .today-pill{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 950;
-      color: rgba(10,12,18,0.92);
-      background: linear-gradient(135deg, rgba(247,231,177,0.95), rgba(215,184,106,0.78));
-      border: 1px solid rgba(247,231,177,0.40);
-    }
-
-    input, select{
-      width: 100%;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--field-border);
-      background: var(--field-bg);
-      color: rgba(255,255,255,0.92);
-      outline: none;
-      font-size: 14px;
-      transition: box-shadow .15s ease, border-color .15s ease, transform .10s ease, background .15s ease;
-    }
-
-    input::placeholder{ color: rgba(233,238,252,0.40); }
-
-    input:focus, select:focus{
-      border-color: rgba(247,231,177,0.35);
-      box-shadow: 0 0 0 4px var(--ring);
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.075);
-    }
-
-    input.today{
-      border-color: rgba(247,231,177,0.35);
-      box-shadow: 0 0 0 4px rgba(215,184,106,0.12);
-    }
-
-    .slots-title{
-      margin: 16px 0 10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      font-size: 13px;
-      font-weight: 950;
-      color: rgba(255,255,255,0.88);
-      letter-spacing: 0.2px;
-    }
-    .slots-title .hint{
-      font-size: 12px;
-      font-weight: 850;
-      color: rgba(233,238,252,0.55);
-    }
-
-    .times{
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 10px;
-    }
-
-    .slot{
-      padding: 12px;
-      border-radius: 16px;
-      border: 1px solid var(--slot-border);
-      background: var(--slot-bg);
-      color: var(--slot-text);
-      font-size: 14px;
-      font-weight: 1000;
-      text-align:center;
-      cursor:pointer;
-      transition: transform .10s ease, box-shadow .10s ease, border-color .10s ease, background .10s ease;
-      user-select:none;
-      box-shadow: 0 12px 26px rgba(0,0,0,0.35);
-    }
-
-    .slot:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 16px 34px rgba(0,0,0,0.48);
-      border-color: rgba(247,231,177,0.58);
-    }
-
-    .slot.active{
-      background: var(--slot-active-bg);
-      border-color: var(--slot-active-border);
-      color: var(--slot-active-text);
-      box-shadow: 0 0 0 4px rgba(215,184,106,0.14), 0 18px 40px rgba(0,0,0,0.55);
-    }
-
-    .slot.disabled{
-      background: var(--slot-disabled-bg);
-      border-color: var(--slot-disabled-border);
-      color: var(--slot-disabled-text);
-      cursor:not-allowed;
-      box-shadow: none;
-      transform:none;
-      opacity: 0.95;
-    }
-
-    .btn.confirm{
-      margin-top: 14px;
-      background: linear-gradient(135deg, rgba(247,231,177,0.95), rgba(215,184,106,0.85), rgba(155,123,47,0.80));
-      color: rgba(10,12,18,0.92);
-      border: 1px solid rgba(247,231,177,0.42);
-      box-shadow: 0 18px 44px rgba(215,184,106,0.20), 0 22px 60px rgba(0,0,0,0.60);
-    }
-    .btn.confirm:disabled{
-      opacity: 0.55;
-      cursor:not-allowed;
-      transform:none;
-      box-shadow:none;
-      filter: grayscale(0.15);
-    }
-
-    .msg{
-      margin-top: 12px;
-      padding: 12px 12px;
-      border-radius: 16px;
-      font-size: 13px;
-      font-weight: 950;
-      display:none;
-      border: 1px solid transparent;
-      background: rgba(255,255,255,0.05);
-    }
-    .msg.ok{ display:block; border-color: rgba(34,197,94,0.35); color: rgba(187,247,208,0.92); }
-    .msg.warn{ display:block; border-color: rgba(247,231,177,0.18); color: rgba(247,231,177,0.88); }
-    .msg.bad{ display:block; border-color: rgba(248,113,113,0.30); color: rgba(254,202,202,0.92); }
-
-    .confirm-card{
-      display:none;
-      margin-top: 14px;
-      border-radius: 18px;
-      border: 1px solid rgba(247,231,177,0.14);
-      background: rgba(255,255,255,0.05);
-      padding: 14px;
-      box-shadow: 0 18px 52px rgba(0,0,0,0.45);
-    }
-    .confirm-card.show{ display:block; }
-
-    .confirm-head{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.10);
-    }
-
-    .check{
-      width: 40px; height: 40px;
-      border-radius: 14px;
-      background: rgba(215,184,106,0.18);
-      border: 1px solid rgba(247,231,177,0.35);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight: 1000;
-      color: rgba(247,231,177,0.92);
-      font-size: 20px;
-    }
-
-    .confirm-title{
-      font-size: 14px;
-      font-weight: 1000;
-      color: rgba(255,255,255,0.92);
-    }
-    .confirm-sub{
-      font-size: 12px;
-      font-weight: 850;
-      color: rgba(233,238,252,0.62);
-      margin-top: 2px;
-    }
-
-    .grid2{
-      margin-top: 12px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    @media (max-width: 720px){ .grid2{ grid-template-columns: 1fr; } }
-
-    .mini-box{
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.10);
-      padding: 10px;
-      background: rgba(0,0,0,0.22);
-    }
-    .mini-label{
-      font-size: 11px;
-      font-weight: 950;
-      color: rgba(233,238,252,0.55);
-      margin-bottom: 4px;
-      letter-spacing: 0.2px;
-    }
-    .mini-val{
-      font-size: 13px;
-      font-weight: 950;
-      color: rgba(255,255,255,0.90);
-      word-break: break-word;
-    }
-
-    .note{
-      margin-top: 14px;
-      text-align:center;
-      color: rgba(233,238,252,0.55);
-      font-weight: 850;
-      font-size: 12px;
-      letter-spacing: 0.2px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Columbus East Tax Services</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  height:100vh;
+  background:radial-gradient(circle at 30% 20%, #0b1a3c, #020617 70%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:Arial,Helvetica,sans-serif;
+  color:white;
+  overflow:hidden;
+}
+
+/* ===== GLASS CARD ===== */
+
+.card{
+  position:relative;
+  width:min(94%,880px);
+  padding:42px 28px;
+  border-radius:28px;
+  background:rgba(170,215,255,0.18);
+  backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(210,235,255,.35);
+  box-shadow:0 30px 90px rgba(0,0,0,.65);
+  text-align:center;
+  overflow:hidden;
+}
+
+/* keep content above earth */
+.card > *{
+  position:relative;
+  z-index:2;
+}
+
+h1{
+  font-size:32px;
+  font-weight:900;
+  margin-bottom:6px;
+}
+
+.sub{
+  opacity:.85;
+  margin-bottom:20px;
+}
+
+/* ===== BUTTONS ===== */
+
+.btn{
+  width:100%;
+  padding:18px;
+  margin:12px 0;
+  border:none;
+  border-radius:18px;
+  font-size:18px;
+  font-weight:900;
+  color:white;
+  cursor:pointer;
+  box-shadow:0 10px 24px rgba(0,0,0,.5);
+}
+
+.call{background:#2563eb}
+.text{background:#16a34a}
+.email{background:#9333ea}
+.book{background:#0f766e}
+
+/* ===== EARTH BEHIND GLASS ===== */
+
+.earth-behind{
+  position:absolute;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  pointer-events:none;
+  z-index:1;
+
+  --earth-size:min(92%,720px);
+  opacity:.45;
+  transform:translateY(24px);
+}
+
+.earth-sphere{
+  width:var(--earth-size);
+  height:var(--earth-size);
+  border-radius:50%;
+
+  background-image:url("https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg");
+  background-repeat:repeat-x;
+  background-size:220% 100%;
+  background-position:0 50%;
+
+  animation:earthSpin 46s linear infinite;
+
+  box-shadow:
+    inset -100px 0 140px rgba(0,0,0,.85),
+    inset 0 0 70px rgba(0,0,0,.4),
+    0 0 80px rgba(59,130,246,.2);
+
+  filter:saturate(1.15) contrast(1.05);
+}
+
+.earth-glow{
+  position:absolute;
+  width:calc(var(--earth-size) * 1.05);
+  height:calc(var(--earth-size) * 1.05);
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(90,160,255,.18), transparent 60%);
+}
+
+@keyframes earthSpin{
+  from{background-position:0% 50%}
+  to{background-position:-220% 50%}
+}
+
+@media(max-width:600px){
+  .earth-behind{
+    --earth-size:96%;
+    opacity:.4;
+  }
+}
+</style>
 </head>
 
 <body>
-  <canvas id="starfield"></canvas>
 
-  <div class="space-layer">
-    <div class="planet-orbit orbit-1"><div class="planet-glass big"></div></div>
-    <div class="planet-orbit orbit-2 medium"><div class="planet-glass medium"></div></div>
-    <div class="planet-orbit orbit-3 fast"><div class="planet-glass small"></div></div>
+<div class="card">
+
+  <!-- 🌍 REAL EARTH -->
+  <div class="earth-behind">
+    <div class="earth-sphere"></div>
+    <div class="earth-glow"></div>
   </div>
 
-  <div class="wrap">
-    <div class="card">
-      <img class="logo" src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png" alt="Columbus East Tax Services Logo" />
+  <h1>Columbus East Tax Services</h1>
+  <div class="sub">Appointments & Support</div>
 
-      <div class="topline">
-        <div class="title">Appointments & Support</div>
-        <div class="subtitle">Premium service • fast booking • clear confirmations</div>
-      </div>
+  <button class="btn call">📞 Call Now</button>
+  <button class="btn text">💬 Text Us</button>
+  <button class="btn email">✉️ Email Us</button>
+  <button class="btn book">📅 Book Appointment</button>
 
-      <div class="divider"></div>
-      <div id="clockLine" class="clock-line"></div>
+</div>
 
-      <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
-      <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
-      <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
-
-      <button class="btn book" id="toggleBtn">✨ Book Appointment</button>
-
-      <div id="booking" class="booking">
-        <div class="section">
-          <div class="section-top">
-            <div>
-              <div class="subline">Reserve Your Time</div>
-              <div id="nowLine" class="now"></div>
-            </div>
-            <div class="chips">
-              <div class="chip"><span class="dot"></span> Availability</div>
-              <div class="chip">60 min</div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label for="fullName">Full Name</label>
-              <input id="fullName" placeholder="Your full name" autocomplete="name" />
-            </div>
-            <div>
-              <label for="email">Email</label>
-              <input id="email" placeholder="you@example.com" autocomplete="email" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label for="service">Service</label>
-              <select id="service">
-                <option>W-2 / Individual Taxes</option>
-                <option>1099 / Self-Employed Taxes</option>
-                <option>LLC / Small Business Filing</option>
-                <option>Audit Help & IRS Letters</option>
-                <option>Amended Returns (1040-X)</option>
-              </select>
-            </div>
-
-            <div>
-              <label for="location">Location</label>
-              <select id="location">
-                <option>CML Whitehall Branch — 4445 E Broad St</option>
-                <option>CML Reynoldsburg Branch — 1402 Brice Rd</option>
-                <option>CML Livingston Branch — 3434 E Livingston Ave</option>
-                <option>CML Groveport Branch — 4980 S Hamilton Rd</option>
-                <option>Online / Phone / Text</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label for="date">Date <span id="todayBadge" class="today-pill" style="display:none;">Today</span></label>
-              <input id="date" type="date" />
-            </div>
-            <div>
-              <label for="duration">Length</label>
-              <select id="duration">
-                <option value="60">60 minutes</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="slots-title">
-            <span>Available Times</span>
-            <span class="hint" id="slotHint">Choose a time</span>
-          </div>
-
-          <div id="times" class="times"></div>
-
-          <button id="confirmBtn" class="btn confirm" disabled>Confirm Booking</button>
-          <div id="msg" class="msg"></div>
-
-          <div id="confirmCard" class="confirm-card">
-            <div class="confirm-head">
-              <div class="check">✓</div>
-              <div>
-                <div class="confirm-title">Design Preview Confirmed</div>
-                <div class="confirm-sub">UI-only confirmation card (no booking created).</div>
-              </div>
-            </div>
-
-            <div class="grid2">
-              <div class="mini-box">
-                <div class="mini-label">Client</div>
-                <div id="cName" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Email</div>
-                <div id="cEmail" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Date & Time</div>
-                <div id="cWhen" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Service</div>
-                <div id="cService" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Location</div>
-                <div id="cLoc" class="mini-val"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="note">Design mode: no database writes • safe to test</div>
-    </div>
-  </div>
-
-  <script>
-    /* ============================================================
-       LUXURY DESIGN MODE JS (NO SUPABASE)
-       ============================================================ */
-
-    // UTIL
-    function pad(n){ return String(n).padStart(2,"0"); }
-    function todayYMD(){
-      const d = new Date();
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    }
-    function fmtNice(dt){
-      return dt.toLocaleString("en-US", {
-        weekday:"short", month:"short", day:"numeric",
-        hour:"2-digit", minute:"2-digit", hour12:true
-      });
-    }
-    function makeLocalDateTimeFrom24(dateStr, hm){
-      const [H,M] = hm.split(":").map(Number);
-      const [Y,m,D] = dateStr.split("-").map(Number);
-      return new Date(Y, m-1, D, H, M, 0, 0);
-    }
-    function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
-    function to12hLabel(hm){
-      let [H,M] = hm.split(":").map(Number);
-      const ampm = H>=12 ? "PM" : "AM";
-      H = H%12; if(H===0) H=12;
-      return `${pad(H)}:${pad(M)} ${ampm}`;
-    }
-
-    // THEME + GALAXY HUE
-    function applyGalaxy(){
-      const now = new Date();
-      const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
-      const hue = (h*15 + m*0.25 + s*(0.25/60)) % 360;
-      document.documentElement.style.setProperty("--galaxy-hue", hue.toFixed(2));
-
-      const c1 = `hsl(${hue.toFixed(1)}, 72%, 18%)`;
-      const c2 = `hsl(${((hue+55)%360).toFixed(1)}, 78%, 9%)`;
-      const c3 = `hsl(${((hue+120)%360).toFixed(1)}, 82%, 6%)`;
-      document.body.style.background = `radial-gradient(circle at 30% 20%, ${c1}, ${c2} 55%, ${c3} 100%)`;
-    }
-    applyGalaxy();
-    setInterval(applyGalaxy, 10000);
-
-    // CLOCK
-    const clockLine = document.getElementById("clockLine");
-    const nowLine = document.getElementById("nowLine");
-    function updateClock(){
-      const now = new Date();
-      const datePart = new Intl.DateTimeFormat("en-US", {
-        weekday:"short", month:"short", day:"2-digit", year:"numeric"
-      }).format(now);
-      const timePart = new Intl.DateTimeFormat("en-US", {
-        hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false
-      }).format(now);
-      clockLine.textContent = `${datePart} • ${timePart}`;
-      nowLine.textContent = `Now: ${datePart} • ${timePart}`;
-    }
-    updateClock();
-    setInterval(updateClock, 1000);
-
-    // COLLAPSIBLE
-    const toggleBtn = document.getElementById("toggleBtn");
-    const booking = document.getElementById("booking");
-
-    // FORM REFS
-    const timesBox = document.getElementById("times");
-    const confirmBtn = document.getElementById("confirmBtn");
-    const msg = document.getElementById("msg");
-    const confirmCard = document.getElementById("confirmCard");
-    const todayBadge = document.getElementById("todayBadge");
-    const slotHint = document.getElementById("slotHint");
-
-    const fullNameEl = document.getElementById("fullName");
-    const emailEl = document.getElementById("email");
-    const serviceEl = document.getElementById("service");
-    const locationEl = document.getElementById("location");
-    const dateEl = document.getElementById("date");
-
-    const cName = document.getElementById("cName");
-    const cEmail = document.getElementById("cEmail");
-    const cWhen = document.getElementById("cWhen");
-    const cService = document.getElementById("cService");
-    const cLoc = document.getElementById("cLoc");
-
-    let selectedSlot = null;
-
-    function updateTodayHighlight(){
-      const isToday = dateEl.value === todayYMD();
-      todayBadge.style.display = isToday ? "inline-flex" : "none";
-      dateEl.classList.toggle("today", isToday);
-    }
-
-    function getAllowedHours(dow){
-      if(dow>=1 && dow<=5) return [9,10,11,12,17,18,19,20];
-      if(dow===6) return [8,9,10,11,12,13,14,15,16,17,18,19];
-      return [9,10,11,12,13,14,15,16,17,18,19];
-    }
-
-    function refreshSlotsDesign(){
-      const ymd = dateEl.value;
-      timesBox.innerHTML = "";
-      selectedSlot = null;
-      confirmBtn.disabled = true;
-      confirmCard.classList.remove("show");
-      msg.className = "msg";
-      msg.textContent = "";
-      updateTodayHighlight();
-
-      if(!ymd){
-        msg.className = "msg warn";
-        msg.textContent = "Please choose a date.";
-        slotHint.textContent = "Choose a date first";
-        return;
-      }
-
-      const dateObj = new Date(ymd + "T00:00:00");
-      const dow = dateObj.getDay();
-      const allowed = getAllowedHours(dow);
-
-      // DESIGN MODE: fake booked pattern
-      const fakeBooked = new Set();
-      if(dow===1) fakeBooked.add("11:00");
-      if(dow===2) fakeBooked.add("17:00");
-      if(dow===6) fakeBooked.add("12:00");
-
-      const now = new Date();
-      let any = false;
-
-      allowed.forEach(H => {
-        const hm = `${pad(H)}:00`;
-        const slotDate = makeLocalDateTimeFrom24(ymd, hm);
-        const isPast = (ymd===todayYMD()) && (slotDate <= now);
-        const isBooked = fakeBooked.has(hm);
-
-        const div = document.createElement("div");
-        div.className = "slot";
-        div.textContent = to12hLabel(hm);
-
-        if(isBooked || isPast){
-          div.classList.add("disabled");
-        }else{
-          any = true;
-          div.addEventListener("click", () => {
-            document.querySelectorAll(".slot").forEach(x => x.classList.remove("active"));
-            div.classList.add("active");
-            selectedSlot = hm;
-            validateForm();
-          });
-        }
-        timesBox.appendChild(div);
-      });
-
-      if(!any){
-        msg.className = "msg warn";
-        msg.textContent = "No times available (design mode).";
-        slotHint.textContent = "No times available";
-      }else{
-        msg.className = "msg warn";
-        msg.textContent = "Select a time to continue.";
-        slotHint.textContent = "Choose a time";
-      }
-    }
-
-    function validateForm(){
-      const nameOk = (fullNameEl.value || "").trim().length > 1;
-      const emailOk = isValidEmail((emailEl.value || "").trim());
-      const slotOk = !!selectedSlot;
-      confirmBtn.disabled = !(nameOk && emailOk && slotOk);
-      if(slotOk) slotHint.textContent = "Ready to confirm";
-    }
-
-    fullNameEl.addEventListener("input", validateForm);
-    emailEl.addEventListener("input", validateForm);
-    dateEl.addEventListener("change", () => { refreshSlotsDesign(); validateForm(); });
-
-    toggleBtn.addEventListener("click", () => {
-      booking.classList.toggle("open");
-      if(booking.classList.contains("open")){
-        if(!dateEl.value) dateEl.value = todayYMD();
-        refreshSlotsDesign();
-      }
-    });
-
-    confirmBtn.addEventListener("click", async () => {
-      msg.className = "msg warn";
-      msg.textContent = "Design mode: showing confirmation UI...";
-      confirmBtn.disabled = true;
-
-      const name = (fullNameEl.value || "").trim();
-      const email = (emailEl.value || "").trim().toLowerCase();
-      const service = serviceEl.value;
-      const location = locationEl.value;
-      const ymd = dateEl.value;
-
-      const startDT = makeLocalDateTimeFrom24(ymd, selectedSlot);
-
-      msg.className = "msg ok";
-      msg.textContent = "✓ Luxury confirmation preview (no booking created).";
-      confirmCard.classList.add("show");
-
-      cName.textContent = name;
-      cEmail.textContent = email;
-      cWhen.textContent = fmtNice(startDT);
-      cService.textContent = service;
-      cLoc.textContent = location;
-
-      setTimeout(() => validateForm(), 350);
-    });
-
-    // INIT
-    dateEl.value = todayYMD();
-    updateTodayHighlight();
-    refreshSlotsDesign();
-
-    /* ============================================================
-       STARFIELD
-       ============================================================ */
-    const canvas = document.getElementById("starfield");
-    const ctx = canvas.getContext("2d");
-    let stars = [];
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-
-    function resizeCanvas(){
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-      initStars();
-    }
-    window.addEventListener("resize", resizeCanvas);
-
-    function initStars(){
-      const count = Math.min(240, Math.floor((width * height) / 11000));
-      stars = [];
-      for(let i=0;i<count;i++){
-        stars.push({
-          x: Math.random()*width,
-          y: Math.random()*height,
-          r: Math.random()*1.5 + 0.4,
-          o: Math.random(),
-          tw: Math.random()*2 + 1
-        });
-      }
-    }
-
-    let shootingStars = [];
-    function spawnShootingStar(){
-      const startX = Math.random()*width*0.6;
-      const startY = Math.random()*height*0.3;
-      const len = Math.random()*260 + 140;
-      shootingStars.push({
-        x:startX, y:startY,
-        vx: 6 + Math.random()*4,
-        vy: 3 + Math.random()*3,
-        life:0, maxLife: 35 + Math.random()*20,
-        length: len
-      });
-    }
-
-    function drawStarfield(){
-      ctx.clearRect(0,0,width,height);
-
-      const hue = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--galaxy-hue")) || 220;
-      ctx.fillStyle = `hsla(${hue}, 55%, 6%, 0.92)`;
-      ctx.fillRect(0,0,width,height);
-
-      const t = Date.now()*0.001;
-      for(const s of stars){
-        const pulse = 0.5 + 0.5*Math.sin(t*s.tw + s.x);
-        ctx.globalAlpha = s.o*pulse;
-        ctx.beginPath();
-        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-        ctx.fillStyle = "#e5f2ff";
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-
-      for(let i=shootingStars.length-1;i>=0;i--){
-        const sh = shootingStars[i];
-        sh.life++;
-        sh.x += sh.vx;
-        sh.y += sh.vy;
-        const p = sh.life/sh.maxLife;
-        if(p>=1){ shootingStars.splice(i,1); continue; }
-
-        const alpha = 1 - p;
-        const tailX = sh.x - sh.vx*sh.length*0.1;
-        const tailY = sh.y - sh.vy*sh.length*0.1;
-
-        const grad = ctx.createLinearGradient(sh.x, sh.y, tailX, tailY);
-        grad.addColorStop(0, `hsla(${(hue+10)%360}, 90%, 78%, ${alpha})`);
-        grad.addColorStop(1, "rgba(37, 99, 235, 0)");
-
-        ctx.strokeStyle = grad;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(sh.x, sh.y);
-        ctx.lineTo(tailX, tailY);
-        ctx.stroke();
-      }
-
-      requestAnimationFrame(drawStarfield);
-    }
-
-    setInterval(() => { if(Math.random()<0.7) spawnShootingStar(); }, 7000);
-    resizeCanvas();
-    drawStarfield();
-  </script>
 </body>
 </html>
