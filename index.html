@@ -12,21 +12,17 @@
     /* ============================================================
        1) GLOBAL RESETS + VARIABLES
        ============================================================ */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       /* Real-time galaxy hue (JS updates this) */
       --galaxy-hue: 220;
 
-      /* Card + text */
-      --card-bg: rgba(255, 255, 255, 0.9);
-      --card-border: rgba(255, 255, 255, 0.35);
-      --card-shadow: 0 28px 80px rgba(0, 0, 0, 0.6);
-      --text-main: #0f172a;
+      /* Card + text (UPDATED: glossy light-blue glass) */
+      --card-bg: rgba(170, 215, 255, 0.22);         /* light blue transparent */
+      --card-border: rgba(210, 235, 255, 0.38);
+      --card-shadow: 0 32px 90px rgba(0, 0, 0, 0.62);
+      --text-main: #0b1220;
       --muted: #64748b;
       --ring: rgba(96, 165, 250, 0.4);
 
@@ -45,10 +41,8 @@
       --slot-disabled-border: #cbd5e1;
       --slot-disabled-text: #94a3b8;
 
-      /* Neon clock glow */
-      --clock-glow-a: rgba(59, 130, 246, 0.7);
-      --clock-glow-b: rgba(37, 99, 235, 0.6);
-      --clock-anim-speed: 2.6s;
+      /* Clock glow */
+      --clock-anim-speed: 2.4s;
     }
 
     html, body { height: 100%; }
@@ -57,20 +51,14 @@
       font-family: Arial, Helvetica, sans-serif;
       color: #fff;
       overflow-x: hidden;
-
-      /* Default fallback (JS will set real gradient) */
       background: radial-gradient(circle at 30% 20%, #0b1a3c, #020617 70%);
       transition: background 1.4s ease, filter 1.2s ease;
       position: relative;
     }
 
     /* Day/Night theme (JS toggles data-theme) */
-    body[data-theme="day"] {
-      filter: brightness(1.06) saturate(1.08);
-    }
-    body[data-theme="night"] {
-      filter: brightness(0.98) saturate(1.0);
-    }
+    body[data-theme="day"] { filter: brightness(1.06) saturate(1.08); }
+    body[data-theme="night"] { filter: brightness(0.98) saturate(1.0); }
 
     /* ============================================================
        2) CANVAS STARFIELD + SHOOTING STARS LAYER
@@ -85,7 +73,7 @@
     }
 
     /* ============================================================
-       3) ORBITING GLASS PLANETS AROUND CARD (CSS ONLY)
+       3) ORBITING GLASS PLANETS AROUND CARD (BIGGER + FASTER)
        ============================================================ */
     .space-layer {
       position: fixed;
@@ -97,33 +85,43 @@
     .planet-orbit {
       position: absolute;
       border-radius: 50%;
-      width: 420px;
-      height: 420px;
+
+      /* UPDATED: bigger orbits */
+      width: 560px;
+      height: 560px;
+
       transform-origin: center center;
-      animation: orbit-slow 42s linear infinite;
+
+      /* UPDATED: faster */
+      animation: orbit-slow 26s linear infinite;
     }
 
     .planet-orbit.fast {
-      width: 260px;
-      height: 260px;
-      animation-duration: 26s;
+      width: 380px;
+      height: 380px;
+      animation-duration: 16s; /* faster */
     }
 
     .planet-orbit.medium {
-      width: 340px;
-      height: 340px;
-      animation-duration: 34s;
+      width: 480px;
+      height: 480px;
+      animation-duration: 20s; /* faster */
     }
 
-    .planet-orbit.orbit-1 { top: 10%; left: calc(50% - 210px); }
-    .planet-orbit.orbit-2 { top: 60%; left: calc(50% - 170px); }
-    .planet-orbit.orbit-3 { top: 30%; left: calc(50% - 130px); }
+    /* Re-position for new sizes */
+    .planet-orbit.orbit-1 { top: 6%; left: calc(50% - 280px); }
+    .planet-orbit.orbit-2 { top: 62%; left: calc(50% - 240px); }
+    .planet-orbit.orbit-3 { top: 26%; left: calc(50% - 190px); }
 
     .planet-glass {
       position: absolute;
       border-radius: 50%;
       background:
-        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.12) 40%, rgba(0, 0, 0, 0) 70%),
+        radial-gradient(circle at 30% 30%,
+          rgba(255, 255, 255, 0.95),
+          rgba(255, 255, 255, 0.12) 40%,
+          rgba(0, 0, 0, 0) 70%
+        ),
         conic-gradient(from 120deg,
           hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%),
           hsl(calc((var(--galaxy-hue) + 70) * 1deg), 90%, 60%),
@@ -132,37 +130,48 @@
           hsl(calc((var(--galaxy-hue) + 280) * 1deg), 90%, 60%),
           hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%)
         );
+
       box-shadow:
-        0 0 18px hsla(calc(var(--galaxy-hue) * 1deg), 90%, 65%, 0.7),
-        0 0 54px hsla(calc((var(--galaxy-hue) + 110) * 1deg), 90%, 62%, 0.45);
-      opacity: 0.75;
-      animation: floaty 6.5s ease-in-out infinite;
+        0 0 22px hsla(calc(var(--galaxy-hue) * 1deg), 90%, 65%, 0.75),
+        0 0 70px hsla(calc((var(--galaxy-hue) + 110) * 1deg), 90%, 62%, 0.50);
+
+      opacity: 0.78;
+
+      /* Slight float motion */
+      animation: floaty 5.2s ease-in-out infinite;
     }
 
-    .planet-orbit.fast .planet-glass { animation-duration: 5.5s; }
-    .planet-orbit.medium .planet-glass { animation-duration: 7.5s; }
+    .planet-orbit.fast .planet-glass { animation-duration: 4.5s; }
+    .planet-orbit.medium .planet-glass { animation-duration: 6.0s; }
 
+    /* UPDATED: bigger planets */
     .planet-glass.big {
-      width: 110px; height: 110px;
-      top: -55px; left: calc(50% - 55px);
+      width: 160px;
+      height: 160px;
+      top: -80px;
+      left: calc(50% - 80px);
     }
     .planet-glass.medium {
-      width: 70px; height: 70px;
-      top: calc(50% - 35px); left: -35px;
+      width: 110px;
+      height: 110px;
+      top: calc(50% - 55px);
+      left: -55px;
     }
     .planet-glass.small {
-      width: 50px; height: 50px;
-      top: calc(100% - 25px); left: calc(50% - 25px);
+      width: 86px;
+      height: 86px;
+      top: calc(100% - 43px);
+      left: calc(50% - 43px);
     }
 
     @keyframes orbit-slow { to { transform: rotate(360deg); } }
     @keyframes floaty {
-      0%,100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
     }
 
     /* ============================================================
-       4) LAYOUT: CARD WRAPPER + FROSTED GLASS
+       4) LAYOUT: CARD WRAPPER + GLOSSY GLASS CARD
        ============================================================ */
     .wrap {
       position: relative;
@@ -173,15 +182,42 @@
     }
 
     .card {
-      background: var(--card-bg);
+      position: relative;
+      background: linear-gradient(
+        180deg,
+        rgba(210, 235, 255, 0.26),
+        rgba(170, 215, 255, 0.18)
+      );
       border-radius: 28px;
       border: 1px solid var(--card-border);
       box-shadow: var(--card-shadow);
       padding: 36px 24px 28px;
       text-align: center;
       color: var(--text-main);
-      backdrop-filter: blur(14px) saturate(170%);
+      backdrop-filter: blur(18px) saturate(185%);
+      -webkit-backdrop-filter: blur(18px) saturate(185%);
+      overflow: hidden;
     }
+
+    /* glossy shine */
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background:
+        radial-gradient(circle at 20% 0%,
+          rgba(255, 255, 255, 0.45),
+          rgba(255, 255, 255, 0.08) 45%,
+          rgba(255, 255, 255, 0) 70%
+        ),
+        radial-gradient(circle at 80% 10%,
+          rgba(59, 130, 246, 0.20),
+          rgba(59, 130, 246, 0) 60%
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+    .card > * { position: relative; z-index: 1; }
 
     @media (max-width: 640px) {
       .card { padding: 28px 18px 20px; }
@@ -197,10 +233,9 @@
       margin: 0 auto 14px;
       background: transparent !important;
       mix-blend-mode: normal;
-      filter: drop-shadow(0 0 18px rgba(191, 219, 254, 0.25));
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.18));
     }
 
-    /* Animate the timestamp glow pulse */
     @keyframes glowPulse {
       0%, 100% {
         box-shadow:
@@ -210,8 +245,8 @@
       }
       50% {
         box-shadow:
-          0 0 22px rgba(59, 130, 246, 0.85),
-          0 0 62px rgba(37, 99, 235, 0.75);
+          0 0 24px rgba(59, 130, 246, 0.85),
+          0 0 70px rgba(37, 99, 235, 0.75);
         transform: translateY(-1px);
       }
     }
@@ -260,15 +295,8 @@
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.5);
     }
 
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.5);
-    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7); }
+    .btn:active { transform: translateY(0); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.5); }
 
     .btn.call { background: var(--btn-call); }
     .btn.text { background: var(--btn-text); }
@@ -285,7 +313,6 @@
       overflow: hidden;
       transition: max-height 0.5s ease;
     }
-
     .booking.open { max-height: 2600px; }
 
     .section {
@@ -296,18 +323,8 @@
       padding: 16px;
     }
 
-    .subline {
-      font-size: 15px;
-      font-weight: 900;
-      color: #0f172a;
-    }
-
-    .now {
-      margin-top: 4px;
-      font-weight: 700;
-      font-size: 13px;
-      color: #2563eb;
-    }
+    .subline { font-size: 15px; font-weight: 900; color: #0f172a; }
+    .now { margin-top: 4px; font-weight: 700; font-size: 13px; color: #2563eb; }
 
     .row {
       display: grid;
@@ -315,7 +332,6 @@
       gap: 12px;
       margin-top: 10px;
     }
-
     @media (max-width: 720px) {
       .row { grid-template-columns: 1fr; }
     }
@@ -330,7 +346,6 @@
       gap: 8px;
     }
 
-    /* "Today" badge (Highlight today in scheduler) */
     .today-pill {
       display: inline-flex;
       align-items: center;
@@ -358,7 +373,6 @@
       box-shadow: 0 0 0 3px var(--ring);
     }
 
-    /* Highlight today (date input glow) */
     input.today {
       border-color: rgba(34, 197, 94, 0.7);
       box-shadow:
@@ -366,13 +380,7 @@
         0 0 18px rgba(34, 197, 94, 0.18);
     }
 
-    /* Slots grid */
-    .slots-title {
-      margin: 16px 0 10px;
-      font-weight: 900;
-      color: #0f172a;
-      font-size: 15px;
-    }
+    .slots-title { margin: 16px 0 10px; font-weight: 900; color: #0f172a; font-size: 15px; }
 
     .times {
       display: grid;
@@ -393,10 +401,7 @@
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
     }
 
-    .slot:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
-    }
+    .slot:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12); }
 
     .slot.active {
       background: var(--slot-active-bg);
@@ -414,7 +419,6 @@
       transform: none;
     }
 
-    /* Confirm button inside booking */
     .btn.confirm {
       margin-top: 16px;
       background: #020617;
@@ -428,7 +432,6 @@
       box-shadow: none;
     }
 
-    /* Status message */
     .msg {
       margin-top: 12px;
       padding: 10px 12px;
@@ -438,26 +441,9 @@
       display: none;
     }
 
-    .msg.ok {
-      display: block;
-      background: #dcfce7;
-      color: #166534;
-      border: 1px solid #86efac;
-    }
-
-    .msg.bad {
-      display: block;
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #fecaca;
-    }
-
-    .msg.warn {
-      display: block;
-      background: #fef3c7;
-      color: #92400e;
-      border: 1px solid #fde68a;
-    }
+    .msg.ok { display: block; background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .msg.bad { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .msg.warn { display: block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
     /* ============================================================
        8) CONFIRMATION CARD (after successful booking)
@@ -470,7 +456,6 @@
       background: #ffffff;
       padding: 14px;
     }
-
     .confirm-card.show { display: block; }
 
     .confirm-head {
@@ -495,17 +480,8 @@
       font-size: 20px;
     }
 
-    .confirm-title {
-      font-size: 17px;
-      font-weight: 900;
-      color: #0f172a;
-    }
-
-    .confirm-sub {
-      font-size: 13px;
-      color: #475569;
-      font-weight: 700;
-    }
+    .confirm-title { font-size: 17px; font-weight: 900; color: #0f172a; }
+    .confirm-sub { font-size: 13px; color: #475569; font-weight: 700; }
 
     .grid2 {
       margin-top: 12px;
@@ -513,10 +489,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
-
-    @media (max-width: 720px) {
-      .grid2 { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
 
     .mini-box {
       border-radius: 14px;
@@ -525,31 +498,14 @@
       background: #ffffff;
     }
 
-    .mini-label {
-      font-size: 12px;
-      font-weight: 900;
-      color: #64748b;
-      margin-bottom: 4px;
-    }
-
-    .mini-val {
-      font-size: 14px;
-      font-weight: 900;
-      color: #0f172a;
-      word-break: break-word;
-    }
+    .mini-label { font-size: 12px; font-weight: 900; color: #64748b; margin-bottom: 4px; }
+    .mini-val { font-size: 14px; font-weight: 900; color: #0f172a; word-break: break-word; }
   </style>
 </head>
 
 <body>
-  <!-- ============================================================
-       CANVAS STARFIELD (BACKGROUND)
-       ============================================================ -->
   <canvas id="starfield"></canvas>
 
-  <!-- ============================================================
-       ORBITING GLASS PLANETS LAYER
-       ============================================================ -->
   <div class="space-layer">
     <div class="planet-orbit orbit-1">
       <div class="planet-glass big"></div>
@@ -562,9 +518,6 @@
     </div>
   </div>
 
-  <!-- ============================================================
-       MAIN WRAPPER + CARD
-       ============================================================ -->
   <div class="wrap">
     <div class="card">
       <img
@@ -573,21 +526,11 @@
         alt="Columbus East Tax Services Logo"
       />
 
-      <!-- Neon date + 24h time (short formats) -->
       <div id="clockLine" class="clock-line"></div>
 
-      <button class="btn call" onclick="window.location='tel:6142597625'">
-        📞 Call Now
-      </button>
-      <button class="btn text" onclick="window.location='sms:6142597625'">
-        💬 Text Us
-      </button>
-      <button
-        class="btn email"
-        onclick="window.location='mailto:columbuseast.taxservices@outlook.com'"
-      >
-        ✉️ Email Us
-      </button>
+      <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
+      <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
+      <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
 
       <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
 
@@ -647,9 +590,7 @@
           <div class="slots-title">Available Times</div>
           <div id="times" class="times"></div>
 
-          <button id="confirmBtn" class="btn confirm" disabled>
-            Confirm Booking
-          </button>
+          <button id="confirmBtn" class="btn confirm" disabled>Confirm Booking</button>
 
           <div id="msg" class="msg"></div>
 
@@ -658,9 +599,7 @@
               <div class="check">✓</div>
               <div>
                 <div class="confirm-title">Booking Confirmed</div>
-                <div class="confirm-sub">
-                  Your appointment has been added to our schedule.
-                </div>
+                <div class="confirm-sub">Your appointment has been added to our schedule.</div>
               </div>
             </div>
 
@@ -687,6 +626,7 @@
               </div>
             </div>
           </div>
+
         </div>
       </div>
       <!-- /booking -->
@@ -706,14 +646,11 @@
        2) UTILITIES
        ------------------------------------------------------------ */
     function pad(n) { return String(n).padStart(2, "0"); }
-
     function todayYMD() {
       const d = new Date();
       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     }
-
     function fmtNice(dt) {
-      // Keep confirmation friendly (12-hour)
       return dt.toLocaleString("en-US", {
         weekday: "short",
         month: "short",
@@ -723,13 +660,11 @@
         hour12: true,
       });
     }
-
     function makeLocalDateTimeFrom24(dateStr, hm) {
       const [H, M] = hm.split(":").map(Number);
       const [Y, m, D] = dateStr.split("-").map(Number);
       return new Date(Y, m - 1, D, H, M, 0, 0);
     }
-
     function isValidEmail(v) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
     }
@@ -743,29 +678,21 @@
       const m = now.getMinutes();
       const s = now.getSeconds();
 
-      // Day/night (simple rule)
       document.body.dataset.theme = (h >= 7 && h < 19) ? "day" : "night";
 
-      // Sync galaxy hue with real time
-      // Smooth hue changes across the day: hour + minutes + seconds
       const hue = (h * 15 + m * 0.25 + s * (0.25 / 60)) % 360;
       document.documentElement.style.setProperty("--galaxy-hue", hue.toFixed(2));
 
-      // Update background using the hue (deep space gradient)
-      const c1 = `hsl(${hue.toFixed(1)}, 72%, ${h >= 7 && h < 19 ? "26%" : "18%"})`;
+      const c1 = `hsl(${hue.toFixed(1)}, 72%, ${(h >= 7 && h < 19) ? "26%" : "18%"})`;
       const c2 = `hsl(${((hue + 55) % 360).toFixed(1)}, 78%, 10%)`;
       const c3 = `hsl(${((hue + 120) % 360).toFixed(1)}, 82%, 6%)`;
-
-      document.body.style.background =
-        `radial-gradient(circle at 30% 20%, ${c1}, ${c2} 55%, ${c3} 100%)`;
+      document.body.style.background = `radial-gradient(circle at 30% 20%, ${c1}, ${c2} 55%, ${c3} 100%)`;
     }
-
     applyThemeAndGalaxy();
-    setInterval(applyThemeAndGalaxy, 10000); // every 10s for "real-time" feel
+    setInterval(applyThemeAndGalaxy, 10000);
 
     /* ------------------------------------------------------------
        4) NEON CLOCK (short weekday + short month + 24h)
-          + pulse is handled by CSS animation
        ------------------------------------------------------------ */
     const clockLine = document.getElementById("clockLine");
     const nowLine = document.getElementById("nowLine");
@@ -774,8 +701,8 @@
       const now = new Date();
 
       const datePart = new Intl.DateTimeFormat("en-US", {
-        weekday: "short",   // Mon
-        month: "short",     // Jan
+        weekday: "short",
+        month: "short",
         day: "2-digit",
         year: "numeric",
       }).format(now);
@@ -784,7 +711,7 @@
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
-        hour12: false,      // 24h
+        hour12: false,
       }).format(now);
 
       clockLine.textContent = `${datePart} • ${timePart}`;
@@ -830,20 +757,14 @@
     const cLoc = document.getElementById("cLoc");
 
     let selectedSlot = null; // "HH:MM"
-    let bookedSet = new Set(); // set of "HH:MM" for a given day
+    let bookedSet = new Set();
 
-    // Highlight today in scheduler (date input + badge)
     function updateTodayHighlight() {
       const isToday = dateEl.value === todayYMD();
       todayBadge.style.display = isToday ? "inline-flex" : "none";
       dateEl.classList.toggle("today", isToday);
     }
 
-    /* Allowed hours PER DAY OF WEEK (0=Sun..6=Sat)
-       Mon–Fri allowed starts: 9,10,11,12,17,18,19,20
-       Sat allowed starts: 8..19
-       Sun allowed starts: 9..19
-    */
     function getAllowedHours(dow) {
       if (dow >= 1 && dow <= 5) return [9, 10, 11, 12, 17, 18, 19, 20];
       if (dow === 6) return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
@@ -965,7 +886,6 @@
         console.error("Same-day check error:", error);
         return false;
       }
-
       return (data || []).some((row) => (row.status || "").toLowerCase() !== "cancelled");
     }
 
@@ -1088,7 +1008,6 @@
     function drawStarfield() {
       ctx.clearRect(0, 0, width, height);
 
-      // Subtle overlay that also shifts slightly with galaxy hue
       const hue = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--galaxy-hue")) || 220;
       ctx.fillStyle = `hsla(${hue}, 55%, 6%, 0.92)`;
       ctx.fillRect(0, 0, width, height);
