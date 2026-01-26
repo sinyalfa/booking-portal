@@ -2,70 +2,85 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Columbus East Tax Services – Booking Portal</title>
 
   <style>
     /* ============================================================
        1) GLOBAL RESETS + VARIABLES
        ============================================================ */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      /* Card + text */
-      --card-bg: rgba(255, 255, 255, 0.9);
-      --card-border: rgba(255, 255, 255, 0.35);
-      --card-shadow: 0 28px 80px rgba(0, 0, 0, 0.6);
-      --text-main: #0f172a;
-      --muted: #64748b;
-      --ring: rgba(96, 165, 250, 0.4);
+    :root{
+      /* Galaxy hue (JS updates this) */
+      --galHue: 220;                 /* 0..360 */
+      --galSat: 85%;
+      --galLum1: 22%;
+      --galLum2: 10%;
+
+      /* Glass card */
+      --card-bg: rgba(255,255,255,0.22);  /* LIGHT GLASS */
+      --card-border: rgba(255,255,255,0.22);
+      --card-shadow: 0 28px 90px rgba(0,0,0,0.55);
+
+      /* Text */
+      --text-main: #eaf2ff;
+      --muted: #c7d2fe;
+      --ring: rgba(96,165,250,.35);
 
       /* Buttons */
-      --btn-call: #2563eb;
-      --btn-text: #16a34a;
-      --btn-email: #9333ea;
-      --btn-book: #0f766e;
+      --btn-call:#2563eb;
+      --btn-text:#16a34a;
+      --btn-email:#9333ea;
+      --btn-book:#0f766e;
 
       /* Slots */
-      --slot-border: #34d399;
-      --slot-bg: #ecfdf5;
-      --slot-active-bg: #c7d2fe;
-      --slot-active-border: #6366f1;
-      --slot-disabled-bg: #f1f5f9;
-      --slot-disabled-border: #cbd5e1;
-      --slot-disabled-text: #94a3b8;
+      --slot-border:#34d399;
+      --slot-bg:#ecfdf5;
+      --slot-active-bg:#c7d2fe;
+      --slot-active-border:#6366f1;
+      --slot-disabled-bg:#f1f5f9;
+      --slot-disabled-border:#cbd5e1;
+      --slot-disabled-text:#94a3b8;
 
-      /* Neon clock glow */
-      --clock-glow: rgba(59, 130, 246, 0.9);
+      /* Clock glow */
+      --clockGlowA: rgba(59,130,246,0.55);
+      --clockGlowB: rgba(168,85,247,0.40);
+
+      /* Day/Night tuning */
+      --dayOverlay: rgba(255,255,255,0.04);
+      --nightOverlay: rgba(0,0,0,0.18);
     }
 
-    html,
-    body {
-      height: 100%;
-    }
+    html, body { height: 100%; }
 
-    body {
+    body{
       font-family: Arial, Helvetica, sans-serif;
       color: #fff;
       overflow-x: hidden;
-
-      /* Fallback background (overridden by JS hourly galaxy) */
-      background: radial-gradient(circle at 30% 20%, #0b1a3c, #020617 70%);
-      transition: background 2s ease;
       position: relative;
+      transition: background 1.2s ease;
+      /* background is driven by JS using --galHue */
+      background:
+        radial-gradient(circle at 30% 18%,
+          hsl(var(--galHue) var(--galSat) var(--galLum1)),
+          hsl(calc(var(--galHue) + 40) var(--galSat) var(--galLum2)) 70%);
+    }
+
+    body.day{
+      /* Slightly brighter in daytime */
+      --card-bg: rgba(255,255,255,0.26);
+      --card-border: rgba(255,255,255,0.26);
+    }
+    body.night{
+      --card-bg: rgba(255,255,255,0.20);
+      --card-border: rgba(255,255,255,0.20);
     }
 
     /* ============================================================
        2) CANVAS STARFIELD + SHOOTING STARS LAYER
        ============================================================ */
-    canvas#starfield {
+    canvas#starfield{
       position: fixed;
       inset: 0;
       width: 100vw;
@@ -77,98 +92,87 @@
     /* ============================================================
        3) ORBITING GLASS PLANETS AROUND CARD (CSS ONLY)
        ============================================================ */
-
-    /* Container to anchor planets around the card */
-    .space-layer {
+    .space-layer{
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: -2;
     }
 
-    .planet-orbit {
+    .planet-orbit{
       position: absolute;
       border-radius: 50%;
-      /* invisible orbit circle – only used as anchor */
       width: 420px;
       height: 420px;
       transform-origin: center center;
-      animation: orbit-slow 42s linear infinite;
+      animation: orbitSpin 42s linear infinite;
+      opacity: 0.75;
+      filter: saturate(1.15);
     }
+    .planet-orbit.fast{ width: 280px; height: 280px; animation-duration: 22s; opacity: 0.65; }
+    .planet-orbit.medium{ width: 360px; height: 360px; animation-duration: 34s; opacity: 0.70; }
 
-    .planet-orbit.fast {
-      width: 260px;
-      height: 260px;
-      animation-duration: 26s;
-    }
+    .planet-orbit.orbit-1{ top: 10%; left: calc(50% - 210px); }
+    .planet-orbit.orbit-2{ top: 60%; left: calc(50% - 180px); }
+    .planet-orbit.orbit-3{ top: 30%; left: calc(50% - 140px); }
+    /* extra orbits */
+    .planet-orbit.orbit-4{ top: 18%; left: calc(50% - 260px); width: 520px; height: 520px; animation-duration: 48s; opacity: 0.55; }
+    .planet-orbit.orbit-5{ top: 52%; left: calc(50% - 200px); width: 380px; height: 380px; animation-duration: 26s; opacity: 0.55; }
 
-    .planet-orbit.medium {
-      width: 340px;
-      height: 340px;
-      animation-duration: 34s;
-    }
-
-    /* Place orbits roughly around center of screen */
-    .planet-orbit.orbit-1 {
-      top: 10%;
-      left: calc(50% - 210px);
-    }
-    .planet-orbit.orbit-2 {
-      top: 60%;
-      left: calc(50% - 170px);
-    }
-    .planet-orbit.orbit-3 {
-      top: 30%;
-      left: calc(50% - 130px);
-    }
-
-    .planet-glass {
+    .planet-glass{
       position: absolute;
       border-radius: 50%;
-      /* "Glass planet" with inner nebula glow */
       background:
-        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.12) 40%, rgba(0, 0, 0, 0) 70%),
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.92), rgba(255,255,255,0.10) 45%, rgba(0,0,0,0) 74%),
         conic-gradient(from 120deg, #60a5fa, #a855f7, #22d3ee, #4f46e5, #f97316, #60a5fa);
       box-shadow:
-        0 0 18px rgba(59, 130, 246, 0.7),
-        0 0 54px rgba(168, 85, 247, 0.45);
-      opacity: 0.75;
-      /* Planet size defined by orbit container */
+        0 0 18px rgba(59,130,246,0.65),
+        0 0 54px rgba(168,85,247,0.35);
+      opacity: 0.70;
+      animation: floaty 7.5s ease-in-out infinite;
     }
 
-    /* Position planets along orbit circle */
-    .planet-glass.big {
-      width: 110px;
-      height: 110px;
-      top: -55px;
-      left: calc(50% - 55px);
+    .planet-glass.big{ width: 110px; height: 110px; top: -55px; left: calc(50% - 55px); }
+    .planet-glass.medium{ width: 74px; height: 74px; top: calc(50% - 37px); left: -37px; }
+    .planet-glass.small{ width: 52px; height: 52px; top: calc(100% - 26px); left: calc(50% - 26px); }
+
+    /* variations */
+    .nebula-b{
+      background:
+        radial-gradient(circle at 35% 25%, rgba(255,255,255,0.92), rgba(255,255,255,0.09) 46%, rgba(0,0,0,0) 76%),
+        conic-gradient(from 40deg, #22d3ee, #a855f7, #60a5fa, #f472b6, #22d3ee);
     }
-    .planet-glass.medium {
-      width: 70px;
-      height: 70px;
-      top: calc(50% - 35px);
-      left: -35px;
+    .nebula-c{
+      background:
+        radial-gradient(circle at 25% 35%, rgba(255,255,255,0.92), rgba(255,255,255,0.10) 42%, rgba(0,0,0,0) 76%),
+        conic-gradient(from 200deg, #60a5fa, #34d399, #a855f7, #fb7185, #60a5fa);
     }
-    .planet-glass.small {
-      width: 50px;
-      height: 50px;
-      top: calc(100% - 25px);
-      left: calc(50% - 25px);
+    .nebula-d{
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.90), rgba(255,255,255,0.09) 46%, rgba(0,0,0,0) 76%),
+        conic-gradient(from 260deg, #a855f7, #60a5fa, #22d3ee, #f97316, #a855f7);
+    }
+    .nebula-e{
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.92), rgba(255,255,255,0.09) 46%, rgba(0,0,0,0) 76%),
+        conic-gradient(from 320deg, #22d3ee, #60a5fa, #a855f7, #4f46e5, #22d3ee);
     }
 
-    @keyframes orbit-slow {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
+    @keyframes orbitSpin{
+      0%{ transform: rotate(0deg); }
+      100%{ transform: rotate(360deg); }
     }
+    @keyframes floaty{
+      0%,100%{ transform: translateY(0px); }
+      50%{ transform: translateY(-10px); }
+    }
+    .planet-orbit.fast .planet-glass{ animation-duration: 6s; }
+    .planet-orbit.medium .planet-glass{ animation-duration: 8.5s; }
 
     /* ============================================================
        4) LAYOUT: CARD WRAPPER + FROSTED GLASS
        ============================================================ */
-    .wrap {
+    .wrap{
       position: relative;
       z-index: 5;
       max-width: 980px;
@@ -176,7 +180,7 @@
       padding: 22px;
     }
 
-    .card {
+    .card{
       background: var(--card-bg);
       border-radius: 28px;
       border: 1px solid var(--card-border);
@@ -184,60 +188,83 @@
       padding: 36px 24px 28px;
       text-align: center;
       color: var(--text-main);
-      backdrop-filter: blur(14px) saturate(170%);
+      backdrop-filter: blur(18px) saturate(190%);
+      -webkit-backdrop-filter: blur(18px) saturate(190%);
+      position: relative;
+      overflow: hidden;
     }
+    .card::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,0.18), transparent 55%),
+        radial-gradient(circle at 85% 0%, rgba(59,130,246,0.12), transparent 55%);
+      pointer-events:none;
+    }
+    .card > *{ position: relative; z-index: 1; }
 
-    @media (max-width: 640px) {
-      .card {
-        padding: 28px 18px 20px;
-      }
+    @media (max-width: 640px){
+      .card{ padding: 28px 18px 20px; }
     }
 
     /* ============================================================
        5) LOGO + NEON CLOCK
        ============================================================ */
-
-    .logo {
+    .logo{
       width: 360px;
       max-width: 92%;
       display: block;
       margin: 0 auto 14px;
       background: transparent !important;
       mix-blend-mode: normal;
+      filter: drop-shadow(0 0 12px rgba(59,130,246,0.25));
     }
 
-    /* Big neon date/time replaces phone numbers */
-    .clock-line {
+    /* ✨ Timestamp glow pulse */
+    .clock-line{
       margin: 10px auto 30px;
-      max-width: 420px; /* medium width, like old numbers */
+      max-width: 520px;
       font-size: 20px;
       font-weight: 900;
-      color: #e5f0ff;
+      color: #eaf2ff;
       text-align: center;
       padding: 10px 16px;
       border-radius: 999px;
-      background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.34), rgba(15, 23, 42, 0.95));
-      box-shadow:
-        0 0 14px rgba(59, 130, 246, 0.7),
-        0 0 40px rgba(37, 99, 235, 0.6);
-      border: 1px solid rgba(191, 219, 254, 0.3);
+      background: radial-gradient(circle at 50% 0%, rgba(37,99,235,0.26), rgba(15,23,42,0.65));
+      border: 1px solid rgba(191,219,254,0.24);
       letter-spacing: 0.5px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+
+      animation: glowPulse 2.4s ease-in-out infinite;
     }
 
-    @media (max-width: 480px) {
-      .clock-line {
-        font-size: 16px;
-        padding: 9px 10px;
+    @keyframes glowPulse{
+      0%,100%{
+        box-shadow:
+          0 0 10px var(--clockGlowA),
+          0 0 28px rgba(37,99,235,0.35),
+          0 0 44px rgba(168,85,247,0.22);
+        transform: translateY(0);
       }
+      50%{
+        box-shadow:
+          0 0 16px rgba(59,130,246,0.85),
+          0 0 44px rgba(37,99,235,0.55),
+          0 0 68px rgba(168,85,247,0.35);
+        transform: translateY(-1px);
+      }
+    }
+
+    @media (max-width: 480px){
+      .clock-line{ font-size: 16px; padding: 9px 10px; }
     }
 
     /* ============================================================
        6) MAIN CTA BUTTONS
        ============================================================ */
-    .btn {
+    .btn{
       width: 100%;
       padding: 18px;
       margin: 12px 0;
@@ -247,86 +274,59 @@
       font-weight: 900;
       color: #fff;
       cursor: pointer;
-      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.5);
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.45);
     }
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(15,23,42,0.65); }
+    .btn:active{ transform: translateY(0); box-shadow: 0 6px 16px rgba(15,23,42,0.45); }
 
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.5);
-    }
-
-    .btn.call {
-      background: var(--btn-call);
-    }
-
-    .btn.text {
-      background: var(--btn-text);
-    }
-
-    .btn.email {
-      background: var(--btn-email);
-    }
-
-    .btn.book {
-      background: var(--btn-book);
-    }
+    .btn.call{ background: var(--btn-call); }
+    .btn.text{ background: var(--btn-text); }
+    .btn.email{ background: var(--btn-email); }
+    .btn.book{ background: var(--btn-book); }
 
     /* ============================================================
        7) BOOKING PANEL CONTAINER
        ============================================================ */
-    .booking {
+    .booking{
       margin-top: 18px;
       text-align: left;
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.5s ease;
     }
+    .booking.open{ max-height: 2600px; }
 
-    .booking.open {
-      max-height: 2600px;
-    }
-
-    .section {
+    /* lighter glass inside the booking area */
+    .section{
       margin-top: 12px;
       border-radius: 20px;
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
+      background: rgba(255,255,255,0.75);
+      border: 1px solid rgba(255,255,255,0.35);
       padding: 16px;
-    }
-
-    .subline {
-      font-size: 15px;
-      font-weight: 900;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       color: #0f172a;
     }
 
-    .now {
+    .subline{ font-size: 15px; font-weight: 900; color: #0f172a; }
+
+    .now{
       margin-top: 4px;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 13px;
-      color: #2563eb;
+      color: #1d4ed8;
     }
 
-    .row {
+    .row{
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       margin-top: 10px;
     }
+    @media (max-width: 720px){ .row{ grid-template-columns: 1fr; } }
 
-    @media (max-width: 720px) {
-      .row {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    label {
+    label{
       font-size: 13px;
       font-weight: 900;
       color: #0f172a;
@@ -334,37 +334,59 @@
       display: block;
     }
 
-    input,
-    select {
+    input, select{
       width: 100%;
       padding: 12px 12px;
       border-radius: 12px;
       border: 1px solid #cbd5e1;
       font-size: 14px;
       outline: none;
+      background: rgba(255,255,255,0.95);
     }
-
-    input:focus,
-    select:focus {
-      border-color: rgba(37, 99, 235, 0.85);
+    input:focus, select:focus{
+      border-color: rgba(37,99,235,0.85);
       box-shadow: 0 0 0 3px var(--ring);
     }
 
-    /* Slots grid */
-    .slots-title {
+    /* 📅 Highlight Today in scheduler (date input) */
+    input#date.today{
+      border-color: rgba(59,130,246,0.95);
+      box-shadow:
+        0 0 0 3px rgba(59,130,246,0.20),
+        0 0 18px rgba(59,130,246,0.30);
+    }
+
+    .slots-title{
       margin: 16px 0 10px;
       font-weight: 900;
       color: #0f172a;
       font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .today-badge{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(59,130,246,0.35);
+      background: rgba(59,130,246,0.12);
+      color: #0b2a5a;
+      font-weight: 900;
+      font-size: 12px;
     }
 
-    .times {
+    .times{
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
       gap: 10px;
     }
 
-    .slot {
+    .slot{
       padding: 12px;
       border-radius: 14px;
       border: 1px solid var(--slot-border);
@@ -374,22 +396,16 @@
       color: #065f46;
       text-align: center;
       cursor: pointer;
-      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+      transition: transform .1s ease, box-shadow .1s ease, background .1s ease;
     }
-
-    .slot:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
-    }
-
-    .slot.active {
+    .slot:hover{ transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15,23,42,0.12); }
+    .slot.active{
       background: var(--slot-active-bg);
       border-color: var(--slot-active-border);
       color: #1e1b4b;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.24);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.24);
     }
-
-    .slot.disabled {
+    .slot.disabled{
       background: var(--slot-disabled-bg);
       border-color: var(--slot-disabled-border);
       color: var(--slot-disabled-text);
@@ -398,22 +414,19 @@
       transform: none;
     }
 
-    /* Confirm button inside booking */
-    .btn.confirm {
+    .btn.confirm{
       margin-top: 16px;
       background: #020617;
       width: 100%;
     }
-
-    .btn.confirm:disabled {
+    .btn.confirm:disabled{
       opacity: 0.5;
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
     }
 
-    /* Status message */
-    .msg {
+    .msg{
       margin-top: 12px;
       padding: 10px 12px;
       border-radius: 10px;
@@ -421,182 +434,93 @@
       font-weight: 900;
       display: none;
     }
-
-    .msg.ok {
-      display: block;
-      background: #dcfce7;
-      color: #166534;
-      border: 1px solid #86efac;
-    }
-
-    .msg.bad {
-      display: block;
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #fecaca;
-    }
-
-    .msg.warn {
-      display: block;
-      background: #fef3c7;
-      color: #92400e;
-      border: 1px solid #fde68a;
-    }
+    .msg.ok{ display:block; background:#dcfce7; color:#166534; border:1px solid #86efac; }
+    .msg.bad{ display:block; background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
+    .msg.warn{ display:block; background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
 
     /* ============================================================
-       8) CONFIRMATION CARD (after successful booking)
+       8) CONFIRMATION CARD
        ============================================================ */
-    .confirm-card {
+    .confirm-card{
       display: none;
       margin-top: 16px;
       border-radius: 18px;
       border: 1px solid #e5e7eb;
-      background: #ffffff;
+      background: rgba(255,255,255,0.92);
       padding: 14px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
+    .confirm-card.show{ display:block; }
 
-    .confirm-card.show {
-      display: block;
+    .confirm-head{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding-bottom:10px;
+      border-bottom:1px solid #e5e7eb;
     }
-
-    .confirm-head {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #e5e7eb;
+    .check{
+      width:40px;height:40px;border-radius:14px;
+      background:#dcfce7;border:1px solid #86efac;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;color:#166534;font-size:20px;
     }
+    .confirm-title{ font-size:17px; font-weight:900; color:#0f172a; }
+    .confirm-sub{ font-size:13px; color:#475569; font-weight:700; }
 
-    .check {
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      background: #dcfce7;
-      border: 1px solid #86efac;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      color: #166534;
-      font-size: 20px;
-    }
-
-    .confirm-title {
-      font-size: 17px;
-      font-weight: 900;
-      color: #0f172a;
-    }
-
-    .confirm-sub {
-      font-size: 13px;
-      color: #475569;
-      font-weight: 700;
-    }
-
-    .grid2 {
-      margin-top: 12px;
-      display: grid;
+    .grid2{
+      margin-top:12px;
+      display:grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap:10px;
     }
+    @media (max-width: 720px){ .grid2{ grid-template-columns: 1fr; } }
 
-    @media (max-width: 720px) {
-      .grid2 {
-        grid-template-columns: 1fr;
-      }
+    .mini-box{
+      border-radius:14px;
+      border:1px solid #e5e7eb;
+      padding:10px;
+      background:#ffffff;
     }
-
-    .mini-box {
-      border-radius: 14px;
-      border: 1px solid #e5e7eb;
-      padding: 10px;
-      background: #ffffff;
-    }
-
-    .mini-label {
-      font-size: 12px;
-      font-weight: 900;
-      color: #64748b;
-      margin-bottom: 4px;
-    }
-
-    .mini-val {
-      font-size: 14px;
-      font-weight: 900;
-      color: #0f172a;
-      word-break: break-word;
-    }
+    .mini-label{ font-size:12px; font-weight:900; color:#64748b; margin-bottom:4px; }
+    .mini-val{ font-size:14px; font-weight:900; color:#0f172a; word-break:break-word; }
   </style>
 </head>
 
 <body>
-  <!-- ============================================================
-       CANVAS STARFIELD (BACKGROUND)
-       ============================================================ -->
+  <!-- CANVAS BACKGROUND -->
   <canvas id="starfield"></canvas>
 
-  <!-- ============================================================
-       ORBITING GLASS PLANETS LAYER
-       ============================================================ -->
+  <!-- ORBITING PLANETS -->
   <div class="space-layer">
-    <!-- Big slow orbit -->
-    <div class="planet-orbit orbit-1">
-      <div class="planet-glass big"></div>
-    </div>
-    <!-- Medium speed orbit -->
-    <div class="planet-orbit orbit-2 medium">
-      <div class="planet-glass medium"></div>
-    </div>
-    <!-- Smaller faster orbit -->
-    <div class="planet-orbit orbit-3 fast">
-      <div class="planet-glass small"></div>
-    </div>
+    <div class="planet-orbit orbit-1"><div class="planet-glass big"></div></div>
+    <div class="planet-orbit orbit-2 medium"><div class="planet-glass medium nebula-b"></div></div>
+    <div class="planet-orbit orbit-3 fast"><div class="planet-glass small nebula-c"></div></div>
+    <div class="planet-orbit orbit-4"><div class="planet-glass medium nebula-d"></div></div>
+    <div class="planet-orbit orbit-5 fast"><div class="planet-glass small nebula-e"></div></div>
   </div>
 
-  <!-- ============================================================
-       MAIN WRAPPER + CARD
-       ============================================================ -->
+  <!-- MAIN CARD -->
   <div class="wrap">
     <div class="card">
-      <!-- Logo from GitHub raw -->
-      <img
-        class="logo"
+      <img class="logo"
         src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png"
-        alt="Columbus East Tax Services Logo"
-      />
+        alt="Columbus East Tax Services Logo" />
 
-      <!-- Neon date + 24h time (replaces phone numbers) -->
-      <div id="clockLine" class="clock-line">
-        <!-- Filled by JS -->
-      </div>
+      <div id="clockLine" class="clock-line"></div>
 
-      <!-- Main CTA buttons -->
-      <button class="btn call" onclick="window.location='tel:6142597625'">
-        📞 Call Now
-      </button>
-      <button class="btn text" onclick="window.location='sms:6142597625'">
-        💬 Text Us
-      </button>
-      <button
-        class="btn email"
-        onclick="window.location='mailto:columbuseast.taxservices@outlook.com'"
-      >
-        ✉️ Email Us
-      </button>
+      <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
+      <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
+      <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
 
-      <button class="btn book" id="toggleBtn">
-        📅 Book Appointment
-      </button>
+      <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
 
-      <!-- ========================================================
-           BOOKING PANEL (collapsible)
-           ======================================================== -->
       <div id="booking" class="booking">
         <div class="section">
           <div class="subline">Book an Appointment</div>
           <div id="nowLine" class="now"></div>
 
-          <!-- Name + Email -->
           <div class="row">
             <div>
               <label for="fullName">Full Name</label>
@@ -608,7 +532,6 @@
             </div>
           </div>
 
-          <!-- Service + Location -->
           <div class="row">
             <div>
               <label for="service">Service</label>
@@ -633,7 +556,6 @@
             </div>
           </div>
 
-          <!-- Date + Duration -->
           <div class="row">
             <div>
               <label for="date">Date</label>
@@ -647,186 +569,56 @@
             </div>
           </div>
 
-          <!-- Available Times -->
-          <div class="slots-title">Available Times</div>
+          <div class="slots-title">
+            <span>Available Times</span>
+            <span id="todayBadge" class="today-badge" style="display:none;">📅 Today</span>
+          </div>
           <div id="times" class="times"></div>
 
-          <!-- Confirm Button -->
-          <button id="confirmBtn" class="btn confirm" disabled>
-            Confirm Booking
-          </button>
+          <button id="confirmBtn" class="btn confirm" disabled>Confirm Booking</button>
 
-          <!-- Status message -->
           <div id="msg" class="msg"></div>
 
-          <!-- Confirmation card -->
           <div id="confirmCard" class="confirm-card">
             <div class="confirm-head">
               <div class="check">✓</div>
               <div>
                 <div class="confirm-title">Booking Confirmed</div>
-                <div class="confirm-sub">
-                  Your appointment has been added to our schedule.
-                </div>
+                <div class="confirm-sub">Your appointment has been added to our schedule.</div>
               </div>
             </div>
 
             <div class="grid2">
-              <div class="mini-box">
-                <div class="mini-label">Client</div>
-                <div id="cName" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Email</div>
-                <div id="cEmail" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Date & Time</div>
-                <div id="cWhen" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Service</div>
-                <div id="cService" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Location</div>
-                <div id="cLoc" class="mini-val"></div>
-              </div>
+              <div class="mini-box"><div class="mini-label">Client</div><div id="cName" class="mini-val"></div></div>
+              <div class="mini-box"><div class="mini-label">Email</div><div id="cEmail" class="mini-val"></div></div>
+              <div class="mini-box"><div class="mini-label">Date & Time</div><div id="cWhen" class="mini-val"></div></div>
+              <div class="mini-box"><div class="mini-label">Service</div><div id="cService" class="mini-val"></div></div>
+              <div class="mini-box"><div class="mini-label">Location</div><div id="cLoc" class="mini-val"></div></div>
             </div>
           </div>
         </div>
-      </div>
-      <!-- /booking -->
-    </div>
-  </div>
+      </div><!-- /booking -->
+    </div><!-- /card -->
+  </div><!-- /wrap -->
 
-  <!-- ============================================================
-       SCRIPTS: SUPABASE + STARFIELD + BOOKING LOGIC
-       ============================================================ -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    /* ------------------------------------------------------------
-       1) SUPABASE CLIENT CONFIG
-       ------------------------------------------------------------ */
+    /* ============================================================
+       SUPABASE
+       ============================================================ */
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    /* ------------------------------------------------------------
-       2) UTILITIES
-       ------------------------------------------------------------ */
-    function pad(n) {
-      return String(n).padStart(2, "0");
-    }
-
-    function todayYMD() {
-      const d = new Date();
-      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-    }
-
-    function fmtNice(dt) {
-      return dt.toLocaleString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      });
-    }
-
-    /* Convert 24h "HH:MM" (string) + date string "YYYY-MM-DD" to Date */
-    function makeLocalDateTimeFrom24(dateStr, hm) {
-      const [H, M] = hm.split(":").map(Number);
-      const [Y, m, D] = dateStr.split("-").map(Number);
-      return new Date(Y, m - 1, D, H, M, 0, 0);
-    }
-
-    function isValidEmail(v) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-    }
-
-    /* ------------------------------------------------------------
-       3) HOURLY GALAXY COLOR (BACKGROUND)
-       ------------------------------------------------------------ */
-    function updateGalaxyBackground() {
-      const h = new Date().getHours();
-      // Simple 6-step palette (you can tweak)
-      let start = "#0b1a3c";
-      let end = "#020617";
-
-      if (h >= 0 && h < 3) {
-        start = "#05081a";
-        end = "#020617";
-      } else if (h >= 3 && h < 6) {
-        start = "#081a3a";
-        end = "#020617";
-      } else if (h >= 6 && h < 9) {
-        start = "#1f2937";
-        end = "#020617";
-      } else if (h >= 9 && h < 15) {
-        start = "#1d4ed8";
-        end = "#020617";
-      } else if (h >= 15 && h < 19) {
-        start = "#4c1d95";
-        end = "#020617";
-      } else {
-        start = "#020617";
-        end = "#000000";
-      }
-
-      document.body.style.background = `radial-gradient(circle at 30% 20%, ${start}, ${end} 70%)`;
-    }
-
-    updateGalaxyBackground();
-    setInterval(updateGalaxyBackground, 60 * 60 * 1000); // every hour
-
-    /* ------------------------------------------------------------
-       4) NEON CLOCK (REPLACES PHONE NUMBERS)
-       ------------------------------------------------------------ */
+    /* ============================================================
+       ELEMENTS
+       ============================================================ */
     const clockLine = document.getElementById("clockLine");
     const nowLine = document.getElementById("nowLine");
 
-    function updateClock() {
-      const now = new Date();
-      // Long weekday + month + date + year
-      const datePart = now.toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      });
-      // 24h time
-      const timePart = now.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      });
-      clockLine.textContent = `${datePart} • ${timePart}`;
-      nowLine.textContent = "Current time: " + timePart;
-    }
-
-    updateClock();
-    setInterval(updateClock, 1000);
-
-    /* ------------------------------------------------------------
-       5) COLLAPSIBLE BOOKING PANEL TOGGLE
-       ------------------------------------------------------------ */
     const toggleBtn = document.getElementById("toggleBtn");
     const booking = document.getElementById("booking");
 
-    toggleBtn.addEventListener("click", () => {
-      booking.classList.toggle("open");
-      if (booking.classList.contains("open")) {
-        if (!dateEl.value) dateEl.value = todayYMD();
-        refreshSlots();
-      }
-    });
-
-    /* ------------------------------------------------------------
-       6) DATE / TIME SLOT GENERATION (DYNAMIC HOURS – 60 MIN)
-       ------------------------------------------------------------ */
     const timesBox = document.getElementById("times");
     const confirmBtn = document.getElementById("confirmBtn");
     const msg = document.getElementById("msg");
@@ -837,6 +629,7 @@
     const serviceEl = document.getElementById("service");
     const locationEl = document.getElementById("location");
     const dateEl = document.getElementById("date");
+    const todayBadge = document.getElementById("todayBadge");
 
     const cName = document.getElementById("cName");
     const cEmail = document.getElementById("cEmail");
@@ -844,41 +637,108 @@
     const cService = document.getElementById("cService");
     const cLoc = document.getElementById("cLoc");
 
-    let selectedSlot = null; // "HH:MM"
-    let bookedSet = new Set(); // set of "HH:MM" for a given day
+    /* ============================================================
+       UTILS
+       ============================================================ */
+    function pad(n){ return String(n).padStart(2,"0"); }
+    function todayYMD(){
+      const d = new Date();
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+    function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+    function makeLocalDateTimeFrom24(dateStr, hm){
+      const [H,M] = hm.split(":").map(Number);
+      const [Y,mo,D] = dateStr.split("-").map(Number);
+      return new Date(Y, mo-1, D, H, M, 0, 0);
+    }
+    function fmtNice(dt){
+      return dt.toLocaleString("en-US", {
+        weekday:"short", month:"short", day:"numeric",
+        hour:"2-digit", minute:"2-digit", hour12:true
+      });
+    }
 
-    /* Allowed hours PER DAY OF WEEK (0=Sun..6=Sat)
-       You chose:
+    /* ============================================================
+       🌍 Day/Night switch + 🌌 Galaxy hue synced to real time
+       - Hue moves smoothly through the day based on minutes since midnight.
+       - Day mode ~ 7am-6pm (tweakable)
+       ============================================================ */
+    function applyDayNightAndHue(){
+      const now = new Date();
+      const h = now.getHours();
+      const mins = h * 60 + now.getMinutes();
+      const t = mins / (24 * 60);              // 0..1
+      const hue = Math.round(200 + 160 * t);   // 200..360 (wrap-friendly)
+
+      document.documentElement.style.setProperty("--galHue", (hue % 360).toString());
+
+      const isDay = (h >= 7 && h < 18);
+      document.body.classList.toggle("day", isDay);
+      document.body.classList.toggle("night", !isDay);
+    }
+    applyDayNightAndHue();
+    setInterval(applyDayNightAndHue, 60 * 1000); // update each minute
+
+    /* ============================================================
+       ✨ Clock: short weekday/month + 24h time
+       ============================================================ */
+    function updateClock(){
+      const now = new Date();
+      const formatted = new Intl.DateTimeFormat("en-US", {
+        weekday: "short",   // Mon
+        month: "short",     // Jan
+        day: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }).format(now);
+
+      clockLine.textContent = formatted;
+
+      // also keep a simpler line inside booking
+      const timePart = now.toLocaleTimeString("en-US", {
+        hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+      });
+      nowLine.textContent = "Current time: " + timePart;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    /* ============================================================
+       Booking panel toggle
+       ============================================================ */
+    toggleBtn.addEventListener("click", () => {
+      booking.classList.toggle("open");
+      if (booking.classList.contains("open")) {
+        if (!dateEl.value) dateEl.value = todayYMD();
+        refreshSlots();
+      }
+    });
+
+    /* ============================================================
+       Availability rules (60 min)
        Mon–Fri allowed starts: 9,10,11,12,17,18,19,20
        Sat allowed starts: 8..19
        Sun allowed starts: 9..19
-    */
-    function getAllowedHours(dow) {
-      if (dow >= 1 && dow <= 5) {
-        // Monday–Friday
-        return [9, 10, 11, 12, 17, 18, 19, 20];
-      } else if (dow === 6) {
-        // Saturday
-        return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-      } else {
-        // Sunday
-        return [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-      }
+       ============================================================ */
+    function getAllowedHours(dow){
+      if (dow >= 1 && dow <= 5) return [9,10,11,12,17,18,19,20];
+      if (dow === 6) return [8,9,10,11,12,13,14,15,16,17,18,19];
+      return [9,10,11,12,13,14,15,16,17,18,19];
     }
-
-    /* Convert 24h "HH:MM" to 12h label like "10:00 AM" */
-    function to12hLabel(hm) {
-      let [H, M] = hm.split(":").map(Number);
+    function to12hLabel(hm){
+      let [H,M] = hm.split(":").map(Number);
       const ampm = H >= 12 ? "PM" : "AM";
-      H = H % 12;
-      if (H === 0) H = 12;
+      H = H % 12; if (H === 0) H = 12;
       return `${pad(H)}:${pad(M)} ${ampm}`;
     }
 
-    /* ------------------------------------------------------------
-       7) FETCH ALREADY-BOOKED TIMES FOR SELECTED DATE
-       ------------------------------------------------------------ */
-    async function fetchBookedForDate(ymd) {
+    let selectedSlot = null;  // "HH:MM"
+    let bookedSet = new Set();
+
+    async function fetchBookedForDate(ymd){
       const start = new Date(ymd + "T00:00:00");
       const end = new Date(ymd + "T23:59:59");
       const { data, error } = await supa
@@ -893,44 +753,48 @@
       }
 
       const set = new Set();
-      (data || []).forEach((row) => {
+      (data || []).forEach(row => {
         if ((row.status || "").toLowerCase() === "cancelled") return;
         const dt = new Date(row.start_time);
-        const hh = pad(dt.getHours());
-        const mm = pad(dt.getMinutes());
-        set.add(`${hh}:${mm}`);
+        set.add(`${pad(dt.getHours())}:${pad(dt.getMinutes())}`);
       });
       return set;
     }
 
-    /* ------------------------------------------------------------
-       8) RENDER SLOTS FOR SELECTED DATE
-       ------------------------------------------------------------ */
-    async function refreshSlots() {
+    function updateTodayHighlight(){
+      const isToday = (dateEl.value === todayYMD());
+      dateEl.classList.toggle("today", isToday);
+      todayBadge.style.display = isToday ? "inline-flex" : "none";
+    }
+
+    async function refreshSlots(){
       const ymd = dateEl.value;
       timesBox.innerHTML = "";
       selectedSlot = null;
       confirmBtn.disabled = true;
+
       msg.className = "msg";
       msg.textContent = "";
 
-      if (!ymd) {
+      if (!ymd){
         msg.className = "msg warn";
         msg.textContent = "Please pick a date.";
+        updateTodayHighlight();
         return;
       }
+
+      updateTodayHighlight();
 
       const dateObj = new Date(ymd + "T00:00:00");
       const dow = dateObj.getDay();
       const allowedHours = getAllowedHours(dow);
 
-      // bookedSet from Supabase
       bookedSet = await fetchBookedForDate(ymd);
 
       const now = new Date();
       let anyAvailable = false;
 
-      allowedHours.forEach((H) => {
+      allowedHours.forEach(H => {
         const hm = `${pad(H)}:00`;
         const slotDate = makeLocalDateTimeFrom24(ymd, hm);
         const isPast = slotDate <= now;
@@ -940,24 +804,21 @@
         div.className = "slot";
         div.textContent = to12hLabel(hm);
 
-        if (isBooked || isPast) {
+        if (isBooked || isPast){
           div.classList.add("disabled");
         } else {
           anyAvailable = true;
           div.addEventListener("click", () => {
-            document
-              .querySelectorAll(".slot")
-              .forEach((x) => x.classList.remove("active"));
+            document.querySelectorAll(".slot").forEach(x => x.classList.remove("active"));
             div.classList.add("active");
             selectedSlot = hm;
             validateForm();
           });
         }
-
         timesBox.appendChild(div);
       });
 
-      if (!anyAvailable) {
+      if (!anyAvailable){
         msg.className = "msg warn";
         msg.textContent = "No available times for this date.";
       } else {
@@ -966,10 +827,7 @@
       }
     }
 
-    /* ------------------------------------------------------------
-       9) FORM VALIDATION
-       ------------------------------------------------------------ */
-    function validateForm() {
+    function validateForm(){
       const nameOk = (fullNameEl.value || "").trim().length > 1;
       const emailOk = isValidEmail((emailEl.value || "").trim());
       const slotOk = !!selectedSlot;
@@ -978,18 +836,11 @@
 
     fullNameEl.addEventListener("input", validateForm);
     emailEl.addEventListener("input", validateForm);
-    dateEl.addEventListener("change", () => {
-      refreshSlots();
-      validateForm();
-    });
+    dateEl.addEventListener("change", () => { refreshSlots(); validateForm(); });
 
-    /* ------------------------------------------------------------
-       10) DOUBLE-BOOK CHECK FOR SAME CLIENT, SAME DAY
-       ------------------------------------------------------------ */
-    async function hasSameDayBooking(email, ymd) {
+    async function hasSameDayBooking(email, ymd){
       const start = new Date(ymd + "T00:00:00");
       const end = new Date(ymd + "T23:59:59");
-
       const { data, error } = await supa
         .from("appointments")
         .select("start_time,status")
@@ -1002,14 +853,9 @@
         return false;
       }
 
-      return (data || []).some(
-        (row) => (row.status || "").toLowerCase() !== "cancelled"
-      );
+      return (data || []).some(row => (row.status || "").toLowerCase() !== "cancelled");
     }
 
-    /* ------------------------------------------------------------
-       11) CONFIRM BOOKING
-       ------------------------------------------------------------ */
     confirmBtn.addEventListener("click", async () => {
       msg.className = "msg warn";
       msg.textContent = "Submitting your booking...";
@@ -1021,42 +867,36 @@
       const location = locationEl.value;
       const ymd = dateEl.value;
 
-      if (!name || !isValidEmail(email) || !selectedSlot || !ymd) {
+      if (!name || !isValidEmail(email) || !selectedSlot || !ymd){
         msg.className = "msg bad";
         msg.textContent = "Please fill all fields and pick a time.";
         validateForm();
         return;
       }
 
-      // Check same-day double booking
       const already = await hasSameDayBooking(email, ymd);
-      if (already) {
+      if (already){
         msg.className = "msg bad";
-        msg.textContent =
-          "You already have an appointment booked for this day.";
+        msg.textContent = "You already have an appointment booked for this day.";
         confirmBtn.disabled = false;
         return;
       }
 
-      // Build start/end time
       const startDT = makeLocalDateTimeFrom24(ymd, selectedSlot);
       const durationMin = parseInt(document.getElementById("duration").value, 10) || 60;
       const endDT = new Date(startDT.getTime() + durationMin * 60000);
 
-      // Insert into Supabase
-      const { error } = await supa.from("appointments").insert([
-        {
-          client_name: name,
-          client_email: email,
-          service: service,
-          location: location,
-          start_time: startDT.toISOString(),
-          end_time: endDT.toISOString(),
-          status: "confirmed",
-        },
-      ]);
+      const { error } = await supa.from("appointments").insert([{
+        client_name: name,
+        client_email: email,
+        service,
+        location,
+        start_time: startDT.toISOString(),
+        end_time: endDT.toISOString(),
+        status: "confirmed",
+      }]);
 
-      if (error) {
+      if (error){
         console.error("Insert error:", error);
         msg.className = "msg bad";
         msg.textContent = "Booking failed. Please try again in a moment.";
@@ -1064,9 +904,9 @@
         return;
       }
 
-      // Success UI
       msg.className = "msg ok";
       msg.textContent = "Appointment confirmed! A staff member will review it.";
+
       confirmCard.classList.add("show");
       cName.textContent = name;
       cEmail.textContent = email;
@@ -1074,81 +914,81 @@
       cService.textContent = service;
       cLoc.textContent = location;
 
-      // Refresh availability so the chosen slot is now blocked
       await refreshSlots();
       validateForm();
     });
 
-    /* ------------------------------------------------------------
-       12) INITIALIZE DEFAULT DATE & SLOTS
-       ------------------------------------------------------------ */
+    // init
     dateEl.value = todayYMD();
+    updateTodayHighlight();
     refreshSlots();
 
-    /* ------------------------------------------------------------
-       13) CANVAS STARFIELD + SHOOTING STARS
-       ------------------------------------------------------------ */
+    /* ============================================================
+       STARFIELD: twinkling + slow shooting stars
+       - Day/night changes star visibility automatically
+       ============================================================ */
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
 
     let stars = [];
     let width = window.innerWidth;
     let height = window.innerHeight;
+    let shootingStars = [];
 
-    function resizeCanvas() {
+    function resizeCanvas(){
       width = window.innerWidth;
       height = window.innerHeight;
       canvas.width = width;
       canvas.height = height;
       initStars();
     }
-
     window.addEventListener("resize", resizeCanvas);
 
-    function initStars() {
-      const count = Math.min(220, Math.floor((width * height) / 12000));
+    function initStars(){
+      const count = Math.min(240, Math.floor((width * height) / 12000));
       stars = [];
-      for (let i = 0; i < count; i++) {
+      for (let i=0;i<count;i++){
         stars.push({
           x: Math.random() * width,
           y: Math.random() * height,
           r: Math.random() * 1.4 + 0.4,
-          o: Math.random(), // base opacity
-          tw: Math.random() * 2 + 1, // twinkle speed
+          o: Math.random(),        // base opacity
+          tw: Math.random() * 2 + 1
         });
       }
     }
 
-    let shootingStars = [];
-
-    function spawnShootingStar() {
-      // Occasional shooting star
+    function spawnShootingStar(){
       const startX = Math.random() * width * 0.6;
       const startY = Math.random() * height * 0.3;
       const len = Math.random() * 250 + 120;
       shootingStars.push({
-        x: startX,
-        y: startY,
-        vx: 6 + Math.random() * 4,
-        vy: 3 + Math.random() * 3,
+        x: startX, y: startY,
+        vx: 5 + Math.random() * 3,
+        vy: 2.5 + Math.random() * 2.5,
         life: 0,
-        maxLife: 35 + Math.random() * 20,
-        length: len,
+        maxLife: 40 + Math.random() * 18,
+        length: len
       });
     }
 
-    function drawStarfield() {
-      ctx.clearRect(0, 0, width, height);
+    function drawStarfield(){
+      ctx.clearRect(0,0,width,height);
 
-      // Background subtle overlay
-      ctx.fillStyle = "rgba(3, 7, 18, 0.9)";
-      ctx.fillRect(0, 0, width, height);
+      // day/night overlay & star strength
+      const isDay = document.body.classList.contains("day");
+      const bgAlpha = isDay ? 0.58 : 0.86;      // brighter in daytime
+      const starBoost = isDay ? 0.45 : 1.0;     // dim stars in day
 
-      // Stars
+      // base canvas dark layer
+      ctx.fillStyle = `rgba(3, 7, 18, ${bgAlpha})`;
+      ctx.fillRect(0,0,width,height);
+
+      // stars
       const t = Date.now() * 0.001;
-      for (const s of stars) {
-        const pulse = 0.5 + 0.5 * Math.sin(t * s.tw + s.x);
-        ctx.globalAlpha = s.o * pulse;
+      for (const s of stars){
+        const pulse = 0.55 + 0.45 * Math.sin(t * s.tw + s.x);
+        ctx.globalAlpha = (s.o * pulse) * starBoost;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         ctx.fillStyle = "#e5f2ff";
@@ -1156,18 +996,20 @@
       }
       ctx.globalAlpha = 1;
 
-      // Shooting stars
-      for (let i = shootingStars.length - 1; i >= 0; i--) {
+      // shooting stars
+      for (let i=shootingStars.length-1;i>=0;i--){
         const sh = shootingStars[i];
         sh.life++;
         sh.x += sh.vx;
         sh.y += sh.vy;
+
         const p = sh.life / sh.maxLife;
-        if (p >= 1) {
-          shootingStars.splice(i, 1);
+        if (p >= 1){
+          shootingStars.splice(i,1);
           continue;
         }
-        const alpha = 1 - p;
+
+        const alpha = (1 - p) * (isDay ? 0.35 : 1.0);
         const tailX = sh.x - sh.vx * sh.length * 0.1;
         const tailY = sh.y - sh.vy * sh.length * 0.1;
 
@@ -1186,9 +1028,11 @@
       requestAnimationFrame(drawStarfield);
     }
 
-    // Spawn a shooting star every ~7–10 seconds
+    // spawn shooting stars (a bit less frequent in day)
     setInterval(() => {
-      if (Math.random() < 0.7) spawnShootingStar();
+      const isDay = document.body.classList.contains("day");
+      const chance = isDay ? 0.35 : 0.75;
+      if (Math.random() < chance) spawnShootingStar();
     }, 7000);
 
     resizeCanvas();
