@@ -1,149 +1,1120 @@
-import { serve } from "https://deno.land/std@0.203.0/http/server.ts";
-import nodemailer from "npm:nodemailer";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Admin – Columbus East Tax Services</title>
 
-const jsonHeaders = { "content-type": "application/json" };
-const corsHeaders = {
-  "access-control-allow-origin": "*",
-  "access-control-allow-headers": "content-type, x-webhook-secret, authorization",
-  "access-control-allow-methods": "POST, OPTIONS",
-};
+  <style>
+    /* ============================================================
+       0) RESETS
+       ============================================================ */
+    * { box-sizing: border-box; }
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; height: 100%; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #e5e7eb; }
 
-function pickRecord(payload: any) {
-  // If your booking page sends flat JSON, keep it:
-  if (payload?.client_name || payload?.client_email || payload?.start_time) return payload;
+    /* ============================================================
+       1) SPACE THEME VARIABLES
+       ============================================================ */
+    :root{
+      /* Background will be set hourly by JS */
+      --bgStart:#0b1a3c;
+      --bgEnd:#020617;
 
-  // If Supabase webhook sends wrapped shapes, try common paths:
-  return (
-    payload?.record ??
-    payload?.new?.record ??
-    payload?.old?.record ??
-    payload?.data?.record ??
-    payload?.data ??
-    {}
-  );
-}
+      /* Frosted glass */
+      --glass: rgba(210, 235, 255, 0.16);
+      --glass2: rgba(255, 255, 255, 0.10);
+      --glassBorder: rgba(255, 255, 255, 0.22);
+      --glassShadow: 0 28px 90px rgba(0,0,0,.55);
 
-function fmtNice(start_time: string) {
-  if (!start_time) return "";
-  const d = new Date(start_time);
-  if (Number.isNaN(d.getTime())) return start_time;
+      --textMain:#0b1220;
+      --muted:#cbd5e1;
+      --mutedDark:#64748b;
 
-  const datePart = d.toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+      --ring: rgba(96, 165, 250, 0.35);
 
-  const timePart = d.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+      /* Solid pills (requested earlier) */
+      --okBg:#2563eb;     /* solid blue */
+      --okText:#ffffff;
+      --okBorder:#1d4ed8;
 
-  return `${datePart} • ${timePart}`;
-}
+      --badBg:#ef4444;    /* solid red */
+      --badText:#ffffff;
+      --badBorder:#dc2626;
 
-serve(async (req) => {
-  // ✅ Preflight (prevents “failed to fetch” sometimes)
-  if (req.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: corsHeaders });
-  }
+      --warnBg:#f59e0b;
+      --warnText:#111827;
+      --warnBorder:#d97706;
 
-  try {
-    // ─────────────────────────
-    // 1) Verify webhook secret
-    // ─────────────────────────
-    const expected = Deno.env.get("WEBHOOK_SECRET") || "";
-    const got = req.headers.get("x-webhook-secret") || "";
+      /* Calendar day highlights */
+      --dayGreenBg:#dcfce7;   --dayGreenBorder:#86efac; /* has confirmed */
+      --dayRedBg:#fee2e2;     --dayRedBorder:#fecaca;   /* cancelled only */
+      --dayYellowBg:#fef3c7;  --dayYellowBorder:#fde68a;/* mixed */
 
-    if (!expected) {
-      return new Response(
-        JSON.stringify({ error: "Server misconfigured: WEBHOOK_SECRET missing" }),
-        { status: 500, headers: { ...jsonHeaders, ...corsHeaders } }
-      );
+      /* Surfaces inside glass */
+      --surface: rgba(255,255,255,.92);
+      --surfaceBorder: rgba(226,232,240,.9);
+
+      /* Accent glow */
+      --glowBlue: rgba(59,130,246,.55);
+      --glowPurple: rgba(168,85,247,.35);
     }
 
-    if (got !== expected) {
-      return new Response(
-        JSON.stringify({
-          error: "Unauthorized (bad webhook secret)",
-          hint: "Your request MUST include header: x-webhook-secret",
-        }),
-        { status: 401, headers: { ...jsonHeaders, ...corsHeaders } }
-      );
+    /* ============================================================
+       2) CANVAS STARFIELD LAYER
+       ============================================================ */
+    canvas#starfield{
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -3;
+      display: block;
     }
 
-    // ─────────────────────────
-    // 2) Read payload
-    // ─────────────────────────
-    const payload = await req.json().catch(() => ({}));
-    const record = pickRecord(payload);
-
-    const client_name = record?.client_name || "(missing)";
-    const client_email = record?.client_email || "(missing)";
-    const service = record?.service || "(missing)";
-    const location = record?.location || "(missing)";
-    const start_time = record?.start_time || "(missing)";
-
-    // ─────────────────────────
-    // 3) Setup Gmail transport
-    // ─────────────────────────
-    const GMAIL_USER = Deno.env.get("GMAIL_USER") || "";
-    const GMAIL_APP_PASSWORD = Deno.env.get("GMAIL_APP_PASSWORD") || "";
-    const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") || "";
-
-    if (!GMAIL_USER || !GMAIL_APP_PASSWORD || !ADMIN_EMAIL) {
-      return new Response(
-        JSON.stringify({
-          error: "Server misconfigured: missing email env var(s)",
-          missing: {
-            GMAIL_USER: !GMAIL_USER,
-            GMAIL_APP_PASSWORD: !GMAIL_APP_PASSWORD,
-            ADMIN_EMAIL: !ADMIN_EMAIL,
-          },
-        }),
-        { status: 500, headers: { ...jsonHeaders, ...corsHeaders } }
-      );
+    /* ============================================================
+       3) ORBITING PLANETS (BIGGER + FASTER)
+       ============================================================ */
+    .space-layer{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -2;
     }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD },
-    });
+    .planet-orbit{
+      position: absolute;
+      border-radius: 50%;
+      width: 560px;
+      height: 560px;
+      transform-origin: center center;
+      animation: orbit 28s linear infinite; /* faster */
+      opacity: 0.95;
+      filter: drop-shadow(0 0 18px rgba(59,130,246,.35));
+    }
+    .planet-orbit.medium{ width: 420px; height: 420px; animation-duration: 22s; }
+    .planet-orbit.fast{ width: 320px; height: 320px; animation-duration: 16s; }
 
-    // ─────────────────────────
-    // 4) Send email
-    // ─────────────────────────
-    await transporter.sendMail({
-      from: `"Appointment Bot" <${GMAIL_USER}>`,
-      to: ADMIN_EMAIL,
-      subject: "📅 New Appointment Booked",
-      html: `
-        <div style="font-family:Arial,sans-serif;line-height:1.5">
-          <h2 style="margin:0 0 10px;">New Appointment</h2>
-          <p><b>Client:</b> ${client_name}</p>
-          <p><b>Email:</b> ${client_email}</p>
-          <p><b>Service:</b> ${service}</p>
-          <p><b>Location:</b> ${location}</p>
-          <p><b>Date & Time:</b> ${fmtNice(start_time)}<br/>
-            <small style="color:#64748b">Raw: ${start_time}</small>
-          </p>
+    .planet-orbit.orbit-1{ top: 8%; left: calc(50% - 280px); }
+    .planet-orbit.orbit-2{ top: 64%; left: calc(50% - 210px); }
+    .planet-orbit.orbit-3{ top: 30%; left: calc(50% - 160px); }
+
+    .planet-glass{
+      position: absolute;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,255,255,0.10) 40%, rgba(0,0,0,0) 70%),
+        conic-gradient(from 120deg, #60a5fa, #a855f7, #22d3ee, #4f46e5, #f97316, #60a5fa);
+      box-shadow:
+        0 0 22px rgba(59,130,246,.65),
+        0 0 70px rgba(168,85,247,.35);
+      opacity: .80;
+      backdrop-filter: blur(6px);
+    }
+    .planet-glass.big{ width: 150px; height: 150px; top: -75px; left: calc(50% - 75px); }
+    .planet-glass.medium{ width: 105px; height: 105px; top: calc(50% - 52px); left: -52px; }
+    .planet-glass.small{ width: 85px; height: 85px; top: calc(100% - 42px); left: calc(50% - 42px); }
+
+    @keyframes orbit{
+      0%{ transform: rotate(0deg); }
+      100%{ transform: rotate(360deg); }
+    }
+
+    /* ============================================================
+       4) PAGE LAYOUT
+       ============================================================ */
+    body{
+      padding: 14px;
+      background: radial-gradient(circle at 30% 20%, var(--bgStart), var(--bgEnd) 70%);
+      transition: background 2s ease;
+      position: relative;
+    }
+
+    .wrap{
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+      position: relative;
+      z-index: 3;
+    }
+
+    /* Main glass container */
+    .glassCard{
+      background: linear-gradient(180deg, var(--glass), var(--glass2));
+      border: 1px solid var(--glassBorder);
+      border-radius: 22px;
+      box-shadow: var(--glassShadow);
+      padding: 14px;
+      color: var(--textMain);
+      backdrop-filter: blur(16px) saturate(160%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .glassCard::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(800px 320px at 20% 0%, rgba(59,130,246,.25), transparent 60%),
+                  radial-gradient(700px 280px at 90% 10%, rgba(168,85,247,.18), transparent 55%);
+      pointer-events:none;
+      z-index:0;
+    }
+    .glassCard > *{ position: relative; z-index: 1; }
+
+    /* Inner white surfaces (calendar/list panels) */
+    .surface{
+      background: var(--surface);
+      border: 1px solid var(--surfaceBorder);
+      border-radius: 20px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.15);
+      padding: 14px;
+      color: #0f172a;
+      overflow: hidden;
+    }
+
+    .titleRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .brand{ display:flex; align-items:center; gap:12px; }
+    .logo{
+      width:44px;height:44px;border-radius:16px;
+      background: linear-gradient(135deg, rgba(59,130,246,1), rgba(168,85,247,1));
+      box-shadow: 0 0 0 6px rgba(59,130,246,.14), 0 18px 40px rgba(0,0,0,.22);
+      flex:0 0 auto;
+    }
+
+    h1{ margin:0; font-size:18px; font-weight:900; color:#071028; }
+    .muted{ color: var(--mutedDark); font-size:13px; line-height:1.4; }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:900;
+      font-size:12px;
+      border: 1px solid transparent;
+      white-space:nowrap;
+    }
+    .pill.ok{ background:var(--okBg); color:var(--okText); border-color:var(--okBorder); }
+    .pill.bad{ background:var(--badBg); color:var(--badText); border-color:var(--badBorder); }
+    .pill.warn{ background:var(--warnBg); color:var(--warnText); border-color:var(--warnBorder); }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      width:100%;
+      min-width:0;
+      margin-top:12px;
+    }
+
+    input, select, button{
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid #d1d5db;
+      font-size:14px;
+      outline:none;
+      background:#fff;
+      min-height:44px;
+      flex:1;
+      min-width:0;
+      max-width:100%;
+    }
+
+    input:focus, select:focus{
+      border-color: rgba(59,130,246,.75);
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    button{
+      border:none;
+      background: linear-gradient(135deg, #0b1220, #111827);
+      color:#fff;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow: 0 12px 26px rgba(0,0,0,.18);
+      transition: transform .12s ease, opacity .12s ease;
+      min-height:46px;
+    }
+    button:hover{ transform: translateY(-1px); }
+    button:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .secondary{
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(148,163,184,.65);
+      color:#0b1220;
+      font-weight:900;
+      box-shadow:none;
+      min-height:44px;
+      backdrop-filter: blur(10px);
+    }
+
+    .split{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .split{ grid-template-columns:1fr; }
+    }
+
+    /* Calendar */
+    .calendarHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .monthTitle{ font-weight:900; font-size:16px; color:#0f172a; }
+
+    .weekdays{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:8px;
+    }
+    .weekday{
+      text-align:center;
+      font-weight:900;
+      font-size:12px;
+      color:#64748b;
+    }
+
+    .calGrid{
+      margin-top:8px;
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:8px;
+      width:100%;
+      max-width:100%;
+    }
+
+    .dayCell{
+      border:1px solid #e5e7eb;
+      border-radius:16px;
+      background:#fff;
+      padding:10px;
+      min-height:86px;
+      cursor:pointer;
+      transition: transform .12s ease, box-shadow .12s ease;
+      overflow:hidden;
+    }
+    .dayCell:hover{ transform: translateY(-1px); box-shadow:0 14px 28px rgba(0,0,0,.10); }
+    .dayCell.dim{ opacity:.35; cursor:default; }
+
+    /* status-based day coloring */
+    .dayCell.dayGreen{ background: var(--dayGreenBg); border-color: var(--dayGreenBorder); }
+    .dayCell.dayRed{ background: var(--dayRedBg); border-color: var(--dayRedBorder); }
+    .dayCell.dayYellow{ background: var(--dayYellowBg); border-color: var(--dayYellowBorder); }
+
+    .dayNum{
+      font-weight:900;
+      font-size:13px;
+      color:#111827;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .badge{
+      font-size:11px;
+      font-weight:900;
+      border-radius:999px;
+      padding:4px 8px;
+      border:1px solid rgba(148,163,184,.55);
+      color:#0b1220;
+      background: rgba(248,250,252,.9);
+      white-space:nowrap;
+      backdrop-filter: blur(8px);
+    }
+    .badge.ok{
+      background: rgba(37,99,235,.12);
+      border-color: rgba(37,99,235,.35);
+      color:#1d4ed8;
+    }
+    .badge.bad{
+      background: rgba(239,68,68,.12);
+      border-color: rgba(239,68,68,.35);
+      color:#b91c1c;
+    }
+
+    .miniList{ margin-top:8px; display:flex; flex-direction:column; gap:6px; }
+    .miniItem{
+      font-size:11px;
+      font-weight:900;
+      color:#0b1220;
+      padding:6px 8px;
+      border-radius:12px;
+      border:1px solid rgba(226,232,240,.95);
+      background: rgba(255,255,255,.88);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    /* Right panel list */
+    .listTitle{ font-size:14px; font-weight:900; margin:0; }
+    .list{ margin-top:10px; display:flex; flex-direction:column; gap:10px; }
+
+    .apptCard{
+      border:1px solid rgba(226,232,240,.95);
+      border-radius:18px;
+      background: rgba(255,255,255,.92);
+      padding:12px;
+      overflow:hidden;
+      box-shadow: 0 10px 22px rgba(0,0,0,.08);
+    }
+    .apptTop{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap; }
+    .apptName{ font-weight:900; color:#0b1220; font-size:14px; margin:0; }
+    .apptMeta{ font-size:13px; color:#0f172a; line-height:1.5; margin-top:6px; }
+    .apptMeta b{ color:#0b1220; }
+
+    /* Auth overlay */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:999;
+    }
+    .panel{
+      width:100%;
+      max-width:460px;
+      background: linear-gradient(180deg, rgba(210,235,255,.18), rgba(255,255,255,.10));
+      border-radius:22px;
+      padding:14px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.55);
+      color: #0b1220;
+      border:1px solid rgba(255,255,255,.22);
+      backdrop-filter: blur(18px) saturate(160%);
+      position: relative;
+      overflow:hidden;
+    }
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(700px 280px at 15% 0%, rgba(59,130,246,.20), transparent 60%),
+                  radial-gradient(650px 260px at 90% 10%, rgba(168,85,247,.16), transparent 55%);
+      pointer-events:none;
+      z-index:0;
+    }
+    .panel > *{ position:relative; z-index:1; }
+
+    /* Optional subtle neon line under header */
+    .neonRule{
+      height:1px;
+      width:100%;
+      margin-top:12px;
+      background: linear-gradient(90deg, transparent, rgba(59,130,246,.6), rgba(168,85,247,.5), transparent);
+      opacity:.9;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- STARFIELD -->
+  <canvas id="starfield"></canvas>
+
+  <!-- ORBITING PLANETS -->
+  <div class="space-layer">
+    <div class="planet-orbit orbit-1">
+      <div class="planet-glass big"></div>
+    </div>
+    <div class="planet-orbit orbit-2 medium">
+      <div class="planet-glass medium"></div>
+    </div>
+    <div class="planet-orbit orbit-3 fast">
+      <div class="planet-glass small"></div>
+    </div>
+  </div>
+
+  <!-- AUTH OVERLAY -->
+  <div id="overlay" class="overlay">
+    <div class="panel">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1 id="authTitle">Admin Login</h1>
+          <div class="muted">Secure login with Supabase Auth</div>
         </div>
-      `,
+      </div>
+
+      <div class="neonRule"></div>
+
+      <div id="loginBox">
+        <div class="row">
+          <input id="email" type="email" placeholder="Admin email" aria-label="Admin email" />
+        </div>
+        <div class="row">
+          <input id="pass" type="password" placeholder="Password" aria-label="Password" />
+        </div>
+        <div class="row">
+          <button id="loginBtn" type="button">Login</button>
+          <button id="forgotBtn" class="secondary" type="button">Forgot?</button>
+        </div>
+        <div id="authStatus" class="muted" style="margin-top:10px;"></div>
+      </div>
+
+      <div id="resetBox" style="display:none;">
+        <div class="muted" style="margin-top:10px;">
+          Set a new password for your admin account.
+        </div>
+        <div class="row">
+          <input id="newPass" type="password" placeholder="New password" aria-label="New password" />
+        </div>
+        <div class="row">
+          <button id="setPassBtn" type="button">Set New Password</button>
+          <button id="backToLoginBtn" class="secondary" type="button">Back</button>
+        </div>
+        <div id="resetStatus" class="muted" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="muted" style="margin-top:12px;">
+        Tip: Supabase Auth Redirect URL must include this page URL.
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="glassCard">
+      <div class="titleRow">
+        <div class="brand">
+          <div class="logo"></div>
+          <div>
+            <h1>Admin Dashboard</h1>
+            <div class="muted" id="whoami">Not signed in</div>
+            <div class="muted" id="debugLine" style="margin-top:4px;"></div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="secondary" id="refreshBtn" type="button">Refresh</button>
+          <button class="secondary" id="logoutBtn" type="button">Logout</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <input id="searchBox" type="text" placeholder="Search name, email, service, location..." aria-label="Search" />
+        <select id="statusFilter" aria-label="Status filter">
+          <option value="all">All</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <select id="rangeFilter" aria-label="Range filter">
+          <option value="90" selected>Last 90 days + future</option>
+          <option value="month">This month only</option>
+        </select>
+      </div>
+
+      <div class="split">
+        <div class="surface">
+          <div class="calendarHeader">
+            <div class="monthTitle" id="monthTitle">Month</div>
+            <div style="display:flex; gap:8px;">
+              <button class="secondary" id="prevMonth" type="button">◀</button>
+              <button class="secondary" id="todayBtn" type="button">Today</button>
+              <button class="secondary" id="nextMonth" type="button">▶</button>
+            </div>
+          </div>
+
+          <div class="weekdays">
+            <div class="weekday">Sun</div><div class="weekday">Mon</div><div class="weekday">Tue</div>
+            <div class="weekday">Wed</div><div class="weekday">Thu</div><div class="weekday">Fri</div><div class="weekday">Sat</div>
+          </div>
+
+          <div class="calGrid" id="calGrid"></div>
+
+          <div class="muted" style="margin-top:10px;">
+            Color Key:
+            <span class="badge ok" style="margin-left:6px;">Confirmed</span>
+            <span class="badge bad" style="margin-left:6px;">Cancelled</span>
+            <span class="badge" style="margin-left:6px; background:var(--dayYellowBg); border-color:var(--dayYellowBorder);">Mixed</span>
+          </div>
+        </div>
+
+        <div class="surface">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+            <div>
+              <div class="listTitle" id="dayTitle">Select a day</div>
+              <div class="muted" id="daySub">Tap a day on the calendar</div>
+            </div>
+            <div id="summaryPills" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+          </div>
+
+          <div class="list" id="apptList"></div>
+          <div class="muted" id="footerNote" style="margin-top:10px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    /* ============================================================
+       A) HOURLY GALAXY COLOR SYNC (same vibe as booking page)
+       ============================================================ */
+    function updateGalaxyBackground(){
+      const h = new Date().getHours();
+      let start="#0b1a3c", end="#020617";
+
+      if (h >= 0 && h < 3) { start="#05081a"; end="#020617"; }
+      else if (h >= 3 && h < 6) { start="#081a3a"; end="#020617"; }
+      else if (h >= 6 && h < 9) { start="#0b1220"; end="#020617"; }
+      else if (h >= 9 && h < 15) { start="#1d4ed8"; end="#020617"; }
+      else if (h >= 15 && h < 19) { start="#4c1d95"; end="#020617"; }
+      else { start="#020617"; end="#000000"; }
+
+      document.body.style.background =
+        `radial-gradient(circle at 30% 20%, ${start}, ${end} 70%)`;
+    }
+    updateGalaxyBackground();
+    setInterval(updateGalaxyBackground, 60 * 60 * 1000);
+
+    /* ============================================================
+       B) CANVAS STARFIELD + SHOOTING STARS
+       ============================================================ */
+    const canvas = document.getElementById("starfield");
+    const ctx = canvas.getContext("2d");
+
+    let stars = [];
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let shootingStars = [];
+
+    function resizeCanvas(){
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      initStars();
+    }
+    window.addEventListener("resize", resizeCanvas);
+
+    function initStars(){
+      const count = Math.min(240, Math.floor((width * height) / 12000));
+      stars = [];
+      for(let i=0;i<count;i++){
+        stars.push({
+          x: Math.random()*width,
+          y: Math.random()*height,
+          r: Math.random()*1.5 + 0.4,
+          o: Math.random(),
+          tw: Math.random()*2 + 1
+        });
+      }
+    }
+
+    function spawnShootingStar(){
+      const startX = Math.random() * width * 0.6;
+      const startY = Math.random() * height * 0.35;
+      const len = Math.random() * 260 + 140;
+      shootingStars.push({
+        x: startX,
+        y: startY,
+        vx: 7 + Math.random()*4,
+        vy: 3 + Math.random()*3,
+        life: 0,
+        maxLife: 30 + Math.random()*25,
+        length: len
+      });
+    }
+
+    function drawStarfield(){
+      ctx.clearRect(0,0,width,height);
+
+      // subtle dark overlay
+      ctx.fillStyle = "rgba(3, 7, 18, 0.85)";
+      ctx.fillRect(0,0,width,height);
+
+      const t = Date.now()*0.001;
+      for(const s of stars){
+        const pulse = 0.5 + 0.5*Math.sin(t*s.tw + s.x);
+        ctx.globalAlpha = s.o * pulse;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.fillStyle = "#e5f2ff";
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      for(let i=shootingStars.length-1;i>=0;i--){
+        const sh = shootingStars[i];
+        sh.life++;
+        sh.x += sh.vx;
+        sh.y += sh.vy;
+
+        const p = sh.life / sh.maxLife;
+        if(p >= 1){
+          shootingStars.splice(i,1);
+          continue;
+        }
+        const alpha = 1 - p;
+        const tailX = sh.x - sh.vx * sh.length * 0.1;
+        const tailY = sh.y - sh.vy * sh.length * 0.1;
+
+        const grad = ctx.createLinearGradient(sh.x, sh.y, tailX, tailY);
+        grad.addColorStop(0, `rgba(191, 219, 254, ${alpha})`);
+        grad.addColorStop(1, "rgba(37, 99, 235, 0)");
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(sh.x, sh.y);
+        ctx.lineTo(tailX, tailY);
+        ctx.stroke();
+      }
+
+      requestAnimationFrame(drawStarfield);
+    }
+
+    setInterval(() => { if(Math.random() < 0.7) spawnShootingStar(); }, 7000);
+
+    resizeCanvas();
+    drawStarfield();
+
+    /* ============================================================
+       C) YOUR EXISTING ADMIN LOGIC (UNCHANGED)
+       ============================================================ */
+    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
+    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+
+    const supa = window.supabase.createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
     });
 
-    // ─────────────────────────
-    // 5) Done
-    // ─────────────────────────
-    return new Response(
-      JSON.stringify({ success: true, message: "Email sent" }),
-      { status: 200, headers: { ...jsonHeaders, ...corsHeaders } }
-    );
-  } catch (err) {
-    return new Response(
-      JSON.stringify({ error: "Unhandled error", details: String(err?.message || err) }),
-      { status: 500, headers: { ...jsonHeaders, ...corsHeaders } }
-    );
-  }
-});
+    const overlay = document.getElementById("overlay");
+    const authStatus = document.getElementById("authStatus");
+    const resetStatus = document.getElementById("resetStatus");
+    const loginBox = document.getElementById("loginBox");
+    const resetBox = document.getElementById("resetBox");
+
+    const emailEl = document.getElementById("email");
+    const passEl = document.getElementById("pass");
+    const newPassEl = document.getElementById("newPass");
+
+    const loginBtn = document.getElementById("loginBtn");
+    const forgotBtn = document.getElementById("forgotBtn");
+    const setPassBtn = document.getElementById("setPassBtn");
+    const backToLoginBtn = document.getElementById("backToLoginBtn");
+
+    const whoami = document.getElementById("whoami");
+    const debugLine = document.getElementById("debugLine");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const searchBox = document.getElementById("searchBox");
+    const statusFilter = document.getElementById("statusFilter");
+    const rangeFilter = document.getElementById("rangeFilter");
+
+    const monthTitle = document.getElementById("monthTitle");
+    const calGrid = document.getElementById("calGrid");
+    const prevMonth = document.getElementById("prevMonth");
+    const nextMonth = document.getElementById("nextMonth");
+    const todayBtn = document.getElementById("todayBtn");
+
+    const dayTitle = document.getElementById("dayTitle");
+    const daySub = document.getElementById("daySub");
+    const apptList = document.getElementById("apptList");
+    const summaryPills = document.getElementById("summaryPills");
+    const footerNote = document.getElementById("footerNote");
+
+    function escapeHtml(s){
+      return String(s || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function pad(n){ return String(n).padStart(2,"0"); }
+    function ymd(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+    function monthLabel(d){ return d.toLocaleDateString([], { month:"long", year:"numeric" }); }
+
+    function fmtNice(iso){
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone:"America/New_York",
+        weekday:"short", month:"short", day:"2-digit",
+        hour:"numeric", minute:"2-digit"
+      }).format(new Date(iso));
+    }
+
+    function pill(type, text){
+      const cls = type === "ok" ? "pill ok" : type === "warn" ? "pill warn" : "pill bad";
+      return `<span class="${cls}">${escapeHtml(text)}</span>`;
+    }
+
+    function showLogin(){
+      overlay.style.display = "flex";
+      loginBox.style.display = "block";
+      resetBox.style.display = "none";
+      authStatus.textContent = "";
+      resetStatus.textContent = "";
+    }
+    function showReset(){
+      overlay.style.display = "flex";
+      loginBox.style.display = "none";
+      resetBox.style.display = "block";
+      authStatus.textContent = "";
+      resetStatus.textContent = "";
+    }
+
+    async function setOverlayBySession(){
+      const { data } = await supa.auth.getSession();
+      const user = data?.session?.user;
+
+      if(user){
+        overlay.style.display = "none";
+        whoami.textContent = `Signed in as ${user.email}`;
+        debugLine.textContent = `DEBUG: role=authenticated | email=${user.email}`;
+        await loadMonthData();
+      } else {
+        whoami.textContent = "Not signed in";
+        debugLine.textContent = "";
+        showLogin();
+      }
+    }
+
+    loginBtn.addEventListener("click", async () => {
+      authStatus.innerHTML = pill("warn", "Signing in…");
+      const email = (emailEl.value || "").trim();
+      const password = passEl.value || "";
+
+      const { error } = await supa.auth.signInWithPassword({ email, password });
+      if(error){
+        authStatus.innerHTML = pill("bad", error.message);
+        return;
+      }
+      authStatus.innerHTML = pill("ok", "Signed in");
+      await setOverlayBySession();
+    });
+
+    forgotBtn.addEventListener("click", async () => {
+      const email = (emailEl.value || "").trim();
+      if(!email){
+        authStatus.innerHTML = pill("bad", "Enter your admin email first");
+        return;
+      }
+      authStatus.innerHTML = pill("warn", "Sending reset email…");
+
+      const redirectTo = window.location.origin + window.location.pathname;
+      const { error } = await supa.auth.resetPasswordForEmail(email, { redirectTo });
+      if(error){
+        authStatus.innerHTML = pill("bad", error.message);
+        return;
+      }
+      authStatus.innerHTML = pill("ok", "Reset email sent. Check inbox.");
+    });
+
+    setPassBtn.addEventListener("click", async () => {
+      const newPassword = newPassEl.value || "";
+      if(newPassword.length < 8){
+        resetStatus.innerHTML = pill("bad", "Use at least 8 characters");
+        return;
+      }
+      resetStatus.innerHTML = pill("warn", "Updating password…");
+
+      const { error } = await supa.auth.updateUser({ password: newPassword });
+      if(error){
+        resetStatus.innerHTML = pill("bad", error.message);
+        return;
+      }
+      resetStatus.innerHTML = pill("ok", "Password updated. Loading…");
+      setTimeout(() => setOverlayBySession(), 700);
+    });
+
+    backToLoginBtn.addEventListener("click", showLogin);
+    logoutBtn.addEventListener("click", async () => { await supa.auth.signOut(); showLogin(); });
+
+    // ========= Data =========
+    let currentMonth = new Date();
+    currentMonth.setDate(1);
+    currentMonth.setHours(0,0,0,0);
+
+    let allRows = [];
+    let selectedDay = null;
+
+    function getMonthRange(d){
+      const start = new Date(d);
+      start.setDate(1); start.setHours(0,0,0,0);
+      const end = new Date(start);
+      end.setMonth(end.getMonth()+1); end.setHours(0,0,0,0);
+      return { start, end };
+    }
+
+    async function fetchAppointments(){
+      footerNote.innerHTML = pill("warn", "Loading…");
+
+      const mode = rangeFilter.value;
+      let start, end;
+
+      if(mode === "90"){
+        start = new Date();
+        start.setDate(start.getDate() - 90);
+        start.setHours(0,0,0,0);
+
+        end = new Date();
+        end.setFullYear(end.getFullYear() + 2);
+        end.setHours(0,0,0,0);
+      } else {
+        ({ start, end } = getMonthRange(currentMonth));
+      }
+
+      const { data, error } = await supa
+        .from("appointments")
+        .select("client_name, client_email, service, location, start_time, status")
+        .gte("start_time", start.toISOString())
+        .lt("start_time", end.toISOString())
+        .order("start_time", { ascending:true });
+
+      if(error){
+        footerNote.innerHTML = pill("bad", "Access error") + " " + escapeHtml(error.message);
+        return [];
+      }
+
+      const rows = data || [];
+      footerNote.innerHTML = rows.length
+        ? pill("ok", `Loaded ${rows.length} appointment(s)`)
+        : pill("warn", "Loaded 0 appointments");
+      return rows;
+    }
+
+    function summarizeByDay(rows){
+      const map = new Map();
+      for(const r of rows){
+        const d = new Date(r.start_time);
+        d.setHours(0,0,0,0);
+        const key = ymd(d);
+
+        if(!map.has(key)){
+          map.set(key, { confirmed:0, cancelled:0, items:[] });
+        }
+        const entry = map.get(key);
+        const st = (r.status || "confirmed").toLowerCase();
+        if(st === "cancelled") entry.cancelled++;
+        else entry.confirmed++;
+        entry.items.push(r);
+      }
+      return map;
+    }
+
+    function dayColorClass(entry){
+      if(!entry) return "";
+      const c = entry.confirmed || 0;
+      const x = entry.cancelled || 0;
+      if(c > 0 && x > 0) return "dayYellow";
+      if(c > 0) return "dayGreen";
+      if(x > 0) return "dayRed";
+      return "";
+    }
+
+    function buildCalendarGrid(monthDate, byDayMap){
+      calGrid.innerHTML = "";
+      monthTitle.textContent = monthLabel(monthDate);
+
+      const first = new Date(monthDate);
+      first.setDate(1);
+      const firstDow = first.getDay();
+
+      const startCell = new Date(first);
+      startCell.setDate(first.getDate() - firstDow);
+      startCell.setHours(0,0,0,0);
+
+      for(let i=0;i<42;i++){
+        const cellDate = new Date(startCell);
+        cellDate.setDate(startCell.getDate()+i);
+
+        const key = ymd(cellDate);
+        const entry = byDayMap.get(key);
+
+        const isCurrent = cellDate.getMonth() === monthDate.getMonth();
+        const isToday = ymd(cellDate) === ymd(new Date());
+        const isSelected = selectedDay && ymd(cellDate) === ymd(selectedDay);
+
+        const confirmed = entry ? entry.confirmed : 0;
+        const cancelled = entry ? entry.cancelled : 0;
+        const total = confirmed + cancelled;
+
+        const colorCls = dayColorClass(entry);
+
+        const box = document.createElement("div");
+        box.className = "dayCell" + (!isCurrent ? " dim" : "") + (colorCls ? " " + colorCls : "");
+
+        if(isSelected){
+          box.style.borderColor = "rgba(59,130,246,.75)";
+          box.style.boxShadow = "0 0 0 4px rgba(59,130,246,.18)";
+        }
+
+        const badgeHtml = total > 0
+          ? `<span class="badge ${confirmed>0 ? "ok" : "bad"}">${total}</span>`
+          : (isToday ? `<span class="badge">Today</span>` : `<span class="badge">—</span>`);
+
+        const mini = entry && entry.items.length
+          ? entry.items.slice(0,2).map(a => {
+              const t = new Date(a.start_time).toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
+              return `<div class="miniItem">${escapeHtml(t)} • ${escapeHtml(a.client_name || "")}</div>`;
+            }).join("")
+          : "";
+
+        box.innerHTML = `
+          <div class="dayNum">
+            <span>${cellDate.getDate()}</span>
+            ${badgeHtml}
+          </div>
+          <div class="miniList">${mini}</div>
+        `;
+
+        if(isCurrent){
+          box.addEventListener("click", () => {
+            selectedDay = new Date(cellDate);
+            selectedDay.setHours(0,0,0,0);
+            renderDayList();
+            buildCalendarGrid(currentMonth, summarizeByDay(allRows));
+          });
+        }
+
+        calGrid.appendChild(box);
+      }
+    }
+
+    function filterRows(rows){
+      const q = (searchBox.value || "").toLowerCase().trim();
+      const st = statusFilter.value;
+
+      return rows.filter(r => {
+        const status = (r.status || "confirmed").toLowerCase();
+        if(st !== "all" && status !== st) return false;
+        if(!q) return true;
+        const blob = [r.client_name, r.client_email, r.service, r.location].join(" ").toLowerCase();
+        return blob.includes(q);
+      });
+    }
+
+    function renderDayList(){
+      if(!selectedDay){
+        dayTitle.textContent = "Select a day";
+        daySub.textContent = "Tap a day on the calendar";
+        apptList.innerHTML = "";
+        summaryPills.innerHTML = "";
+        return;
+      }
+
+      const dayKey = ymd(selectedDay);
+      const dayRows = filterRows(allRows).filter(r => {
+        const d = new Date(r.start_time);
+        d.setHours(0,0,0,0);
+        return ymd(d) === dayKey;
+      });
+
+      dayTitle.textContent = selectedDay.toLocaleDateString([], { weekday:"long", month:"long", day:"numeric", year:"numeric" });
+      daySub.textContent = `${dayRows.length} appointment(s)`;
+
+      const confirmed = dayRows.filter(r => (r.status||"confirmed").toLowerCase() !== "cancelled").length;
+      const cancelled = dayRows.filter(r => (r.status||"confirmed").toLowerCase() === "cancelled").length;
+
+      summaryPills.innerHTML = `
+        <span class="pill ok">Confirmed: ${confirmed}</span>
+        <span class="pill bad">Cancelled: ${cancelled}</span>
+      `;
+
+      if(!dayRows.length){
+        apptList.innerHTML = `<div class="muted">No appointments found for this day.</div>`;
+        return;
+      }
+
+      apptList.innerHTML = dayRows.map(r => {
+        const status = (r.status || "confirmed").toLowerCase();
+        const label = status === "cancelled" ? "Cancelled" : "Confirmed";
+        const pillCls = status === "cancelled" ? "pill bad" : "pill ok";
+        const time = fmtNice(r.start_time);
+
+        return `
+          <div class="apptCard">
+            <div class="apptTop">
+              <div>
+                <div class="apptName">${escapeHtml(r.client_name || "Client")}</div>
+                <div class="apptMeta">
+                  <div><b>Time:</b> ${escapeHtml(time)}</div>
+                  <div><b>Service:</b> ${escapeHtml(r.service || "")}</div>
+                  <div><b>Location:</b> ${escapeHtml(r.location || "")}</div>
+                  <div><b>Email:</b> ${escapeHtml(r.client_email || "")}</div>
+                </div>
+              </div>
+              <div><span class="${pillCls}">${label}</span></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function loadMonthData(){
+      if(!selectedDay){
+        selectedDay = new Date();
+        selectedDay.setHours(0,0,0,0);
+      }
+      allRows = await fetchAppointments();
+      buildCalendarGrid(currentMonth, summarizeByDay(allRows));
+      renderDayList();
+    }
+
+    prevMonth.addEventListener("click", async () => {
+      currentMonth.setMonth(currentMonth.getMonth()-1);
+      currentMonth.setDate(1);
+      await loadMonthData();
+    });
+    nextMonth.addEventListener("click", async () => {
+      currentMonth.setMonth(currentMonth.getMonth()+1);
+      currentMonth.setDate(1);
+      await loadMonthData();
+    });
+    todayBtn.addEventListener("click", async () => {
+      currentMonth = new Date();
+      currentMonth.setDate(1);
+      currentMonth.setHours(0,0,0,0);
+      selectedDay = new Date();
+      selectedDay.setHours(0,0,0,0);
+      await loadMonthData();
+    });
+
+    refreshBtn.addEventListener("click", loadMonthData);
+    searchBox.addEventListener("input", renderDayList);
+    statusFilter.addEventListener("change", renderDayList);
+    rangeFilter.addEventListener("change", loadMonthData);
+
+    async function init(){
+      if (window.location.hash.includes("recovery")) showReset();
+      await setOverlayBySession();
+
+      supa.auth.onAuthStateChange(async (_event, session) => {
+        if(session?.user){
+          overlay.style.display = "none";
+          whoami.textContent = `Signed in as ${session.user.email}`;
+          debugLine.textContent = `DEBUG: role=authenticated | email=${session.user.email}`;
+          await loadMonthData();
+        } else {
+          whoami.textContent = "Not signed in";
+          debugLine.textContent = "";
+          showLogin();
+        }
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
