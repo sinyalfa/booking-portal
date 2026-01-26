@@ -889,6 +889,7 @@
       return (data || []).some((row) => (row.status || "").toLowerCase() !== "cancelled");
     }
 
+    // ✅ UPDATED: now calls Edge Function `book-appointment`
     confirmBtn.addEventListener("click", async () => {
       msg.className = "msg warn";
       msg.textContent = "Submitting your booking...";
@@ -919,18 +920,20 @@
       const durationMin = parseInt(document.getElementById("duration").value, 10) || 60;
       const endDT = new Date(startDT.getTime() + durationMin * 60000);
 
-      const { error } = await supa.from("appointments").insert([{
-        client_name: name,
-        client_email: email,
-        service,
-        location,
-        start_time: startDT.toISOString(),
-        end_time: endDT.toISOString(),
-        status: "confirmed",
-      }]);
+      const { data, error } = await supa.functions.invoke("book-appointment", {
+        body: {
+          client_name: name,
+          client_email: email,
+          service,
+          location,
+          start_time: startDT.toISOString(),
+          end_time: endDT.toISOString(),
+          duration_min: durationMin,
+        },
+      });
 
-      if (error) {
-        console.error("Insert error:", error);
+      if (error || !data?.success) {
+        console.error("book-appointment failed:", error, data);
         msg.className = "msg bad";
         msg.textContent = "Booking failed. Please try again in a moment.";
         confirmBtn.disabled = false;
@@ -938,7 +941,11 @@
       }
 
       msg.className = "msg ok";
-      msg.textContent = "Appointment confirmed! A staff member will review it.";
+      msg.textContent =
+        data?.email === "failed"
+          ? "Appointment booked! Email did not send (staff will still see it)."
+          : "Appointment confirmed! A confirmation email has been sent.";
+
       confirmCard.classList.add("show");
       cName.textContent = name;
       cEmail.textContent = email;
