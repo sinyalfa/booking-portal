@@ -53,6 +53,9 @@
       --radius2: 18px;
 
       --clock-anim-speed: 2.8s;
+
+      /* ===== Earth sizing ===== */
+      --earth-size: min(92%, 820px);
     }
 
     html, body { height: 100%; }
@@ -163,6 +166,58 @@
       -webkit-backdrop-filter: blur(18px) saturate(160%);
     }
 
+    /* ====== NEW: Earth layer behind the card content ====== */
+    .earth-layer{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+      z-index:0;
+      opacity:0.42;
+      transform: translateY(18px);
+    }
+
+    .earth-glow{
+      position:absolute;
+      width: calc(var(--earth-size) * 1.05);
+      height: calc(var(--earth-size) * 1.05);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(90,160,255,0.18), rgba(0,0,0,0) 60%);
+      filter: blur(2px);
+      opacity: 0.7;
+    }
+
+    .earth{
+      width: var(--earth-size);
+      height: var(--earth-size);
+      border-radius: 50%;
+
+      /* Real Earth image */
+      background-image: url("https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg");
+      background-repeat: repeat-x;
+      background-size: 240% 100%;
+      background-position: 0% 50%;
+
+      /* spin illusion */
+      animation: earthSpin 46s linear infinite;
+
+      /* sphere shading + glassy feel */
+      box-shadow:
+        inset -120px 0 160px rgba(0,0,0,0.88),
+        inset 0 0 90px rgba(0,0,0,0.35),
+        0 0 70px rgba(59,130,246,0.18);
+
+      filter: saturate(1.1) contrast(1.05) blur(0.2px);
+      opacity: 0.95;
+    }
+
+    @keyframes earthSpin{
+      from { background-position: 0% 50%; }
+      to   { background-position: -240% 50%; }
+    }
+
     /* Gold frame glow */
     .card::before{
       content:"";
@@ -172,7 +227,7 @@
         radial-gradient(circle at 30% 0%, rgba(247,231,177,0.18), rgba(247,231,177,0) 55%),
         linear-gradient(135deg, rgba(247,231,177,0.22), rgba(0,0,0,0) 35%, rgba(215,184,106,0.18));
       pointer-events:none;
-      z-index:0;
+      z-index:1;
     }
 
     /* Subtle border shimmer */
@@ -190,13 +245,16 @@
       mask-composite: exclude;
       opacity: 0.35;
       pointer-events:none;
-      z-index:0;
+      z-index:1;
     }
 
-    .card > *{ position: relative; z-index: 1; }
+    /* make all content above earth + overlays */
+    .card > *{ position: relative; z-index: 2; }
 
     @media (max-width: 640px){
       .card{ padding: 26px 16px 16px; }
+      :root{ --earth-size: 102%; }
+      .earth-layer{ opacity: 0.38; }
     }
 
     /* ============================================================
@@ -644,6 +702,13 @@
 
   <div class="wrap">
     <div class="card">
+
+      <!-- ✅ NEW: Earth behind the glass -->
+      <div class="earth-layer" aria-hidden="true">
+        <div class="earth"></div>
+        <div class="earth-glow"></div>
+      </div>
+
       <img class="logo" src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png" alt="Columbus East Tax Services Logo" />
 
       <div class="topline">
