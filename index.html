@@ -1,256 +1,390 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Columbus East Tax Services – Booking Portal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Columbus East Tax Services – Booking Portal</title>
 
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
 
-  body{
-    font-family:Arial,Helvetica,sans-serif;
-    color:#fff;
-    overflow:hidden;
-    background:radial-gradient(circle at 30% 20%, #0b1a3c, #020617 70%);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:22px;
-  }
-
-  /* ===== Card / Glass ===== */
-  .wrap{width:min(980px,100%); position:relative;}
-  .card{
-    position:relative;
-    width:100%;
-    border-radius:28px;
-    padding:36px 24px 28px;
-    text-align:center;
-    color:#0b1220;
-
-    background:linear-gradient(180deg, rgba(210,235,255,0.22), rgba(170,215,255,0.14));
-    border:1px solid rgba(210,235,255,0.35);
-    box-shadow:0 32px 90px rgba(0,0,0,0.62);
-
-    backdrop-filter: blur(18px) saturate(185%);
-    -webkit-backdrop-filter: blur(18px) saturate(185%);
-    overflow:hidden;
-  }
-
-  /* glossy shine */
-  .card::before{
-    content:"";
-    position:absolute;
-    inset:-2px;
-    background:
-      radial-gradient(circle at 20% 0%, rgba(255,255,255,0.38), rgba(255,255,255,0.08) 45%, rgba(255,255,255,0) 70%),
-      radial-gradient(circle at 80% 10%, rgba(59,130,246,0.20), rgba(59,130,246,0) 60%);
-    pointer-events:none;
-    z-index:2;
-  }
-  .card > *{position:relative;z-index:3}
-
-  /* ===== Header ===== */
-  .logo{
-    width:360px;
-    max-width:92%;
-    display:block;
-    margin:0 auto 14px;
-    filter: drop-shadow(0 0 20px rgba(255,255,255,0.18));
-  }
-
-  .clock-line{
-    margin:10px auto 30px;
-    max-width:420px;
-    font-size:18px;
-    font-weight:900;
-    color:#e5f0ff;
-    text-align:center;
-    padding:10px 16px;
-    border-radius:999px;
-    background:radial-gradient(circle at 50% 0%, rgba(59,130,246,0.22), rgba(15,23,42,0.95));
-    border:1px solid rgba(191,219,254,0.3);
-    letter-spacing:.5px;
-    animation:glowPulse 2.4s ease-in-out infinite;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  @keyframes glowPulse{
-    0%,100%{
-      box-shadow:0 0 14px rgba(59,130,246,.55), 0 0 40px rgba(37,99,235,.45);
-      transform:translateY(0);
+    body{
+      font-family: Arial, Helvetica, sans-serif;
+      color:#fff;
+      overflow-x:hidden;
+      background: radial-gradient(circle at 30% 20%, #0b1a3c, #020617 70%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
     }
-    50%{
-      box-shadow:0 0 24px rgba(59,130,246,.85), 0 0 70px rgba(37,99,235,.75);
-      transform:translateY(-1px);
+
+    .wrap{width:min(980px, 100%); position:relative;}
+    .card{
+      position:relative;
+      width:100%;
+      background: linear-gradient(180deg, rgba(210, 235, 255, 0.26), rgba(170, 215, 255, 0.18));
+      border-radius:28px;
+      border:1px solid rgba(210, 235, 255, 0.38);
+      box-shadow:0 32px 90px rgba(0,0,0,0.62);
+      padding:36px 24px 28px;
+      text-align:center;
+      color:#0b1220;
+      backdrop-filter: blur(18px) saturate(185%);
+      -webkit-backdrop-filter: blur(18px) saturate(185%);
+      overflow:hidden;
     }
-  }
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255,255,255,0.45), rgba(255,255,255,0.08) 45%, rgba(255,255,255,0) 70%),
+        radial-gradient(circle at 80% 10%, rgba(59,130,246,0.20), rgba(59,130,246,0) 60%);
+      pointer-events:none;
+      z-index:2;
+    }
+    .card > *{position:relative; z-index:3;}
 
-  /* ===== Buttons ===== */
-  .btn{
-    width:100%;
-    padding:18px;
-    margin:12px 0;
-    border:none;
-    border-radius:18px;
-    font-size:18px;
-    font-weight:900;
-    color:#fff;
-    cursor:pointer;
-    transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
-    box-shadow:0 10px 24px rgba(15,23,42,.5);
-  }
-  .btn:hover{transform:translateY(-1px); box-shadow:0 14px 30px rgba(15,23,42,.7)}
-  .btn:active{transform:translateY(0); box-shadow:0 6px 16px rgba(15,23,42,.5)}
-  .btn.call{background:#2563eb}
-  .btn.text{background:#16a34a}
-  .btn.email{background:#9333ea}
-  .btn.book{background:#0f766e}
+    /* ===== Earth + Money (behind glass) ===== */
+    .scene{
+      position:absolute;
+      inset:-40px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+      z-index:1;
+      opacity:.55;
+    }
+    .bg-dim{
+      position:absolute;
+      inset:0;
+      z-index:2;
+      pointer-events:none;
+      background:radial-gradient(circle at 50% 40%, rgba(0,0,0,0.28), rgba(0,0,0,0.62));
+      mix-blend-mode:multiply;
+    }
 
-  /* ============================================================
-     🌍 EARTH + 💵 ORBITING REAL BILLS (BEHIND GLASS)
-     ============================================================ */
-  .bg-scene{
-    position:absolute;
-    inset:-40px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    pointer-events:none;
-    z-index:1;                /* behind content but inside card */
-    opacity:.55;              /* behind dark glass feel */
-    filter: saturate(1.05) contrast(1.05);
-  }
+    .earth-wrap{
+      position:relative;
+      width:min(92%, 720px);
+      aspect-ratio:1/1;
+      border-radius:50%;
+    }
+    .earth-halo{
+      position:absolute;
+      inset:-4%;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(90,160,255,.22), transparent 62%);
+    }
+    .earth{
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      background-image:url("https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg");
+      background-repeat:repeat-x;
+      background-size:220% 100%;
+      background-position:0% 50%;
+      animation:earthSpin 46s linear infinite;
+      box-shadow:
+        inset -140px 0 190px rgba(0,0,0,.95),
+        inset 0 0 80px rgba(0,0,0,.35),
+        0 0 90px rgba(59,130,246,.18);
+    }
+    @keyframes earthSpin{
+      from{background-position:0% 50%}
+      to{background-position:-220% 50%}
+    }
 
-  /* dark glass layer over scene, still behind UI */
-  .bg-dim{
-    position:absolute;
-    inset:0;
-    z-index:2;
-    pointer-events:none;
-    background:radial-gradient(circle at 50% 40%, rgba(0,0,0,0.28), rgba(0,0,0,0.62));
-    mix-blend-mode:multiply;
-  }
+    .orbit{
+      position:absolute;
+      inset:-16%;
+      border-radius:50%;
+      transform-style:preserve-3d;
+    }
+    .orbit.cw{animation:spinCW 22s linear infinite}
+    .orbit.ccw{animation:spinCCW 26s linear infinite}
+    @keyframes spinCW{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    @keyframes spinCCW{from{transform:rotate(360deg)}to{transform:rotate(0deg)}}
 
-  /* Earth sizing */
-  .earth-wrap{
-    position:relative;
-    width:min(92%, 720px);
-    aspect-ratio:1/1;
-    border-radius:50%;
-  }
+    .bill{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:120px;
+      height:52px;
+      border-radius:8px;
+      background-image:url("https://upload.wikimedia.org/wikipedia/commons/4/4e/US_%24100_Obverse.jpg");
+      background-size:cover;
+      background-position:center;
+      box-shadow:0 14px 28px rgba(0,0,0,.45);
+      filter:contrast(1.06) saturate(1.06);
+      animation:floatBill 3.2s ease-in-out infinite;
+      transform-origin:center;
+    }
+    @keyframes floatBill{
+      0%,100%{transform:translate(-50%,-50%) translateY(0)}
+      50%{transform:translate(-50%,-50%) translateY(-12px)}
+    }
 
-  /* Glow halo */
-  .earth-halo{
-    position:absolute;
-    inset:-4%;
-    border-radius:50%;
-    background:radial-gradient(circle, rgba(90,160,255,.22), transparent 62%);
-    filter: blur(0px);
-  }
+    .b1{transform:translate(-50%,-50%) rotate(0deg)   translateX(360px); animation-delay:0.00s}
+    .b2{transform:translate(-50%,-50%) rotate(60deg)  translateX(360px); animation-delay:0.25s}
+    .b3{transform:translate(-50%,-50%) rotate(120deg) translateX(360px); animation-delay:0.50s}
+    .b4{transform:translate(-50%,-50%) rotate(180deg) translateX(360px); animation-delay:0.75s}
+    .b5{transform:translate(-50%,-50%) rotate(240deg) translateX(360px); animation-delay:1.00s}
+    .b6{transform:translate(-50%,-50%) rotate(300deg) translateX(360px); animation-delay:1.25s}
 
-  /* Realistic earth texture spin (background-position shift) */
-  .earth{
-    position:absolute;
-    inset:0;
-    border-radius:50%;
-    background-image:url("https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg");
-    background-repeat:repeat-x;
-    background-size:220% 100%;
-    background-position:0% 50%;
-    animation:earthSpin 46s linear infinite;
+    /* ===== Header ===== */
+    .logo{
+      width:360px;
+      max-width:92%;
+      display:block;
+      margin:0 auto 14px;
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.18));
+    }
 
-    /* shadow like night side */
-    box-shadow:
-      inset -140px 0 190px rgba(0,0,0,.95),
-      inset 0 0 80px rgba(0,0,0,.35),
-      0 0 90px rgba(59,130,246,.18);
-  }
+    .clock-line{
+      margin:10px auto 30px;
+      max-width:420px;
+      font-size:20px;
+      font-weight:900;
+      color:#e5f0ff;
+      text-align:center;
+      padding:10px 16px;
+      border-radius:999px;
+      background: radial-gradient(circle at 50% 0%, rgba(59,130,246,0.22), rgba(15,23,42,0.95));
+      border:1px solid rgba(191,219,254,0.3);
+      letter-spacing:0.5px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      animation:glowPulse 2.4s ease-in-out infinite;
+    }
+    @keyframes glowPulse{
+      0%,100%{
+        box-shadow:0 0 14px rgba(59,130,246,.55), 0 0 40px rgba(37,99,235,.45);
+        transform:translateY(0);
+      }
+      50%{
+        box-shadow:0 0 24px rgba(59,130,246,.85), 0 0 70px rgba(37,99,235,.75);
+        transform:translateY(-1px);
+      }
+    }
 
-  @keyframes earthSpin{
-    from{background-position:0% 50%}
-    to{background-position:-220% 50%}
-  }
+    /* ===== Buttons ===== */
+    .btn{
+      width:100%;
+      padding:18px;
+      margin:12px 0;
+      border:none;
+      border-radius:18px;
+      font-size:18px;
+      font-weight:900;
+      color:#fff;
+      cursor:pointer;
+      transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+      box-shadow:0 10px 24px rgba(15,23,42,.5);
+    }
+    .btn:hover{transform:translateY(-1px); box-shadow:0 14px 30px rgba(15,23,42,.7)}
+    .btn:active{transform:translateY(0); box-shadow:0 6px 16px rgba(15,23,42,.5)}
+    .btn.call{background:#2563eb}
+    .btn.text{background:#16a34a}
+    .btn.email{background:#9333ea}
+    .btn.book{background:#0f766e}
 
-  /* Orbit ring container */
-  .orbit{
-    position:absolute;
-    inset:-14%;
-    border-radius:50%;
-    animation:orbitSpin 18s linear infinite;
-    transform-style:preserve-3d;
-  }
-  @keyframes orbitSpin{
-    from{transform:rotate(0deg)}
-    to{transform:rotate(360deg)}
-  }
+    /* ===== Booking panel ===== */
+    .booking{
+      margin-top:18px;
+      text-align:left;
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .5s ease;
+    }
+    .booking.open{max-height:2600px}
 
-  /* REAL bill image */
-  .bill{
-    position:absolute;
-    left:50%;
-    top:50%;
-    width:120px;
-    height:52px;
-    border-radius:8px;
+    .section{
+      margin-top:12px;
+      border-radius:20px;
+      background:#ffffff;
+      border:1px solid #e5e7eb;
+      padding:16px;
+    }
 
-    background-image:url("https://upload.wikimedia.org/wikipedia/commons/4/4e/US_%24100_Obverse.jpg");
-    background-size:cover;
-    background-position:center;
+    .subline{font-size:15px;font-weight:900;color:#0f172a}
+    .now{margin-top:4px;font-weight:700;font-size:13px;color:#2563eb}
 
-    box-shadow:0 14px 28px rgba(0,0,0,.45);
-    filter: contrast(1.05) saturate(1.05);
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:10px;
+    }
+    @media (max-width:720px){ .row{grid-template-columns:1fr} }
 
-    /* subtle flutter */
-    animation:billFlutter 3s ease-in-out infinite;
-    transform-origin:center;
-  }
-  @keyframes billFlutter{
-    0%,100%{filter:contrast(1.05) saturate(1.05); transform:translate(-50%,-50%) rotateX(0deg)}
-    50%{filter:contrast(1.08) saturate(1.10); transform:translate(-50%,-50%) rotateX(10deg)}
-  }
+    label{
+      font-size:13px;
+      font-weight:900;
+      color:#0f172a;
+      margin-bottom:4px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
 
-  /* Place bills around the orbit */
-  .b1{transform:translate(-50%,-50%) rotate(0deg)   translateX(360px)}
-  .b2{transform:translate(-50%,-50%) rotate(60deg)  translateX(360px); animation-delay:.25s}
-  .b3{transform:translate(-50%,-50%) rotate(120deg) translateX(360px); animation-delay:.5s}
-  .b4{transform:translate(-50%,-50%) rotate(180deg) translateX(360px); animation-delay:.75s}
-  .b5{transform:translate(-50%,-50%) rotate(240deg) translateX(360px); animation-delay:1s}
-  .b6{transform:translate(-50%,-50%) rotate(300deg) translateX(360px); animation-delay:1.25s}
+    .today-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      color:#0b1220;
+      background:rgba(34,197,94,0.18);
+      border:1px solid rgba(34,197,94,0.45);
+    }
 
-  @media (max-width: 640px){
-    .card{padding:28px 18px 20px}
-    .clock-line{font-size:16px;padding:9px 10px}
-    .bill{width:90px;height:40px}
-    .b1,.b2,.b3,.b4,.b5,.b6{transform:translate(-50%,-50%) rotate(var(--r,0deg)) translateX(240px)}
-    .b1{--r:0deg}
-    .b2{--r:60deg}
-    .b3{--r:120deg}
-    .b4{--r:180deg}
-    .b5{--r:240deg}
-    .b6{--r:300deg}
-  }
-</style>
+    input,select{
+      width:100%;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid #cbd5e1;
+      font-size:14px;
+      outline:none;
+    }
+    input:focus,select:focus{
+      border-color:rgba(37,99,235,0.85);
+      box-shadow:0 0 0 3px rgba(96,165,250,0.4);
+    }
+    input.today{
+      border-color:rgba(34,197,94,0.7);
+      box-shadow:0 0 0 3px rgba(34,197,94,0.18), 0 0 18px rgba(34,197,94,0.18);
+    }
+
+    .slots-title{margin:16px 0 10px;font-weight:900;color:#0f172a;font-size:15px}
+    .times{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));
+      gap:10px;
+    }
+    .slot{
+      padding:12px;
+      border-radius:14px;
+      border:1px solid #34d399;
+      background:#ecfdf5;
+      font-size:14px;
+      font-weight:900;
+      color:#065f46;
+      text-align:center;
+      cursor:pointer;
+      transition:transform .1s ease, box-shadow .1s ease, background .1s ease;
+    }
+    .slot:hover{transform:translateY(-1px); box-shadow:0 8px 16px rgba(15,23,42,.12)}
+    .slot.active{
+      background:#c7d2fe;
+      border-color:#6366f1;
+      color:#1e1b4b;
+      box-shadow:0 0 0 3px rgba(99,102,241,0.24);
+    }
+    .slot.disabled{
+      background:#f1f5f9;
+      border-color:#cbd5e1;
+      color:#94a3b8;
+      cursor:not-allowed;
+      box-shadow:none;
+      transform:none;
+    }
+
+    .btn.confirm{
+      margin-top:16px;
+      background:#020617;
+      width:100%;
+    }
+    .btn.confirm:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .msg{
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:10px;
+      font-size:13px;
+      font-weight:900;
+      display:none;
+    }
+    .msg.ok{display:block; background:#dcfce7; color:#166534; border:1px solid #86efac}
+    .msg.bad{display:block; background:#fee2e2; color:#991b1b; border:1px solid #fecaca}
+    .msg.warn{display:block; background:#fef3c7; color:#92400e; border:1px solid #fde68a}
+
+    .confirm-card{
+      display:none;
+      margin-top:16px;
+      border-radius:18px;
+      border:1px solid #e5e7eb;
+      background:#ffffff;
+      padding:14px;
+    }
+    .confirm-card.show{display:block}
+    .confirm-head{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding-bottom:10px;
+      border-bottom:1px solid #e5e7eb;
+    }
+    .check{
+      width:40px;height:40px;border-radius:14px;
+      background:#dcfce7;border:1px solid #86efac;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;color:#166534;font-size:20px;
+    }
+    .confirm-title{font-size:17px;font-weight:900;color:#0f172a}
+    .confirm-sub{font-size:13px;color:#475569;font-weight:700}
+
+    .grid2{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width:720px){ .grid2{grid-template-columns:1fr} }
+    .mini-box{
+      border-radius:14px;border:1px solid #e5e7eb;
+      padding:10px;background:#ffffff;
+    }
+    .mini-label{font-size:12px;font-weight:900;color:#64748b;margin-bottom:4px}
+    .mini-val{font-size:14px;font-weight:900;color:#0f172a; word-break:break-word}
+
+    @media (max-width:640px){
+      .card{padding:28px 18px 20px}
+      .clock-line{font-size:16px;padding:9px 10px}
+      .bill{width:90px;height:40px}
+    }
+  </style>
 </head>
 
 <body>
   <div class="wrap">
     <div class="card">
 
-      <!-- 🌍💵 Background scene behind the dark glass -->
-      <div class="bg-scene" aria-hidden="true">
+      <!-- Earth + Money background -->
+      <div class="scene" aria-hidden="true">
         <div class="earth-wrap">
           <div class="earth-halo"></div>
           <div class="earth"></div>
 
-          <div class="orbit">
+          <div class="orbit cw">
             <div class="bill b1"></div>
             <div class="bill b2"></div>
             <div class="bill b3"></div>
+          </div>
+
+          <div class="orbit ccw">
             <div class="bill b4"></div>
             <div class="bill b5"></div>
             <div class="bill b6"></div>
@@ -259,39 +393,424 @@
       </div>
       <div class="bg-dim" aria-hidden="true"></div>
 
-      <!-- ====== Foreground UI ====== -->
-      <img
-        class="logo"
-        src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png"
-        alt="Columbus East Tax Services Logo"
-      />
-
+      <!-- Foreground UI -->
+      <img class="logo" src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png" alt="Columbus East Tax Services Logo" />
       <div id="clockLine" class="clock-line"></div>
 
       <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
       <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
       <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
-      <button class="btn book" onclick="alert('Design mode: booking UI can be added back anytime')">📅 Book Appointment</button>
+
+      <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
+
+      <div id="booking" class="booking">
+        <div class="section">
+          <div class="subline">Book an Appointment</div>
+          <div id="nowLine" class="now"></div>
+
+          <div class="row">
+            <div>
+              <label for="fullName">Full Name</label>
+              <input id="fullName" placeholder="Your full name" />
+            </div>
+            <div>
+              <label for="email">Email</label>
+              <input id="email" placeholder="you@example.com" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="service">Service</label>
+              <select id="service">
+                <option>W-2 / Individual Taxes</option>
+                <option>1099 / Self-Employed Taxes</option>
+                <option>LLC / Small Business Filing</option>
+                <option>Audit Help & IRS Letters</option>
+                <option>Amended Returns (1040-X)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="location">Location</label>
+              <select id="location">
+                <option>CML Whitehall Branch — 4445 E Broad St</option>
+                <option>CML Reynoldsburg Branch — 1402 Brice Rd</option>
+                <option>CML Livingston Branch — 3434 E Livingston Ave</option>
+                <option>CML Groveport Branch — 4980 S Hamilton Rd</option>
+                <option>Online / Phone / Text</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="date">Date <span id="todayBadge" class="today-pill" style="display:none;">Today</span></label>
+              <input id="date" type="date" />
+            </div>
+            <div>
+              <label for="duration">Length</label>
+              <select id="duration">
+                <option value="60">60 minutes</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="slots-title">Available Times</div>
+          <div id="times" class="times"></div>
+
+          <button id="confirmBtn" class="btn confirm" disabled>Confirm Booking</button>
+
+          <div id="msg" class="msg"></div>
+
+          <div id="confirmCard" class="confirm-card">
+            <div class="confirm-head">
+              <div class="check">✓</div>
+              <div>
+                <div class="confirm-title">Booking Confirmed</div>
+                <div class="confirm-sub">Your appointment has been added to our schedule.</div>
+              </div>
+            </div>
+
+            <div class="grid2">
+              <div class="mini-box">
+                <div class="mini-label">Client</div>
+                <div id="cName" class="mini-val"></div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Email</div>
+                <div id="cEmail" class="mini-val"></div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Date & Time</div>
+                <div id="cWhen" class="mini-val"></div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Service</div>
+                <div id="cService" class="mini-val"></div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Location</div>
+                <div id="cLoc" class="mini-val"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
 
     </div>
   </div>
 
-<script>
-  // Simple live clock line
-  const clockLine = document.getElementById("clockLine");
-  function updateClock(){
-    const now = new Date();
-    const datePart = new Intl.DateTimeFormat("en-US", {
-      weekday:"short", month:"short", day:"2-digit", year:"numeric"
-    }).format(now);
-    const timePart = new Intl.DateTimeFormat("en-US", {
-      hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false
-    }).format(now);
-    clockLine.textContent = `${datePart} • ${timePart}`;
-  }
-  updateClock();
-  setInterval(updateClock, 1000);
-</script>
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <script>
+    /* ------------------------------------------------------------
+       CLOCK
+       ------------------------------------------------------------ */
+    const clockLine = document.getElementById("clockLine");
+    const nowLine = document.getElementById("nowLine");
+
+    function updateClock() {
+      const now = new Date();
+
+      const datePart = new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      }).format(now);
+
+      const timePart = new Intl.DateTimeFormat("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }).format(now);
+
+      clockLine.textContent = `${datePart} • ${timePart}`;
+      nowLine.textContent = `Now: ${datePart} • ${timePart}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    /* ------------------------------------------------------------
+       SUPABASE CONFIG (KEY ADDED)
+       ------------------------------------------------------------ */
+    const SUPABASE_URL = "https://zleztbdrxnqirccgkvqx.supabase.co";
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs";
+
+    const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    /* ------------------------------------------------------------
+       BOOKING UI TOGGLE
+       ------------------------------------------------------------ */
+    const toggleBtn = document.getElementById("toggleBtn");
+    const booking = document.getElementById("booking");
+
+    toggleBtn.addEventListener("click", () => {
+      booking.classList.toggle("open");
+      if (booking.classList.contains("open")) {
+        if (!dateEl.value) dateEl.value = todayYMD();
+        refreshSlots();
+      }
+    });
+
+    /* ------------------------------------------------------------
+       UTILITIES
+       ------------------------------------------------------------ */
+    function pad(n) { return String(n).padStart(2, "0"); }
+
+    function todayYMD() {
+      const d = new Date();
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }
+
+    function fmtNice(dt) {
+      return dt.toLocaleString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    }
+
+    function makeLocalDateTimeFrom24(dateStr, hm) {
+      const [H, M] = hm.split(":").map(Number);
+      const [Y, m, D] = dateStr.split("-").map(Number);
+      return new Date(Y, m - 1, D, H, M, 0, 0);
+    }
+
+    function isValidEmail(v) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    }
+
+    function getAllowedHours(dow) {
+      if (dow >= 1 && dow <= 5) return [9, 10, 11, 12, 17, 18, 19, 20];
+      if (dow === 6) return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+      return [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+    }
+
+    function to12hLabel(hm) {
+      let [H, M] = hm.split(":").map(Number);
+      const ampm = H >= 12 ? "PM" : "AM";
+      H = H % 12;
+      if (H === 0) H = 12;
+      return `${pad(H)}:${pad(M)} ${ampm}`;
+    }
+
+    /* ------------------------------------------------------------
+       BOOKING LOGIC (READ + INSERT)
+       ------------------------------------------------------------ */
+    const timesBox = document.getElementById("times");
+    const confirmBtn = document.getElementById("confirmBtn");
+    const msg = document.getElementById("msg");
+    const confirmCard = document.getElementById("confirmCard");
+    const todayBadge = document.getElementById("todayBadge");
+
+    const fullNameEl = document.getElementById("fullName");
+    const emailEl = document.getElementById("email");
+    const serviceEl = document.getElementById("service");
+    const locationEl = document.getElementById("location");
+    const dateEl = document.getElementById("date");
+
+    const cName = document.getElementById("cName");
+    const cEmail = document.getElementById("cEmail");
+    const cWhen = document.getElementById("cWhen");
+    const cService = document.getElementById("cService");
+    const cLoc = document.getElementById("cLoc");
+
+    let selectedSlot = null; // "HH:MM"
+    let bookedSet = new Set();
+
+    function updateTodayHighlight() {
+      const isToday = dateEl.value === todayYMD();
+      todayBadge.style.display = isToday ? "inline-flex" : "none";
+      dateEl.classList.toggle("today", isToday);
+    }
+
+    async function fetchBookedForDate(ymd) {
+      const start = new Date(ymd + "T00:00:00");
+      const end = new Date(ymd + "T23:59:59");
+
+      const { data, error } = await supa
+        .from("appointments")
+        .select("start_time,status")
+        .gte("start_time", start.toISOString())
+        .lte("start_time", end.toISOString());
+
+      if (error) {
+        console.error("Fetch booked error:", error);
+        return new Set();
+      }
+
+      const set = new Set();
+      (data || []).forEach((row) => {
+        if ((row.status || "").toLowerCase() === "cancelled") return;
+        const dt = new Date(row.start_time);
+        set.add(`${pad(dt.getHours())}:${pad(dt.getMinutes())}`);
+      });
+      return set;
+    }
+
+    async function refreshSlots() {
+      const ymd = dateEl.value;
+      timesBox.innerHTML = "";
+      selectedSlot = null;
+      confirmBtn.disabled = true;
+      msg.className = "msg";
+      msg.textContent = "";
+      updateTodayHighlight();
+
+      if (!ymd) {
+        msg.className = "msg warn";
+        msg.textContent = "Please pick a date.";
+        return;
+      }
+
+      const dateObj = new Date(ymd + "T00:00:00");
+      const dow = dateObj.getDay();
+      const allowedHours = getAllowedHours(dow);
+
+      bookedSet = await fetchBookedForDate(ymd);
+
+      const now = new Date();
+      let anyAvailable = false;
+
+      allowedHours.forEach((H) => {
+        const hm = `${pad(H)}:00`;
+        const slotDate = makeLocalDateTimeFrom24(ymd, hm);
+        const isPast = slotDate <= now;
+        const isBooked = bookedSet.has(hm);
+
+        const div = document.createElement("div");
+        div.className = "slot";
+        div.textContent = to12hLabel(hm);
+
+        if (isBooked || isPast) {
+          div.classList.add("disabled");
+        } else {
+          anyAvailable = true;
+          div.addEventListener("click", () => {
+            document.querySelectorAll(".slot").forEach((x) => x.classList.remove("active"));
+            div.classList.add("active");
+            selectedSlot = hm;
+            validateForm();
+          });
+        }
+
+        timesBox.appendChild(div);
+      });
+
+      if (!anyAvailable) {
+        msg.className = "msg warn";
+        msg.textContent = "No available times for this date.";
+      } else {
+        msg.className = "msg warn";
+        msg.textContent = "Select a time to continue.";
+      }
+    }
+
+    function validateForm() {
+      const nameOk = (fullNameEl.value || "").trim().length > 1;
+      const emailOk = isValidEmail((emailEl.value || "").trim());
+      const slotOk = !!selectedSlot;
+      confirmBtn.disabled = !(nameOk && emailOk && slotOk);
+    }
+
+    fullNameEl.addEventListener("input", validateForm);
+    emailEl.addEventListener("input", validateForm);
+    dateEl.addEventListener("change", () => { refreshSlots(); validateForm(); });
+
+    async function hasSameDayBooking(email, ymd) {
+      const start = new Date(ymd + "T00:00:00");
+      const end = new Date(ymd + "T23:59:59");
+
+      const { data, error } = await supa
+        .from("appointments")
+        .select("start_time,status")
+        .eq("client_email", email)
+        .gte("start_time", start.toISOString())
+        .lte("start_time", end.toISOString());
+
+      if (error) {
+        console.error("Same-day check error:", error);
+        return false;
+      }
+      return (data || []).some((row) => (row.status || "").toLowerCase() !== "cancelled");
+    }
+
+    confirmBtn.addEventListener("click", async () => {
+      msg.className = "msg warn";
+      msg.textContent = "Submitting your booking...";
+      confirmBtn.disabled = true;
+
+      const name = (fullNameEl.value || "").trim();
+      const email = (emailEl.value || "").trim().toLowerCase();
+      const service = serviceEl.value;
+      const location = locationEl.value;
+      const ymd = dateEl.value;
+
+      if (!name || !isValidEmail(email) || !selectedSlot || !ymd) {
+        msg.className = "msg bad";
+        msg.textContent = "Please fill all fields and pick a time.";
+        validateForm();
+        return;
+      }
+
+      const already = await hasSameDayBooking(email, ymd);
+      if (already) {
+        msg.className = "msg bad";
+        msg.textContent = "You already have an appointment booked for this day.";
+        confirmBtn.disabled = false;
+        return;
+      }
+
+      const startDT = makeLocalDateTimeFrom24(ymd, selectedSlot);
+      const durationMin = parseInt(document.getElementById("duration").value, 10) || 60;
+      const endDT = new Date(startDT.getTime() + durationMin * 60000);
+
+      const { error } = await supa.from("appointments").insert([{
+        client_name: name,
+        client_email: email,
+        service,
+        location,
+        start_time: startDT.toISOString(),
+        end_time: endDT.toISOString(),
+        status: "confirmed",
+      }]);
+
+      if (error) {
+        console.error("Insert error:", error);
+        msg.className = "msg bad";
+        msg.textContent = "Booking failed. Please try again in a moment.";
+        confirmBtn.disabled = false;
+        return;
+      }
+
+      msg.className = "msg ok";
+      msg.textContent = "Appointment confirmed! A staff member will review it.";
+
+      confirmCard.classList.add("show");
+      cName.textContent = name;
+      cEmail.textContent = email;
+      cWhen.textContent = fmtNice(startDT);
+      cService.textContent = service;
+      cLoc.textContent = location;
+
+      await refreshSlots();
+      validateForm();
+    });
+
+    /* Init */
+    dateEl.value = todayYMD();
+    updateTodayHighlight();
+    refreshSlots();
+    validateForm();
+  </script>
 </body>
 </html>
