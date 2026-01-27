@@ -74,7 +74,7 @@
       justify-content:center;
       pointer-events:none;
       z-index:1;
-      opacity:0.70;
+      opacity:0.72;
       transform: translateZ(0);
     }
 
@@ -85,9 +85,9 @@
       z-index:2;
       pointer-events:none;
       background:
-        radial-gradient(circle at 50% 45%,
-          rgba(2,6,23,0.10),
-          rgba(2,6,23,0.66) 62%,
+        radial-gradient(circle at 50% 40%,
+          rgba(2,6,23,0.08),
+          rgba(2,6,23,0.62) 58%,
           rgba(2,6,23,0.88) 100%);
       mix-blend-mode:multiply;
     }
@@ -101,6 +101,8 @@
       align-items:center;
       justify-content:center;
       perspective: 1200px;
+      /* NEW: pull the whole scene upward toward logo */
+      transform: translateY(-78px);
     }
 
     .earth-halo{
@@ -136,7 +138,7 @@
     /* Bills ring */
     .money-layer{
       position:absolute;
-      inset:-20%;
+      inset:-28%; /* NEW: larger orbit area */
       border-radius:50%;
       transform-style: preserve-3d;
     }
@@ -145,13 +147,13 @@
       position:absolute;
       left:50%;
       top:50%;
-      width:160px;
-      height:70px;
-      border-radius:10px;
+      width:235px;   /* NEW: bigger */
+      height:105px;  /* NEW: bigger */
+      border-radius:12px;
       transform-style:preserve-3d;
       transform: translate(-50%,-50%);
-      box-shadow:0 18px 30px rgba(0,0,0,.55);
-      filter: contrast(1.10) saturate(1.10);
+      box-shadow:0 22px 38px rgba(0,0,0,.60);
+      filter: contrast(1.12) saturate(1.15);
       will-change: transform;
       backface-visibility:hidden;
       -webkit-backface-visibility:hidden;
@@ -163,7 +165,7 @@
       content:"";
       position:absolute;
       inset:0;
-      border-radius:10px;
+      border-radius:12px;
       background-image:url("https://upload.wikimedia.org/wikipedia/commons/4/4e/US_%24100_Obverse.jpg");
       background-size:cover;
       background-position:center;
@@ -176,36 +178,33 @@
       content:"";
       position:absolute;
       inset:0;
-      border-radius:10px;
+      border-radius:12px;
       background:
-        linear-gradient(120deg, rgba(255,255,255,0.25), rgba(255,255,255,0) 58%),
-        radial-gradient(circle at 70% 20%, rgba(255,255,255,0.18), rgba(255,255,255,0) 55%);
+        linear-gradient(120deg, rgba(255,255,255,0.26), rgba(255,255,255,0) 58%),
+        radial-gradient(circle at 70% 20%, rgba(255,255,255,0.20), rgba(255,255,255,0) 55%);
       mix-blend-mode: screen;
       opacity:0.65;
       pointer-events:none;
     }
 
-    /* "Paper bend" overlay (makes it feel 3D without flipping) */
+    /* "Paper bend" overlay */
     .bill .bend{
       position:absolute;
       inset:0;
-      border-radius:10px;
+      border-radius:12px;
       pointer-events:none;
-
-      /* center crease shadow + edge falloff */
       background:
         linear-gradient(90deg,
-          rgba(0,0,0,0.20) 0%,
-          rgba(0,0,0,0.05) 18%,
-          rgba(255,255,255,0.10) 35%,
-          rgba(0,0,0,0.08) 50%,
-          rgba(255,255,255,0.08) 65%,
-          rgba(0,0,0,0.06) 82%,
-          rgba(0,0,0,0.18) 100%),
+          rgba(0,0,0,0.22) 0%,
+          rgba(0,0,0,0.06) 18%,
+          rgba(255,255,255,0.12) 35%,
+          rgba(0,0,0,0.10) 50%,
+          rgba(255,255,255,0.10) 65%,
+          rgba(0,0,0,0.08) 82%,
+          rgba(0,0,0,0.20) 100%),
         radial-gradient(circle at 50% 50%,
-          rgba(255,255,255,0.08),
+          rgba(255,255,255,0.10),
           rgba(0,0,0,0.18) 70%);
-
       mix-blend-mode: overlay;
       opacity:0.55;
     }
@@ -213,18 +212,18 @@
     /* BIG visible denomination overlay */
     .bill .denom{
       position:absolute;
-      right:8px;
-      bottom:6px;
+      right:10px;
+      bottom:8px;
       font-weight:900;
-      font-size:24px;
+      font-size:34px; /* NEW: bigger */
       letter-spacing:0.5px;
       color:rgba(10, 100, 60, 0.95);
       text-shadow:
-        0 2px 0 rgba(255,255,255,0.6),
-        0 10px 18px rgba(0,0,0,0.55);
+        0 2px 0 rgba(255,255,255,0.65),
+        0 12px 22px rgba(0,0,0,0.58);
       background: rgba(255,255,255,0.22);
       border: 1px solid rgba(255,255,255,0.22);
-      padding: 2px 8px;
+      padding: 3px 10px;
       border-radius: 999px;
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
@@ -448,8 +447,9 @@
     @media (max-width:640px){
       .card{padding:28px 18px 20px}
       .clock-line{font-size:16px;padding:9px 10px}
-      .bill{width:132px;height:58px}
-      .bill .denom{font-size:20px}
+      .earth-wrap{ transform: translateY(-58px); }
+      .bill{width:188px;height:84px}
+      .bill .denom{font-size:28px}
     }
   </style>
 </head>
@@ -465,7 +465,6 @@
         <div class="earth-wrap" id="earthWrap">
           <div class="earth-halo"></div>
           <div class="earth"></div>
-
           <div class="money-layer" id="moneyLayer"></div>
         </div>
       </div>
@@ -584,42 +583,31 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    /* ------------------------------------------------------------
-       CLOCK
-       ------------------------------------------------------------ */
+    /* CLOCK */
     const clockLine = document.getElementById("clockLine");
     const nowLine = document.getElementById("nowLine");
-
     function updateClock() {
       const now = new Date();
       const datePart = new Intl.DateTimeFormat("en-US", {
         weekday: "short", month: "short", day: "2-digit", year: "numeric",
       }).format(now);
-
       const timePart = new Intl.DateTimeFormat("en-US", {
         hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
       }).format(now);
-
       clockLine.textContent = `${datePart} • ${timePart}`;
       nowLine.textContent = `Now: ${datePart} • ${timePart}`;
     }
     updateClock();
     setInterval(updateClock, 1000);
 
-    /* ------------------------------------------------------------
-       SUPABASE CONFIG
-       ------------------------------------------------------------ */
+    /* SUPABASE CONFIG */
     const SUPABASE_URL = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE"; // <- paste your anon key here
-
     const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    /* ------------------------------------------------------------
-       BOOKING UI TOGGLE
-       ------------------------------------------------------------ */
+    /* BOOKING UI TOGGLE */
     const toggleBtn = document.getElementById("toggleBtn");
     const booking = document.getElementById("booking");
-
     toggleBtn.addEventListener("click", () => {
       booking.classList.toggle("open");
       if (booking.classList.contains("open")) {
@@ -628,9 +616,7 @@
       }
     });
 
-    /* ------------------------------------------------------------
-       UTILITIES
-       ------------------------------------------------------------ */
+    /* UTILITIES */
     function pad(n) { return String(n).padStart(2, "0"); }
     function todayYMD() {
       const d = new Date();
@@ -663,9 +649,7 @@
       return `${pad(H)}:${pad(M)} ${ampm}`;
     }
 
-    /* ------------------------------------------------------------
-       BOOKING LOGIC
-       ------------------------------------------------------------ */
+    /* BOOKING LOGIC */
     const timesBox = document.getElementById("times");
     const confirmBtn = document.getElementById("confirmBtn");
     const msg = document.getElementById("msg");
@@ -871,9 +855,7 @@
     refreshSlots();
     validateForm();
 
-    /* ------------------------------------------------------------
-       CREATE 18 BILLS (ALL $100) + BEND LAYER
-       ------------------------------------------------------------ */
+    /* CREATE 18 BILLS */
     const moneyLayer = document.getElementById("moneyLayer");
     const BILL_COUNT = 18;
 
@@ -897,16 +879,12 @@
     const earthWrap = document.getElementById("earthWrap");
     const bills = Array.from(document.querySelectorAll(".bill"));
 
-    /* ------------------------------------------------------------
-       MONEY ORBIT (ALTERNATING DIRECTIONS + ALWAYS FRONT-FACING)
-       - No rotateY/rotateX flipping
-       - We keep subtle rotateZ + “paper bend” shading
-       ------------------------------------------------------------ */
+    /* MONEY ORBIT (UP-CLOSE + BIG + READABLE) */
     const orbiters = bills.map((el, i) => {
-      const dir = (i % 2 === 0) ? 1 : -1;              // alternate direction
+      const dir = (i % 2 === 0) ? 1 : -1;
       const baseAngle = (i / bills.length) * Math.PI * 2;
-      const speed = (0.50 + (i % 6) * 0.05) * dir;     // varied
-      const radius = 0.48 + (i % 4) * 0.03;            // varied
+      const speed = (0.62 + (i % 6) * 0.06) * dir;
+      const radius = 0.55 + (i % 4) * 0.035;   // NEW: wider ring
       const phase = Math.random() * Math.PI * 2;
       return { el, baseAngle, speed, radius, phase };
     });
@@ -918,10 +896,10 @@
       const cx = rect.width / 2;
       const cy = rect.height / 2;
 
-      const ellipseY = 0.62;
-      const depthScale = 0.22;
+      const ellipseY = 0.50;     // NEW: flatter ellipse pushes some bills into logo area
+      const depthScale = 0.36;   // NEW: more “pop” scaling
 
-      orbiters.forEach((o, idx) => {
+      orbiters.forEach((o) => {
         const theta = o.baseAngle + t * o.speed;
 
         const r = rect.width * o.radius;
@@ -929,17 +907,15 @@
         const y = cy + Math.sin(theta) * r * ellipseY;
 
         const depth = (Math.sin(theta) + 1) / 2; // 0..1
-        const scale = 0.86 + depth * depthScale;
+        const scale = 0.95 + depth * depthScale; // NEW: closer/larger
 
-        // float + tiny readable motion (NO FLIPS)
-        const bob = Math.sin(t * 2.0 + o.phase) * 10;
-        const rot = Math.sin(t * 1.2 + o.phase) * 5;     // small rotateZ only
-        const drift = Math.cos(t * 1.0 + o.phase) * 6;   // subtle side drift
+        const bob = Math.sin(t * 2.15 + o.phase) * 12;
+        const rot = Math.sin(t * 1.1 + o.phase) * 6;   // rotateZ only
+        const drift = Math.cos(t * 1.0 + o.phase) * 8;
 
-        // change bend lighting over time (keeps "3D paper" feel)
         const bend = o.el.querySelector(".bend");
         if (bend) {
-          const light = 0.45 + 0.20 * Math.sin(t * 1.4 + o.phase);
+          const light = 0.48 + 0.22 * Math.sin(t * 1.4 + o.phase);
           bend.style.opacity = String(light);
         }
 
@@ -949,17 +925,15 @@
           ` scale(${scale})` +
           ` rotateZ(${rot}deg)`;
 
-        o.el.style.zIndex = String(10 + Math.floor(depth * 20));
-        o.el.style.opacity = String(0.58 + depth * 0.42);
+        o.el.style.zIndex = String(10 + Math.floor(depth * 30));
+        o.el.style.opacity = String(0.62 + depth * 0.38);
       });
 
       requestAnimationFrame(animateMoney);
     }
     requestAnimationFrame(animateMoney);
 
-    /* ------------------------------------------------------------
-       STARFIELD + SHOOTING STARS (CANVAS)
-       ------------------------------------------------------------ */
+    /* STARFIELD + SHOOTING STARS */
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
 
