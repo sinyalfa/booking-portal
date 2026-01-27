@@ -4,189 +4,153 @@
 <meta charset="UTF-8" />
 <title>CETS Admin</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-
 <style>
-body {
-  margin:0;
-  font-family: system-ui, sans-serif;
-  background: radial-gradient(circle at top,#0c1c3a,#020617);
-  color:#fff;
-}
-
-.wrap {
-  max-width:1100px;
-  margin:auto;
-  padding:40px;
-}
-
-.card {
-  background: rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.12);
-  backdrop-filter: blur(16px);
-  border-radius:22px;
-  padding:26px;
-  box-shadow:0 30px 80px rgba(0,0,0,.6);
-}
-
-h1 {margin-top:0}
-
-.row {
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-bottom:12px;
-}
-
-input, button {
-  padding:14px 16px;
-  border-radius:14px;
-  border:none;
-  font-size:15px;
-}
-
-input {
-  flex:1;
-}
-
-button {
-  background:#2563eb;
-  color:#fff;
-  font-weight:700;
-  cursor:pointer;
-}
-
-button.secondary {background:#334155}
-button.good {background:#15803d}
-button.bad {background:#7f1d1d}
-
-button:hover {opacity:.9}
-
-#statusBadge {
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 14px;
-  border-radius:999px;
-  font-weight:700;
-  background:#7f1d1d;
-  margin-bottom:18px;
-}
-
-#statusBadge[data-ok="1"] {
-  background:#15803d;
-}
-
-.table {
-  margin-top:18px;
-  opacity:.85;
-}
+  body{margin:0;font-family:system-ui,sans-serif;background:radial-gradient(circle at top,#0c1c3a,#020617);color:#fff}
+  .wrap{max-width:1100px;margin:auto;padding:40px}
+  .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(16px);
+        border-radius:22px;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  h1{margin:0 0 10px}
+  .muted{opacity:.8;margin:0 0 18px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  input,button{padding:14px 16px;border-radius:14px;border:none;font-size:15px}
+  input{flex:1;min-width:220px}
+  button{background:#2563eb;color:#fff;font-weight:800;cursor:pointer}
+  button.secondary{background:#334155}
+  button.good{background:#15803d}
+  button.bad{background:#7f1d1d}
+  button:hover{opacity:.9}
+  button:active{transform:translateY(1px)}
+  #statusBadge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;font-weight:800;background:#7f1d1d;margin-bottom:18px}
+  #statusBadge[data-ok="1"]{background:#15803d}
+  #jsAlive{display:inline-block;margin-left:10px;font-weight:800;opacity:.9}
+  pre{white-space:pre-wrap;background:rgba(0,0,0,.35);padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);overflow:auto}
 </style>
 </head>
 
 <body>
 <div class="wrap">
   <div class="card">
-
     <h1>CETS Admin — Appointments</h1>
+    <p class="muted">Sign in with Supabase Auth, then test reading appointments (RLS may block reads).</p>
 
-    <div id="statusBadge" data-ok="0">Not connected</div>
+    <div id="statusBadge" data-ok="0">Not connected <span id="jsAlive">(JS not loaded)</span></div>
 
     <div class="row">
-      <input id="adminEmail" placeholder="Admin email" />
-      <input id="adminPassword" type="password" placeholder="Password" />
-      <button id="btnSignIn">Sign In</button>
+      <input id="adminEmail" placeholder="Admin email" autocomplete="username" />
+      <input id="adminPassword" type="password" placeholder="Password" autocomplete="current-password" />
+      <button id="btnSignIn" type="button">Sign In</button>
     </div>
 
     <div class="row">
-      <button class="secondary" id="btnSignOut">Sign Out</button>
-      <button class="secondary" id="btnWhoAmI">Who am I?</button>
-      <button class="good" id="btnRefresh">Test Appointments Read</button>
+      <button class="secondary" id="btnSignOut" type="button">Sign Out</button>
+      <button class="secondary" id="btnWhoAmI" type="button">Who am I?</button>
+      <button class="good" id="btnTestRead" type="button">Test Appointments Read</button>
     </div>
 
-    <div class="table" id="output"></div>
-
+    <pre id="output">Ready.</pre>
   </div>
 </div>
 
-<!-- SCRIPT ALWAYS AFTER HTML -->
-<script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+<!-- Supabase CDN (NO MODULE IMPORTS) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-const SUPABASE_URL = "YOUR_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+<script>
+(function () {
+  // If you can see "JS loaded" then buttons WILL work.
+  const jsAlive = document.getElementById("jsAlive");
+  jsAlive.textContent = "(JS loaded)";
 
-const supa = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // ✅ Put your real values here (keep admin page private!)
+  const SUPABASE_URL = "YOUR_SUPABASE_URL";
+  const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
-const $ = (id) => document.getElementById(id);
+  const out = (msg) => document.getElementById("output").textContent = msg;
 
-function setBadge(ok, text) {
-  const b = $("statusBadge");
-  b.textContent = text;
-  b.dataset.ok = ok ? "1" : "0";
-}
-
-async function whoAmI() {
-  const { data, error } = await supa.auth.getUser();
-  console.log("USER:", data, error);
-
-  if (!data?.user) {
-    setBadge(false, "Not signed in");
-    return;
+  function setBadge(ok, text) {
+    const b = document.getElementById("statusBadge");
+    b.dataset.ok = ok ? "1" : "0";
+    b.childNodes[0].textContent = text + " ";
   }
-  setBadge(true, "Signed in: " + data.user.email);
-}
 
-async function signIn() {
-  const email = $("adminEmail").value.trim();
-  const password = $("adminPassword").value;
-
-  const { data, error } = await supa.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  console.log("SIGN IN:", data, error);
-
-  if (error) {
-    alert(error.message);
-    setBadge(false, "Sign-in failed");
+  // Create client using window.supabase (same style as your booking portal)
+  if (!window.supabase || !window.supabase.createClient) {
+    setBadge(false, "Supabase SDK failed to load");
+    out("Supabase SDK missing. CDN blocked? Check adblock/CSP/network.");
     return;
   }
 
-  await whoAmI();
-}
+  const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-async function signOut() {
-  await supa.auth.signOut();
-  setBadge(false, "Signed out");
-}
+  async function whoAmI() {
+    const { data, error } = await supa.auth.getUser();
+    console.log("WHOAMI:", data, error);
 
-async function testAppointments() {
-  const { data, error } = await supa
-    .from("appointments")
-    .select("*")
-    .limit(10);
-
-  console.log("READ:", data, error);
-
-  if (error) {
-    setBadge(false, "RLS blocked / bad config");
-    $("output").textContent = error.message;
-    return;
+    if (error) {
+      setBadge(false, "Auth error");
+      out(error.message);
+      return;
+    }
+    if (!data || !data.user) {
+      setBadge(false, "Not signed in");
+      out("Not signed in.");
+      return;
+    }
+    setBadge(true, "Signed in: " + data.user.email);
+    out("Signed in as: " + data.user.email);
   }
 
-  setBadge(true, "Connected + can read");
-  $("output").textContent = JSON.stringify(data, null, 2);
-}
+  async function signIn() {
+    const email = document.getElementById("adminEmail").value.trim();
+    const password = document.getElementById("adminPassword").value;
 
-window.addEventListener("DOMContentLoaded", () => {
-  $("btnSignIn").onclick = signIn;
-  $("btnSignOut").onclick = signOut;
-  $("btnWhoAmI").onclick = whoAmI;
-  $("btnRefresh").onclick = testAppointments;
+    if (!email || !password) {
+      out("Enter email + password.");
+      return;
+    }
 
+    out("Signing in...");
+    const { data, error } = await supa.auth.signInWithPassword({ email, password });
+    console.log("SIGNIN:", data, error);
+
+    if (error) {
+      setBadge(false, "Sign-in failed");
+      out(error.message);
+      return;
+    }
+    await whoAmI();
+  }
+
+  async function signOut() {
+    out("Signing out...");
+    const { error } = await supa.auth.signOut();
+    if (error) out(error.message);
+    setBadge(false, "Signed out");
+    out("Signed out.");
+  }
+
+  async function testRead() {
+    out("Reading appointments (limit 10)...");
+    const { data, error } = await supa.from("appointments").select("*").order("start_time", { ascending: false }).limit(10);
+    console.log("READ:", data, error);
+
+    if (error) {
+      setBadge(false, "Read blocked (RLS / perms)");
+      out("ERROR: " + error.message + "\n\nThis means the page works, but your RLS/policies block reading.");
+      return;
+    }
+    setBadge(true, "Connected + can read");
+    out(JSON.stringify(data, null, 2));
+  }
+
+  // Attach handlers (buttons will respond)
+  document.getElementById("btnSignIn").addEventListener("click", signIn);
+  document.getElementById("btnSignOut").addEventListener("click", signOut);
+  document.getElementById("btnWhoAmI").addEventListener("click", whoAmI);
+  document.getElementById("btnTestRead").addEventListener("click", testRead);
+
+  // Initial check
   whoAmI();
-});
+})();
 </script>
 </body>
 </html>
