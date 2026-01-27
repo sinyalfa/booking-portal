@@ -3,251 +3,441 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>CETS — Admin Appointments</title>
+  <title>CETS Admin — Appointments</title>
 
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg:#020617;
-      --card: rgba(255,255,255,0.06);
-      --card2: rgba(255,255,255,0.04);
-      --border: rgba(255,255,255,0.10);
-      --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.62);
-      --good: #22c55e;
-      --bad: #ef4444;
-      --warn: #f59e0b;
-      --blue: #60a5fa;
-      --shadow: 0 24px 80px rgba(0,0,0,0.65);
-    }
-
-    html,body{height:100%}
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
     body{
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
-      background: radial-gradient(circle at 30% 20%, #0b1a3c, var(--bg) 70%);
-      color: var(--text);
-      padding: 22px;
+      font-family: Arial, Helvetica, sans-serif;
+      color:#eaf2ff;
+      background: radial-gradient(circle at 20% 10%, #0b1a3c, #020617 70%);
+      padding: 26px;
     }
 
-    .wrap{max-width:1100px;margin:0 auto}
-    .top{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
-      margin-bottom:16px;
+    .wrap{ max-width: 1200px; margin: 0 auto; }
+    .topbar{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      margin-bottom: 16px;
     }
-    .title{
-      font-size:22px; font-weight:950; letter-spacing:.2px;
+    .title h1{
+      font-size: 34px; font-weight: 900; letter-spacing: .2px;
     }
-    .sub{margin-top:6px;color:var(--muted);font-weight:700;font-size:13px}
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px; border-radius:999px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,0.05);
-      color: rgba(255,255,255,0.85);
-      font-weight:900; font-size:12px;
-      white-space:nowrap;
+    .title p{ margin-top: 6px; color: rgba(234,242,255,.78); font-weight: 700; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 16px 38px rgba(0,0,0,.35);
+      font-weight: 900;
+      white-space: nowrap;
     }
-    .dot{width:10px;height:10px;border-radius:999px;background:var(--good);box-shadow:0 0 0 3px rgba(34,197,94,0.18)}
+    .dot{ width: 10px; height: 10px; border-radius: 999px; background: #ef4444; box-shadow: 0 0 18px rgba(239,68,68,.55); }
+    .dot.ok{ background:#22c55e; box-shadow: 0 0 18px rgba(34,197,94,.55); }
 
     .card{
-      background: linear-gradient(180deg, var(--card), var(--card2));
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      padding: 14px;
-      overflow:hidden;
+      margin-top: 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 26px 70px rgba(0,0,0,.55);
+      overflow: hidden;
     }
 
-    .toolbar{
+    .section{ padding: 16px; border-bottom: 1px solid rgba(255,255,255,.10); }
+    .section:last-child{ border-bottom: none; }
+
+    .grid{
       display:grid;
-      grid-template-columns: 1.1fr 0.8fr 0.8fr 0.7fr;
-      gap:10px;
-      margin-bottom: 12px;
+      grid-template-columns: 1.5fr 1fr 1fr 0.9fr;
+      gap: 12px;
     }
-    @media (max-width:900px){
-      .toolbar{grid-template-columns: 1fr 1fr}
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px){
+      .grid{ grid-template-columns: 1fr; }
     }
 
     input, select, button{
-      font: inherit;
-    }
-    input, select{
       width:100%;
-      padding: 12px 12px;
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(0,0,0,0.22);
-      color: rgba(255,255,255,0.92);
-      outline:none;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(2,6,23,.35);
+      color: #eaf2ff;
+      padding: 14px 14px;
+      outline: none;
+      font-size: 14px;
+      font-weight: 800;
     }
-    select option{background:#fff;color:#0b1220}
+    input::placeholder{ color: rgba(234,242,255,.55); font-weight: 800; }
+
+    input:focus, select:focus{
+      border-color: rgba(59,130,246,.75);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.28);
+    }
+
+    .btnRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (max-width: 980px){
+      .btnRow{ grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px){
+      .btnRow{ grid-template-columns: 1fr; }
+    }
 
     .btn{
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(96,165,250,0.22);
-      color: rgba(255,255,255,0.95);
       cursor:pointer;
-      font-weight: 950;
-      transition: transform .10s ease, filter .10s ease;
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+      box-shadow: 0 14px 34px rgba(0,0,0,.35);
     }
-    .btn:hover{transform: translateY(-1px)}
-    .btn:active{transform: translateY(0)}
-    .btn.secondary{background: rgba(255,255,255,0.08)}
-    .btn.danger{background: rgba(239,68,68,0.22)}
-    .btn.good{background: rgba(34,197,94,0.22)}
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 18px 44px rgba(0,0,0,.45); }
+    .btn:active{ transform: translateY(0); }
+
+    .btn.primary{ background: linear-gradient(180deg, rgba(59,130,246,.55), rgba(37,99,235,.35)); }
+    .btn.good{ background: linear-gradient(180deg, rgba(34,197,94,.40), rgba(16,185,129,.26)); }
+    .btn.bad{ background: linear-gradient(180deg, rgba(239,68,68,.38), rgba(220,38,38,.22)); }
+    .btn.muted{ background: rgba(255,255,255,.08); }
 
     .msg{
-      margin: 10px 0 0;
-      padding: 12px;
+      margin-top: 12px;
+      padding: 12px 14px;
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.05);
-      color: rgba(255,255,255,0.85);
-      font-weight: 900;
-      font-size: 13px;
       display:none;
+      font-weight: 900;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(2,6,23,.35);
+      color: rgba(234,242,255,.9);
     }
-    .msg.show{display:block}
-    .msg.ok{border-color: rgba(34,197,94,0.30); color: rgba(187,247,208,0.95)}
-    .msg.bad{border-color: rgba(239,68,68,0.30); color: rgba(254,202,202,0.95)}
-    .msg.warn{border-color: rgba(245,158,11,0.30); color: rgba(253,230,138,0.95)}
+    .msg.show{ display:block; }
+    .msg.ok{ border-color: rgba(34,197,94,.35); }
+    .msg.warn{ border-color: rgba(245,158,11,.35); }
+    .msg.err{ border-color: rgba(239,68,68,.35); }
 
     table{
-      width:100%;
+      width: 100%;
       border-collapse: collapse;
-      overflow:hidden;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,0.10);
+      font-size: 14px;
     }
     thead th{
-      text-align:left;
-      font-size: 12px;
-      letter-spacing:.2px;
-      font-weight: 950;
-      color: rgba(255,255,255,0.78);
-      padding: 10px 10px;
-      background: rgba(255,255,255,0.06);
-      border-bottom: 1px solid rgba(255,255,255,0.10);
+      text-align: left;
+      padding: 12px 12px;
+      background: rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      font-weight: 900;
     }
     tbody td{
-      padding: 12px 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
       vertical-align: top;
-      font-size: 13px;
-      color: rgba(255,255,255,0.90);
+      font-weight: 800;
+      color: rgba(234,242,255,.92);
     }
-    tbody tr:hover{background: rgba(255,255,255,0.03)}
-    .small{color: rgba(255,255,255,0.62); font-size: 12px; font-weight: 800}
-    .status{
-      display:inline-flex; align-items:center; gap:8px;
-      padding: 6px 10px; border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.12);
-      font-weight: 950; font-size: 12px;
-      background: rgba(255,255,255,0.04);
+    .small{ font-size: 12px; opacity: .8; font-weight: 800; margin-top: 3px; }
+    .pill{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
     }
-    .status.confirmed{border-color: rgba(34,197,94,0.35); color: rgba(187,247,208,0.95)}
-    .status.pending{border-color: rgba(245,158,11,0.35); color: rgba(253,230,138,0.95)}
-    .status.cancelled{border-color: rgba(239,68,68,0.35); color: rgba(254,202,202,0.95)}
-    .actions{display:flex; gap:8px; flex-wrap:wrap}
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+    .pill.confirmed{ background: rgba(34,197,94,.18); border-color: rgba(34,197,94,.35); }
+    .pill.cancelled{ background: rgba(239,68,68,.18); border-color: rgba(239,68,68,.35); }
+    .pill.pending{ background: rgba(245,158,11,.18); border-color: rgba(245,158,11,.35); }
+
+    .actions{
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .miniBtn{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(2,6,23,.25);
+      font-weight: 900;
+      cursor:pointer;
+      width: auto;
+    }
+    .miniBtn.good{ background: rgba(34,197,94,.16); border-color: rgba(34,197,94,.35); }
+    .miniBtn.bad{ background: rgba(239,68,68,.16); border-color: rgba(239,68,68,.35); }
+    .miniBtn.muted{ background: rgba(255,255,255,.08); }
+
+    .loginGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr 0.7fr;
+      gap: 12px;
+    }
+    @media (max-width: 780px){
+      .loginGrid{ grid-template-columns: 1fr; }
+    }
+
+    .tip{
+      margin-top: 10px;
+      opacity: .85;
+      font-weight: 800;
+      font-size: 12px;
+    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="top">
-      <div>
-        <div class="title">CETS Admin — Appointments</div>
-        <div class="sub">View, filter, confirm, or cancel appointments stored in Supabase.</div>
+    <div class="topbar">
+      <div class="title">
+        <h1>CETS Admin — Appointments</h1>
+        <p>View, filter, confirm, or cancel appointments stored in Supabase.</p>
       </div>
-      <div class="pill"><span class="dot"></span><span id="connText">Connecting…</span></div>
+
+      <div class="badge" id="statusBadge">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Not connected</span>
+      </div>
     </div>
 
+    <!-- LOGIN -->
     <div class="card">
-      <div class="toolbar">
-        <input id="search" placeholder="Search name/email/service/location…" />
-        <input id="date" type="date" />
-        <select id="status">
-          <option value="">All statuses</option>
-          <option value="pending">Pending</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-        <button id="refresh" class="btn">Refresh</button>
+      <div class="section">
+        <div class="loginGrid">
+          <input id="loginEmail" type="email" placeholder="Admin email (Supabase Auth)" />
+          <input id="loginPass" type="password" placeholder="Password" />
+          <button class="btn primary" id="loginBtn">Sign In</button>
+        </div>
+        <div class="btnRow" style="margin-top:12px;">
+          <button class="btn muted" id="logoutBtn">Sign Out</button>
+          <button class="btn muted" id="whoamiBtn">Who am I?</button>
+          <div></div>
+          <div></div>
+        </div>
 
-        <button id="todayBtn" class="btn secondary">Today</button>
-        <button id="clearBtn" class="btn secondary">Clear Filters</button>
-        <button id="confirmAllBtn" class="btn good">Confirm Filtered</button>
-        <button id="cancelAllBtn" class="btn danger">Cancel Filtered</button>
+        <div class="msg" id="loginMsg"></div>
+        <div class="tip">
+          Tip: This page requires Supabase Auth + RLS admin policies. Don’t make appointments readable with anon.
+        </div>
       </div>
 
-      <div id="msg" class="msg"></div>
+      <!-- FILTERS -->
+      <div class="section">
+        <div class="grid">
+          <input id="q" placeholder="Search name/email/service/location..." />
+          <input id="day" type="date" />
+          <select id="status">
+            <option value="">All statuses</option>
+            <option value="confirmed">confirmed</option>
+            <option value="pending">pending</option>
+            <option value="cancelled">cancelled</option>
+          </select>
+          <button class="btn primary" id="refreshBtn">Refresh</button>
+        </div>
 
-      <div style="overflow:auto; border-radius:14px;">
-        <table>
-          <thead>
-            <tr>
-              <th style="min-width:210px;">Client</th>
-              <th style="min-width:210px;">Appointment</th>
-              <th style="min-width:260px;">Service / Location</th>
-              <th style="min-width:150px;">Status</th>
-              <th style="min-width:220px;">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="rows">
-            <tr><td colspan="5" class="small">Loading…</td></tr>
-          </tbody>
-        </table>
+        <div class="btnRow">
+          <button class="btn muted" id="todayBtn">Today</button>
+          <button class="btn muted" id="clearBtn">Clear Filters</button>
+          <button class="btn good" id="confirmFilteredBtn">Confirm Filtered</button>
+          <button class="btn bad" id="cancelFilteredBtn">Cancel Filtered</button>
+        </div>
+
+        <div class="msg" id="msg"></div>
       </div>
 
-      <div class="small" style="margin-top:10px;">
-        Tip: Keep this page private (password protect / private repo / basic auth) since it uses your Supabase anon key.
+      <!-- TABLE -->
+      <div class="section" style="padding:0;">
+        <div style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th style="min-width:240px;">Client</th>
+                <th style="min-width:220px;">Appointment</th>
+                <th style="min-width:260px;">Service / Location</th>
+                <th style="min-width:140px;">Status</th>
+                <th style="min-width:220px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <tr><td colspan="5" style="padding:16px; opacity:.8;">Sign in, then click Refresh.</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ===========================
-    // 1) CONFIG (PUT YOUR KEYS)
-    // ===========================
-    const SUPABASE_URL = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const SUPABASE_ANON_KEY = "PASTE_YOUR_ANON_KEY_HERE"; // <-- replace
+    // ============================================================
+    // 1) CONFIG — PUT YOUR SUPABASE VALUES HERE
+    // ============================================================
+    const SUPABASE_URL = "PASTE_YOUR_SUPABASE_URL_HERE";
+    const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
     const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ===========================
-    // 2) UI HELPERS
-    // ===========================
-    const $ = (id)=>document.getElementById(id);
-    const rowsEl = $("rows");
-    const msgEl = $("msg");
-    const connText = $("connText");
+    // ============================================================
+    // 2) DOM
+    // ============================================================
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
 
-    function showMsg(type, text){
-      msgEl.className = "msg show " + (type || "");
-      msgEl.textContent = text;
+    const loginEmail = document.getElementById("loginEmail");
+    const loginPass = document.getElementById("loginPass");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const whoamiBtn = document.getElementById("whoamiBtn");
+    const loginMsg = document.getElementById("loginMsg");
+
+    const qEl = document.getElementById("q");
+    const dayEl = document.getElementById("day");
+    const statusEl = document.getElementById("status");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const todayBtn = document.getElementById("todayBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const confirmFilteredBtn = document.getElementById("confirmFilteredBtn");
+    const cancelFilteredBtn = document.getElementById("cancelFilteredBtn");
+    const msg = document.getElementById("msg");
+    const tbody = document.getElementById("tbody");
+
+    function show(el, text, kind="warn"){
+      el.className = "msg show " + (kind || "");
+      el.textContent = text;
     }
-    function clearMsg(){
-      msgEl.className = "msg";
-      msgEl.textContent = "";
+    function hide(el){
+      el.className = "msg";
+      el.textContent = "";
     }
-    function pad(n){ return String(n).padStart(2,"0"); }
+
+    function setConnected(ok, text){
+      statusDot.className = "dot" + (ok ? " ok" : "");
+      statusText.textContent = text || (ok ? "Connected" : "Not connected");
+    }
+
     function todayYMD(){
       const d = new Date();
+      const pad = n => String(n).padStart(2,"0");
       return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
     }
+
     function fmtNY(iso){
       const d = new Date(iso);
-      return new Intl.DateTimeFormat("en-US",{
-        timeZone:"America/New_York",
-        weekday:"short", month:"short", day:"2-digit", year:"numeric",
-        hour:"numeric", minute:"2-digit"
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/New_York",
+        weekday: "short",
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "2-digit",
       }).format(d);
     }
+
+    // ============================================================
+    // 3) AUTH
+    // ============================================================
+    async function refreshAuthBadge(){
+      const { data } = await supa.auth.getSession();
+      const ses = data?.session;
+      if (ses?.user?.email){
+        setConnected(true, `Signed in: ${ses.user.email}`);
+      } else {
+        setConnected(false, "Not connected");
+      }
+    }
+
+    loginBtn.addEventListener("click", async () => {
+      hide(loginMsg);
+      const email = (loginEmail.value || "").trim();
+      const password = (loginPass.value || "").trim();
+      if (!email || !password){
+        show(loginMsg, "Enter email + password.", "warn");
+        return;
+      }
+      const { data, error } = await supa.auth.signInWithPassword({ email, password });
+      if (error){
+        show(loginMsg, "Sign-in failed: " + error.message, "err");
+        await refreshAuthBadge();
+        return;
+      }
+      show(loginMsg, "Signed in successfully.", "ok");
+      await refreshAuthBadge();
+      await loadAppointments();
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      hide(loginMsg);
+      const { error } = await supa.auth.signOut();
+      if (error){
+        show(loginMsg, "Sign-out failed: " + error.message, "err");
+        return;
+      }
+      show(loginMsg, "Signed out.", "ok");
+      await refreshAuthBadge();
+      tbody.innerHTML = `<tr><td colspan="5" style="padding:16px; opacity:.8;">Signed out.</td></tr>`;
+    });
+
+    whoamiBtn.addEventListener("click", async () => {
+      const { data, error } = await supa.auth.getUser();
+      if (error){
+        show(loginMsg, "WhoAmI failed: " + error.message, "err");
+        return;
+      }
+      show(loginMsg, data?.user?.email ? `You are: ${data.user.email}` : "No user session.", "warn");
+    });
+
+    // ============================================================
+    // 4) DATA LOAD + FILTERS
+    // ============================================================
+    function buildQuery(){
+      // We’ll do a simple load and filter client-side (fast enough for small/medium volume).
+      // If you have thousands, we’ll switch to server-side filters.
+      return supa
+        .from("appointments")
+        .select("id,client_name,client_email,service,location,start_time,end_time,status,created_at")
+        .order("start_time", { ascending: true })
+        .limit(1000);
+    }
+
+    function applyClientFilters(rows){
+      const q = (qEl.value || "").trim().toLowerCase();
+      const day = dayEl.value || "";
+      const st = statusEl.value || "";
+
+      return (rows || []).filter(r => {
+        if (st && String(r.status || "").toLowerCase() !== st) return false;
+
+        if (day){
+          const d = new Date(r.start_time);
+          const y = d.getFullYear();
+          const m = String(d.getMonth()+1).padStart(2,"0");
+          const dd = String(d.getDate()).padStart(2,"0");
+          const ymd = `${y}-${m}-${dd}`;
+          if (ymd !== day) return false;
+        }
+
+        if (q){
+          const hay = [
+            r.client_name, r.client_email, r.service, r.location
+          ].map(x => String(x || "").toLowerCase()).join(" ");
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    function statusPill(s){
+      const v = String(s || "").toLowerCase();
+      if (v === "confirmed") return `<span class="pill confirmed">confirmed</span>`;
+      if (v === "cancelled") return `<span class="pill cancelled">cancelled</span>`;
+      return `<span class="pill pending">${v || "pending"}</span>`;
+    }
+
     function esc(s){
-      return String(s||"")
+      return String(s || "")
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
@@ -255,196 +445,170 @@
         .replaceAll("'","&#039;");
     }
 
-    // ===========================
-    // 3) FETCH APPOINTMENTS
-    // ===========================
-    async function fetchAppointments(){
-      clearMsg();
-      rowsEl.innerHTML = `<tr><td colspan="5" class="small">Loading…</td></tr>`;
+    let lastLoaded = []; // all rows
+    let lastFiltered = []; // filtered rows
 
-      // filters
-      const q = ($("search").value || "").trim().toLowerCase();
-      const date = $("date").value || "";
-      const status = $("status").value || "";
+    async function loadAppointments(){
+      hide(msg);
 
-      // build query
-      let query = supa
-        .from("appointments")
-        .select("id, client_name, client_email, service, location, start_time, end_time, status, created_at")
-        .order("start_time", { ascending: true });
-
-      if (status) query = query.eq("status", status);
-
-      if (date){
-        const start = new Date(date + "T00:00:00");
-        const end = new Date(date + "T23:59:59");
-        query = query.gte("start_time", start.toISOString()).lte("start_time", end.toISOString());
-      }
-
-      const { data, error } = await query;
-
-      if (error){
-        console.error(error);
-        rowsEl.innerHTML = `<tr><td colspan="5" class="small">Error loading data.</td></tr>`;
-        showMsg("bad", "Error loading appointments: " + error.message);
-        return [];
-      }
-
-      // text filter (client-side)
-      const filtered = (data || []).filter(r=>{
-        if (!q) return true;
-        const hay = [
-          r.client_name, r.client_email, r.service, r.location,
-          r.start_time, r.end_time, r.status
-        ].join(" ").toLowerCase();
-        return hay.includes(q);
-      });
-
-      renderRows(filtered);
-      return filtered;
-    }
-
-    function renderRows(items){
-      if (!items.length){
-        rowsEl.innerHTML = `<tr><td colspan="5" class="small">No appointments match your filters.</td></tr>`;
+      // must have session
+      const { data: s } = await supa.auth.getSession();
+      if (!s?.session){
+        show(msg, "Not signed in. Sign in first.", "warn");
         return;
       }
 
-      rowsEl.innerHTML = items.map(r=>{
-        const st = r.start_time ? fmtNY(r.start_time) : "—";
-        const en = r.end_time ? fmtNY(r.end_time) : "—";
-        const stat = (r.status || "pending").toLowerCase();
-        const sClass = stat === "confirmed" ? "confirmed" : stat === "cancelled" ? "cancelled" : "pending";
+      // fetch
+      const { data, error } = await buildQuery();
+      if (error){
+        show(msg, "Supabase query failed: " + error.message + " (Check RLS + admin policies)", "err");
+        tbody.innerHTML = `<tr><td colspan="5" style="padding:16px; opacity:.8;">Connection failed.</td></tr>`;
+        return;
+      }
+
+      lastLoaded = data || [];
+      lastFiltered = applyClientFilters(lastLoaded);
+      renderTable(lastFiltered);
+
+      show(msg, `Loaded ${lastLoaded.length} appointments. Showing ${lastFiltered.length}.`, "ok");
+    }
+
+    function renderTable(rows){
+      if (!rows.length){
+        tbody.innerHTML = `<tr><td colspan="5" style="padding:16px; opacity:.8;">No results.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rows.map(r => {
+        const when = fmtNY(r.start_time);
+        const end = r.end_time ? fmtNY(r.end_time) : "";
+        const status = String(r.status || "pending").toLowerCase();
 
         return `
-          <tr data-id="${esc(r.id)}">
+          <tr>
             <td>
-              <div style="font-weight:950;">${esc(r.client_name || "Client")}</div>
+              <div>${esc(r.client_name || "Client")}</div>
               <div class="small">${esc(r.client_email || "")}</div>
+              <div class="small">ID: ${esc(r.id || "")}</div>
             </td>
             <td>
-              <div style="font-weight:950;">${esc(st)}</div>
-              <div class="small">Ends: ${esc(en)}</div>
-              <div class="small mono">ID: ${esc(r.id)}</div>
+              <div>${esc(when)}</div>
+              ${end ? `<div class="small">Ends: ${esc(end)}</div>` : ``}
+              <div class="small">Created: ${r.created_at ? esc(fmtNY(r.created_at)) : ""}</div>
             </td>
             <td>
-              <div style="font-weight:950;">${esc(r.service || "")}</div>
+              <div>${esc(r.service || "")}</div>
               <div class="small">${esc(r.location || "")}</div>
             </td>
-            <td>
-              <span class="status ${sClass}">${esc(stat)}</span>
-            </td>
+            <td>${statusPill(status)}</td>
             <td>
               <div class="actions">
-                <button class="btn good" data-action="confirm">Confirm</button>
-                <button class="btn danger" data-action="cancel">Cancel</button>
-                <button class="btn secondary" data-action="copy">Copy Email</button>
+                <button class="miniBtn good" data-act="confirm" data-id="${esc(r.id)}">Confirm</button>
+                <button class="miniBtn bad" data-act="cancel" data-id="${esc(r.id)}">Cancel</button>
+                <button class="miniBtn muted" data-act="pending" data-id="${esc(r.id)}">Pending</button>
               </div>
             </td>
           </tr>
         `;
       }).join("");
+
+      // bind action buttons
+      tbody.querySelectorAll("button[data-act]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.getAttribute("data-id");
+          const act = btn.getAttribute("data-act");
+          if (!id || !act) return;
+
+          const newStatus = act === "confirm" ? "confirmed" : act === "cancel" ? "cancelled" : "pending";
+          await updateOne(id, newStatus);
+        });
+      });
     }
 
-    // ===========================
-    // 4) UPDATE STATUS
-    // ===========================
-    async function updateStatus(id, status){
-      const { error } = await supa.from("appointments").update({ status }).eq("id", id);
-      if (error) throw error;
+    async function updateOne(id, status){
+      hide(msg);
+      const { error } = await supa
+        .from("appointments")
+        .update({ status })
+        .eq("id", id);
+
+      if (error){
+        show(msg, `Update failed: ${error.message} (Check admin update policy / RLS)`, "err");
+        return;
+      }
+      show(msg, `Updated ${id} → ${status}`, "ok");
+      await loadAppointments();
     }
 
-    // ===========================
-    // 5) EVENTS
-    // ===========================
-    document.addEventListener("click", async (e)=>{
-      const btn = e.target.closest("button[data-action]");
-      if (!btn) return;
+    async function updateMany(ids, status){
+      hide(msg);
+      if (!ids.length){
+        show(msg, "No rows to update.", "warn");
+        return;
+      }
+      const { error } = await supa
+        .from("appointments")
+        .update({ status })
+        .in("id", ids);
 
-      const tr = e.target.closest("tr[data-id]");
-      if (!tr) return;
-      const id = tr.getAttribute("data-id");
-      const action = btn.getAttribute("data-action");
+      if (error){
+        show(msg, `Bulk update failed: ${error.message}`, "err");
+        return;
+      }
+      show(msg, `Bulk updated ${ids.length} rows → ${status}`, "ok");
+      await loadAppointments();
+    }
 
-      try{
-        if (action === "confirm"){
-          await updateStatus(id, "confirmed");
-          showMsg("ok", "Confirmed appointment: " + id);
-          await fetchAppointments();
+    // ============================================================
+    // 5) UI EVENTS
+    // ============================================================
+    refreshBtn.addEventListener("click", loadAppointments);
+
+    todayBtn.addEventListener("click", async () => {
+      dayEl.value = todayYMD();
+      await loadAppointments();
+    });
+
+    clearBtn.addEventListener("click", async () => {
+      qEl.value = "";
+      dayEl.value = "";
+      statusEl.value = "";
+      await loadAppointments();
+    });
+
+    // confirm/cancel filtered
+    confirmFilteredBtn.addEventListener("click", async () => {
+      const ids = lastFiltered.map(r => r.id).filter(Boolean);
+      await updateMany(ids, "confirmed");
+    });
+
+    cancelFilteredBtn.addEventListener("click", async () => {
+      const ids = lastFiltered.map(r => r.id).filter(Boolean);
+      await updateMany(ids, "cancelled");
+    });
+
+    // auto reload when filters change (optional)
+    [qEl, dayEl, statusEl].forEach(el => {
+      el.addEventListener("change", () => {
+        lastFiltered = applyClientFilters(lastLoaded);
+        renderTable(lastFiltered);
+        if (lastLoaded.length){
+          show(msg, `Showing ${lastFiltered.length} of ${lastLoaded.length}.`, "ok");
         }
-        if (action === "cancel"){
-          await updateStatus(id, "cancelled");
-          showMsg("warn", "Cancelled appointment: " + id);
-          await fetchAppointments();
+      });
+      el.addEventListener("input", () => {
+        if (el === qEl){
+          lastFiltered = applyClientFilters(lastLoaded);
+          renderTable(lastFiltered);
         }
-        if (action === "copy"){
-          const email = tr.querySelector("td .small")?.textContent || "";
-          await navigator.clipboard.writeText(email.trim());
-          showMsg("ok", "Copied email: " + email.trim());
-        }
-      }catch(err){
-        console.error(err);
-        showMsg("bad", "Action failed: " + (err?.message || err));
-      }
+      });
     });
 
-    $("refresh").addEventListener("click", fetchAppointments);
-
-    $("todayBtn").addEventListener("click", ()=>{
-      $("date").value = todayYMD();
-      fetchAppointments();
-    });
-
-    $("clearBtn").addEventListener("click", ()=>{
-      $("search").value = "";
-      $("date").value = "";
-      $("status").value = "";
-      fetchAppointments();
-    });
-
-    $("confirmAllBtn").addEventListener("click", async ()=>{
-      const items = await fetchAppointments();
-      if (!items.length) return showMsg("warn","No filtered appointments to confirm.");
-      if (!confirm(`Confirm ${items.length} appointment(s)?`)) return;
-
-      try{
-        for (const r of items) await updateStatus(r.id, "confirmed");
-        showMsg("ok", `Confirmed ${items.length} appointment(s).`);
-        await fetchAppointments();
-      }catch(err){
-        console.error(err);
-        showMsg("bad","Bulk confirm failed: " + (err?.message || err));
-      }
-    });
-
-    $("cancelAllBtn").addEventListener("click", async ()=>{
-      const items = await fetchAppointments();
-      if (!items.length) return showMsg("warn","No filtered appointments to cancel.");
-      if (!confirm(`Cancel ${items.length} appointment(s)?`)) return;
-
-      try{
-        for (const r of items) await updateStatus(r.id, "cancelled");
-        showMsg("warn", `Cancelled ${items.length} appointment(s).`);
-        await fetchAppointments();
-      }catch(err){
-        console.error(err);
-        showMsg("bad","Bulk cancel failed: " + (err?.message || err));
-      }
-    });
-
-    // quick “connected” check + initial load
-    (async ()=>{
-      try{
-        const { error } = await supa.from("appointments").select("id").limit(1);
-        if (error) throw error;
-        connText.textContent = "Connected";
-        await fetchAppointments();
-      }catch(err){
-        console.error(err);
-        connText.textContent = "Not connected";
-        showMsg("bad", "Supabase connection failed. Check URL/Anon Key + RLS policies.");
-        rowsEl.innerHTML = `<tr><td colspan="5" class="small">Connection failed.</td></tr>`;
-      }
+    // init
+    (async () => {
+      await refreshAuthBadge();
+      hide(msg);
+      hide(loginMsg);
     })();
   </script>
 </body>
