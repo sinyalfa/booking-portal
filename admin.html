@@ -1,615 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>CETS Admin — Appointments</title>
+<meta charset="UTF-8" />
+<title>CETS Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
-    body{
-      font-family: Arial, Helvetica, sans-serif;
-      color:#eaf2ff;
-      background: radial-gradient(circle at 20% 10%, #0b1a3c, #020617 70%);
-      padding: 26px;
-    }
+<style>
+body {
+  margin:0;
+  font-family: system-ui, sans-serif;
+  background: radial-gradient(circle at top,#0c1c3a,#020617);
+  color:#fff;
+}
 
-    .wrap{ max-width: 1200px; margin: 0 auto; }
-    .topbar{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
-      margin-bottom: 16px;
-    }
-    .title h1{
-      font-size: 34px; font-weight: 900; letter-spacing: .2px;
-    }
-    .title p{ margin-top: 6px; color: rgba(234,242,255,.78); font-weight: 700; }
+.wrap {
+  max-width:1100px;
+  margin:auto;
+  padding:40px;
+}
 
-    .badge{
-      display:inline-flex; align-items:center; gap:10px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: 0 16px 38px rgba(0,0,0,.35);
-      font-weight: 900;
-      white-space: nowrap;
-    }
-    .dot{ width: 10px; height: 10px; border-radius: 999px; background: #ef4444; box-shadow: 0 0 18px rgba(239,68,68,.55); }
-    .dot.ok{ background:#22c55e; box-shadow: 0 0 18px rgba(34,197,94,.55); }
+.card {
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(16px);
+  border-radius:22px;
+  padding:26px;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
+}
 
-    .card{
-      margin-top: 14px;
-      border-radius: 20px;
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: 0 26px 70px rgba(0,0,0,.55);
-      overflow: hidden;
-    }
+h1 {margin-top:0}
 
-    .section{ padding: 16px; border-bottom: 1px solid rgba(255,255,255,.10); }
-    .section:last-child{ border-bottom: none; }
+.row {
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1.5fr 1fr 1fr 0.9fr;
-      gap: 12px;
-    }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 560px){
-      .grid{ grid-template-columns: 1fr; }
-    }
+input, button {
+  padding:14px 16px;
+  border-radius:14px;
+  border:none;
+  font-size:15px;
+}
 
-    input, select, button{
-      width:100%;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(2,6,23,.35);
-      color: #eaf2ff;
-      padding: 14px 14px;
-      outline: none;
-      font-size: 14px;
-      font-weight: 800;
-    }
-    input::placeholder{ color: rgba(234,242,255,.55); font-weight: 800; }
+input {
+  flex:1;
+}
 
-    input:focus, select:focus{
-      border-color: rgba(59,130,246,.75);
-      box-shadow: 0 0 0 3px rgba(59,130,246,.28);
-    }
+button {
+  background:#2563eb;
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+}
 
-    .btnRow{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      gap: 12px;
-      margin-top: 12px;
-    }
-    @media (max-width: 980px){
-      .btnRow{ grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 560px){
-      .btnRow{ grid-template-columns: 1fr; }
-    }
+button.secondary {background:#334155}
+button.good {background:#15803d}
+button.bad {background:#7f1d1d}
 
-    .btn{
-      cursor:pointer;
-      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
-      box-shadow: 0 14px 34px rgba(0,0,0,.35);
-    }
-    .btn:hover{ transform: translateY(-1px); box-shadow: 0 18px 44px rgba(0,0,0,.45); }
-    .btn:active{ transform: translateY(0); }
+button:hover {opacity:.9}
 
-    .btn.primary{ background: linear-gradient(180deg, rgba(59,130,246,.55), rgba(37,99,235,.35)); }
-    .btn.good{ background: linear-gradient(180deg, rgba(34,197,94,.40), rgba(16,185,129,.26)); }
-    .btn.bad{ background: linear-gradient(180deg, rgba(239,68,68,.38), rgba(220,38,38,.22)); }
-    .btn.muted{ background: rgba(255,255,255,.08); }
+#statusBadge {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 14px;
+  border-radius:999px;
+  font-weight:700;
+  background:#7f1d1d;
+  margin-bottom:18px;
+}
 
-    .msg{
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      display:none;
-      font-weight: 900;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(2,6,23,.35);
-      color: rgba(234,242,255,.9);
-    }
-    .msg.show{ display:block; }
-    .msg.ok{ border-color: rgba(34,197,94,.35); }
-    .msg.warn{ border-color: rgba(245,158,11,.35); }
-    .msg.err{ border-color: rgba(239,68,68,.35); }
+#statusBadge[data-ok="1"] {
+  background:#15803d;
+}
 
-    table{
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    thead th{
-      text-align: left;
-      padding: 12px 12px;
-      background: rgba(255,255,255,.06);
-      border-bottom: 1px solid rgba(255,255,255,.12);
-      font-weight: 900;
-    }
-    tbody td{
-      padding: 12px 12px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      vertical-align: top;
-      font-weight: 800;
-      color: rgba(234,242,255,.92);
-    }
-    .small{ font-size: 12px; opacity: .8; font-weight: 800; margin-top: 3px; }
-    .pill{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 900;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.08);
-    }
-    .pill.confirmed{ background: rgba(34,197,94,.18); border-color: rgba(34,197,94,.35); }
-    .pill.cancelled{ background: rgba(239,68,68,.18); border-color: rgba(239,68,68,.35); }
-    .pill.pending{ background: rgba(245,158,11,.18); border-color: rgba(245,158,11,.35); }
-
-    .actions{
-      display:flex; gap:10px; flex-wrap:wrap;
-    }
-    .miniBtn{
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(2,6,23,.25);
-      font-weight: 900;
-      cursor:pointer;
-      width: auto;
-    }
-    .miniBtn.good{ background: rgba(34,197,94,.16); border-color: rgba(34,197,94,.35); }
-    .miniBtn.bad{ background: rgba(239,68,68,.16); border-color: rgba(239,68,68,.35); }
-    .miniBtn.muted{ background: rgba(255,255,255,.08); }
-
-    .loginGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr 0.7fr;
-      gap: 12px;
-    }
-    @media (max-width: 780px){
-      .loginGrid{ grid-template-columns: 1fr; }
-    }
-
-    .tip{
-      margin-top: 10px;
-      opacity: .85;
-      font-weight: 800;
-      font-size: 12px;
-    }
-  </style>
+.table {
+  margin-top:18px;
+  opacity:.85;
+}
+</style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="title">
-        <h1>CETS Admin — Appointments</h1>
-        <p>View, filter, confirm, or cancel appointments stored in Supabase.</p>
-      </div>
+<div class="wrap">
+  <div class="card">
 
-      <div class="badge" id="statusBadge">
-        <span class="dot" id="statusDot"></span>
-        <span id="statusText">Not connected</span>
-      </div>
+    <h1>CETS Admin — Appointments</h1>
+
+    <div id="statusBadge" data-ok="0">Not connected</div>
+
+    <div class="row">
+      <input id="adminEmail" placeholder="Admin email" />
+      <input id="adminPassword" type="password" placeholder="Password" />
+      <button id="btnSignIn">Sign In</button>
     </div>
 
-    <!-- LOGIN -->
-    <div class="card">
-      <div class="section">
-        <div class="loginGrid">
-          <input id="loginEmail" type="email" placeholder="Admin email (Supabase Auth)" />
-          <input id="loginPass" type="password" placeholder="Password" />
-          <button class="btn primary" id="loginBtn">Sign In</button>
-        </div>
-        <div class="btnRow" style="margin-top:12px;">
-          <button class="btn muted" id="logoutBtn">Sign Out</button>
-          <button class="btn muted" id="whoamiBtn">Who am I?</button>
-          <div></div>
-          <div></div>
-        </div>
-
-        <div class="msg" id="loginMsg"></div>
-        <div class="tip">
-          Tip: This page requires Supabase Auth + RLS admin policies. Don’t make appointments readable with anon.
-        </div>
-      </div>
-
-      <!-- FILTERS -->
-      <div class="section">
-        <div class="grid">
-          <input id="q" placeholder="Search name/email/service/location..." />
-          <input id="day" type="date" />
-          <select id="status">
-            <option value="">All statuses</option>
-            <option value="confirmed">confirmed</option>
-            <option value="pending">pending</option>
-            <option value="cancelled">cancelled</option>
-          </select>
-          <button class="btn primary" id="refreshBtn">Refresh</button>
-        </div>
-
-        <div class="btnRow">
-          <button class="btn muted" id="todayBtn">Today</button>
-          <button class="btn muted" id="clearBtn">Clear Filters</button>
-          <button class="btn good" id="confirmFilteredBtn">Confirm Filtered</button>
-          <button class="btn bad" id="cancelFilteredBtn">Cancel Filtered</button>
-        </div>
-
-        <div class="msg" id="msg"></div>
-      </div>
-
-      <!-- TABLE -->
-      <div class="section" style="padding:0;">
-        <div style="overflow:auto;">
-          <table>
-            <thead>
-              <tr>
-                <th style="min-width:240px;">Client</th>
-                <th style="min-width:220px;">Appointment</th>
-                <th style="min-width:260px;">Service / Location</th>
-                <th style="min-width:140px;">Status</th>
-                <th style="min-width:220px;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="tbody">
-              <tr><td colspan="5" style="padding:16px; opacity:.8;">Sign in, then click Refresh.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div class="row">
+      <button class="secondary" id="btnSignOut">Sign Out</button>
+      <button class="secondary" id="btnWhoAmI">Who am I?</button>
+      <button class="good" id="btnRefresh">Test Appointments Read</button>
     </div>
+
+    <div class="table" id="output"></div>
 
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    // ============================================================
-    // 1) CONFIG — PUT YOUR SUPABASE VALUES HERE
-    // ============================================================
-    const SUPABASE_URL = "PASTE_YOUR_SUPABASE_URL_HERE";
-    const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
-    const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<!-- SCRIPT ALWAYS AFTER HTML -->
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    // ============================================================
-    // 2) DOM
-    // ============================================================
-    const statusDot = document.getElementById("statusDot");
-    const statusText = document.getElementById("statusText");
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
-    const loginEmail = document.getElementById("loginEmail");
-    const loginPass = document.getElementById("loginPass");
-    const loginBtn = document.getElementById("loginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const whoamiBtn = document.getElementById("whoamiBtn");
-    const loginMsg = document.getElementById("loginMsg");
+const supa = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const qEl = document.getElementById("q");
-    const dayEl = document.getElementById("day");
-    const statusEl = document.getElementById("status");
-    const refreshBtn = document.getElementById("refreshBtn");
-    const todayBtn = document.getElementById("todayBtn");
-    const clearBtn = document.getElementById("clearBtn");
-    const confirmFilteredBtn = document.getElementById("confirmFilteredBtn");
-    const cancelFilteredBtn = document.getElementById("cancelFilteredBtn");
-    const msg = document.getElementById("msg");
-    const tbody = document.getElementById("tbody");
+const $ = (id) => document.getElementById(id);
 
-    function show(el, text, kind="warn"){
-      el.className = "msg show " + (kind || "");
-      el.textContent = text;
-    }
-    function hide(el){
-      el.className = "msg";
-      el.textContent = "";
-    }
+function setBadge(ok, text) {
+  const b = $("statusBadge");
+  b.textContent = text;
+  b.dataset.ok = ok ? "1" : "0";
+}
 
-    function setConnected(ok, text){
-      statusDot.className = "dot" + (ok ? " ok" : "");
-      statusText.textContent = text || (ok ? "Connected" : "Not connected");
-    }
+async function whoAmI() {
+  const { data, error } = await supa.auth.getUser();
+  console.log("USER:", data, error);
 
-    function todayYMD(){
-      const d = new Date();
-      const pad = n => String(n).padStart(2,"0");
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    }
+  if (!data?.user) {
+    setBadge(false, "Not signed in");
+    return;
+  }
+  setBadge(true, "Signed in: " + data.user.email);
+}
 
-    function fmtNY(iso){
-      const d = new Date(iso);
-      return new Intl.DateTimeFormat("en-US", {
-        timeZone: "America/New_York",
-        weekday: "short",
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-        hour: "numeric",
-        minute: "2-digit",
-      }).format(d);
-    }
+async function signIn() {
+  const email = $("adminEmail").value.trim();
+  const password = $("adminPassword").value;
 
-    // ============================================================
-    // 3) AUTH
-    // ============================================================
-    async function refreshAuthBadge(){
-      const { data } = await supa.auth.getSession();
-      const ses = data?.session;
-      if (ses?.user?.email){
-        setConnected(true, `Signed in: ${ses.user.email}`);
-      } else {
-        setConnected(false, "Not connected");
-      }
-    }
+  const { data, error } = await supa.auth.signInWithPassword({
+    email,
+    password
+  });
 
-    loginBtn.addEventListener("click", async () => {
-      hide(loginMsg);
-      const email = (loginEmail.value || "").trim();
-      const password = (loginPass.value || "").trim();
-      if (!email || !password){
-        show(loginMsg, "Enter email + password.", "warn");
-        return;
-      }
-      const { data, error } = await supa.auth.signInWithPassword({ email, password });
-      if (error){
-        show(loginMsg, "Sign-in failed: " + error.message, "err");
-        await refreshAuthBadge();
-        return;
-      }
-      show(loginMsg, "Signed in successfully.", "ok");
-      await refreshAuthBadge();
-      await loadAppointments();
-    });
+  console.log("SIGN IN:", data, error);
 
-    logoutBtn.addEventListener("click", async () => {
-      hide(loginMsg);
-      const { error } = await supa.auth.signOut();
-      if (error){
-        show(loginMsg, "Sign-out failed: " + error.message, "err");
-        return;
-      }
-      show(loginMsg, "Signed out.", "ok");
-      await refreshAuthBadge();
-      tbody.innerHTML = `<tr><td colspan="5" style="padding:16px; opacity:.8;">Signed out.</td></tr>`;
-    });
+  if (error) {
+    alert(error.message);
+    setBadge(false, "Sign-in failed");
+    return;
+  }
 
-    whoamiBtn.addEventListener("click", async () => {
-      const { data, error } = await supa.auth.getUser();
-      if (error){
-        show(loginMsg, "WhoAmI failed: " + error.message, "err");
-        return;
-      }
-      show(loginMsg, data?.user?.email ? `You are: ${data.user.email}` : "No user session.", "warn");
-    });
+  await whoAmI();
+}
 
-    // ============================================================
-    // 4) DATA LOAD + FILTERS
-    // ============================================================
-    function buildQuery(){
-      // We’ll do a simple load and filter client-side (fast enough for small/medium volume).
-      // If you have thousands, we’ll switch to server-side filters.
-      return supa
-        .from("appointments")
-        .select("id,client_name,client_email,service,location,start_time,end_time,status,created_at")
-        .order("start_time", { ascending: true })
-        .limit(1000);
-    }
+async function signOut() {
+  await supa.auth.signOut();
+  setBadge(false, "Signed out");
+}
 
-    function applyClientFilters(rows){
-      const q = (qEl.value || "").trim().toLowerCase();
-      const day = dayEl.value || "";
-      const st = statusEl.value || "";
+async function testAppointments() {
+  const { data, error } = await supa
+    .from("appointments")
+    .select("*")
+    .limit(10);
 
-      return (rows || []).filter(r => {
-        if (st && String(r.status || "").toLowerCase() !== st) return false;
+  console.log("READ:", data, error);
 
-        if (day){
-          const d = new Date(r.start_time);
-          const y = d.getFullYear();
-          const m = String(d.getMonth()+1).padStart(2,"0");
-          const dd = String(d.getDate()).padStart(2,"0");
-          const ymd = `${y}-${m}-${dd}`;
-          if (ymd !== day) return false;
-        }
+  if (error) {
+    setBadge(false, "RLS blocked / bad config");
+    $("output").textContent = error.message;
+    return;
+  }
 
-        if (q){
-          const hay = [
-            r.client_name, r.client_email, r.service, r.location
-          ].map(x => String(x || "").toLowerCase()).join(" ");
-          if (!hay.includes(q)) return false;
-        }
-        return true;
-      });
-    }
+  setBadge(true, "Connected + can read");
+  $("output").textContent = JSON.stringify(data, null, 2);
+}
 
-    function statusPill(s){
-      const v = String(s || "").toLowerCase();
-      if (v === "confirmed") return `<span class="pill confirmed">confirmed</span>`;
-      if (v === "cancelled") return `<span class="pill cancelled">cancelled</span>`;
-      return `<span class="pill pending">${v || "pending"}</span>`;
-    }
+window.addEventListener("DOMContentLoaded", () => {
+  $("btnSignIn").onclick = signIn;
+  $("btnSignOut").onclick = signOut;
+  $("btnWhoAmI").onclick = whoAmI;
+  $("btnRefresh").onclick = testAppointments;
 
-    function esc(s){
-      return String(s || "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    let lastLoaded = []; // all rows
-    let lastFiltered = []; // filtered rows
-
-    async function loadAppointments(){
-      hide(msg);
-
-      // must have session
-      const { data: s } = await supa.auth.getSession();
-      if (!s?.session){
-        show(msg, "Not signed in. Sign in first.", "warn");
-        return;
-      }
-
-      // fetch
-      const { data, error } = await buildQuery();
-      if (error){
-        show(msg, "Supabase query failed: " + error.message + " (Check RLS + admin policies)", "err");
-        tbody.innerHTML = `<tr><td colspan="5" style="padding:16px; opacity:.8;">Connection failed.</td></tr>`;
-        return;
-      }
-
-      lastLoaded = data || [];
-      lastFiltered = applyClientFilters(lastLoaded);
-      renderTable(lastFiltered);
-
-      show(msg, `Loaded ${lastLoaded.length} appointments. Showing ${lastFiltered.length}.`, "ok");
-    }
-
-    function renderTable(rows){
-      if (!rows.length){
-        tbody.innerHTML = `<tr><td colspan="5" style="padding:16px; opacity:.8;">No results.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = rows.map(r => {
-        const when = fmtNY(r.start_time);
-        const end = r.end_time ? fmtNY(r.end_time) : "";
-        const status = String(r.status || "pending").toLowerCase();
-
-        return `
-          <tr>
-            <td>
-              <div>${esc(r.client_name || "Client")}</div>
-              <div class="small">${esc(r.client_email || "")}</div>
-              <div class="small">ID: ${esc(r.id || "")}</div>
-            </td>
-            <td>
-              <div>${esc(when)}</div>
-              ${end ? `<div class="small">Ends: ${esc(end)}</div>` : ``}
-              <div class="small">Created: ${r.created_at ? esc(fmtNY(r.created_at)) : ""}</div>
-            </td>
-            <td>
-              <div>${esc(r.service || "")}</div>
-              <div class="small">${esc(r.location || "")}</div>
-            </td>
-            <td>${statusPill(status)}</td>
-            <td>
-              <div class="actions">
-                <button class="miniBtn good" data-act="confirm" data-id="${esc(r.id)}">Confirm</button>
-                <button class="miniBtn bad" data-act="cancel" data-id="${esc(r.id)}">Cancel</button>
-                <button class="miniBtn muted" data-act="pending" data-id="${esc(r.id)}">Pending</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join("");
-
-      // bind action buttons
-      tbody.querySelectorAll("button[data-act]").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const id = btn.getAttribute("data-id");
-          const act = btn.getAttribute("data-act");
-          if (!id || !act) return;
-
-          const newStatus = act === "confirm" ? "confirmed" : act === "cancel" ? "cancelled" : "pending";
-          await updateOne(id, newStatus);
-        });
-      });
-    }
-
-    async function updateOne(id, status){
-      hide(msg);
-      const { error } = await supa
-        .from("appointments")
-        .update({ status })
-        .eq("id", id);
-
-      if (error){
-        show(msg, `Update failed: ${error.message} (Check admin update policy / RLS)`, "err");
-        return;
-      }
-      show(msg, `Updated ${id} → ${status}`, "ok");
-      await loadAppointments();
-    }
-
-    async function updateMany(ids, status){
-      hide(msg);
-      if (!ids.length){
-        show(msg, "No rows to update.", "warn");
-        return;
-      }
-      const { error } = await supa
-        .from("appointments")
-        .update({ status })
-        .in("id", ids);
-
-      if (error){
-        show(msg, `Bulk update failed: ${error.message}`, "err");
-        return;
-      }
-      show(msg, `Bulk updated ${ids.length} rows → ${status}`, "ok");
-      await loadAppointments();
-    }
-
-    // ============================================================
-    // 5) UI EVENTS
-    // ============================================================
-    refreshBtn.addEventListener("click", loadAppointments);
-
-    todayBtn.addEventListener("click", async () => {
-      dayEl.value = todayYMD();
-      await loadAppointments();
-    });
-
-    clearBtn.addEventListener("click", async () => {
-      qEl.value = "";
-      dayEl.value = "";
-      statusEl.value = "";
-      await loadAppointments();
-    });
-
-    // confirm/cancel filtered
-    confirmFilteredBtn.addEventListener("click", async () => {
-      const ids = lastFiltered.map(r => r.id).filter(Boolean);
-      await updateMany(ids, "confirmed");
-    });
-
-    cancelFilteredBtn.addEventListener("click", async () => {
-      const ids = lastFiltered.map(r => r.id).filter(Boolean);
-      await updateMany(ids, "cancelled");
-    });
-
-    // auto reload when filters change (optional)
-    [qEl, dayEl, statusEl].forEach(el => {
-      el.addEventListener("change", () => {
-        lastFiltered = applyClientFilters(lastLoaded);
-        renderTable(lastFiltered);
-        if (lastLoaded.length){
-          show(msg, `Showing ${lastFiltered.length} of ${lastLoaded.length}.`, "ok");
-        }
-      });
-      el.addEventListener("input", () => {
-        if (el === qEl){
-          lastFiltered = applyClientFilters(lastLoaded);
-          renderTable(lastFiltered);
-        }
-      });
-    });
-
-    // init
-    (async () => {
-      await refreshAuthBadge();
-      hide(msg);
-      hide(loginMsg);
-    })();
-  </script>
+  whoAmI();
+});
+</script>
 </body>
 </html>
