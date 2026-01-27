@@ -100,7 +100,8 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      perspective: 1200px;
+      /* keep 3D available but we’ll keep bills mostly flat */
+      perspective: 1400px;
     }
 
     .earth-halo{
@@ -145,17 +146,18 @@
       position:absolute;
       left:50%;
       top:50%;
-      width:160px;
-      height:70px;
+      width:165px;
+      height:72px;
       border-radius:10px;
       transform-style:preserve-3d;
       transform: translate(-50%,-50%);
       box-shadow:0 18px 30px rgba(0,0,0,.55);
-      filter: contrast(1.10) saturate(1.10);
+      filter: contrast(1.10) saturate(1.12);
       will-change: transform;
       backface-visibility:hidden;
       -webkit-backface-visibility:hidden;
       overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.18);
     }
 
     /* $100 bill image */
@@ -171,16 +173,28 @@
       transform: scale(1.02);
     }
 
-    /* glossy highlight */
+    /* glossy highlight + shimmer (moves) */
     .bill::after{
       content:"";
       position:absolute;
-      inset:0;
+      inset:-40%;
       border-radius:10px;
-      background: linear-gradient(120deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 58%);
-      mix-blend-mode: screen;
-      opacity:0.6;
+      background:
+        linear-gradient(110deg,
+          rgba(255,255,255,0.00) 20%,
+          rgba(255,255,255,0.24) 35%,
+          rgba(255,255,255,0.00) 55%);
+      transform: translateX(-35%) rotate(12deg);
+      opacity:0.55;
       pointer-events:none;
+      animation: shimmer 2.8s ease-in-out infinite;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes shimmer{
+      0%   { transform: translateX(-45%) rotate(12deg); opacity:0.35; }
+      50%  { transform: translateX(10%)  rotate(12deg); opacity:0.62; }
+      100% { transform: translateX(45%)  rotate(12deg); opacity:0.35; }
     }
 
     /* BIG visible denomination overlay */
@@ -201,6 +215,19 @@
       border-radius: 999px;
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
+    }
+
+    /* “Paper bend” overlay (subtle curve) */
+    .bill .bend{
+      position:absolute;
+      inset:0;
+      border-radius:10px;
+      background:
+        radial-gradient(circle at 30% 50%, rgba(0,0,0,0.00), rgba(0,0,0,0.14) 60%, rgba(0,0,0,0.00) 80%),
+        radial-gradient(circle at 70% 50%, rgba(255,255,255,0.10), rgba(255,255,255,0.00) 60%);
+      opacity:0.55;
+      pointer-events:none;
+      mix-blend-mode: overlay;
     }
 
     /* ============================================================
@@ -421,7 +448,7 @@
     @media (max-width:640px){
       .card{padding:28px 18px 20px}
       .clock-line{font-size:16px;padding:9px 10px}
-      .bill{width:132px;height:58px}
+      .bill{width:138px;height:60px}
       .bill .denom{font-size:20px}
     }
   </style>
@@ -846,8 +873,7 @@
     validateForm();
 
     /* ------------------------------------------------------------
-       CREATE 18 BILLS (ALL $100) + DENOM OVERLAY
-       Change BILL_COUNT to 16..20 if you want.
+       CREATE 18 BILLS (ALL $100)
        ------------------------------------------------------------ */
     const moneyLayer = document.getElementById("moneyLayer");
     const BILL_COUNT = 18;
@@ -862,6 +888,10 @@
       denom.textContent = "100";
       d.appendChild(denom);
 
+      const bend = document.createElement("div");
+      bend.className = "bend";
+      d.appendChild(bend);
+
       moneyLayer.appendChild(d);
     }
 
@@ -869,12 +899,14 @@
     const bills = Array.from(document.querySelectorAll(".bill"));
 
     /* ------------------------------------------------------------
-       MONEY ORBIT (ALTERNATING DIRECTIONS + FACING SCREEN)
+       MONEY ORBIT (ALTERNATING DIRECTIONS + MOSTLY FLAT)
+       - bills face screen (no big flips)
+       - subtle bend + small sway only
        ------------------------------------------------------------ */
     const orbiters = bills.map((el, i) => {
       const dir = (i % 2 === 0) ? 1 : -1;              // alternate direction
       const baseAngle = (i / bills.length) * Math.PI * 2;
-      const speed = (0.50 + (i % 6) * 0.05) * dir;     // varied
+      const speed = (0.42 + (i % 6) * 0.03) * dir;     // smooth, not too fast
       const radius = 0.48 + (i % 4) * 0.03;            // varied
       const phase = Math.random() * Math.PI * 2;
       return { el, dir, baseAngle, speed, radius, phase };
@@ -888,9 +920,10 @@
       const cy = rect.height / 2;
 
       const ellipseY = 0.62;
-      const depthScale = 0.22;
+      const depthScale = 0.18;     // less depth scaling = more “flat to camera”
+      const faceRotMax = 3.0;      // degrees (very small)
 
-      orbiters.forEach((o) => {
+      orbiters.forEach((o, idx) => {
         const theta = o.baseAngle + t * o.speed;
 
         const r = rect.width * o.radius;
@@ -898,23 +931,31 @@
         const y = cy + Math.sin(theta) * r * ellipseY;
 
         const depth = (Math.sin(theta) + 1) / 2; // 0..1
-        const scale = 0.86 + depth * depthScale;
+        const scale = 0.90 + depth * depthScale;
 
-        const bob = Math.sin(t * 2.1 + o.phase) * 12;    // px
-        const swayZ = Math.sin(t * 1.4 + o.phase) * 6;   // deg
-        const flipY = Math.sin(t * 1.7 + o.phase) * 10;  // deg
-        const tiltX = Math.cos(t * 1.2 + o.phase) * 6;   // deg
+        // gentle float and micro sway (keeps it “alive” but readable)
+        const bob = Math.sin(t * 1.6 + o.phase) * 10;        // px
+        const swayZ = Math.sin(t * 0.9 + o.phase) * 4.5;     // deg
+        const microY = Math.sin(t * 1.1 + o.phase) * faceRotMax; // deg (tiny)
+        const microX = Math.cos(t * 0.8 + o.phase) * (faceRotMax * 0.7);
+
+        // subtle “paper bend” feel by slightly varying Z translate per depth
+        const zPush = (depth - 0.5) * 24; // px
 
         o.el.style.transform =
           `translate(${x}px, ${y + bob}px)` +
           ` translate(-50%, -50%)` +
+          ` translateZ(${zPush}px)` +
           ` scale(${scale})` +
           ` rotateZ(${swayZ}deg)` +
-          ` rotateX(${tiltX}deg)` +
-          ` rotateY(${flipY}deg)`;
+          ` rotateY(${microY}deg)` +
+          ` rotateX(${microX}deg)`;
 
         o.el.style.zIndex = String(10 + Math.floor(depth * 20));
-        o.el.style.opacity = String(0.55 + depth * 0.45);
+        o.el.style.opacity = String(0.60 + depth * 0.40);
+
+        // stagger shimmer timing so they don’t all shine at once
+        o.el.style.animationDelay = `${(idx % 6) * 0.12}s`;
       });
 
       requestAnimationFrame(animateMoney);
@@ -974,7 +1015,6 @@
     function drawStarfield() {
       ctx.clearRect(0, 0, width, height);
 
-      // deep space background
       ctx.fillStyle = "rgba(2, 6, 23, 0.94)";
       ctx.fillRect(0, 0, width, height);
 
@@ -989,7 +1029,6 @@
       }
       ctx.globalAlpha = 1;
 
-      // Shooting stars
       for (let i = shootingStars.length - 1; i >= 0; i--) {
         const sh = shootingStars[i];
         sh.life++;
