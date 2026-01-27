@@ -14,13 +14,27 @@
       color:#fff;
       overflow-x:hidden;
       background: radial-gradient(circle at 30% 20%, #0b1a3c, #020617 70%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:22px;
+      position:relative;
     }
 
-    .wrap{ width:min(980px, 100%); position:relative; }
+    /* STARFIELD CANVAS */
+    canvas#starfield{
+      position:fixed;
+      inset:0;
+      width:100vw;
+      height:100vh;
+      z-index:-4;
+      display:block;
+    }
+
+    .wrap{
+      width:min(980px, 100%);
+      margin:0 auto;
+      padding:22px;
+      position:relative;
+      z-index:5;
+    }
+
     .card{
       position:relative;
       width:100%;
@@ -60,7 +74,7 @@
       justify-content:center;
       pointer-events:none;
       z-index:1;
-      opacity:0.62;
+      opacity:0.70;
       transform: translateZ(0);
     }
 
@@ -71,13 +85,16 @@
       z-index:2;
       pointer-events:none;
       background:
-        radial-gradient(circle at 50% 45%, rgba(2,6,23,0.12), rgba(2,6,23,0.62) 62%, rgba(2,6,23,0.82) 100%);
+        radial-gradient(circle at 50% 45%,
+          rgba(2,6,23,0.10),
+          rgba(2,6,23,0.66) 62%,
+          rgba(2,6,23,0.88) 100%);
       mix-blend-mode:multiply;
     }
 
     .earth-wrap{
       position:relative;
-      width:min(92%, 740px);
+      width:min(92%, 760px);
       aspect-ratio:1/1;
       border-radius:50%;
       display:flex;
@@ -86,17 +103,15 @@
       perspective: 1200px;
     }
 
-    /* halo behind */
     .earth-halo{
       position:absolute;
       inset:-6%;
       border-radius:50%;
-      background: radial-gradient(circle, rgba(90,160,255,0.26), transparent 62%);
-      filter: blur(0.2px);
-      opacity:0.85;
+      background: radial-gradient(circle, rgba(90,160,255,0.30), transparent 62%);
+      opacity:0.9;
     }
 
-    /* Earth itself (real photo + continuous rotation illusion) */
+    /* Earth (photo + continuous rotation illusion) */
     .earth{
       position:absolute;
       inset:0;
@@ -107,9 +122,9 @@
       background-position:0% 50%;
       animation:earthSpin 46s linear infinite;
       box-shadow:
-        inset -150px 0 210px rgba(0,0,0,.92),
+        inset -160px 0 240px rgba(0,0,0,.92),
         inset 0 0 90px rgba(0,0,0,.32),
-        0 0 110px rgba(59,130,246,.16);
+        0 0 120px rgba(59,130,246,.18);
       transform: translateZ(0);
     }
 
@@ -118,53 +133,74 @@
       to{ background-position:-220% 50% }
     }
 
-    /* Cash layer that orbits around the earth */
+    /* Bills ring */
     .money-layer{
       position:absolute;
-      inset:-18%;
+      inset:-20%;
       border-radius:50%;
       transform-style: preserve-3d;
     }
 
-    /* Each bill is positioned by JS (so it can face screen properly) */
     .bill{
       position:absolute;
       left:50%;
       top:50%;
-      width:128px;
-      height:56px;
-      border-radius:9px;
+      width:160px;
+      height:70px;
+      border-radius:10px;
       transform-style:preserve-3d;
       transform: translate(-50%,-50%);
-      box-shadow:0 18px 30px rgba(0,0,0,.50);
-      filter: contrast(1.06) saturate(1.08);
+      box-shadow:0 18px 30px rgba(0,0,0,.55);
+      filter: contrast(1.10) saturate(1.10);
       will-change: transform;
       backface-visibility:hidden;
       -webkit-backface-visibility:hidden;
+      overflow:hidden;
     }
 
-    /* A “real bill” image */
+    /* $100 bill image */
     .bill::before{
       content:"";
       position:absolute;
       inset:0;
-      border-radius:9px;
+      border-radius:10px;
       background-image:url("https://upload.wikimedia.org/wikipedia/commons/4/4e/US_%24100_Obverse.jpg");
       background-size:cover;
       background-position:center;
       background-repeat:no-repeat;
+      transform: scale(1.02);
     }
 
-    /* slight glossy highlight so it reads better */
+    /* glossy highlight */
     .bill::after{
       content:"";
       position:absolute;
       inset:0;
-      border-radius:9px;
-      background: linear-gradient(120deg, rgba(255,255,255,0.18), rgba(255,255,255,0) 55%);
+      border-radius:10px;
+      background: linear-gradient(120deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 58%);
       mix-blend-mode: screen;
-      opacity:0.55;
+      opacity:0.6;
       pointer-events:none;
+    }
+
+    /* BIG visible denomination overlay */
+    .bill .denom{
+      position:absolute;
+      right:8px;
+      bottom:6px;
+      font-weight:900;
+      font-size:24px;
+      letter-spacing:0.5px;
+      color:rgba(10, 100, 60, 0.95);
+      text-shadow:
+        0 2px 0 rgba(255,255,255,0.6),
+        0 10px 18px rgba(0,0,0,0.55);
+      background: rgba(255,255,255,0.22);
+      border: 1px solid rgba(255,255,255,0.22);
+      padding: 2px 8px;
+      border-radius: 999px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
 
     /* ============================================================
@@ -385,12 +421,15 @@
     @media (max-width:640px){
       .card{padding:28px 18px 20px}
       .clock-line{font-size:16px;padding:9px 10px}
-      .bill{width:96px;height:42px}
+      .bill{width:132px;height:58px}
+      .bill .denom{font-size:20px}
     }
   </style>
 </head>
 
 <body>
+  <canvas id="starfield"></canvas>
+
   <div class="wrap">
     <div class="card">
 
@@ -400,19 +439,7 @@
           <div class="earth-halo"></div>
           <div class="earth"></div>
 
-          <!-- Bills are positioned/animated by JS -->
-          <div class="money-layer" id="moneyLayer">
-            <div class="bill" data-i="0"></div>
-            <div class="bill" data-i="1"></div>
-            <div class="bill" data-i="2"></div>
-            <div class="bill" data-i="3"></div>
-            <div class="bill" data-i="4"></div>
-            <div class="bill" data-i="5"></div>
-            <div class="bill" data-i="6"></div>
-            <div class="bill" data-i="7"></div>
-            <div class="bill" data-i="8"></div>
-            <div class="bill" data-i="9"></div>
-          </div>
+          <div class="money-layer" id="moneyLayer"></div>
         </div>
       </div>
       <div class="bg-dim" aria-hidden="true"></div>
@@ -579,35 +606,29 @@
        UTILITIES
        ------------------------------------------------------------ */
     function pad(n) { return String(n).padStart(2, "0"); }
-
     function todayYMD() {
       const d = new Date();
       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     }
-
     function fmtNice(dt) {
       return dt.toLocaleString("en-US", {
         weekday: "short", month: "short", day: "numeric",
         hour: "2-digit", minute: "2-digit", hour12: true,
       });
     }
-
     function makeLocalDateTimeFrom24(dateStr, hm) {
       const [H, M] = hm.split(":").map(Number);
       const [Y, m, D] = dateStr.split("-").map(Number);
       return new Date(Y, m - 1, D, H, M, 0, 0);
     }
-
     function isValidEmail(v) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
     }
-
     function getAllowedHours(dow) {
       if (dow >= 1 && dow <= 5) return [9, 10, 11, 12, 17, 18, 19, 20];
       if (dow === 6) return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
       return [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
     }
-
     function to12hLabel(hm) {
       let [H, M] = hm.split(":").map(Number);
       const ampm = H >= 12 ? "PM" : "AM";
@@ -617,7 +638,7 @@
     }
 
     /* ------------------------------------------------------------
-       BOOKING LOGIC (READ + INSERT)
+       BOOKING LOGIC
        ------------------------------------------------------------ */
     const timesBox = document.getElementById("times");
     const confirmBtn = document.getElementById("confirmBtn");
@@ -637,7 +658,7 @@
     const cService = document.getElementById("cService");
     const cLoc = document.getElementById("cLoc");
 
-    let selectedSlot = null; // "HH:MM"
+    let selectedSlot = null;
     let bookedSet = new Set();
 
     function updateTodayHighlight() {
@@ -819,27 +840,42 @@
       validateForm();
     });
 
-    /* Init booking */
     dateEl.value = todayYMD();
     updateTodayHighlight();
     refreshSlots();
     validateForm();
 
     /* ------------------------------------------------------------
-       MONEY ORBIT ANIMATION (ALTERNATING DIRECTIONS + FACING SCREEN)
-       - We position bills with trig so they can ALWAYS face the viewer.
-       - Half orbit CW, half CCW.
-       - Add bob + subtle 3D flip so it reads as floating cash.
+       CREATE 18 BILLS (ALL $100) + DENOM OVERLAY
+       Change BILL_COUNT to 16..20 if you want.
        ------------------------------------------------------------ */
+    const moneyLayer = document.getElementById("moneyLayer");
+    const BILL_COUNT = 18;
+
+    for (let i = 0; i < BILL_COUNT; i++) {
+      const d = document.createElement("div");
+      d.className = "bill";
+      d.dataset.i = String(i);
+
+      const denom = document.createElement("div");
+      denom.className = "denom";
+      denom.textContent = "100";
+      d.appendChild(denom);
+
+      moneyLayer.appendChild(d);
+    }
+
     const earthWrap = document.getElementById("earthWrap");
     const bills = Array.from(document.querySelectorAll(".bill"));
 
-    // Setup each bill with its own orbit params
+    /* ------------------------------------------------------------
+       MONEY ORBIT (ALTERNATING DIRECTIONS + FACING SCREEN)
+       ------------------------------------------------------------ */
     const orbiters = bills.map((el, i) => {
-      const dir = (i % 2 === 0) ? 1 : -1; // alternate direction
+      const dir = (i % 2 === 0) ? 1 : -1;              // alternate direction
       const baseAngle = (i / bills.length) * Math.PI * 2;
-      const speed = (0.45 + (i % 5) * 0.06) * dir; // radians/sec (varied)
-      const radius = 0.46 + (i % 3) * 0.04; // relative radius (varied)
+      const speed = (0.50 + (i % 6) * 0.05) * dir;     // varied
+      const radius = 0.48 + (i % 4) * 0.03;            // varied
       const phase = Math.random() * Math.PI * 2;
       return { el, dir, baseAngle, speed, radius, phase };
     });
@@ -847,36 +883,28 @@
     function animateMoney(tms){
       const t = tms / 1000;
 
-      // Center + size of earthWrap
       const rect = earthWrap.getBoundingClientRect();
       const cx = rect.width / 2;
       const cy = rect.height / 2;
 
-      // orbit ellipse factors (perspective)
-      const ellipseY = 0.62;   // squish Y so it looks like a ring in perspective
-      const depthScale = 0.22; // how much size changes front/back
+      const ellipseY = 0.62;
+      const depthScale = 0.22;
 
-      orbiters.forEach((o, i) => {
+      orbiters.forEach((o) => {
         const theta = o.baseAngle + t * o.speed;
 
-        // Orbit position around center
         const r = rect.width * o.radius;
         const x = cx + Math.cos(theta) * r;
         const y = cy + Math.sin(theta) * r * ellipseY;
 
-        // Depth: use sin(theta) to decide "front/back"
-        // front when sin(theta) is positive (lower half), back when negative (upper half)
         const depth = (Math.sin(theta) + 1) / 2; // 0..1
-        const scale = 0.82 + depth * depthScale;
+        const scale = 0.86 + depth * depthScale;
 
-        // Bobbing + sway/flip (keeps bill facing screen, but adds life)
-        const bob = Math.sin(t * 2.2 + o.phase) * 10; // px
-        const swayZ = Math.sin(t * 1.6 + o.phase) * 6; // degrees
-        const flipY = Math.sin(t * 1.9 + o.phase) * 12; // degrees (subtle 3D)
-        const tiltX = Math.cos(t * 1.4 + o.phase) * 6; // degrees
+        const bob = Math.sin(t * 2.1 + o.phase) * 12;    // px
+        const swayZ = Math.sin(t * 1.4 + o.phase) * 6;   // deg
+        const flipY = Math.sin(t * 1.7 + o.phase) * 10;  // deg
+        const tiltX = Math.cos(t * 1.2 + o.phase) * 6;   // deg
 
-        // Make it "face the screen": we do NOT rotate along orbit direction.
-        // We only add subtle tilt/flip + tiny Z sway for realism.
         o.el.style.transform =
           `translate(${x}px, ${y + bob}px)` +
           ` translate(-50%, -50%)` +
@@ -885,16 +913,118 @@
           ` rotateX(${tiltX}deg)` +
           ` rotateY(${flipY}deg)`;
 
-        // z-index based on depth so front bills appear on top
         o.el.style.zIndex = String(10 + Math.floor(depth * 20));
-
-        // Slightly reduce opacity for back bills (makes depth obvious)
         o.el.style.opacity = String(0.55 + depth * 0.45);
       });
 
       requestAnimationFrame(animateMoney);
     }
     requestAnimationFrame(animateMoney);
+
+    /* ------------------------------------------------------------
+       STARFIELD + SHOOTING STARS (CANVAS)
+       ------------------------------------------------------------ */
+    const canvas = document.getElementById("starfield");
+    const ctx = canvas.getContext("2d");
+
+    let stars = [];
+    let shootingStars = [];
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      initStars();
+    }
+    window.addEventListener("resize", resizeCanvas);
+
+    function initStars() {
+      const count = Math.min(260, Math.floor((width * height) / 11000));
+      stars = [];
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: Math.random() * 1.5 + 0.35,
+          o: Math.random(),
+          tw: Math.random() * 2 + 1,
+        });
+      }
+    }
+
+    function spawnShootingStar() {
+      const startX = Math.random() * width * 0.6;
+      const startY = Math.random() * height * 0.3;
+      const len = Math.random() * 260 + 140;
+
+      shootingStars.push({
+        x: startX,
+        y: startY,
+        vx: 6 + Math.random() * 4,
+        vy: 3 + Math.random() * 3,
+        life: 0,
+        maxLife: 36 + Math.random() * 22,
+        length: len,
+      });
+    }
+
+    function drawStarfield() {
+      ctx.clearRect(0, 0, width, height);
+
+      // deep space background
+      ctx.fillStyle = "rgba(2, 6, 23, 0.94)";
+      ctx.fillRect(0, 0, width, height);
+
+      const t = Date.now() * 0.001;
+      for (const s of stars) {
+        const pulse = 0.5 + 0.5 * Math.sin(t * s.tw + s.x);
+        ctx.globalAlpha = s.o * pulse;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = "#e5f2ff";
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      // Shooting stars
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const sh = shootingStars[i];
+        sh.life++;
+        sh.x += sh.vx;
+        sh.y += sh.vy;
+
+        const p = sh.life / sh.maxLife;
+        if (p >= 1) {
+          shootingStars.splice(i, 1);
+          continue;
+        }
+
+        const alpha = 1 - p;
+        const tailX = sh.x - sh.vx * sh.length * 0.1;
+        const tailY = sh.y - sh.vy * sh.length * 0.1;
+
+        const grad = ctx.createLinearGradient(sh.x, sh.y, tailX, tailY);
+        grad.addColorStop(0, `rgba(160, 210, 255, ${alpha})`);
+        grad.addColorStop(1, "rgba(37, 99, 235, 0)");
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(sh.x, sh.y);
+        ctx.lineTo(tailX, tailY);
+        ctx.stroke();
+      }
+
+      requestAnimationFrame(drawStarfield);
+    }
+
+    setInterval(() => { if (Math.random() < 0.75) spawnShootingStar(); }, 6500);
+
+    resizeCanvas();
+    drawStarfield();
   </script>
 </body>
 </html>
