@@ -2,367 +2,730 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>CETS Admin — Appointments</title>
-
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
+    :root{
+      --bg1:#07102a;
+      --bg2:#020617;
+      --glass: rgba(17, 29, 56, 0.62);
+      --glass2: rgba(15, 23, 42, 0.65);
+      --border: rgba(148, 163, 184, 0.18);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
 
+      --blue:#3b82f6;
+      --green:#10b981;
+      --red:#ef4444;
+      --amber:#f59e0b;
+
+      --shadow: 0 30px 90px rgba(0,0,0,.55);
+      --ring: rgba(59,130,246,.35);
+    }
+
+    *{box-sizing:border-box}
     body{
-      font-family: Arial, Helvetica, sans-serif;
-      color: #e5e7eb;
-      background: radial-gradient(circle at 20% 15%, #0b2458, #020617 70%);
-      overflow-x: hidden;
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background: radial-gradient(circle at 20% 10%, #12214b 0%, var(--bg1) 30%, var(--bg2) 80%);
+      min-height:100vh;
+      padding:28px 18px;
     }
 
-    .wrap{
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 26px 18px 40px;
-    }
+    .wrap{ max-width: 1120px; margin: 0 auto; }
 
     .card{
-      background: rgba(15, 23, 42, 0.65);
-      border: 1px solid rgba(148, 163, 184, 0.18);
-      box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+      background: linear-gradient(180deg, rgba(17, 29, 56, 0.70), rgba(8, 15, 35, 0.72));
+      border: 1px solid var(--border);
       border-radius: 22px;
-      padding: 22px;
-      backdrop-filter: blur(16px) saturate(140%);
-      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
-    h1{
-      font-size: 42px;
+    .head{
+      padding: 22px 22px 14px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .title{
+      font-size: 40px;
       font-weight: 900;
-      letter-spacing: 0.5px;
-      color: #f8fafc;
-      margin-bottom: 6px;
+      letter-spacing: .3px;
+      margin:0;
     }
-    .sub{
-      color: rgba(226,232,240,0.82);
-      font-weight: 700;
-      margin-bottom: 18px;
-    }
-
-    .topbar{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 14px;
+    .subtitle{
+      margin:6px 0 0;
+      color: var(--muted);
+      font-weight: 650;
     }
 
-    .badge{
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
+    .status-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
       padding: 10px 14px;
       border-radius: 999px;
-      background: rgba(2, 6, 23, 0.65);
-      border: 1px solid rgba(148,163,184,0.25);
+      background: rgba(0,0,0,.25);
+      border: 1px solid var(--border);
       font-weight: 900;
-      color: #e2e8f0;
-      white-space: nowrap;
+      white-space:nowrap;
+      height: fit-content;
     }
-    .dot{ width: 10px; height: 10px; border-radius: 999px; background: #ef4444; box-shadow: 0 0 10px rgba(239,68,68,0.65); }
-    .dot.ok{ background: #22c55e; box-shadow: 0 0 10px rgba(34,197,94,0.55); }
+    .dot{
+      width:10px;height:10px;border-radius:99px;
+      background: var(--red);
+      box-shadow: 0 0 14px rgba(239,68,68,.55);
+    }
+    .dot.ok{
+      background: var(--green);
+      box-shadow: 0 0 14px rgba(16,185,129,.45);
+    }
+
+    .panel{
+      padding: 0 22px 22px;
+      border-top: 1px solid rgba(148,163,184,.12);
+    }
 
     .grid{
-      display: grid;
-      grid-template-columns: 1fr 1fr 220px;
-      gap: 12px;
-      margin-top: 10px;
-      margin-bottom: 14px;
+      display:grid;
+      grid-template-columns: 1.1fr 1.1fr .7fr;
+      gap: 10px;
+      margin-top: 16px;
     }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
+    @media (max-width: 920px){
+      .title{font-size: 34px}
+      .grid{grid-template-columns: 1fr}
     }
 
-    .input{
-      width: 100%;
+    .input, .select, .btn{
+      height: 48px;
       border-radius: 14px;
-      border: 1px solid rgba(148,163,184,0.22);
-      background: rgba(2, 6, 23, 0.55);
-      color: #f8fafc;
-      padding: 14px 14px;
-      font-size: 14px;
+      border: 1px solid rgba(148,163,184,.18);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      padding: 0 14px;
       outline: none;
+      font-weight: 800;
     }
-    .input::placeholder{ color: rgba(226,232,240,0.55); }
+    .input:focus, .select:focus{
+      border-color: rgba(59,130,246,.75);
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+    .select{ padding-right: 10px; }
+
+    .btn{
+      cursor:pointer;
+      transition: transform .08s ease, box-shadow .12s ease, opacity .12s ease;
+      box-shadow: 0 10px 22px rgba(0,0,0,.35);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,.45); }
+    .btn:active{ transform: translateY(0px); box-shadow: 0 10px 18px rgba(0,0,0,.35); }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; box-shadow:none; }
+
+    .btn.blue{ background: linear-gradient(180deg, rgba(59,130,246,.95), rgba(37,99,235,.90)); border-color: rgba(59,130,246,.25); }
+    .btn.green{ background: linear-gradient(180deg, rgba(16,185,129,.95), rgba(5,150,105,.92)); border-color: rgba(16,185,129,.25); }
+    .btn.red{ background: linear-gradient(180deg, rgba(239,68,68,.95), rgba(220,38,38,.92)); border-color: rgba(239,68,68,.25); }
+    .btn.gray{ background: rgba(148,163,184,.18); border-color: rgba(148,163,184,.16); }
 
     .row2{
-      display: grid;
-      grid-template-columns: 1fr 220px 220px 180px;
-      gap: 12px;
-      margin-top: 12px;
-      margin-bottom: 10px;
+      margin-top: 10px;
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 10px;
     }
-    @media (max-width: 980px){
+    @media (max-width: 920px){
+      .row2{ grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px){
       .row2{ grid-template-columns: 1fr; }
     }
 
-    .btn{
-      border: none;
-      border-radius: 14px;
-      padding: 14px 14px;
-      font-weight: 900;
-      font-size: 14px;
-      cursor: pointer;
-      color: #fff;
-      background: rgba(59,130,246,0.92);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
-      transition: transform .12s ease, opacity .12s ease, box-shadow .12s ease;
-      user-select: none;
-    }
-    .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,0.45); }
-    .btn:active{ transform: translateY(0); box-shadow: 0 8px 18px rgba(0,0,0,0.35); }
-    .btn:disabled{ opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
-
-    .btn.secondary{ background: rgba(100,116,139,0.55); }
-    .btn.good{ background: rgba(16,185,129,0.85); }
-    .btn.bad{ background: rgba(239,68,68,0.78); }
-    .btn.dark{ background: rgba(2,6,23,0.9); }
-
-    .toolbar{
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      gap: 12px;
-      margin: 12px 0 14px;
-    }
-    @media (max-width: 980px){ .toolbar{ grid-template-columns: 1fr; } }
-
-    .msg{
+    .logbox{
       margin-top: 12px;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(148,163,184,0.2);
-      background: rgba(2,6,23,0.6);
-      color: rgba(226,232,240,0.95);
-      font-weight: 800;
-      font-size: 13px;
-      min-height: 44px;
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,.16);
+      background: rgba(0,0,0,.30);
+      padding: 12px;
+      min-height: 120px;
+      max-height: 220px;
+      overflow:auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      color: rgba(226,232,240,.9);
       white-space: pre-wrap;
     }
 
-    table{
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      overflow: hidden;
+    .tablewrap{
+      margin-top: 16px;
       border-radius: 18px;
-      border: 1px solid rgba(148,163,184,0.18);
-      background: rgba(2,6,23,0.45);
+      border: 1px solid rgba(148,163,184,.14);
+      overflow:hidden;
+      background: rgba(0,0,0,.20);
     }
-
+    table{
+      width:100%;
+      border-collapse: collapse;
+    }
     thead th{
-      text-align: left;
+      text-align:left;
+      padding: 12px 14px;
       font-size: 13px;
-      letter-spacing: .2px;
-      padding: 14px 14px;
-      color: #f8fafc;
-      background: rgba(148,163,184,0.12);
-      border-bottom: 1px solid rgba(148,163,184,0.18);
+      color: rgba(226,232,240,.9);
+      background: rgba(148,163,184,.10);
+      border-bottom: 1px solid rgba(148,163,184,.12);
       font-weight: 900;
+      letter-spacing: .2px;
     }
     tbody td{
-      padding: 14px 14px;
-      color: rgba(226,232,240,0.95);
-      border-bottom: 1px solid rgba(148,163,184,0.10);
-      font-size: 14px;
+      padding: 14px;
+      border-bottom: 1px solid rgba(148,163,184,.10);
       vertical-align: top;
     }
-    tbody tr:hover td{
-      background: rgba(148,163,184,0.08);
-    }
+    tbody tr:last-child td{ border-bottom: none; }
 
+    .mini{ font-size: 12px; color: rgba(148,163,184,.92); font-weight: 800; }
+    .big{ font-size: 15px; font-weight: 950; }
     .pill{
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      display:inline-flex;
+      align-items:center;
       padding: 7px 10px;
       border-radius: 999px;
-      font-weight: 900;
+      font-weight: 950;
       font-size: 12px;
-      border: 1px solid rgba(148,163,184,0.18);
-      background: rgba(2,6,23,0.65);
-      color: #e2e8f0;
-      white-space: nowrap;
+      border: 1px solid rgba(148,163,184,.18);
+      background: rgba(148,163,184,.10);
     }
-    .pill.ok{ background: rgba(34,197,94,0.18); border-color: rgba(34,197,94,0.38); color: #bbf7d0; }
-    .pill.bad{ background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.35); color: #fecaca; }
-    .pill.warn{ background: rgba(245,158,11,0.18); border-color: rgba(245,158,11,0.38); color: #fde68a; }
+    .pill.confirmed{ background: rgba(16,185,129,.14); border-color: rgba(16,185,129,.25); color: #b7ffdf; }
+    .pill.cancelled{ background: rgba(239,68,68,.16); border-color: rgba(239,68,68,.25); color: #ffd1d1; }
+    .pill.expired{ background: rgba(245,158,11,.16); border-color: rgba(245,158,11,.28); color: #ffe7be; }
 
     .actions{
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 140px;
     }
 
-    .mini{
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 13px;
+    .muteline{
+      padding: 12px 22px 0;
+      color: rgba(148,163,184,.92);
+      font-weight: 800;
+      font-size: 12px;
     }
 
-    .muted{ color: rgba(226,232,240,0.70); font-weight: 700; font-size: 12px; }
-    .hint{
-      margin-top: 10px;
-      color: rgba(226,232,240,0.75);
-      font-weight: 700;
-      font-size: 13px;
+    /* modal */
+    .modal-backdrop{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 9999;
     }
+    .modal-backdrop.show{ display:flex; }
+
+    .modal{
+      width: min(920px, 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,.18);
+      background: linear-gradient(180deg, rgba(17,29,56,.95), rgba(8,15,35,.95));
+      box-shadow: 0 40px 120px rgba(0,0,0,.65);
+      overflow:hidden;
+    }
+    .modal-head{
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom: 1px solid rgba(148,163,184,.12);
+    }
+    .modal-title{
+      margin:0;
+      font-weight: 1000;
+      letter-spacing:.2px;
+    }
+    .modal-body{ padding: 14px 16px; }
+    .modal-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 760px){
+      .modal-grid{ grid-template-columns: 1fr; }
+    }
+    .lbl{
+      font-size: 12px;
+      font-weight: 950;
+      color: rgba(226,232,240,.92);
+      margin-bottom: 6px;
+      display:block;
+    }
+    .modal-foot{
+      padding: 14px 16px;
+      border-top: 1px solid rgba(148,163,184,.12);
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .btn.small{ height: 44px; border-radius: 12px; padding: 0 14px; }
+    .hint{ font-size: 12px; color: rgba(148,163,184,.95); font-weight: 800; margin-top: 8px; }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="topbar">
-      <div>
-        <h1>CETS Admin — Appointments</h1>
-        <div class="sub">Sign in with Supabase Auth, then view / filter / confirm / cancel appointments.</div>
-      </div>
-
-      <div class="badge" id="statusBadge">
-        <span class="dot" id="statusDot"></span>
-        <span id="statusText">Not connected</span>
-      </div>
-    </div>
-
     <div class="card">
-      <!-- Auth -->
-      <div class="grid">
-        <input id="email" class="input" type="email" placeholder="Admin email (Supabase Auth)" autocomplete="username" />
-        <input id="password" class="input" type="password" placeholder="Password" autocomplete="current-password" />
-        <button id="btnSignIn" class="btn">Sign In</button>
+      <div class="head">
+        <div>
+          <h1 class="title">CETS Admin — Appointments</h1>
+          <div class="subtitle">Sign in, search/filter, <b>change</b> or <b>cancel</b> appointments.</div>
+        </div>
+        <div class="status-pill" id="connPill">
+          <span class="dot" id="connDot"></span>
+          <span id="connText">Not connected</span>
+        </div>
       </div>
 
-      <div class="toolbar">
-        <button id="btnSignOut" class="btn secondary">Sign Out</button>
-        <button id="btnWhoAmI" class="btn secondary">Who am I?</button>
-        <button id="btnTestRead" class="btn good">Test Appointments Read</button>
-        <button id="btnRefresh" class="btn">Refresh</button>
-      </div>
+      <div class="panel">
+        <!-- AUTH ROW -->
+        <div class="grid">
+          <input id="email" class="input" placeholder="Admin email (Supabase Auth)" />
+          <input id="password" class="input" type="password" placeholder="Password" />
+          <button id="btnSignIn" class="btn blue">Sign In</button>
+        </div>
 
-      <!-- Filters -->
-      <div class="row2">
-        <input id="q" class="input" placeholder="Search name/email/service/location..." />
-        <input id="date" class="input" type="date" />
-        <select id="status" class="input">
-          <option value="">All statuses</option>
-          <option value="confirmed">confirmed</option>
-          <option value="cancelled">cancelled</option>
-          <option value="pending">pending</option>
-        </select>
-        <button id="btnToday" class="btn secondary">Today</button>
-      </div>
+        <div class="row2">
+          <button id="btnSignOut" class="btn gray">Sign Out</button>
+          <button id="btnWhoAmI" class="btn gray">Who am I?</button>
+          <button id="btnTestRead" class="btn green">Test Appointments Read</button>
+          <button id="btnRefresh" class="btn blue">Refresh</button>
+        </div>
 
-      <div class="toolbar">
-        <button id="btnClear" class="btn secondary">Clear Filters</button>
-        <button id="btnConfirmFiltered" class="btn good">Confirm Filtered</button>
-        <button id="btnCancelFiltered" class="btn bad">Cancel Filtered</button>
-        <button id="btnExport" class="btn dark">Export CSV</button>
-      </div>
+        <!-- FILTERS -->
+        <div class="grid" style="margin-top:12px;">
+          <input id="q" class="input" placeholder="Search name/email/service/location..." />
+          <input id="date" class="input" type="date" />
+          <select id="status" class="select">
+            <option value="all">All statuses</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="expired">Expired (computed)</option>
+          </select>
+        </div>
 
-      <div class="msg" id="log">Ready.</div>
+        <div class="row2">
+          <button id="btnToday" class="btn gray">Today</button>
+          <button id="btnClear" class="btn gray">Clear Filters</button>
+          <button id="btnCancelFiltered" class="btn red">Cancel Filtered</button>
+          <button id="btnExport" class="btn gray">Export CSV</button>
+        </div>
 
-      <!-- Table -->
-      <div style="margin-top:14px;">
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 24%;">Client</th>
-              <th style="width: 22%;">Appointment</th>
-              <th style="width: 28%;">Service / Location</th>
-              <th style="width: 12%;">Status</th>
-              <th style="width: 14%;">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="tbody">
-            <tr><td colspan="5" class="muted">Sign in, then click Refresh.</td></tr>
-          </tbody>
-        </table>
-        <div class="hint">
-          Tip: Keep this page private (private repo / password protect / basic auth). It uses your Supabase anon key.
+        <div id="log" class="logbox">Ready.</div>
+
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:240px;">Client</th>
+                <th style="width:260px;">Appointment</th>
+                <th>Service / Location</th>
+                <th style="width:140px;">Status</th>
+                <th style="width:170px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <tr><td colspan="5" class="mini" style="padding:16px;">Sign in, then click Refresh.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="muteline">
+          Tip: Keep this page private (private repo / password protect / basic auth). Never expose a service-role key in the browser.
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Supabase JS (UMD) -->
+  <!-- CHANGE MODAL -->
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <h3 class="modal-title" id="modalTitle">Change Appointment</h3>
+        <button class="btn small gray" id="btnModalClose">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-grid">
+          <div>
+            <label class="lbl">Client name</label>
+            <input id="m_client_name" class="input" />
+          </div>
+          <div>
+            <label class="lbl">Client email</label>
+            <input id="m_client_email" class="input" />
+          </div>
+          <div>
+            <label class="lbl">Service</label>
+            <input id="m_service" class="input" />
+          </div>
+          <div>
+            <label class="lbl">Location</label>
+            <input id="m_location" class="input" />
+          </div>
+          <div>
+            <label class="lbl">Start (local)</label>
+            <input id="m_start" type="datetime-local" class="input" />
+          </div>
+          <div>
+            <label class="lbl">End (local)</label>
+            <input id="m_end" type="datetime-local" class="input" />
+          </div>
+        </div>
+        <div class="hint">
+          “Expired” is computed by <code>end_time &lt; now</code>. You can reschedule an expired appointment by changing start/end into the future.
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn small red" id="btnModalCancel">Cancel Appointment</button>
+        <button class="btn small green" id="btnModalSave">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
-    /*****************************************************************
-     * 1) CONFIG (PASTE YOUR KEYS HERE)
-     *****************************************************************/
+    /************************************************************
+     * 1) CONFIG — PASTE YOUR URL + ANON KEY HERE
+     ************************************************************/
     const SUPABASE_URL = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs"; // <-- paste your anon key
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs"; // <-- paste yours
 
-    /*****************************************************************
+    const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    /************************************************************
      * 2) DOM
-     *****************************************************************/
-    const el = (id) => document.getElementById(id);
+     ************************************************************/
+    const $ = (id) => document.getElementById(id);
 
-    const statusDot  = el("statusDot");
-    const statusText = el("statusText");
-    const logBox     = el("log");
+    const connDot = $("connDot");
+    const connText = $("connText");
 
-    const emailEl = el("email");
-    const passEl  = el("password");
+    const emailEl = $("email");
+    const passEl  = $("password");
 
-    const qEl     = el("q");
-    const dateEl  = el("date");
-    const statusEl= el("status");
+    const qEl = $("q");
+    const dateEl = $("date");
+    const statusEl = $("status");
 
-    const tbody   = el("tbody");
+    const tbody = $("tbody");
+    const logBox = $("log");
 
-    const btnSignIn = el("btnSignIn");
-    const btnSignOut = el("btnSignOut");
-    const btnWhoAmI = el("btnWhoAmI");
-    const btnTestRead = el("btnTestRead");
-    const btnRefresh = el("btnRefresh");
-    const btnToday = el("btnToday");
-    const btnClear = el("btnClear");
-    const btnConfirmFiltered = el("btnConfirmFiltered");
-    const btnCancelFiltered = el("btnCancelFiltered");
-    const btnExport = el("btnExport");
+    // modal
+    const modalBackdrop = $("modalBackdrop");
+    const btnModalClose = $("btnModalClose");
+    const btnModalSave  = $("btnModalSave");
+    const btnModalCancel = $("btnModalCancel");
 
-    /*****************************************************************
-     * 3) HELPERS
-     *****************************************************************/
-    function log(msg) {
-      const ts = new Date().toLocaleTimeString();
-      logBox.textContent = `[${ts}] ${msg}\n` + logBox.textContent;
+    const m_client_name  = $("m_client_name");
+    const m_client_email = $("m_client_email");
+    const m_service      = $("m_service");
+    const m_location     = $("m_location");
+    const m_start        = $("m_start");
+    const m_end          = $("m_end");
+
+    let currentRows = [];
+    let editingRow = null;
+
+    /************************************************************
+     * 3) UTIL
+     ************************************************************/
+    function log(line){
+      const t = new Date();
+      const stamp = t.toLocaleTimeString();
+      logBox.textContent = `[${stamp}] ${line}\n` + logBox.textContent;
     }
 
-    function setConnected(ok, text) {
-      statusDot.classList.toggle("ok", !!ok);
-      statusText.textContent = text || (ok ? "Connected" : "Not connected");
+    function setConnected(ok, text){
+      connDot.classList.toggle("ok", !!ok);
+      connText.textContent = text || (ok ? "Connected" : "Not connected");
     }
 
-    function pad(n){ return String(n).padStart(2,"0"); }
-
-    function todayYMD(){
+    function ymdToday(){
       const d = new Date();
+      const pad = (n)=> String(n).padStart(2,"0");
       return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
     }
 
-    function fmtNice(iso){
-      // show local time but still readable
+    function niceDate(iso){
       const d = new Date(iso);
       return d.toLocaleString("en-US", {
-        weekday: "short",
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-        hour: "numeric",
-        minute: "2-digit",
+        weekday:"short", month:"short", day:"2-digit",
+        year:"numeric", hour:"2-digit", minute:"2-digit",
       });
     }
 
-    function escapeHtml(s) {
-      return String(s ?? "")
+    // expired is computed (does not modify DB)
+    function isExpired(row){
+      const status = String(row.status||"").toLowerCase();
+      if (status === "cancelled") return false;
+      if (!row.end_time) return false;
+      return new Date(row.end_time).getTime() < Date.now();
+    }
+
+    function computedStatusLabel(row){
+      const s = String(row.status || "confirmed").toLowerCase();
+      if (s === "cancelled") return "cancelled";
+      if (isExpired(row)) return "expired";
+      return "confirmed";
+    }
+
+    function toLocalInputValue(iso){
+      if (!iso) return "";
+      const d = new Date(iso);
+      // yyyy-MM-ddTHH:mm in local time
+      const pad = (n)=> String(n).padStart(2,"0");
+      const yyyy = d.getFullYear();
+      const MM = pad(d.getMonth()+1);
+      const dd = pad(d.getDate());
+      const HH = pad(d.getHours());
+      const mm = pad(d.getMinutes());
+      return `${yyyy}-${MM}-${dd}T${HH}:${mm}`;
+    }
+
+    function localInputToISO(v){
+      // v is "yyyy-MM-ddTHH:mm" local time
+      if (!v) return "";
+      const d = new Date(v);
+      return d.toISOString();
+    }
+
+    function filterRows(rows){
+      const q = (qEl.value || "").trim().toLowerCase();
+      const ymd = (dateEl.value || "").trim();
+      const status = statusEl.value;
+
+      return rows.filter(r => {
+        const hay = [
+          r.client_name, r.client_email, r.service, r.location, r.id
+        ].map(x => String(x||"").toLowerCase()).join(" | ");
+
+        if (q && !hay.includes(q)) return false;
+
+        if (ymd){
+          const start = new Date(r.start_time);
+          const pad = (n)=>String(n).padStart(2,"0");
+          const ry = `${start.getFullYear()}-${pad(start.getMonth()+1)}-${pad(start.getDate())}`;
+          if (ry !== ymd) return false;
+        }
+
+        const c = computedStatusLabel(r);
+        if (status !== "all" && c !== status) return false;
+
+        return true;
+      });
+    }
+
+    function downloadCSV(filename, rows){
+      const cols = [
+        "id","client_name","client_email","service","location",
+        "start_time","end_time","status","computed_status","created_at"
+      ];
+      const escape = (v) => {
+        const s = String(v ?? "");
+        if (/[",\n]/.test(s)) return `"${s.replaceAll('"','""')}"`;
+        return s;
+      };
+      const lines = [];
+      lines.push(cols.join(","));
+      for (const r of rows){
+        const obj = { ...r, computed_status: computedStatusLabel(r) };
+        lines.push(cols.map(c => escape(obj[c])).join(","));
+      }
+      const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    }
+
+    /************************************************************
+     * 4) AUTH
+     ************************************************************/
+    async function refreshSessionBadge(){
+      const { data } = await supa.auth.getSession();
+      const sess = data?.session;
+      if (sess?.user){
+        setConnected(true, `Signed in: ${sess.user.email}`);
+      } else {
+        setConnected(false, "Not connected");
+      }
+    }
+
+    async function signIn(){
+      const email = (emailEl.value || "").trim();
+      const password = (passEl.value || "").trim();
+      if (!email || !password){
+        alert("Enter admin email and password.");
+        return;
+      }
+      log("Signing in...");
+      const { data, error } = await supa.auth.signInWithPassword({ email, password });
+      if (error){
+        log("SIGNIN ERROR: " + error.message);
+        alert(error.message);
+        await refreshSessionBadge();
+        return;
+      }
+      log("Signed in successfully.");
+      await refreshSessionBadge();
+    }
+
+    async function signOut(){
+      log("Signing out...");
+      const { error } = await supa.auth.signOut();
+      if (error){
+        log("SIGNOUT ERROR: " + error.message);
+        alert(error.message);
+      } else {
+        log("Signed out.");
+      }
+      await refreshSessionBadge();
+      tbody.innerHTML = `<tr><td colspan="5" class="mini" style="padding:16px;">Signed out. Sign in, then click Refresh.</td></tr>`;
+    }
+
+    async function whoAmI(){
+      const { data } = await supa.auth.getUser();
+      if (data?.user){
+        log("User: " + data.user.email + "  (id: " + data.user.id + ")");
+        alert(`Signed in as:\n${data.user.email}\n\nUser ID:\n${data.user.id}`);
+      } else {
+        log("No user session.");
+        alert("No session. Sign in first.");
+      }
+      await refreshSessionBadge();
+    }
+
+    /************************************************************
+     * 5) DATA: READ / RENDER
+     ************************************************************/
+    async function testRead(){
+      log("Reading appointments...");
+      const { data, error } = await supa
+        .from("appointments")
+        .select("*")
+        .order("start_time", { ascending: true })
+        .limit(5);
+
+      if (error){
+        log("READ ERROR: " + error.message);
+        alert("Read blocked: " + error.message + "\n\nIf you can sign in but reads fail, your RLS policy is blocking reads for this user.");
+        return;
+      }
+      log(`SUCCESS — rows: ${(data||[]).length}`);
+      log(JSON.stringify(data||[], null, 2));
+    }
+
+    async function fetchAll(){
+      log("Refreshing...");
+      const { data: sess } = await supa.auth.getSession();
+      if (!sess?.session){
+        log("No session. Sign in first.");
+        alert("Sign in first.");
+        return;
+      }
+
+      // Pull a reasonable window (you can widen this)
+      const { data, error } = await supa
+        .from("appointments")
+        .select("*")
+        .order("start_time", { ascending: true })
+        .limit(500);
+
+      if (error){
+        log("READ ERROR: " + error.message);
+        alert("Read failed: " + error.message);
+        return;
+      }
+
+      currentRows = data || [];
+      renderTable();
+      log(`Loaded ${currentRows.length} total rows.`);
+    }
+
+    function renderTable(){
+      const rows = filterRows(currentRows);
+
+      if (!rows.length){
+        tbody.innerHTML = `<tr><td colspan="5" class="mini" style="padding:16px;">No matches for current filters.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rows.map(r => {
+        const when = niceDate(r.start_time);
+        const idShort = String(r.id || "").slice(0, 8);
+        const status = computedStatusLabel(r);
+
+        const pillClass = status === "cancelled" ? "cancelled" : status === "expired" ? "expired" : "confirmed";
+
+        const disabledCancel = status === "cancelled" ? "disabled" : "";
+        const cancelLabel = status === "cancelled" ? "Cancelled" : "Cancel";
+
+        return `
+          <tr data-id="${r.id}">
+            <td>
+              <div class="big">${escapeHTML(r.client_name || "—")}</div>
+              <div class="mini">${escapeHTML(r.client_email || "—")}</div>
+            </td>
+
+            <td>
+              <div class="big">${escapeHTML(when)}</div>
+              <div class="mini">ID: ${escapeHTML(String(r.id || ""))}</div>
+              <div class="mini">Short: ${escapeHTML(idShort)}</div>
+            </td>
+
+            <td>
+              <div class="big">${escapeHTML(r.service || "—")}</div>
+              <div class="mini">${escapeHTML(r.location || "—")}</div>
+            </td>
+
+            <td>
+              <span class="pill ${pillClass}">${status.toUpperCase()}</span>
+            </td>
+
+            <td>
+              <div class="actions">
+                <button class="btn small green btnChange" data-id="${r.id}">Change</button>
+                <button class="btn small red btnCancel" data-id="${r.id}" ${disabledCancel}>${cancelLabel}</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      // wire row buttons
+      tbody.querySelectorAll(".btnChange").forEach(btn => {
+        btn.addEventListener("click", () => openChangeModal(btn.dataset.id));
+      });
+      tbody.querySelectorAll(".btnCancel").forEach(btn => {
+        btn.addEventListener("click", () => cancelOne(btn.dataset.id));
+      });
+    }
+
+    function escapeHTML(s){
+      return String(s || "")
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
@@ -370,327 +733,205 @@
         .replaceAll("'","&#039;");
     }
 
-    function pillForStatus(st){
-      const v = (st || "").toLowerCase();
-      if (v === "confirmed") return `<span class="pill ok">confirmed</span>`;
-      if (v === "cancelled") return `<span class="pill bad">cancelled</span>`;
-      return `<span class="pill warn">${escapeHtml(v || "pending")}</span>`;
-    }
+    /************************************************************
+     * 6) ACTIONS: CANCEL + CHANGE
+     ************************************************************/
+    async function cancelOne(id){
+      const row = currentRows.find(x => String(x.id) === String(id));
+      if (!row) return;
 
-    function downloadText(filename, text){
-      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    /*****************************************************************
-     * 4) SUPABASE CLIENT
-     *****************************************************************/
-    const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Keep badge accurate
-    supa.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setConnected(true, `Connected — ${session.user.email}`);
-      } else {
-        setConnected(false, "Not connected");
-      }
-    });
-
-    async function initStatus() {
-      const { data } = await supa.auth.getSession();
-      if (data?.session?.user) {
-        setConnected(true, `Connected — ${data.session.user.email}`);
-      } else {
-        setConnected(false, "Not connected");
-      }
-      log("JS loaded & Supabase client ready.");
-    }
-
-    /*****************************************************************
-     * 5) DATA LOADING + RENDERING
-     *****************************************************************/
-    let lastRows = [];
-
-    function applyClientSideFilters(rows) {
-      const q = (qEl.value || "").trim().toLowerCase();
-      const date = dateEl.value; // YYYY-MM-DD
-      const st = (statusEl.value || "").trim().toLowerCase();
-
-      return rows.filter(r => {
-        const hay = [
-          r.client_name, r.client_email, r.service, r.location, r.status
-        ].map(x => String(x||"").toLowerCase()).join(" ");
-
-        if (q && !hay.includes(q)) return false;
-
-        if (st && String(r.status||"").toLowerCase() !== st) return false;
-
-        if (date) {
-          // match by start_time date in local time
-          const d = new Date(r.start_time);
-          const localYMD = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-          if (localYMD !== date) return false;
-        }
-
-        return true;
-      });
-    }
-
-    function render(rows) {
-      lastRows = rows;
-
-      const filtered = applyClientSideFilters(rows);
-
-      if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="muted">No appointments match filters.</td></tr>`;
+      const label = computedStatusLabel(row);
+      if (label === "cancelled"){
+        alert("Already cancelled.");
         return;
       }
 
-      tbody.innerHTML = filtered.map(r => {
-        const when = r.start_time ? fmtNice(r.start_time) : "—";
-        const client = `
-          <div style="font-weight:900;">${escapeHtml(r.client_name || "—")}</div>
-          <div class="muted">${escapeHtml(r.client_email || "—")}</div>
-        `;
+      if (!confirm("Cancel this appointment?\n\n" + (row.client_name || "") + "\n" + (row.start_time || ""))) return;
 
-        const appt = `
-          <div style="font-weight:900;">${escapeHtml(when)}</div>
-          <div class="muted">ID: ${escapeHtml(r.id || "")}</div>
-        `;
-
-        const svc = `
-          <div style="font-weight:900;">${escapeHtml(r.service || "—")}</div>
-          <div class="muted">${escapeHtml(r.location || "—")}</div>
-        `;
-
-        const actions = `
-          <div class="actions">
-            <button class="btn mini good" data-action="confirm" data-id="${escapeHtml(r.id)}">Confirm</button>
-            <button class="btn mini bad" data-action="cancel" data-id="${escapeHtml(r.id)}">Cancel</button>
-          </div>
-        `;
-
-        return `
-          <tr>
-            <td>${client}</td>
-            <td>${appt}</td>
-            <td>${svc}</td>
-            <td>${pillForStatus(r.status)}</td>
-            <td>${actions}</td>
-          </tr>
-        `;
-      }).join("");
-    }
-
-    async function loadAppointments() {
-      log("Reading appointments...");
-
-      // Must be signed in to pass RLS
-      const { data: sess } = await supa.auth.getSession();
-      if (!sess?.session?.user) {
-        log("No session — sign in first.");
-        setConnected(false, "Not connected");
-        return;
-      }
-
-      // Pull recent appointments (you can widen this later)
-      const { data, error } = await supa
-        .from("appointments")
-        .select("*")
-        .order("start_time", { ascending: true })
-        .limit(500);
-
-      if (error) {
-        console.error(error);
-        log(`ERROR reading appointments: ${error.message}`);
-        return;
-      }
-
-      log(`SUCCESS — rows: ${(data || []).length}`);
-      render(data || []);
-    }
-
-    /*****************************************************************
-     * 6) UPDATES (CONFIRM/CANCEL)
-     *****************************************************************/
-    async function updateStatus(id, newStatus) {
-      const { data: sess } = await supa.auth.getSession();
-      if (!sess?.session?.user) {
-        log("No session — sign in first.");
-        return;
-      }
-
-      log(`Updating ${id} → ${newStatus}...`);
-
-      const patch = { status: newStatus };
-
-      // Optional columns (only apply if your table has them)
-      if (newStatus === "confirmed") patch.confirmed_at = new Date().toISOString();
-      if (newStatus === "cancelled") patch.cancelled_at = new Date().toISOString();
+      log(`Cancelling ${id}...`);
 
       const { error } = await supa
         .from("appointments")
-        .update(patch)
+        .update({ status: "cancelled" })
         .eq("id", id);
 
-      if (error) {
-        console.error(error);
-        log(`ERROR update: ${error.message}`);
+      if (error){
+        log("CANCEL ERROR: " + error.message);
+        alert("Cancel failed: " + error.message);
         return;
       }
 
-      log(`OK — ${id} updated`);
-      await loadAppointments();
+      log(`Cancelled ${id}`);
+      // update local cache and rerender
+      row.status = "cancelled";
+      renderTable();
     }
 
-    async function bulkUpdateFiltered(newStatus) {
-      const filtered = applyClientSideFilters(lastRows);
-      if (!filtered.length) {
-        log("No rows match filters.");
+    function openChangeModal(id){
+      const row = currentRows.find(x => String(x.id) === String(id));
+      if (!row) return;
+
+      editingRow = row;
+
+      $("modalTitle").textContent = `Change Appointment — ${row.client_name || "Client"}`;
+
+      m_client_name.value  = row.client_name || "";
+      m_client_email.value = row.client_email || "";
+      m_service.value      = row.service || "";
+      m_location.value     = row.location || "";
+      m_start.value        = toLocalInputValue(row.start_time);
+      m_end.value          = toLocalInputValue(row.end_time);
+
+      // modal cancel button should still work even if expired/confirmed
+      btnModalCancel.disabled = (computedStatusLabel(row) === "cancelled");
+
+      modalBackdrop.classList.add("show");
+      modalBackdrop.setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal(){
+      modalBackdrop.classList.remove("show");
+      modalBackdrop.setAttribute("aria-hidden", "true");
+      editingRow = null;
+    }
+
+    async function saveChanges(){
+      if (!editingRow) return;
+
+      const id = editingRow.id;
+      const payload = {
+        client_name: (m_client_name.value || "").trim(),
+        client_email: (m_client_email.value || "").trim().toLowerCase(),
+        service: (m_service.value || "").trim(),
+        location: (m_location.value || "").trim(),
+        start_time: localInputToISO(m_start.value),
+        end_time: localInputToISO(m_end.value),
+      };
+
+      if (!payload.client_email || !payload.start_time || !payload.end_time){
+        alert("Client email + start + end are required.");
         return;
       }
 
-      if (!confirm(`Update ${filtered.length} appointment(s) to "${newStatus}"?`)) return;
+      // If it was cancelled, admin might still change it — but typically you'd keep cancelled.
+      // We will NOT auto-change status here. Only your Cancel button changes status.
+      log(`Saving changes for ${id}...`);
 
-      for (const r of filtered) {
-        // sequential so you can see logging + avoid rate limits
-        await updateStatus(r.id, newStatus);
+      const { error } = await supa
+        .from("appointments")
+        .update(payload)
+        .eq("id", id);
+
+      if (error){
+        log("SAVE ERROR: " + error.message);
+        alert("Save failed: " + error.message);
+        return;
       }
+
+      // update local cache
+      Object.assign(editingRow, payload);
+
+      log(`Saved changes for ${id}`);
+      closeModal();
+      renderTable();
     }
 
-    /*****************************************************************
+    async function cancelFromModal(){
+      if (!editingRow) return;
+      await cancelOne(editingRow.id);
+      // if cancelled, close the modal
+      closeModal();
+    }
+
+    async function cancelFiltered(){
+      const filtered = filterRows(currentRows);
+      const active = filtered.filter(r => computedStatusLabel(r) !== "cancelled");
+      if (!active.length){
+        alert("No non-cancelled rows in current filter.");
+        return;
+      }
+
+      if (!confirm(`Cancel ${active.length} appointment(s) from current filter?`)) return;
+
+      log(`Cancelling filtered (${active.length})...`);
+
+      // do sequential to keep it simple & readable
+      for (const r of active){
+        const { error } = await supa
+          .from("appointments")
+          .update({ status: "cancelled" })
+          .eq("id", r.id);
+
+        if (error){
+          log(`CANCEL ERROR on ${r.id}: ${error.message}`);
+        } else {
+          r.status = "cancelled";
+          log(`Cancelled ${r.id}`);
+        }
+      }
+
+      renderTable();
+      log("Done cancelling filtered.");
+    }
+
+    /************************************************************
      * 7) EVENTS
-     *****************************************************************/
-    btnSignIn.addEventListener("click", async () => {
-      try {
-        const email = (emailEl.value || "").trim().toLowerCase();
-        const password = (passEl.value || "").trim();
-        if (!email || !password) {
-          log("Enter email + password.");
-          return;
-        }
+     ************************************************************/
+    $("btnSignIn").addEventListener("click", signIn);
+    $("btnSignOut").addEventListener("click", signOut);
+    $("btnWhoAmI").addEventListener("click", whoAmI);
+    $("btnTestRead").addEventListener("click", testRead);
+    $("btnRefresh").addEventListener("click", fetchAll);
 
-        log("Signing in...");
-        const { data, error } = await supa.auth.signInWithPassword({ email, password });
-
-        if (error) {
-          console.error(error);
-          log(`SIGN-IN ERROR: ${error.message}`);
-          setConnected(false, "Not connected");
-          return;
-        }
-
-        setConnected(true, `Connected — ${data.user.email}`);
-        log("Signed in successfully.");
-      } catch (e) {
-        console.error(e);
-        log(`SIGN-IN EXCEPTION: ${String(e?.message || e)}`);
-      }
+    $("btnToday").addEventListener("click", () => {
+      dateEl.value = ymdToday();
+      renderTable();
     });
 
-    btnSignOut.addEventListener("click", async () => {
-      log("Signing out...");
-      await supa.auth.signOut();
-      setConnected(false, "Not connected");
-      log("Signed out.");
-      tbody.innerHTML = `<tr><td colspan="5" class="muted">Signed out.</td></tr>`;
-    });
-
-    btnWhoAmI.addEventListener("click", async () => {
-      const { data } = await supa.auth.getUser();
-      if (!data?.user) {
-        log("No user session.");
-        return;
-      }
-      log(`User: ${data.user.email} | id: ${data.user.id}`);
-    });
-
-    btnTestRead.addEventListener("click", async () => {
-      // quick read to see if RLS blocks
-      log("Testing read (limit 1)...");
-      const { data, error } = await supa.from("appointments").select("*").limit(1);
-      if (error) {
-        console.error(error);
-        log(`TEST READ ERROR: ${error.message}`);
-        return;
-      }
-      log(`TEST READ OK — rows: ${(data || []).length}`);
-      if (data?.[0]) log(JSON.stringify(data[0], null, 2));
-    });
-
-    btnRefresh.addEventListener("click", loadAppointments);
-
-    btnToday.addEventListener("click", () => {
-      dateEl.value = todayYMD();
-      render(lastRows);
-      log("Filter: Today");
-    });
-
-    btnClear.addEventListener("click", () => {
+    $("btnClear").addEventListener("click", () => {
       qEl.value = "";
       dateEl.value = "";
-      statusEl.value = "";
-      render(lastRows);
-      log("Filters cleared.");
+      statusEl.value = "all";
+      renderTable();
     });
 
-    btnConfirmFiltered.addEventListener("click", () => bulkUpdateFiltered("confirmed"));
-    btnCancelFiltered.addEventListener("click", () => bulkUpdateFiltered("cancelled"));
+    $("btnCancelFiltered").addEventListener("click", cancelFiltered);
 
-    btnExport.addEventListener("click", () => {
-      const filtered = applyClientSideFilters(lastRows);
-
-      if (!filtered.length) {
-        log("No rows to export.");
+    $("btnExport").addEventListener("click", () => {
+      const rows = filterRows(currentRows);
+      if (!rows.length){
+        alert("No rows to export.");
         return;
       }
-
-      const headers = ["id","client_name","client_email","service","location","start_time","end_time","status","created_at"];
-      const csv = [
-        headers.join(","),
-        ...filtered.map(r => headers.map(h => {
-          const v = r[h] ?? "";
-          const s = String(v).replaceAll('"','""');
-          return `"${s}"`;
-        }).join(","))
-      ].join("\n");
-
-      downloadText(`appointments-${Date.now()}.csv`, csv);
-      log(`Exported CSV — rows: ${filtered.length}`);
+      downloadCSV("appointments_export.csv", rows);
+      log(`Exported CSV — rows: ${rows.length}`);
     });
 
-    // Filter typing updates view immediately
-    qEl.addEventListener("input", () => render(lastRows));
-    dateEl.addEventListener("change", () => render(lastRows));
-    statusEl.addEventListener("change", () => render(lastRows));
+    qEl.addEventListener("input", () => renderTable());
+    dateEl.addEventListener("change", () => renderTable());
+    statusEl.addEventListener("change", () => renderTable());
 
-    // Row actions (event delegation)
-    tbody.addEventListener("click", async (e) => {
-      const btn = e.target.closest("button");
-      if (!btn) return;
+    // modal
+    btnModalClose.addEventListener("click", closeModal);
+    modalBackdrop.addEventListener("click", (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+    btnModalSave.addEventListener("click", saveChanges);
+    btnModalCancel.addEventListener("click", cancelFromModal);
 
-      const action = btn.getAttribute("data-action");
-      const id = btn.getAttribute("data-id");
-      if (!action || !id) return;
-
-      if (action === "confirm") {
-        await updateStatus(id, "confirmed");
-      } else if (action === "cancel") {
-        await updateStatus(id, "cancelled");
-      }
+    // session changes
+    supa.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) setConnected(true, `Signed in: ${session.user.email}`);
+      else setConnected(false, "Not connected");
     });
 
-    /*****************************************************************
-     * 8) INIT
-     *****************************************************************/
-    initStatus();
+    /************************************************************
+     * 8) BOOT
+     ************************************************************/
+    (async function boot(){
+      log("JS loaded & Supabase client ready.");
+      await refreshSessionBadge();
+    })();
   </script>
 </body>
 </html>
