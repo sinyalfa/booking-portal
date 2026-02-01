@@ -513,12 +513,12 @@
 
           <div class="chips" id="r_times"></div>
 
-          <!-- hidden datetime-local fields used for saving -->
+          <!-- hidden ISO used for saving -->
           <input id="m_start_hidden" type="hidden" />
           <input id="m_end_hidden" type="hidden" />
 
           <div class="hint">
-            Tip: Expired rows will become <b>confirmed</b> automatically when saved with a future time.
+            Disabled times are either <b>past</b> or <b>already booked</b>. Pick an open time.
           </div>
         </div>
       </div>
@@ -589,7 +589,8 @@
     let editingRow = null;
     let editingWasExpired = false;
 
-    let selectedHM = ""; // "HH:MM" for quick pick
+    let selectedHM = ""; // "HH:MM"
+    let reschedBookedSet = new Set(); // HH:MM booked for chosen day
 
     /************************************************************
      * 3) UTIL
@@ -620,7 +621,6 @@
       });
     }
 
-    // expired computed
     function isExpired(row){
       const status = String(row.status||"").toLowerCase();
       if (status === "cancelled") return false;
@@ -709,11 +709,8 @@
 
     // Allowed hours like your booking rules
     function getAllowedHours(dow){
-      // Mon-Fri
       if (dow >= 1 && dow <= 5) return [9,10,11,12,17,18,19,20];
-      // Sat
       if (dow === 6) return [8,9,10,11,12,13,14,15,16,17,18,19];
-      // Sun
       return [9,10,11,12,13,14,15,16,17,18,19];
     }
 
@@ -730,34 +727,67 @@
       return new Date(Y, m - 1, D, H, M, 0, 0);
     }
 
+    /************************************************************
+     * 4) RESCHEDULE: Fetch booked times for date (disables chips)
+     ************************************************************/
+    async function fetchBookedSetForDateLocal(ymd){
+      // Local day boundaries -> ISO, to match how you store start_time
+      const startLocal = new Date(ymd + "T00:00:00");
+      const endLocal   = new Date(ymd + "T23:59:59.999");
+
+      const { data, error } = await supa
+        .from("appointments")
+        .select("start_time,status")
+        .gte("start_time", startLocal.toISOString())
+        .lte("start_time", endLocal.toISOString());
+
+      if (error){
+        log("BOOKED-FETCH ERROR: " + error.message);
+        return new Set();
+      }
+
+      const set = new Set();
+      (data || []).forEach(row => {
+        if (String(row.status || "").toLowerCase() === "cancelled") return;
+        const dt = new Date(row.start_time);
+        set.add(`${pad(dt.getHours())}:${pad(dt.getMinutes())}`);
+      });
+
+      return set;
+    }
+
     function setReschedulePreview(){
       if (!r_date.value || !selectedHM){
         r_preview.textContent = "No selection";
         r_preview.className = "badge";
         return;
       }
+
       const startDT = makeLocalDateTimeFrom24(r_date.value, selectedHM);
       const durationMin = parseInt(r_duration.value, 10) || 60;
       const endDT = new Date(startDT.getTime() + durationMin * 60000);
 
       const ok = endDT.getTime() > Date.now() && startDT.getTime() > Date.now();
 
-      r_preview.textContent = `${startDT.toLocaleString("en-US",{weekday:"short",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit"})} → ${endDT.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})}`;
+      r_preview.textContent =
+        `${startDT.toLocaleString("en-US",{weekday:"short",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit"})}` +
+        ` → ${endDT.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})}`;
+
       r_preview.className = "badge " + (ok ? "ok" : "warn");
 
       r_selected.value = to12hLabel(selectedHM);
 
-      // Store hidden values used during Save
       m_start_hidden.value = startDT.toISOString();
       m_end_hidden.value = endDT.toISOString();
     }
 
-    function renderRescheduleTimes(){
+    async function renderRescheduleTimes(){
       r_times.innerHTML = "";
       selectedHM = "";
       r_selected.value = "";
       m_start_hidden.value = "";
       m_end_hidden.value = "";
+      reschedBookedSet = new Set();
 
       const ymd = r_date.value;
       if (!ymd){
@@ -766,25 +796,38 @@
         return;
       }
 
+      // Fetch booked set for this day (non-cancelled)
+      r_badge.textContent = "Checking availability…";
+      reschedBookedSet = await fetchBookedSetForDateLocal(ymd);
+
       const dateObj = new Date(ymd + "T00:00:00");
       const dow = dateObj.getDay();
       const allowed = getAllowedHours(dow);
 
       const now = new Date();
+      let disabledPast = 0;
+      let disabledBooked = 0;
+      let enabledCount = 0;
 
       allowed.forEach(H => {
         const hm = `${pad(H)}:00`;
         const slotDate = makeLocalDateTimeFrom24(ymd, hm);
 
-        // disable if in the past
-        const disabled = slotDate.getTime() <= now.getTime();
+        const isPast = slotDate.getTime() <= now.getTime();
+        const isBooked = reschedBookedSet.has(hm);
+
+        const disabled = isPast || isBooked;
 
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "chip" + (disabled ? " disabled" : "");
         btn.textContent = to12hLabel(hm);
 
-        if (!disabled){
+        if (disabled){
+          if (isPast) disabledPast++;
+          else if (isBooked) disabledBooked++;
+        } else {
+          enabledCount++;
           btn.addEventListener("click", () => {
             Array.from(r_times.querySelectorAll(".chip")).forEach(x => x.classList.remove("active"));
             btn.classList.add("active");
@@ -796,11 +839,19 @@
         r_times.appendChild(btn);
       });
 
+      if (enabledCount === 0){
+        r_badge.textContent = "No available times on this date (past/booked). Pick another date.";
+        r_badge.className = "badge warn";
+      } else {
+        r_badge.textContent = `Available: ${enabledCount} • Booked: ${disabledBooked} • Past: ${disabledPast}`;
+        r_badge.className = "badge ok";
+      }
+
       setReschedulePreview();
     }
 
     /************************************************************
-     * 4) AUTH
+     * 5) AUTH
      ************************************************************/
     async function refreshSessionBadge(){
       const { data } = await supa.auth.getSession();
@@ -857,7 +908,7 @@
     }
 
     /************************************************************
-     * 5) DATA
+     * 6) DATA
      ************************************************************/
     async function testRead(){
       log("Reading appointments...");
@@ -922,7 +973,6 @@
         const primaryLabel = isExp ? "Reschedule" : "Change";
         const primaryClass = isExp ? "amber" : "green";
 
-        // Cancel only for confirmed (not expired, not cancelled)
         const showCancel = (!isExp && !isCan);
         const cancelHTML = showCancel
           ? `<button class="btn small red btnCancel" data-id="${r.id}">Cancel</button>`
@@ -968,7 +1018,7 @@
     }
 
     /************************************************************
-     * 6) ACTIONS
+     * 7) ACTIONS
      ************************************************************/
     async function cancelOne(id){
       const row = currentRows.find(x => String(x.id) === String(id));
@@ -1018,25 +1068,24 @@
         ? `Reschedule — ${row.client_name || "Client"}`
         : `Change — ${row.client_name || "Client"}`;
 
-      // fill common fields
+      // common fields
       m_client_name.value  = row.client_name || "";
       m_client_email.value = row.client_email || "";
       m_service.value      = row.service || "";
       m_location.value     = row.location || "";
 
-      // Toggle UI blocks
       if (editingWasExpired){
         normalDateTime.style.display = "none";
         reschedBlock.style.display = "block";
 
-        // init reschedule UI
         r_date.value = ymdToday();
         r_duration.value = "60";
         r_selected.value = "";
         selectedHM = "";
+        r_badge.className = "badge warn";
         r_badge.textContent = "Expired appointment — pick a future time";
 
-        renderRescheduleTimes();
+        renderRescheduleTimes(); // includes booked-time disabling
       } else {
         reschedBlock.style.display = "none";
         normalDateTime.style.display = "block";
@@ -1056,6 +1105,7 @@
       editingRow = null;
       editingWasExpired = false;
       selectedHM = "";
+      reschedBookedSet = new Set();
     }
 
     async function saveChanges(){
@@ -1063,7 +1113,6 @@
 
       const id = editingRow.id;
 
-      // base payload always
       const payload = {
         client_name: (m_client_name.value || "").trim(),
         client_email: (m_client_email.value || "").trim().toLowerCase(),
@@ -1080,12 +1129,17 @@
       let endISO = "";
 
       if (editingWasExpired){
-        // must have picked a time
         startISO = m_start_hidden.value;
         endISO = m_end_hidden.value;
 
         if (!r_date.value || !selectedHM || !startISO || !endISO){
           alert("Pick a date and tap a time slot first.");
+          return;
+        }
+
+        // final safety: prevent saving into booked slot
+        if (reschedBookedSet.has(selectedHM)){
+          alert("That time is already booked. Pick another.");
           return;
         }
       } else {
@@ -1101,7 +1155,7 @@
       payload.start_time = startISO;
       payload.end_time   = endISO;
 
-      // If it WAS expired and new time is in future -> set confirmed in DB (unless cancelled)
+      // if rescheduling from expired into future, set confirmed (unless cancelled)
       const endMs = new Date(endISO).getTime();
       const startMs = new Date(startISO).getTime();
       const nowMs = Date.now();
@@ -1165,7 +1219,7 @@
     }
 
     /************************************************************
-     * 7) EVENTS
+     * 8) EVENTS
      ************************************************************/
     $("btnSignIn").addEventListener("click", signIn);
     $("btnSignOut").addEventListener("click", signOut);
@@ -1210,10 +1264,7 @@
 
     // reschedule quick pick interactions
     r_date.addEventListener("change", renderRescheduleTimes);
-    r_duration.addEventListener("change", () => {
-      // if already picked a time, update end preview
-      setReschedulePreview();
-    });
+    r_duration.addEventListener("change", () => setReschedulePreview());
 
     // session changes
     supa.auth.onAuthStateChange((_event, session) => {
@@ -1222,7 +1273,7 @@
     });
 
     /************************************************************
-     * 8) BOOT
+     * 9) BOOT
      ************************************************************/
     (async function boot(){
       log("JS loaded & Supabase client ready.");
