@@ -6,6 +6,9 @@
   <title>Columbus East Tax Services – Booking Portal</title>
 
   <style>
+    /* ============================================================
+       1) GLOBAL RESETS + VARIABLES
+       ============================================================ */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -48,6 +51,9 @@
     body[data-theme="day"] { filter: brightness(1.06) saturate(1.08); }
     body[data-theme="night"] { filter: brightness(0.98) saturate(1.0); }
 
+    /* ============================================================
+       2) CANVAS STARFIELD + SHOOTING STARS LAYER
+       ============================================================ */
     canvas#starfield {
       position: fixed;
       inset: 0;
@@ -57,6 +63,9 @@
       display: block;
     }
 
+    /* ============================================================
+       3) ORBITING GLASS PLANETS AROUND CARD (BIGGER + FASTER)
+       ============================================================ */
     .space-layer {
       position: fixed;
       inset: 0;
@@ -106,9 +115,11 @@
           hsl(calc((var(--galaxy-hue) + 280) * 1deg), 90%, 60%),
           hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%)
         );
+
       box-shadow:
         0 0 22px hsla(calc(var(--galaxy-hue) * 1deg), 90%, 65%, 0.75),
         0 0 70px hsla(calc((var(--galaxy-hue) + 110) * 1deg), 90%, 62%, 0.50);
+
       opacity: 0.78;
       animation: floaty 5.2s ease-in-out infinite;
     }
@@ -117,21 +128,33 @@
     .planet-orbit.medium .planet-glass { animation-duration: 6.0s; }
 
     .planet-glass.big {
-      width: 160px; height: 160px;
-      top: -80px; left: calc(50% - 80px);
+      width: 160px;
+      height: 160px;
+      top: -80px;
+      left: calc(50% - 80px);
     }
     .planet-glass.medium {
-      width: 110px; height: 110px;
-      top: calc(50% - 55px); left: -55px;
+      width: 110px;
+      height: 110px;
+      top: calc(50% - 55px);
+      left: -55px;
     }
     .planet-glass.small {
-      width: 86px; height: 86px;
-      top: calc(100% - 43px); left: calc(50% - 43px);
+      width: 86px;
+      height: 86px;
+      top: calc(100% - 43px);
+      left: calc(50% - 43px);
     }
 
     @keyframes orbit-slow { to { transform: rotate(360deg); } }
-    @keyframes floaty { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
 
+    /* ============================================================
+       4) LAYOUT: CARD WRAPPER + GLOSSY GLASS CARD
+       ============================================================ */
     .wrap {
       position: relative;
       z-index: 5;
@@ -142,7 +165,11 @@
 
     .card {
       position: relative;
-      background: linear-gradient(180deg, rgba(210, 235, 255, 0.26), rgba(170, 215, 255, 0.18));
+      background: linear-gradient(
+        180deg,
+        rgba(210, 235, 255, 0.26),
+        rgba(170, 215, 255, 0.18)
+      );
       border-radius: 28px;
       border: 1px solid var(--card-border);
       box-shadow: var(--card-shadow);
@@ -177,6 +204,9 @@
       .card { padding: 28px 18px 20px; }
     }
 
+    /* ============================================================
+       5) LOGO + NEON CLOCK
+       ============================================================ */
     .logo {
       width: 360px;
       max-width: 92%;
@@ -189,11 +219,15 @@
 
     @keyframes glowPulse {
       0%, 100% {
-        box-shadow: 0 0 14px rgba(59, 130, 246, 0.55), 0 0 40px rgba(37, 99, 235, 0.45);
+        box-shadow:
+          0 0 14px rgba(59, 130, 246, 0.55),
+          0 0 40px rgba(37, 99, 235, 0.45);
         transform: translateY(0);
       }
       50% {
-        box-shadow: 0 0 24px rgba(59, 130, 246, 0.85), 0 0 70px rgba(37, 99, 235, 0.75);
+        box-shadow:
+          0 0 24px rgba(59, 130, 246, 0.85),
+          0 0 70px rgba(37, 99, 235, 0.75);
         transform: translateY(-1px);
       }
     }
@@ -207,7 +241,11 @@
       text-align: center;
       padding: 10px 16px;
       border-radius: 999px;
-      background: radial-gradient(circle at 50% 0%, hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22), rgba(15, 23, 42, 0.95));
+      background: radial-gradient(
+        circle at 50% 0%,
+        hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22),
+        rgba(15, 23, 42, 0.95)
+      );
       border: 1px solid rgba(191, 219, 254, 0.3);
       letter-spacing: 0.5px;
       white-space: nowrap;
@@ -220,6 +258,9 @@
       .clock-line { font-size: 16px; padding: 9px 10px; }
     }
 
+    /* ============================================================
+       6) MAIN CTA BUTTONS
+       ============================================================ */
     .btn {
       width: 100%;
       padding: 18px;
@@ -242,6 +283,9 @@
     .btn.email { background: var(--btn-email); }
     .btn.book { background: var(--btn-book); }
 
+    /* ============================================================
+       7) BOOKING PANEL CONTAINER
+       ============================================================ */
     .booking {
       margin-top: 18px;
       text-align: left;
@@ -257,6 +301,8 @@
       background: #ffffff;
       border: 1px solid #e5e7eb;
       padding: 16px;
+      position: relative;
+      overflow: hidden;
     }
 
     .subline { font-size: 15px; font-weight: 900; color: #0f172a; }
@@ -311,7 +357,9 @@
 
     input.today {
       border-color: rgba(34, 197, 94, 0.7);
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18), 0 0 18px rgba(34, 197, 94, 0.18);
+      box-shadow:
+        0 0 0 3px rgba(34, 197, 94, 0.18),
+        0 0 18px rgba(34, 197, 94, 0.18);
     }
 
     .slots-title { margin: 16px 0 10px; font-weight: 900; color: #0f172a; font-size: 15px; }
@@ -333,6 +381,7 @@
       text-align: center;
       cursor: pointer;
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+      user-select: none;
     }
 
     .slot:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12); }
@@ -379,6 +428,9 @@
     .msg.bad { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
     .msg.warn { display: block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
+    /* ============================================================
+       8) CONFIRMATION CARD (after successful booking)
+       ============================================================ */
     .confirm-card {
       display: none;
       margin-top: 16px;
@@ -431,6 +483,49 @@
 
     .mini-label { font-size: 12px; font-weight: 900; color: #64748b; margin-bottom: 4px; }
     .mini-val { font-size: 14px; font-weight: 900; color: #0f172a; word-break: break-word; }
+
+    /* ============================================================
+       9) SUCCESS BACKGROUND + CONFETTI BURST (ONE-TIME)
+       ============================================================ */
+    .section.success-state {
+      background: linear-gradient(180deg, #ebfff3 0%, #d9ffe8 65%, #ebfff3 100%);
+      border-color: rgba(34, 197, 94, 0.35);
+      box-shadow:
+        0 0 0 3px rgba(34, 197, 94, 0.12),
+        0 18px 55px rgba(15, 23, 42, 0.16);
+    }
+
+    /* container for JS-generated pieces */
+    #confettiLayer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    /* individual piece */
+    .confetti {
+      position: absolute;
+      top: -40px;
+      border-radius: 4px;
+      opacity: 0;
+      transform: translate3d(0,0,0) rotate(0deg);
+      will-change: transform, opacity;
+      animation: confettiBurst var(--dur, 1800ms) ease-out forwards;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+    }
+
+    /* more “paper” shapes */
+    .confetti.rect { border-radius: 4px; }
+    .confetti.strip { border-radius: 999px; }
+    .confetti.dot { border-radius: 999px; }
+
+    @keyframes confettiBurst {
+      0%   { opacity: 0; transform: translate3d(var(--x0, 0px), var(--y0, 0px), 0) rotate(var(--r0, 0deg)); }
+      12%  { opacity: 1; }
+      100% { opacity: 0; transform: translate3d(var(--x1, 0px), var(--y1, 220px), 0) rotate(var(--r1, 540deg)); }
+    }
   </style>
 </head>
 
@@ -466,7 +561,10 @@
       <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
 
       <div id="booking" class="booking">
-        <div class="section">
+        <div class="section" id="bookingSection">
+          <!-- Confetti overlay lives here -->
+          <div id="confettiLayer"></div>
+
           <div class="subline">Book an Appointment</div>
           <div id="nowLine" class="now"></div>
 
@@ -567,10 +665,10 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     /* ------------------------------------------------------------
-       1) SUPABASE CLIENT CONFIG
+       1) SUPABASE CLIENT CONFIG  (PASTE YOURS HERE)
        ------------------------------------------------------------ */
     const SUPABASE_URL = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs"; // <-- paste your anon key here
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs";
     const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     /* ------------------------------------------------------------
@@ -623,7 +721,7 @@
     setInterval(applyThemeAndGalaxy, 10000);
 
     /* ------------------------------------------------------------
-       4) NEON CLOCK (short weekday + short month + 24h)
+       4) NEON CLOCK
        ------------------------------------------------------------ */
     const clockLine = document.getElementById("clockLine");
     const nowLine = document.getElementById("nowLine");
@@ -657,7 +755,6 @@
        ------------------------------------------------------------ */
     const toggleBtn = document.getElementById("toggleBtn");
     const booking = document.getElementById("booking");
-    const dateEl = document.getElementById("date");
 
     toggleBtn.addEventListener("click", () => {
       booking.classList.toggle("open");
@@ -680,6 +777,10 @@
     const emailEl = document.getElementById("email");
     const serviceEl = document.getElementById("service");
     const locationEl = document.getElementById("location");
+    const dateEl = document.getElementById("date");
+
+    const bookingSection = document.getElementById("bookingSection");
+    const confettiLayer = document.getElementById("confettiLayer");
 
     const cName = document.getElementById("cName");
     const cEmail = document.getElementById("cEmail");
@@ -713,7 +814,6 @@
     async function fetchBookedForDate(ymd) {
       const start = new Date(ymd + "T00:00:00");
       const end = new Date(ymd + "T23:59:59");
-
       const { data, error } = await supa
         .from("appointments")
         .select("start_time,status")
@@ -734,25 +834,18 @@
       return set;
     }
 
-    // ✅ FIX #1: allow refreshSlots() to keep success message (don’t overwrite it)
-    async function refreshSlots(opts = { keepMsg: false }) {
+    async function refreshSlots() {
       const ymd = dateEl.value;
       timesBox.innerHTML = "";
       selectedSlot = null;
       confirmBtn.disabled = true;
-
-      if (!opts.keepMsg) {
-        msg.className = "msg";
-        msg.textContent = "";
-      }
-
+      msg.className = "msg";
+      msg.textContent = "";
       updateTodayHighlight();
 
       if (!ymd) {
-        if (!opts.keepMsg) {
-          msg.className = "msg warn";
-          msg.textContent = "Please pick a date.";
-        }
+        msg.className = "msg warn";
+        msg.textContent = "Please pick a date.";
         return;
       }
 
@@ -790,14 +883,12 @@
         timesBox.appendChild(div);
       });
 
-      if (!opts.keepMsg) {
-        if (!anyAvailable) {
-          msg.className = "msg warn";
-          msg.textContent = "No available times for this date.";
-        } else {
-          msg.className = "msg warn";
-          msg.textContent = "Select a time to continue.";
-        }
+      if (!anyAvailable) {
+        msg.className = "msg warn";
+        msg.textContent = "No available times for this date.";
+      } else {
+        msg.className = "msg warn";
+        msg.textContent = "Select a time to continue.";
       }
     }
 
@@ -828,6 +919,88 @@
         return false;
       }
       return (data || []).some((row) => (row.status || "").toLowerCase() !== "cancelled");
+    }
+
+    /* ------------------------------------------------------------
+       CONFETTI BURST (ONE-TIME, ~2 seconds)
+       ------------------------------------------------------------ */
+    function burstConfetti() {
+      // Clear old pieces
+      confettiLayer.innerHTML = "";
+
+      const colors = [
+        "#22c55e", "#16a34a", "#3b82f6", "#a855f7",
+        "#f97316", "#ef4444", "#eab308", "#06b6d4",
+        "#ec4899", "#84cc16"
+      ];
+
+      // More intense: 90 pieces
+      const total = 90;
+
+      // Pieces start around the top third of section and spray out
+      const W = bookingSection.clientWidth;
+      const H = bookingSection.clientHeight;
+
+      for (let i = 0; i < total; i++) {
+        const el = document.createElement("div");
+        el.className = "confetti";
+
+        // Bigger paper shapes
+        const typeRoll = Math.random();
+        let type = "rect";
+        if (typeRoll < 0.18) type = "dot";
+        else if (typeRoll < 0.55) type = "strip";
+        else type = "rect";
+        el.classList.add(type);
+
+        // Size
+        let w, h;
+        if (type === "dot") {
+          const s = 6 + Math.random() * 10; // bigger dots too
+          w = s; h = s;
+        } else if (type === "strip") {
+          w = 8 + Math.random() * 14;
+          h = 26 + Math.random() * 30;
+        } else { // rect
+          w = 10 + Math.random() * 18;
+          h = 12 + Math.random() * 22;
+        }
+
+        el.style.width = `${w}px`;
+        el.style.height = `${h}px`;
+        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+        // Start position (center-ish, but varied)
+        const startX = (W * 0.5) + (Math.random() - 0.5) * (W * 0.35);
+        const startY = H * 0.05 + Math.random() * (H * 0.12);
+
+        // End position: spray sideways + fall down
+        const endX = startX + (Math.random() - 0.5) * (W * 0.95);
+        const endY = (H * 0.55) + Math.random() * (H * 0.55);
+
+        // Rotation
+        const r0 = (Math.random() - 0.5) * 80;
+        const r1 = 360 + Math.random() * 720;
+
+        // Duration around 1.6s–2.1s
+        const dur = 1600 + Math.random() * 500;
+
+        el.style.left = `${startX}px`;
+        el.style.setProperty("--x0", "0px");
+        el.style.setProperty("--y0", "0px");
+        el.style.setProperty("--x1", `${(endX - startX).toFixed(0)}px`);
+        el.style.setProperty("--y1", `${(endY - startY).toFixed(0)}px`);
+        el.style.setProperty("--r0", `${r0.toFixed(0)}deg`);
+        el.style.setProperty("--r1", `${r1.toFixed(0)}deg`);
+        el.style.setProperty("--dur", `${dur.toFixed(0)}ms`);
+
+        confettiLayer.appendChild(el);
+      }
+
+      // Clean up after ~2 seconds
+      setTimeout(() => {
+        confettiLayer.innerHTML = "";
+      }, 2200);
     }
 
     confirmBtn.addEventListener("click", async () => {
@@ -878,19 +1051,23 @@
         return;
       }
 
-      // ✅ Success UI
+      // ✅ SUCCESS UI
       msg.className = "msg ok";
       msg.textContent = "✅ Appointment booked & confirmation sent!";
       confirmCard.classList.add("show");
+
       cName.textContent = name;
       cEmail.textContent = email;
       cWhen.textContent = fmtNice(startDT);
       cService.textContent = service;
       cLoc.textContent = location;
 
-      // ✅ FIX #1: refresh availability WITHOUT overwriting the green success message
-      await refreshSlots({ keepMsg: true });
-      confirmBtn.disabled = true; // keep disabled after success
+      // Turn section light green + burst confetti one-time
+      bookingSection.classList.add("success-state");
+      burstConfetti();
+
+      await refreshSlots();
+      validateForm();
     });
 
     /* Init */
@@ -899,7 +1076,7 @@
     refreshSlots();
 
     /* ------------------------------------------------------------
-       7) CANVAS STARFIELD + SHOOTING STARS
+       7) CANVAS STARFIELD + SHOOTING STARS (unchanged)
        ------------------------------------------------------------ */
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
