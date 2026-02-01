@@ -2,476 +2,522 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
   <title>Columbus East Tax Services – Booking Portal</title>
 
   <style>
+    /* ============================================================
+       1) GLOBAL RESETS + VARIABLES
+       ============================================================ */
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Real-time galaxy hue (JS updates this) */
+      --galaxy-hue: 220;
+
+      /* Card + text (UPDATED: glossy light-blue glass) */
+      --card-bg: rgba(170, 215, 255, 0.22);
+      --card-border: rgba(210, 235, 255, 0.38);
+      --card-shadow: 0 32px 90px rgba(0, 0, 0, 0.62);
+      --text-main: #0b1220;
+      --muted: #64748b;
+      --ring: rgba(96, 165, 250, 0.4);
+
+      /* Buttons */
+      --btn-call: #2563eb;
+      --btn-text: #16a34a;
+      --btn-email: #9333ea;
+      --btn-book: #0f766e;
+
+      /* Slots */
+      --slot-border: #34d399;
+      --slot-bg: #ecfdf5;
+      --slot-active-bg: #c7d2fe;
+      --slot-active-border: #6366f1;
+      --slot-disabled-bg: #f1f5f9;
+      --slot-disabled-border: #cbd5e1;
+      --slot-disabled-text: #94a3b8;
+
+      /* Clock glow */
+      --clock-anim-speed: 2.4s;
+    }
+
     html, body { height: 100%; }
 
-    body{
+    body {
       font-family: Arial, Helvetica, sans-serif;
-      color:#fff;
-      overflow-x:hidden;
+      color: #fff;
+      overflow-x: hidden;
       background: radial-gradient(circle at 30% 20%, #0b1a3c, #020617 70%);
-      position:relative;
+      transition: background 1.4s ease, filter 1.2s ease;
+      position: relative;
     }
 
-    /* STARFIELD CANVAS */
-    canvas#starfield{
-      position:fixed;
-      inset:0;
-      width:100vw;
-      height:100vh;
-      z-index:-4;
-      display:block;
+    /* Day/Night theme (JS toggles data-theme) */
+    body[data-theme="day"] { filter: brightness(1.06) saturate(1.08); }
+    body[data-theme="night"] { filter: brightness(0.98) saturate(1.0); }
+
+    /* ============================================================
+       2) CANVAS STARFIELD + SHOOTING STARS LAYER
+       ============================================================ */
+    canvas#starfield {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -3;
+      display: block;
     }
 
-    .wrap{
-      width:min(980px, 100%);
-      margin:0 auto;
-      padding:22px;
-      position:relative;
-      z-index:5;
+    /* ============================================================
+       3) ORBITING GLASS PLANETS AROUND CARD (BIGGER + FASTER)
+       ============================================================ */
+    .space-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -2;
     }
 
-    .card{
-      position:relative;
-      width:100%;
-      background: linear-gradient(180deg, rgba(210, 235, 255, 0.26), rgba(170, 215, 255, 0.18));
-      border-radius:28px;
-      border:1px solid rgba(210, 235, 255, 0.38);
-      box-shadow:0 32px 90px rgba(0,0,0,0.62);
-      padding:36px 24px 28px;
-      text-align:center;
-      color:#0b1220;
+    .planet-orbit {
+      position: absolute;
+      border-radius: 50%;
+      width: 560px;
+      height: 560px;
+      transform-origin: center center;
+      animation: orbit-slow 26s linear infinite;
+    }
+
+    .planet-orbit.fast {
+      width: 380px;
+      height: 380px;
+      animation-duration: 16s;
+    }
+
+    .planet-orbit.medium {
+      width: 480px;
+      height: 480px;
+      animation-duration: 20s;
+    }
+
+    .planet-orbit.orbit-1 { top: 6%; left: calc(50% - 280px); }
+    .planet-orbit.orbit-2 { top: 62%; left: calc(50% - 240px); }
+    .planet-orbit.orbit-3 { top: 26%; left: calc(50% - 190px); }
+
+    .planet-glass {
+      position: absolute;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 30%,
+          rgba(255, 255, 255, 0.95),
+          rgba(255, 255, 255, 0.12) 40%,
+          rgba(0, 0, 0, 0) 70%
+        ),
+        conic-gradient(from 120deg,
+          hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%),
+          hsl(calc((var(--galaxy-hue) + 70) * 1deg), 90%, 60%),
+          hsl(calc((var(--galaxy-hue) + 140) * 1deg), 90%, 62%),
+          hsl(calc((var(--galaxy-hue) + 210) * 1deg), 90%, 60%),
+          hsl(calc((var(--galaxy-hue) + 280) * 1deg), 90%, 60%),
+          hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%)
+        );
+
+      box-shadow:
+        0 0 22px hsla(calc(var(--galaxy-hue) * 1deg), 90%, 65%, 0.75),
+        0 0 70px hsla(calc((var(--galaxy-hue) + 110) * 1deg), 90%, 62%, 0.50);
+
+      opacity: 0.78;
+      animation: floaty 5.2s ease-in-out infinite;
+    }
+
+    .planet-orbit.fast .planet-glass { animation-duration: 4.5s; }
+    .planet-orbit.medium .planet-glass { animation-duration: 6.0s; }
+
+    .planet-glass.big {
+      width: 160px;
+      height: 160px;
+      top: -80px;
+      left: calc(50% - 80px);
+    }
+    .planet-glass.medium {
+      width: 110px;
+      height: 110px;
+      top: calc(50% - 55px);
+      left: -55px;
+    }
+    .planet-glass.small {
+      width: 86px;
+      height: 86px;
+      top: calc(100% - 43px);
+      left: calc(50% - 43px);
+    }
+
+    @keyframes orbit-slow { to { transform: rotate(360deg); } }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+
+    /* ============================================================
+       4) LAYOUT: CARD WRAPPER + GLOSSY GLASS CARD
+       ============================================================ */
+    .wrap {
+      position: relative;
+      z-index: 5;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    .card {
+      position: relative;
+      background: linear-gradient(
+        180deg,
+        rgba(210, 235, 255, 0.26),
+        rgba(170, 215, 255, 0.18)
+      );
+      border-radius: 28px;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--card-shadow);
+      padding: 36px 24px 28px;
+      text-align: center;
+      color: var(--text-main);
       backdrop-filter: blur(18px) saturate(185%);
       -webkit-backdrop-filter: blur(18px) saturate(185%);
-      overflow:hidden;
+      overflow: hidden;
     }
 
-    /* glossy shine */
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
       background:
-        radial-gradient(circle at 20% 0%, rgba(255,255,255,0.45), rgba(255,255,255,0.08) 45%, rgba(255,255,255,0) 70%),
-        radial-gradient(circle at 80% 10%, rgba(59,130,246,0.20), rgba(59,130,246,0) 60%);
-      pointer-events:none;
-      z-index:3;
+        radial-gradient(circle at 20% 0%,
+          rgba(255, 255, 255, 0.45),
+          rgba(255, 255, 255, 0.08) 45%,
+          rgba(255, 255, 255, 0) 70%
+        ),
+        radial-gradient(circle at 80% 10%,
+          rgba(59, 130, 246, 0.20),
+          rgba(59, 130, 246, 0) 60%
+        );
+      pointer-events: none;
+      z-index: 0;
     }
-    .card > *{ position:relative; z-index:4; }
+    .card > * { position: relative; z-index: 1; }
 
-    /* ============================================================
-       EARTH + CASH (BEHIND DARK GLASS)
-       ============================================================ */
-    .scene{
-      position:absolute;
-      inset:-40px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      pointer-events:none;
-      z-index:1;
-      opacity:0.72;
-      transform: translateZ(0);
-    }
-
-    /* dark glass “black circle” feel */
-    .bg-dim{
-      position:absolute;
-      inset:0;
-      z-index:2;
-      pointer-events:none;
-      background:
-        radial-gradient(circle at 50% 40%,
-          rgba(2,6,23,0.08),
-          rgba(2,6,23,0.62) 58%,
-          rgba(2,6,23,0.88) 100%);
-      mix-blend-mode:multiply;
-    }
-
-    .earth-wrap{
-      position:relative;
-      width:min(92%, 760px);
-      aspect-ratio:1/1;
-      border-radius:50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      perspective: 1200px;
-      /* NEW: pull the whole scene upward toward logo */
-      transform: translateY(-78px);
-    }
-
-    .earth-halo{
-      position:absolute;
-      inset:-6%;
-      border-radius:50%;
-      background: radial-gradient(circle, rgba(90,160,255,0.30), transparent 62%);
-      opacity:0.9;
-    }
-
-    /* Earth (photo + continuous rotation illusion) */
-    .earth{
-      position:absolute;
-      inset:0;
-      border-radius:50%;
-      background-image:url("https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg");
-      background-repeat:repeat-x;
-      background-size:220% 100%;
-      background-position:0% 50%;
-      animation:earthSpin 46s linear infinite;
-      box-shadow:
-        inset -160px 0 240px rgba(0,0,0,.92),
-        inset 0 0 90px rgba(0,0,0,.32),
-        0 0 120px rgba(59,130,246,.18);
-      transform: translateZ(0);
-    }
-
-    @keyframes earthSpin{
-      from{ background-position:0% 50% }
-      to{ background-position:-220% 50% }
-    }
-
-    /* Bills ring */
-    .money-layer{
-      position:absolute;
-      inset:-28%; /* NEW: larger orbit area */
-      border-radius:50%;
-      transform-style: preserve-3d;
-    }
-
-    .bill{
-      position:absolute;
-      left:50%;
-      top:50%;
-      width:235px;   /* NEW: bigger */
-      height:105px;  /* NEW: bigger */
-      border-radius:12px;
-      transform-style:preserve-3d;
-      transform: translate(-50%,-50%);
-      box-shadow:0 22px 38px rgba(0,0,0,.60);
-      filter: contrast(1.12) saturate(1.15);
-      will-change: transform;
-      backface-visibility:hidden;
-      -webkit-backface-visibility:hidden;
-      overflow:hidden;
-    }
-
-    /* $100 bill image */
-    .bill::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      border-radius:12px;
-      background-image:url("https://upload.wikimedia.org/wikipedia/commons/4/4e/US_%24100_Obverse.jpg");
-      background-size:cover;
-      background-position:center;
-      background-repeat:no-repeat;
-      transform: scale(1.02);
-    }
-
-    /* readable glossy highlight */
-    .bill::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      border-radius:12px;
-      background:
-        linear-gradient(120deg, rgba(255,255,255,0.26), rgba(255,255,255,0) 58%),
-        radial-gradient(circle at 70% 20%, rgba(255,255,255,0.20), rgba(255,255,255,0) 55%);
-      mix-blend-mode: screen;
-      opacity:0.65;
-      pointer-events:none;
-    }
-
-    /* "Paper bend" overlay */
-    .bill .bend{
-      position:absolute;
-      inset:0;
-      border-radius:12px;
-      pointer-events:none;
-      background:
-        linear-gradient(90deg,
-          rgba(0,0,0,0.22) 0%,
-          rgba(0,0,0,0.06) 18%,
-          rgba(255,255,255,0.12) 35%,
-          rgba(0,0,0,0.10) 50%,
-          rgba(255,255,255,0.10) 65%,
-          rgba(0,0,0,0.08) 82%,
-          rgba(0,0,0,0.20) 100%),
-        radial-gradient(circle at 50% 50%,
-          rgba(255,255,255,0.10),
-          rgba(0,0,0,0.18) 70%);
-      mix-blend-mode: overlay;
-      opacity:0.55;
-    }
-
-    /* BIG visible denomination overlay */
-    .bill .denom{
-      position:absolute;
-      right:10px;
-      bottom:8px;
-      font-weight:900;
-      font-size:34px; /* NEW: bigger */
-      letter-spacing:0.5px;
-      color:rgba(10, 100, 60, 0.95);
-      text-shadow:
-        0 2px 0 rgba(255,255,255,0.65),
-        0 12px 22px rgba(0,0,0,0.58);
-      background: rgba(255,255,255,0.22);
-      border: 1px solid rgba(255,255,255,0.22);
-      padding: 3px 10px;
-      border-radius: 999px;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+    @media (max-width: 640px) {
+      .card { padding: 28px 18px 20px; }
     }
 
     /* ============================================================
-       HEADER + UI
+       5) LOGO + NEON CLOCK
        ============================================================ */
-    .logo{
-      width:360px;
-      max-width:92%;
-      display:block;
-      margin:0 auto 14px;
+    .logo {
+      width: 360px;
+      max-width: 92%;
+      display: block;
+      margin: 0 auto 14px;
+      background: transparent !important;
+      mix-blend-mode: normal;
       filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.18));
     }
 
-    .clock-line{
-      margin:10px auto 30px;
-      max-width:420px;
-      font-size:20px;
-      font-weight:900;
-      color:#e5f0ff;
-      text-align:center;
-      padding:10px 16px;
-      border-radius:999px;
-      background: radial-gradient(circle at 50% 0%, rgba(59,130,246,0.22), rgba(15,23,42,0.95));
-      border:1px solid rgba(191,219,254,0.3);
-      letter-spacing:0.5px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      animation:glowPulse 2.4s ease-in-out infinite;
-    }
-
-    @keyframes glowPulse{
-      0%,100%{
-        box-shadow:0 0 14px rgba(59,130,246,.55), 0 0 40px rgba(37,99,235,.45);
-        transform:translateY(0);
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow:
+          0 0 14px rgba(59, 130, 246, 0.55),
+          0 0 40px rgba(37, 99, 235, 0.45);
+        transform: translateY(0);
       }
-      50%{
-        box-shadow:0 0 24px rgba(59,130,246,.85), 0 0 70px rgba(37,99,235,.75);
-        transform:translateY(-1px);
+      50% {
+        box-shadow:
+          0 0 24px rgba(59, 130, 246, 0.85),
+          0 0 70px rgba(37, 99, 235, 0.75);
+        transform: translateY(-1px);
       }
     }
 
-    .btn{
-      width:100%;
-      padding:18px;
-      margin:12px 0;
-      border:none;
-      border-radius:18px;
-      font-size:18px;
-      font-weight:900;
-      color:#fff;
-      cursor:pointer;
-      transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
-      box-shadow:0 10px 24px rgba(15,23,42,.5);
-    }
-    .btn:hover{transform:translateY(-1px); box-shadow:0 14px 30px rgba(15,23,42,.7)}
-    .btn:active{transform:translateY(0); box-shadow:0 6px 16px rgba(15,23,42,.5)}
-    .btn.call{background:#2563eb}
-    .btn.text{background:#16a34a}
-    .btn.email{background:#9333ea}
-    .btn.book{background:#0f766e}
+    .clock-line {
+      margin: 10px auto 30px;
+      max-width: 420px;
+      font-size: 20px;
+      font-weight: 900;
+      color: #e5f0ff;
+      text-align: center;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: radial-gradient(
+        circle at 50% 0%,
+        hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22),
+        rgba(15, 23, 42, 0.95)
+      );
+      border: 1px solid rgba(191, 219, 254, 0.3);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
-    .booking{
-      margin-top:18px;
-      text-align:left;
-      max-height:0;
-      overflow:hidden;
-      transition:max-height .5s ease;
-    }
-    .booking.open{max-height:2600px}
-
-    .section{
-      margin-top:12px;
-      border-radius:20px;
-      background:#ffffff;
-      border:1px solid #e5e7eb;
-      padding:16px;
-    }
-    .subline{font-size:15px;font-weight:900;color:#0f172a}
-    .now{margin-top:4px;font-weight:700;font-size:13px;color:#2563eb}
-
-    .row{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-      margin-top:10px;
-    }
-    @media (max-width:720px){ .row{grid-template-columns:1fr} }
-
-    label{
-      font-size:13px;
-      font-weight:900;
-      color:#0f172a;
-      margin-bottom:4px;
-      display:flex;
-      align-items:center;
-      gap:8px;
+      animation: glowPulse var(--clock-anim-speed) ease-in-out infinite;
     }
 
-    .today-pill{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:4px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:900;
-      color:#0b1220;
-      background:rgba(34,197,94,0.18);
-      border:1px solid rgba(34,197,94,0.45);
+    @media (max-width: 480px) {
+      .clock-line { font-size: 16px; padding: 9px 10px; }
     }
 
-    input,select{
-      width:100%;
-      padding:12px 12px;
-      border-radius:12px;
-      border:1px solid #cbd5e1;
-      font-size:14px;
-      outline:none;
-    }
-    input:focus,select:focus{
-      border-color:rgba(37,99,235,0.85);
-      box-shadow:0 0 0 3px rgba(96,165,250,0.4);
-    }
-    input.today{
-      border-color:rgba(34,197,94,0.7);
-      box-shadow:0 0 0 3px rgba(34,197,94,0.18), 0 0 18px rgba(34,197,94,0.18);
-    }
-
-    .slots-title{margin:16px 0 10px;font-weight:900;color:#0f172a;font-size:15px}
-    .times{
-      display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));
-      gap:10px;
-    }
-    .slot{
-      padding:12px;
-      border-radius:14px;
-      border:1px solid #34d399;
-      background:#ecfdf5;
-      font-size:14px;
-      font-weight:900;
-      color:#065f46;
-      text-align:center;
-      cursor:pointer;
-      transition:transform .1s ease, box-shadow .1s ease, background .1s ease;
-    }
-    .slot:hover{transform:translateY(-1px); box-shadow:0 8px 16px rgba(15,23,42,.12)}
-    .slot.active{
-      background:#c7d2fe;
-      border-color:#6366f1;
-      color:#1e1b4b;
-      box-shadow:0 0 0 3px rgba(99,102,241,0.24);
-    }
-    .slot.disabled{
-      background:#f1f5f9;
-      border-color:#cbd5e1;
-      color:#94a3b8;
-      cursor:not-allowed;
-      box-shadow:none;
-      transform:none;
+    /* ============================================================
+       6) MAIN CTA BUTTONS
+       ============================================================ */
+    .btn {
+      width: 100%;
+      padding: 18px;
+      margin: 12px 0;
+      border: none;
+      border-radius: 18px;
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.5);
     }
 
-    .btn.confirm{ margin-top:16px; background:#020617; width:100%; }
-    .btn.confirm:disabled{ opacity:.5; cursor:not-allowed; transform:none; box-shadow:none; }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7); }
+    .btn:active { transform: translateY(0); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.5); }
 
-    .msg{
-      margin-top:12px;
-      padding:10px 12px;
-      border-radius:10px;
-      font-size:13px;
-      font-weight:900;
-      display:none;
-    }
-    .msg.ok{display:block; background:#dcfce7; color:#166534; border:1px solid #86efac}
-    .msg.bad{display:block; background:#fee2e2; color:#991b1b; border:1px solid #fecaca}
-    .msg.warn{display:block; background:#fef3c7; color:#92400e; border:1px solid #fde68a}
+    .btn.call { background: var(--btn-call); }
+    .btn.text { background: var(--btn-text); }
+    .btn.email { background: var(--btn-email); }
+    .btn.book { background: var(--btn-book); }
 
-    .confirm-card{
-      display:none;
-      margin-top:16px;
-      border-radius:18px;
-      border:1px solid #e5e7eb;
-      background:#ffffff;
-      padding:14px;
+    /* ============================================================
+       7) BOOKING PANEL CONTAINER
+       ============================================================ */
+    .booking {
+      margin-top: 18px;
+      text-align: left;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
     }
-    .confirm-card.show{display:block}
-    .confirm-head{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding-bottom:10px;
-      border-bottom:1px solid #e5e7eb;
-    }
-    .check{
-      width:40px;height:40px;border-radius:14px;
-      background:#dcfce7;border:1px solid #86efac;
-      display:flex;align-items:center;justify-content:center;
-      font-weight:900;color:#166534;font-size:20px;
-    }
-    .confirm-title{font-size:17px;font-weight:900;color:#0f172a}
-    .confirm-sub{font-size:13px;color:#475569;font-weight:700}
+    .booking.open { max-height: 2600px; }
 
-    .grid2{
-      margin-top:12px;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
+    .section {
+      margin-top: 12px;
+      border-radius: 20px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      padding: 16px;
     }
-    @media (max-width:720px){ .grid2{grid-template-columns:1fr} }
-    .mini-box{
-      border-radius:14px;border:1px solid #e5e7eb;
-      padding:10px;background:#ffffff;
-    }
-    .mini-label{font-size:12px;font-weight:900;color:#64748b;margin-bottom:4px}
-    .mini-val{font-size:14px;font-weight:900;color:#0f172a; word-break:break-word}
 
-    @media (max-width:640px){
-      .card{padding:28px 18px 20px}
-      .clock-line{font-size:16px;padding:9px 10px}
-      .earth-wrap{ transform: translateY(-58px); }
-      .bill{width:188px;height:84px}
-      .bill .denom{font-size:28px}
+    .subline { font-size: 15px; font-weight: 900; color: #0f172a; }
+    .now { margin-top: 4px; font-weight: 700; font-size: 13px; color: #2563eb; }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
     }
+    @media (max-width: 720px) {
+      .row { grid-template-columns: 1fr; }
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .today-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #0b1220;
+      background: rgba(34, 197, 94, 0.18);
+      border: 1px solid rgba(34, 197, 94, 0.45);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: rgba(37, 99, 235, 0.85);
+      box-shadow: 0 0 0 3px var(--ring);
+    }
+
+    input.today {
+      border-color: rgba(34, 197, 94, 0.7);
+      box-shadow:
+        0 0 0 3px rgba(34, 197, 94, 0.18),
+        0 0 18px rgba(34, 197, 94, 0.18);
+    }
+
+    .slots-title { margin: 16px 0 10px; font-weight: 900; color: #0f172a; font-size: 15px; }
+
+    .times {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
+    .slot {
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--slot-border);
+      background: var(--slot-bg);
+      font-size: 14px;
+      font-weight: 900;
+      color: #065f46;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+    }
+
+    .slot:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12); }
+
+    .slot.active {
+      background: var(--slot-active-bg);
+      border-color: var(--slot-active-border);
+      color: #1e1b4b;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.24);
+    }
+
+    .slot.disabled {
+      background: var(--slot-disabled-bg);
+      border-color: var(--slot-disabled-border);
+      color: var(--slot-disabled-text);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .btn.confirm {
+      margin-top: 16px;
+      background: #020617;
+      width: 100%;
+    }
+
+    .btn.confirm:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .msg {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 900;
+      display: none;
+      white-space: pre-wrap; /* so error details wrap nicely */
+      word-break: break-word;
+    }
+
+    .msg.ok { display: block; background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .msg.bad { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .msg.warn { display: block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+
+    /* ============================================================
+       8) CONFIRMATION CARD (after successful booking)
+       ============================================================ */
+    .confirm-card {
+      display: none;
+      margin-top: 16px;
+      border-radius: 18px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      padding: 14px;
+    }
+    .confirm-card.show { display: block; }
+
+    .confirm-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .check {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      color: #166534;
+      font-size: 20px;
+    }
+
+    .confirm-title { font-size: 17px; font-weight: 900; color: #0f172a; }
+    .confirm-sub { font-size: 13px; color: #475569; font-weight: 700; }
+
+    .grid2 {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
+
+    .mini-box {
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      padding: 10px;
+      background: #ffffff;
+    }
+
+    .mini-label { font-size: 12px; font-weight: 900; color: #64748b; margin-bottom: 4px; }
+    .mini-val { font-size: 14px; font-weight: 900; color: #0f172a; word-break: break-word; }
   </style>
 </head>
 
 <body>
   <canvas id="starfield"></canvas>
 
+  <div class="space-layer">
+    <div class="planet-orbit orbit-1">
+      <div class="planet-glass big"></div>
+    </div>
+    <div class="planet-orbit orbit-2 medium">
+      <div class="planet-glass medium"></div>
+    </div>
+    <div class="planet-orbit orbit-3 fast">
+      <div class="planet-glass small"></div>
+    </div>
+  </div>
+
   <div class="wrap">
     <div class="card">
+      <img
+        class="logo"
+        src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png"
+        alt="Columbus East Tax Services Logo"
+      />
 
-      <!-- Earth + Money background -->
-      <div class="scene" aria-hidden="true">
-        <div class="earth-wrap" id="earthWrap">
-          <div class="earth-halo"></div>
-          <div class="earth"></div>
-          <div class="money-layer" id="moneyLayer"></div>
-        </div>
-      </div>
-      <div class="bg-dim" aria-hidden="true"></div>
-
-      <!-- Foreground UI -->
-      <img class="logo" src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png" alt="Columbus East Tax Services Logo" />
       <div id="clockLine" class="clock-line"></div>
 
       <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
@@ -575,48 +621,22 @@
 
         </div>
       </div>
-
+      <!-- /booking -->
     </div>
   </div>
 
-  <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
-    /* CLOCK */
-    const clockLine = document.getElementById("clockLine");
-    const nowLine = document.getElementById("nowLine");
-    function updateClock() {
-      const now = new Date();
-      const datePart = new Intl.DateTimeFormat("en-US", {
-        weekday: "short", month: "short", day: "2-digit", year: "numeric",
-      }).format(now);
-      const timePart = new Intl.DateTimeFormat("en-US", {
-        hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
-      }).format(now);
-      clockLine.textContent = `${datePart} • ${timePart}`;
-      nowLine.textContent = `Now: ${datePart} • ${timePart}`;
-    }
-    updateClock();
-    setInterval(updateClock, 1000);
+    /* ------------------------------------------------------------
+       1) SUPABASE CLIENT CONFIG
+       ------------------------------------------------------------ */
+    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
+    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    /* SUPABASE CONFIG */
-    const SUPABASE_URL = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE"; // <- paste your anon key here
-    const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    /* BOOKING UI TOGGLE */
-    const toggleBtn = document.getElementById("toggleBtn");
-    const booking = document.getElementById("booking");
-    toggleBtn.addEventListener("click", () => {
-      booking.classList.toggle("open");
-      if (booking.classList.contains("open")) {
-        if (!dateEl.value) dateEl.value = todayYMD();
-        refreshSlots();
-      }
-    });
-
-    /* UTILITIES */
+    /* ------------------------------------------------------------
+       2) UTILITIES
+       ------------------------------------------------------------ */
     function pad(n) { return String(n).padStart(2, "0"); }
     function todayYMD() {
       const d = new Date();
@@ -624,8 +644,12 @@
     }
     function fmtNice(dt) {
       return dt.toLocaleString("en-US", {
-        weekday: "short", month: "short", day: "numeric",
-        hour: "2-digit", minute: "2-digit", hour12: true,
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
       });
     }
     function makeLocalDateTimeFrom24(dateStr, hm) {
@@ -636,20 +660,68 @@
     function isValidEmail(v) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
     }
-    function getAllowedHours(dow) {
-      if (dow >= 1 && dow <= 5) return [9, 10, 11, 12, 17, 18, 19, 20];
-      if (dow === 6) return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-      return [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+
+    /* ------------------------------------------------------------
+       3) AUTO SWITCH DAY/NIGHT + SYNC GALAXY HUE WITH REAL TIME
+       ------------------------------------------------------------ */
+    function applyThemeAndGalaxy() {
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const s = now.getSeconds();
+
+      document.body.dataset.theme = (h >= 7 && h < 19) ? "day" : "night";
+
+      const hue = (h * 15 + m * 0.25 + s * (0.25 / 60)) % 360;
+      document.documentElement.style.setProperty("--galaxy-hue", hue.toFixed(2));
+
+      const c1 = `hsl(${hue.toFixed(1)}, 72%, ${(h >= 7 && h < 19) ? "26%" : "18%"})`;
+      const c2 = `hsl(${((hue + 55) % 360).toFixed(1)}, 78%, 10%)`;
+      const c3 = `hsl(${((hue + 120) % 360).toFixed(1)}, 82%, 6%)`;
+      document.body.style.background = `radial-gradient(circle at 30% 20%, ${c1}, ${c2} 55%, ${c3} 100%)`;
     }
-    function to12hLabel(hm) {
-      let [H, M] = hm.split(":").map(Number);
-      const ampm = H >= 12 ? "PM" : "AM";
-      H = H % 12;
-      if (H === 0) H = 12;
-      return `${pad(H)}:${pad(M)} ${ampm}`;
+    applyThemeAndGalaxy();
+    setInterval(applyThemeAndGalaxy, 10000);
+
+    /* ------------------------------------------------------------
+       4) NEON CLOCK
+       ------------------------------------------------------------ */
+    const clockLine = document.getElementById("clockLine");
+    const nowLine = document.getElementById("nowLine");
+
+    function updateClock() {
+      const now = new Date();
+
+      const datePart = new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      }).format(now);
+
+      const timePart = new Intl.DateTimeFormat("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }).format(now);
+
+      clockLine.textContent = `${datePart} • ${timePart}`;
+      nowLine.textContent = `Now: ${datePart} • ${timePart}`;
     }
 
-    /* BOOKING LOGIC */
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    /* ------------------------------------------------------------
+       5) COLLAPSIBLE BOOKING PANEL TOGGLE
+       ------------------------------------------------------------ */
+    const toggleBtn = document.getElementById("toggleBtn");
+    const booking = document.getElementById("booking");
+
+    /* ------------------------------------------------------------
+       6) BOOKING LOGIC
+       ------------------------------------------------------------ */
     const timesBox = document.getElementById("times");
     const confirmBtn = document.getElementById("confirmBtn");
     const msg = document.getElementById("msg");
@@ -668,8 +740,16 @@
     const cService = document.getElementById("cService");
     const cLoc = document.getElementById("cLoc");
 
-    let selectedSlot = null;
+    let selectedSlot = null; // "HH:MM"
     let bookedSet = new Set();
+
+    toggleBtn.addEventListener("click", () => {
+      booking.classList.toggle("open");
+      if (booking.classList.contains("open")) {
+        if (!dateEl.value) dateEl.value = todayYMD();
+        refreshSlots();
+      }
+    });
 
     function updateTodayHighlight() {
       const isToday = dateEl.value === todayYMD();
@@ -677,10 +757,23 @@
       dateEl.classList.toggle("today", isToday);
     }
 
+    function getAllowedHours(dow) {
+      if (dow >= 1 && dow <= 5) return [9, 10, 11, 12, 17, 18, 19, 20];
+      if (dow === 6) return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+      return [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+    }
+
+    function to12hLabel(hm) {
+      let [H, M] = hm.split(":").map(Number);
+      const ampm = H >= 12 ? "PM" : "AM";
+      H = H % 12;
+      if (H === 0) H = 12;
+      return `${pad(H)}:${pad(M)} ${ampm}`;
+    }
+
     async function fetchBookedForDate(ymd) {
       const start = new Date(ymd + "T00:00:00");
       const end = new Date(ymd + "T23:59:59");
-
       const { data, error } = await supa
         .from("appointments")
         .select("start_time,status")
@@ -706,8 +799,10 @@
       timesBox.innerHTML = "";
       selectedSlot = null;
       confirmBtn.disabled = true;
+
       msg.className = "msg";
       msg.textContent = "";
+
       updateTodayHighlight();
 
       if (!ymd) {
@@ -818,7 +913,11 @@
       const durationMin = parseInt(document.getElementById("duration").value, 10) || 60;
       const endDT = new Date(startDT.getTime() + durationMin * 60000);
 
-      const { error } = await supa.from("appointments").insert([{
+      /* ============================================================
+         ✅ FIX #1 INSERTED HERE:
+         Show the REAL Supabase error message in the red box
+         ============================================================ */
+      const payload = {
         client_name: name,
         client_email: email,
         service,
@@ -826,19 +925,30 @@
         start_time: startDT.toISOString(),
         end_time: endDT.toISOString(),
         status: "confirmed",
-      }]);
+      };
+
+      const { data, error } = await supa
+        .from("appointments")
+        .insert([payload])
+        .select()
+        .single();
 
       if (error) {
-        console.error("Insert error:", error);
+        console.error("Insert error:", error, "payload:", payload);
+
         msg.className = "msg bad";
-        msg.textContent = "Booking failed. Please try again in a moment.";
+        msg.textContent =
+          `Booking failed: ${error.message}` +
+          (error.details ? ` — ${error.details}` : "") +
+          (error.hint ? ` (hint: ${error.hint})` : "");
+
         confirmBtn.disabled = false;
         return;
       }
+      /* ============================================================ */
 
       msg.className = "msg ok";
       msg.textContent = "Appointment confirmed! A staff member will review it.";
-
       confirmCard.classList.add("show");
       cName.textContent = name;
       cEmail.textContent = email;
@@ -850,95 +960,18 @@
       validateForm();
     });
 
+    /* Init */
     dateEl.value = todayYMD();
     updateTodayHighlight();
     refreshSlots();
-    validateForm();
 
-    /* CREATE 18 BILLS */
-    const moneyLayer = document.getElementById("moneyLayer");
-    const BILL_COUNT = 18;
-
-    for (let i = 0; i < BILL_COUNT; i++) {
-      const d = document.createElement("div");
-      d.className = "bill";
-      d.dataset.i = String(i);
-
-      const bend = document.createElement("div");
-      bend.className = "bend";
-      d.appendChild(bend);
-
-      const denom = document.createElement("div");
-      denom.className = "denom";
-      denom.textContent = "100";
-      d.appendChild(denom);
-
-      moneyLayer.appendChild(d);
-    }
-
-    const earthWrap = document.getElementById("earthWrap");
-    const bills = Array.from(document.querySelectorAll(".bill"));
-
-    /* MONEY ORBIT (UP-CLOSE + BIG + READABLE) */
-    const orbiters = bills.map((el, i) => {
-      const dir = (i % 2 === 0) ? 1 : -1;
-      const baseAngle = (i / bills.length) * Math.PI * 2;
-      const speed = (0.62 + (i % 6) * 0.06) * dir;
-      const radius = 0.55 + (i % 4) * 0.035;   // NEW: wider ring
-      const phase = Math.random() * Math.PI * 2;
-      return { el, baseAngle, speed, radius, phase };
-    });
-
-    function animateMoney(tms){
-      const t = tms / 1000;
-
-      const rect = earthWrap.getBoundingClientRect();
-      const cx = rect.width / 2;
-      const cy = rect.height / 2;
-
-      const ellipseY = 0.50;     // NEW: flatter ellipse pushes some bills into logo area
-      const depthScale = 0.36;   // NEW: more “pop” scaling
-
-      orbiters.forEach((o) => {
-        const theta = o.baseAngle + t * o.speed;
-
-        const r = rect.width * o.radius;
-        const x = cx + Math.cos(theta) * r;
-        const y = cy + Math.sin(theta) * r * ellipseY;
-
-        const depth = (Math.sin(theta) + 1) / 2; // 0..1
-        const scale = 0.95 + depth * depthScale; // NEW: closer/larger
-
-        const bob = Math.sin(t * 2.15 + o.phase) * 12;
-        const rot = Math.sin(t * 1.1 + o.phase) * 6;   // rotateZ only
-        const drift = Math.cos(t * 1.0 + o.phase) * 8;
-
-        const bend = o.el.querySelector(".bend");
-        if (bend) {
-          const light = 0.48 + 0.22 * Math.sin(t * 1.4 + o.phase);
-          bend.style.opacity = String(light);
-        }
-
-        o.el.style.transform =
-          `translate(${x + drift}px, ${y + bob}px)` +
-          ` translate(-50%, -50%)` +
-          ` scale(${scale})` +
-          ` rotateZ(${rot}deg)`;
-
-        o.el.style.zIndex = String(10 + Math.floor(depth * 30));
-        o.el.style.opacity = String(0.62 + depth * 0.38);
-      });
-
-      requestAnimationFrame(animateMoney);
-    }
-    requestAnimationFrame(animateMoney);
-
-    /* STARFIELD + SHOOTING STARS */
+    /* ------------------------------------------------------------
+       7) CANVAS STARFIELD + SHOOTING STARS
+       ------------------------------------------------------------ */
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
 
     let stars = [];
-    let shootingStars = [];
     let width = window.innerWidth;
     let height = window.innerHeight;
 
@@ -952,31 +985,32 @@
     window.addEventListener("resize", resizeCanvas);
 
     function initStars() {
-      const count = Math.min(260, Math.floor((width * height) / 11000));
+      const count = Math.min(220, Math.floor((width * height) / 12000));
       stars = [];
       for (let i = 0; i < count; i++) {
         stars.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          r: Math.random() * 1.5 + 0.35,
+          r: Math.random() * 1.4 + 0.4,
           o: Math.random(),
           tw: Math.random() * 2 + 1,
         });
       }
     }
 
+    let shootingStars = [];
+
     function spawnShootingStar() {
       const startX = Math.random() * width * 0.6;
       const startY = Math.random() * height * 0.3;
-      const len = Math.random() * 260 + 140;
-
+      const len = Math.random() * 250 + 120;
       shootingStars.push({
         x: startX,
         y: startY,
         vx: 6 + Math.random() * 4,
         vy: 3 + Math.random() * 3,
         life: 0,
-        maxLife: 36 + Math.random() * 22,
+        maxLife: 35 + Math.random() * 20,
         length: len,
       });
     }
@@ -984,7 +1018,8 @@
     function drawStarfield() {
       ctx.clearRect(0, 0, width, height);
 
-      ctx.fillStyle = "rgba(2, 6, 23, 0.94)";
+      const hue = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--galaxy-hue")) || 220;
+      ctx.fillStyle = `hsla(${hue}, 55%, 6%, 0.92)`;
       ctx.fillRect(0, 0, width, height);
 
       const t = Date.now() * 0.001;
@@ -1003,19 +1038,17 @@
         sh.life++;
         sh.x += sh.vx;
         sh.y += sh.vy;
-
         const p = sh.life / sh.maxLife;
         if (p >= 1) {
           shootingStars.splice(i, 1);
           continue;
         }
-
         const alpha = 1 - p;
         const tailX = sh.x - sh.vx * sh.length * 0.1;
         const tailY = sh.y - sh.vy * sh.length * 0.1;
 
         const grad = ctx.createLinearGradient(sh.x, sh.y, tailX, tailY);
-        grad.addColorStop(0, `rgba(160, 210, 255, ${alpha})`);
+        grad.addColorStop(0, `hsla(${(hue + 10) % 360}, 90%, 78%, ${alpha})`);
         grad.addColorStop(1, "rgba(37, 99, 235, 0)");
 
         ctx.strokeStyle = grad;
@@ -1029,7 +1062,7 @@
       requestAnimationFrame(drawStarfield);
     }
 
-    setInterval(() => { if (Math.random() < 0.75) spawnShootingStar(); }, 6500);
+    setInterval(() => { if (Math.random() < 0.7) spawnShootingStar(); }, 7000);
 
     resizeCanvas();
     drawStarfield();
