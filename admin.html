@@ -8,8 +8,6 @@
     :root{
       --bg1:#07102a;
       --bg2:#020617;
-      --glass: rgba(17, 29, 56, 0.62);
-      --glass2: rgba(15, 23, 42, 0.65);
       --border: rgba(148, 163, 184, 0.18);
       --text: #e5e7eb;
       --muted: #9ca3af;
@@ -134,6 +132,7 @@
     .btn.green{ background: linear-gradient(180deg, rgba(16,185,129,.95), rgba(5,150,105,.92)); border-color: rgba(16,185,129,.25); }
     .btn.red{ background: linear-gradient(180deg, rgba(239,68,68,.95), rgba(220,38,38,.92)); border-color: rgba(239,68,68,.25); }
     .btn.gray{ background: rgba(148,163,184,.18); border-color: rgba(148,163,184,.16); }
+    .btn.amber{ background: linear-gradient(180deg, rgba(245,158,11,.95), rgba(217,119,6,.92)); border-color: rgba(245,158,11,.28); }
 
     .row2{
       margin-top: 10px;
@@ -211,7 +210,7 @@
       display:flex;
       flex-direction: column;
       gap: 10px;
-      min-width: 140px;
+      min-width: 160px;
     }
 
     .muteline{
@@ -235,7 +234,7 @@
     .modal-backdrop.show{ display:flex; }
 
     .modal{
-      width: min(920px, 100%);
+      width: min(960px, 100%);
       border-radius: 18px;
       border: 1px solid rgba(148,163,184,.18);
       background: linear-gradient(180deg, rgba(17,29,56,.95), rgba(8,15,35,.95));
@@ -280,6 +279,91 @@
     }
     .btn.small{ height: 44px; border-radius: 12px; padding: 0 14px; }
     .hint{ font-size: 12px; color: rgba(148,163,184,.95); font-weight: 800; margin-top: 8px; }
+
+    /* Reschedule (quick pick) UI */
+    .resched-wrap{
+      margin-top: 8px;
+      border: 1px solid rgba(148,163,184,.14);
+      background: rgba(0,0,0,.22);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .resched-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      align-items:end;
+    }
+    @media (max-width: 820px){
+      .resched-grid{ grid-template-columns: 1fr; }
+    }
+    .chips{
+      margin-top: 10px;
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+    }
+    .chip{
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(16,185,129,.30);
+      background: rgba(16,185,129,.10);
+      color: #b7ffdf;
+      font-weight: 950;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition: transform .08s ease, box-shadow .12s ease, background .12s ease;
+      user-select:none;
+    }
+    .chip:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(0,0,0,.35); }
+    .chip.active{
+      border-color: rgba(59,130,246,.65);
+      background: rgba(59,130,246,.18);
+      color: #dbeafe;
+      box-shadow: 0 0 0 4px rgba(59,130,246,.20);
+      transform:none;
+    }
+    .chip.disabled{
+      cursor:not-allowed;
+      opacity:.45;
+      border-color: rgba(148,163,184,.22);
+      background: rgba(148,163,184,.08);
+      color: rgba(148,163,184,.9);
+      box-shadow:none;
+      transform:none;
+    }
+    .subnote{
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(226,232,240,.85);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,.18);
+      background: rgba(148,163,184,.10);
+      color: rgba(226,232,240,.9);
+      font-weight: 1000;
+    }
+    .badge.ok{
+      border-color: rgba(16,185,129,.28);
+      background: rgba(16,185,129,.12);
+      color: #b7ffdf;
+    }
+    .badge.warn{
+      border-color: rgba(245,158,11,.30);
+      background: rgba(245,158,11,.12);
+      color: #ffe7be;
+    }
   </style>
 </head>
 
@@ -289,7 +373,7 @@
       <div class="head">
         <div>
           <h1 class="title">CETS Admin — Appointments</h1>
-          <div class="subtitle">Sign in, search/filter, <b>change</b> or <b>cancel</b> appointments.</div>
+          <div class="subtitle">Search/filter, <b>change</b> or <b>reschedule</b>, and <b>cancel</b> (not for expired).</div>
         </div>
         <div class="status-pill" id="connPill">
           <span class="dot" id="connDot"></span>
@@ -327,7 +411,7 @@
         <div class="row2">
           <button id="btnToday" class="btn gray">Today</button>
           <button id="btnClear" class="btn gray">Clear Filters</button>
-          <button id="btnCancelFiltered" class="btn red">Cancel Filtered</button>
+          <button id="btnCancelFiltered" class="btn red">Cancel Filtered (non-expired)</button>
           <button id="btnExport" class="btn gray">Export CSV</button>
         </div>
 
@@ -341,7 +425,7 @@
                 <th style="width:260px;">Appointment</th>
                 <th>Service / Location</th>
                 <th style="width:140px;">Status</th>
-                <th style="width:170px;">Actions</th>
+                <th style="width:190px;">Actions</th>
               </tr>
             </thead>
             <tbody id="tbody">
@@ -357,7 +441,7 @@
     </div>
   </div>
 
-  <!-- CHANGE MODAL -->
+  <!-- CHANGE / RESCHEDULE MODAL -->
   <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true">
       <div class="modal-head">
@@ -365,6 +449,7 @@
         <button class="btn small gray" id="btnModalClose">Close</button>
       </div>
       <div class="modal-body">
+        <!-- COMMON FIELDS (always shown) -->
         <div class="modal-grid">
           <div>
             <label class="lbl">Client name</label>
@@ -382,22 +467,64 @@
             <label class="lbl">Location</label>
             <input id="m_location" class="input" />
           </div>
-          <div>
-            <label class="lbl">Start (local)</label>
-            <input id="m_start" type="datetime-local" class="input" />
-          </div>
-          <div>
-            <label class="lbl">End (local)</label>
-            <input id="m_end" type="datetime-local" class="input" />
-          </div>
         </div>
-        <div class="hint">
-          “Expired” is computed by <code>end_time &lt; now</code>. You can reschedule an expired appointment by changing start/end into the future.
+
+        <!-- NORMAL (Change) mode datetime inputs -->
+        <div id="normalDateTime" style="margin-top:12px;">
+          <div class="modal-grid">
+            <div>
+              <label class="lbl">Start (local)</label>
+              <input id="m_start" type="datetime-local" class="input" />
+            </div>
+            <div>
+              <label class="lbl">End (local)</label>
+              <input id="m_end" type="datetime-local" class="input" />
+            </div>
+          </div>
+          <div class="hint" id="modalHint">Edit details, then click Save.</div>
+        </div>
+
+        <!-- EXPIRED (Reschedule) mode quick-pick -->
+        <div id="reschedBlock" class="resched-wrap" style="display:none;">
+          <div class="resched-grid">
+            <div>
+              <label class="lbl">New date</label>
+              <input id="r_date" type="date" class="input" />
+            </div>
+            <div>
+              <label class="lbl">Duration</label>
+              <select id="r_duration" class="select">
+                <option value="60">60 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="90">90 minutes</option>
+                <option value="120">120 minutes</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Selected time</label>
+              <input id="r_selected" class="input" placeholder="Tap a time below" disabled />
+            </div>
+          </div>
+
+          <div class="subnote">
+            <span class="badge warn" id="r_badge">Expired appointment — pick a future time</span>
+            <span class="badge" id="r_preview">No selection</span>
+          </div>
+
+          <div class="chips" id="r_times"></div>
+
+          <!-- hidden datetime-local fields used for saving -->
+          <input id="m_start_hidden" type="hidden" />
+          <input id="m_end_hidden" type="hidden" />
+
+          <div class="hint">
+            Tip: Expired rows will become <b>confirmed</b> automatically when saved with a future time.
+          </div>
         </div>
       </div>
+
       <div class="modal-foot">
-        <button class="btn small red" id="btnModalCancel">Cancel Appointment</button>
-        <button class="btn small green" id="btnModalSave">Save Changes</button>
+        <button class="btn small green" id="btnModalSave">Save</button>
       </div>
     </div>
   </div>
@@ -434,7 +561,11 @@
     const modalBackdrop = $("modalBackdrop");
     const btnModalClose = $("btnModalClose");
     const btnModalSave  = $("btnModalSave");
-    const btnModalCancel = $("btnModalCancel");
+    const modalTitle    = $("modalTitle");
+    const modalHint     = $("modalHint");
+
+    const normalDateTime = $("normalDateTime");
+    const reschedBlock   = $("reschedBlock");
 
     const m_client_name  = $("m_client_name");
     const m_client_email = $("m_client_email");
@@ -443,8 +574,22 @@
     const m_start        = $("m_start");
     const m_end          = $("m_end");
 
+    // reschedule quick pick
+    const r_date     = $("r_date");
+    const r_duration = $("r_duration");
+    const r_selected = $("r_selected");
+    const r_times    = $("r_times");
+    const r_badge    = $("r_badge");
+    const r_preview  = $("r_preview");
+
+    const m_start_hidden = $("m_start_hidden");
+    const m_end_hidden   = $("m_end_hidden");
+
     let currentRows = [];
     let editingRow = null;
+    let editingWasExpired = false;
+
+    let selectedHM = ""; // "HH:MM" for quick pick
 
     /************************************************************
      * 3) UTIL
@@ -460,9 +605,10 @@
       connText.textContent = text || (ok ? "Connected" : "Not connected");
     }
 
+    function pad(n){ return String(n).padStart(2,"0"); }
+
     function ymdToday(){
       const d = new Date();
-      const pad = (n)=> String(n).padStart(2,"0");
       return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
     }
 
@@ -474,7 +620,7 @@
       });
     }
 
-    // expired is computed (does not modify DB)
+    // expired computed
     function isExpired(row){
       const status = String(row.status||"").toLowerCase();
       if (status === "cancelled") return false;
@@ -492,21 +638,22 @@
     function toLocalInputValue(iso){
       if (!iso) return "";
       const d = new Date(iso);
-      // yyyy-MM-ddTHH:mm in local time
-      const pad = (n)=> String(n).padStart(2,"0");
-      const yyyy = d.getFullYear();
-      const MM = pad(d.getMonth()+1);
-      const dd = pad(d.getDate());
-      const HH = pad(d.getHours());
-      const mm = pad(d.getMinutes());
-      return `${yyyy}-${MM}-${dd}T${HH}:${mm}`;
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
     function localInputToISO(v){
-      // v is "yyyy-MM-ddTHH:mm" local time
       if (!v) return "";
-      const d = new Date(v);
+      const d = new Date(v); // local
       return d.toISOString();
+    }
+
+    function escapeHTML(s){
+      return String(s || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
 
     function filterRows(rows){
@@ -523,7 +670,6 @@
 
         if (ymd){
           const start = new Date(r.start_time);
-          const pad = (n)=>String(n).padStart(2,"0");
           const ry = `${start.getFullYear()}-${pad(start.getMonth()+1)}-${pad(start.getDate())}`;
           if (ry !== ymd) return false;
         }
@@ -561,6 +707,98 @@
       URL.revokeObjectURL(a.href);
     }
 
+    // Allowed hours like your booking rules
+    function getAllowedHours(dow){
+      // Mon-Fri
+      if (dow >= 1 && dow <= 5) return [9,10,11,12,17,18,19,20];
+      // Sat
+      if (dow === 6) return [8,9,10,11,12,13,14,15,16,17,18,19];
+      // Sun
+      return [9,10,11,12,13,14,15,16,17,18,19];
+    }
+
+    function to12hLabel(hm){
+      let [H, M] = hm.split(":").map(Number);
+      const ampm = H >= 12 ? "PM" : "AM";
+      H = H % 12; if (H === 0) H = 12;
+      return `${pad(H)}:${pad(M)} ${ampm}`;
+    }
+
+    function makeLocalDateTimeFrom24(dateStr, hm){
+      const [H, M] = hm.split(":").map(Number);
+      const [Y, m, D] = dateStr.split("-").map(Number);
+      return new Date(Y, m - 1, D, H, M, 0, 0);
+    }
+
+    function setReschedulePreview(){
+      if (!r_date.value || !selectedHM){
+        r_preview.textContent = "No selection";
+        r_preview.className = "badge";
+        return;
+      }
+      const startDT = makeLocalDateTimeFrom24(r_date.value, selectedHM);
+      const durationMin = parseInt(r_duration.value, 10) || 60;
+      const endDT = new Date(startDT.getTime() + durationMin * 60000);
+
+      const ok = endDT.getTime() > Date.now() && startDT.getTime() > Date.now();
+
+      r_preview.textContent = `${startDT.toLocaleString("en-US",{weekday:"short",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit"})} → ${endDT.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})}`;
+      r_preview.className = "badge " + (ok ? "ok" : "warn");
+
+      r_selected.value = to12hLabel(selectedHM);
+
+      // Store hidden values used during Save
+      m_start_hidden.value = startDT.toISOString();
+      m_end_hidden.value = endDT.toISOString();
+    }
+
+    function renderRescheduleTimes(){
+      r_times.innerHTML = "";
+      selectedHM = "";
+      r_selected.value = "";
+      m_start_hidden.value = "";
+      m_end_hidden.value = "";
+
+      const ymd = r_date.value;
+      if (!ymd){
+        r_preview.textContent = "Pick a date first";
+        r_preview.className = "badge warn";
+        return;
+      }
+
+      const dateObj = new Date(ymd + "T00:00:00");
+      const dow = dateObj.getDay();
+      const allowed = getAllowedHours(dow);
+
+      const now = new Date();
+
+      allowed.forEach(H => {
+        const hm = `${pad(H)}:00`;
+        const slotDate = makeLocalDateTimeFrom24(ymd, hm);
+
+        // disable if in the past
+        const disabled = slotDate.getTime() <= now.getTime();
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip" + (disabled ? " disabled" : "");
+        btn.textContent = to12hLabel(hm);
+
+        if (!disabled){
+          btn.addEventListener("click", () => {
+            Array.from(r_times.querySelectorAll(".chip")).forEach(x => x.classList.remove("active"));
+            btn.classList.add("active");
+            selectedHM = hm;
+            setReschedulePreview();
+          });
+        }
+
+        r_times.appendChild(btn);
+      });
+
+      setReschedulePreview();
+    }
+
     /************************************************************
      * 4) AUTH
      ************************************************************/
@@ -582,7 +820,7 @@
         return;
       }
       log("Signing in...");
-      const { data, error } = await supa.auth.signInWithPassword({ email, password });
+      const { error } = await supa.auth.signInWithPassword({ email, password });
       if (error){
         log("SIGNIN ERROR: " + error.message);
         alert(error.message);
@@ -619,7 +857,7 @@
     }
 
     /************************************************************
-     * 5) DATA: READ / RENDER
+     * 5) DATA
      ************************************************************/
     async function testRead(){
       log("Reading appointments...");
@@ -647,7 +885,6 @@
         return;
       }
 
-      // Pull a reasonable window (you can widen this)
       const { data, error } = await supa
         .from("appointments")
         .select("*")
@@ -675,13 +912,21 @@
 
       tbody.innerHTML = rows.map(r => {
         const when = niceDate(r.start_time);
-        const idShort = String(r.id || "").slice(0, 8);
         const status = computedStatusLabel(r);
 
         const pillClass = status === "cancelled" ? "cancelled" : status === "expired" ? "expired" : "confirmed";
 
-        const disabledCancel = status === "cancelled" ? "disabled" : "";
-        const cancelLabel = status === "cancelled" ? "Cancelled" : "Cancel";
+        const isExp = (status === "expired");
+        const isCan = (status === "cancelled");
+
+        const primaryLabel = isExp ? "Reschedule" : "Change";
+        const primaryClass = isExp ? "amber" : "green";
+
+        // Cancel only for confirmed (not expired, not cancelled)
+        const showCancel = (!isExp && !isCan);
+        const cancelHTML = showCancel
+          ? `<button class="btn small red btnCancel" data-id="${r.id}">Cancel</button>`
+          : ``;
 
         return `
           <tr data-id="${r.id}">
@@ -693,7 +938,6 @@
             <td>
               <div class="big">${escapeHTML(when)}</div>
               <div class="mini">ID: ${escapeHTML(String(r.id || ""))}</div>
-              <div class="mini">Short: ${escapeHTML(idShort)}</div>
             </td>
 
             <td>
@@ -707,15 +951,14 @@
 
             <td>
               <div class="actions">
-                <button class="btn small green btnChange" data-id="${r.id}">Change</button>
-                <button class="btn small red btnCancel" data-id="${r.id}" ${disabledCancel}>${cancelLabel}</button>
+                <button class="btn small ${primaryClass} btnChange" data-id="${r.id}">${primaryLabel}</button>
+                ${cancelHTML}
               </div>
             </td>
           </tr>
         `;
       }).join("");
 
-      // wire row buttons
       tbody.querySelectorAll(".btnChange").forEach(btn => {
         btn.addEventListener("click", () => openChangeModal(btn.dataset.id));
       });
@@ -724,23 +967,20 @@
       });
     }
 
-    function escapeHTML(s){
-      return String(s || "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
     /************************************************************
-     * 6) ACTIONS: CANCEL + CHANGE
+     * 6) ACTIONS
      ************************************************************/
     async function cancelOne(id){
       const row = currentRows.find(x => String(x.id) === String(id));
       if (!row) return;
 
       const label = computedStatusLabel(row);
+
+      if (label === "expired"){
+        alert("Expired appointments cannot be cancelled. Use Reschedule instead.");
+        return;
+      }
+
       if (label === "cancelled"){
         alert("Already cancelled.");
         return;
@@ -762,7 +1002,6 @@
       }
 
       log(`Cancelled ${id}`);
-      // update local cache and rerender
       row.status = "cancelled";
       renderTable();
     }
@@ -772,18 +1011,40 @@
       if (!row) return;
 
       editingRow = row;
+      const status = computedStatusLabel(row);
+      editingWasExpired = (status === "expired");
 
-      $("modalTitle").textContent = `Change Appointment — ${row.client_name || "Client"}`;
+      modalTitle.textContent = editingWasExpired
+        ? `Reschedule — ${row.client_name || "Client"}`
+        : `Change — ${row.client_name || "Client"}`;
 
+      // fill common fields
       m_client_name.value  = row.client_name || "";
       m_client_email.value = row.client_email || "";
       m_service.value      = row.service || "";
       m_location.value     = row.location || "";
-      m_start.value        = toLocalInputValue(row.start_time);
-      m_end.value          = toLocalInputValue(row.end_time);
 
-      // modal cancel button should still work even if expired/confirmed
-      btnModalCancel.disabled = (computedStatusLabel(row) === "cancelled");
+      // Toggle UI blocks
+      if (editingWasExpired){
+        normalDateTime.style.display = "none";
+        reschedBlock.style.display = "block";
+
+        // init reschedule UI
+        r_date.value = ymdToday();
+        r_duration.value = "60";
+        r_selected.value = "";
+        selectedHM = "";
+        r_badge.textContent = "Expired appointment — pick a future time";
+
+        renderRescheduleTimes();
+      } else {
+        reschedBlock.style.display = "none";
+        normalDateTime.style.display = "block";
+
+        modalHint.textContent = "Edit details, then click Save.";
+        m_start.value = toLocalInputValue(row.start_time);
+        m_end.value   = toLocalInputValue(row.end_time);
+      }
 
       modalBackdrop.classList.add("show");
       modalBackdrop.setAttribute("aria-hidden", "false");
@@ -793,28 +1054,65 @@
       modalBackdrop.classList.remove("show");
       modalBackdrop.setAttribute("aria-hidden", "true");
       editingRow = null;
+      editingWasExpired = false;
+      selectedHM = "";
     }
 
     async function saveChanges(){
       if (!editingRow) return;
 
       const id = editingRow.id;
+
+      // base payload always
       const payload = {
         client_name: (m_client_name.value || "").trim(),
         client_email: (m_client_email.value || "").trim().toLowerCase(),
         service: (m_service.value || "").trim(),
         location: (m_location.value || "").trim(),
-        start_time: localInputToISO(m_start.value),
-        end_time: localInputToISO(m_end.value),
       };
 
-      if (!payload.client_email || !payload.start_time || !payload.end_time){
-        alert("Client email + start + end are required.");
+      if (!payload.client_email){
+        alert("Client email is required.");
         return;
       }
 
-      // If it was cancelled, admin might still change it — but typically you'd keep cancelled.
-      // We will NOT auto-change status here. Only your Cancel button changes status.
+      let startISO = "";
+      let endISO = "";
+
+      if (editingWasExpired){
+        // must have picked a time
+        startISO = m_start_hidden.value;
+        endISO = m_end_hidden.value;
+
+        if (!r_date.value || !selectedHM || !startISO || !endISO){
+          alert("Pick a date and tap a time slot first.");
+          return;
+        }
+      } else {
+        startISO = localInputToISO(m_start.value);
+        endISO   = localInputToISO(m_end.value);
+
+        if (!startISO || !endISO){
+          alert("Start and end are required.");
+          return;
+        }
+      }
+
+      payload.start_time = startISO;
+      payload.end_time   = endISO;
+
+      // If it WAS expired and new time is in future -> set confirmed in DB (unless cancelled)
+      const endMs = new Date(endISO).getTime();
+      const startMs = new Date(startISO).getTime();
+      const nowMs = Date.now();
+
+      const dbStatusNow = String(editingRow.status || "confirmed").toLowerCase();
+      const isCancelledInDb = (dbStatusNow === "cancelled");
+
+      if (editingWasExpired && !isCancelledInDb && endMs > nowMs && startMs > nowMs) {
+        payload.status = "confirmed";
+      }
+
       log(`Saving changes for ${id}...`);
 
       const { error } = await supa
@@ -828,7 +1126,6 @@
         return;
       }
 
-      // update local cache
       Object.assign(editingRow, payload);
 
       log(`Saved changes for ${id}`);
@@ -836,27 +1133,20 @@
       renderTable();
     }
 
-    async function cancelFromModal(){
-      if (!editingRow) return;
-      await cancelOne(editingRow.id);
-      // if cancelled, close the modal
-      closeModal();
-    }
-
     async function cancelFiltered(){
       const filtered = filterRows(currentRows);
-      const active = filtered.filter(r => computedStatusLabel(r) !== "cancelled");
-      if (!active.length){
-        alert("No non-cancelled rows in current filter.");
+      const toCancel = filtered.filter(r => computedStatusLabel(r) === "confirmed");
+
+      if (!toCancel.length){
+        alert("No CONFIRMED (non-expired) rows in current filter to cancel.");
         return;
       }
 
-      if (!confirm(`Cancel ${active.length} appointment(s) from current filter?`)) return;
+      if (!confirm(`Cancel ${toCancel.length} confirmed appointment(s) from current filter?`)) return;
 
-      log(`Cancelling filtered (${active.length})...`);
+      log(`Cancelling filtered (${toCancel.length})...`);
 
-      // do sequential to keep it simple & readable
-      for (const r of active){
+      for (const r of toCancel){
         const { error } = await supa
           .from("appointments")
           .update({ status: "cancelled" })
@@ -917,7 +1207,13 @@
       if (e.target === modalBackdrop) closeModal();
     });
     btnModalSave.addEventListener("click", saveChanges);
-    btnModalCancel.addEventListener("click", cancelFromModal);
+
+    // reschedule quick pick interactions
+    r_date.addEventListener("change", renderRescheduleTimes);
+    r_duration.addEventListener("change", () => {
+      // if already picked a time, update end preview
+      setReschedulePreview();
+    });
 
     // session changes
     supa.auth.onAuthStateChange((_event, session) => {
