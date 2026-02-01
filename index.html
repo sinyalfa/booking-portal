@@ -2,23 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Columbus East Tax Services – Booking Portal</title>
 
   <style>
-    /* ============================================================
-       1) GLOBAL RESETS + VARIABLES
-       ============================================================ */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      /* Real-time galaxy hue (JS updates this) */
       --galaxy-hue: 220;
 
-      /* Card + text (UPDATED: glossy light-blue glass) */
       --card-bg: rgba(170, 215, 255, 0.22);
       --card-border: rgba(210, 235, 255, 0.38);
       --card-shadow: 0 32px 90px rgba(0, 0, 0, 0.62);
@@ -26,13 +18,11 @@
       --muted: #64748b;
       --ring: rgba(96, 165, 250, 0.4);
 
-      /* Buttons */
       --btn-call: #2563eb;
       --btn-text: #16a34a;
       --btn-email: #9333ea;
       --btn-book: #0f766e;
 
-      /* Slots */
       --slot-border: #34d399;
       --slot-bg: #ecfdf5;
       --slot-active-bg: #c7d2fe;
@@ -41,7 +31,6 @@
       --slot-disabled-border: #cbd5e1;
       --slot-disabled-text: #94a3b8;
 
-      /* Clock glow */
       --clock-anim-speed: 2.4s;
     }
 
@@ -56,13 +45,9 @@
       position: relative;
     }
 
-    /* Day/Night theme (JS toggles data-theme) */
     body[data-theme="day"] { filter: brightness(1.06) saturate(1.08); }
     body[data-theme="night"] { filter: brightness(0.98) saturate(1.0); }
 
-    /* ============================================================
-       2) CANVAS STARFIELD + SHOOTING STARS LAYER
-       ============================================================ */
     canvas#starfield {
       position: fixed;
       inset: 0;
@@ -72,9 +57,6 @@
       display: block;
     }
 
-    /* ============================================================
-       3) ORBITING GLASS PLANETS AROUND CARD (BIGGER + FASTER)
-       ============================================================ */
     .space-layer {
       position: fixed;
       inset: 0;
@@ -124,11 +106,9 @@
           hsl(calc((var(--galaxy-hue) + 280) * 1deg), 90%, 60%),
           hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%)
         );
-
       box-shadow:
         0 0 22px hsla(calc(var(--galaxy-hue) * 1deg), 90%, 65%, 0.75),
         0 0 70px hsla(calc((var(--galaxy-hue) + 110) * 1deg), 90%, 62%, 0.50);
-
       opacity: 0.78;
       animation: floaty 5.2s ease-in-out infinite;
     }
@@ -137,33 +117,21 @@
     .planet-orbit.medium .planet-glass { animation-duration: 6.0s; }
 
     .planet-glass.big {
-      width: 160px;
-      height: 160px;
-      top: -80px;
-      left: calc(50% - 80px);
+      width: 160px; height: 160px;
+      top: -80px; left: calc(50% - 80px);
     }
     .planet-glass.medium {
-      width: 110px;
-      height: 110px;
-      top: calc(50% - 55px);
-      left: -55px;
+      width: 110px; height: 110px;
+      top: calc(50% - 55px); left: -55px;
     }
     .planet-glass.small {
-      width: 86px;
-      height: 86px;
-      top: calc(100% - 43px);
-      left: calc(50% - 43px);
+      width: 86px; height: 86px;
+      top: calc(100% - 43px); left: calc(50% - 43px);
     }
 
     @keyframes orbit-slow { to { transform: rotate(360deg); } }
-    @keyframes floaty {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-12px); }
-    }
+    @keyframes floaty { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
 
-    /* ============================================================
-       4) LAYOUT: CARD WRAPPER + GLOSSY GLASS CARD
-       ============================================================ */
     .wrap {
       position: relative;
       z-index: 5;
@@ -174,11 +142,7 @@
 
     .card {
       position: relative;
-      background: linear-gradient(
-        180deg,
-        rgba(210, 235, 255, 0.26),
-        rgba(170, 215, 255, 0.18)
-      );
+      background: linear-gradient(180deg, rgba(210, 235, 255, 0.26), rgba(170, 215, 255, 0.18));
       border-radius: 28px;
       border: 1px solid var(--card-border);
       box-shadow: var(--card-shadow);
@@ -213,9 +177,6 @@
       .card { padding: 28px 18px 20px; }
     }
 
-    /* ============================================================
-       5) LOGO + NEON CLOCK
-       ============================================================ */
     .logo {
       width: 360px;
       max-width: 92%;
@@ -228,15 +189,11 @@
 
     @keyframes glowPulse {
       0%, 100% {
-        box-shadow:
-          0 0 14px rgba(59, 130, 246, 0.55),
-          0 0 40px rgba(37, 99, 235, 0.45);
+        box-shadow: 0 0 14px rgba(59, 130, 246, 0.55), 0 0 40px rgba(37, 99, 235, 0.45);
         transform: translateY(0);
       }
       50% {
-        box-shadow:
-          0 0 24px rgba(59, 130, 246, 0.85),
-          0 0 70px rgba(37, 99, 235, 0.75);
+        box-shadow: 0 0 24px rgba(59, 130, 246, 0.85), 0 0 70px rgba(37, 99, 235, 0.75);
         transform: translateY(-1px);
       }
     }
@@ -250,17 +207,12 @@
       text-align: center;
       padding: 10px 16px;
       border-radius: 999px;
-      background: radial-gradient(
-        circle at 50% 0%,
-        hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22),
-        rgba(15, 23, 42, 0.95)
-      );
+      background: radial-gradient(circle at 50% 0%, hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22), rgba(15, 23, 42, 0.95));
       border: 1px solid rgba(191, 219, 254, 0.3);
       letter-spacing: 0.5px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-
       animation: glowPulse var(--clock-anim-speed) ease-in-out infinite;
     }
 
@@ -268,9 +220,6 @@
       .clock-line { font-size: 16px; padding: 9px 10px; }
     }
 
-    /* ============================================================
-       6) MAIN CTA BUTTONS
-       ============================================================ */
     .btn {
       width: 100%;
       padding: 18px;
@@ -293,9 +242,6 @@
     .btn.email { background: var(--btn-email); }
     .btn.book { background: var(--btn-book); }
 
-    /* ============================================================
-       7) BOOKING PANEL CONTAINER
-       ============================================================ */
     .booking {
       margin-top: 18px;
       text-align: left;
@@ -365,9 +311,7 @@
 
     input.today {
       border-color: rgba(34, 197, 94, 0.7);
-      box-shadow:
-        0 0 0 3px rgba(34, 197, 94, 0.18),
-        0 0 18px rgba(34, 197, 94, 0.18);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18), 0 0 18px rgba(34, 197, 94, 0.18);
     }
 
     .slots-title { margin: 16px 0 10px; font-weight: 900; color: #0f172a; font-size: 15px; }
@@ -429,17 +373,12 @@
       font-size: 13px;
       font-weight: 900;
       display: none;
-      white-space: pre-wrap; /* so error details wrap nicely */
-      word-break: break-word;
     }
 
     .msg.ok { display: block; background: #dcfce7; color: #166534; border: 1px solid #86efac; }
     .msg.bad { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
     .msg.warn { display: block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
-    /* ============================================================
-       8) CONFIRMATION CARD (after successful booking)
-       ============================================================ */
     .confirm-card {
       display: none;
       margin-top: 16px;
@@ -630,9 +569,9 @@
     /* ------------------------------------------------------------
        1) SUPABASE CLIENT CONFIG
        ------------------------------------------------------------ */
-    const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
-    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const SUPABASE_URL = "https://zleztbdrxnqirccgkvqx.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs"; // <-- paste your anon key here
+    const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     /* ------------------------------------------------------------
        2) UTILITIES
@@ -684,7 +623,7 @@
     setInterval(applyThemeAndGalaxy, 10000);
 
     /* ------------------------------------------------------------
-       4) NEON CLOCK
+       4) NEON CLOCK (short weekday + short month + 24h)
        ------------------------------------------------------------ */
     const clockLine = document.getElementById("clockLine");
     const nowLine = document.getElementById("nowLine");
@@ -718,6 +657,15 @@
        ------------------------------------------------------------ */
     const toggleBtn = document.getElementById("toggleBtn");
     const booking = document.getElementById("booking");
+    const dateEl = document.getElementById("date");
+
+    toggleBtn.addEventListener("click", () => {
+      booking.classList.toggle("open");
+      if (booking.classList.contains("open")) {
+        if (!dateEl.value) dateEl.value = todayYMD();
+        refreshSlots();
+      }
+    });
 
     /* ------------------------------------------------------------
        6) BOOKING LOGIC
@@ -732,7 +680,6 @@
     const emailEl = document.getElementById("email");
     const serviceEl = document.getElementById("service");
     const locationEl = document.getElementById("location");
-    const dateEl = document.getElementById("date");
 
     const cName = document.getElementById("cName");
     const cEmail = document.getElementById("cEmail");
@@ -742,14 +689,6 @@
 
     let selectedSlot = null; // "HH:MM"
     let bookedSet = new Set();
-
-    toggleBtn.addEventListener("click", () => {
-      booking.classList.toggle("open");
-      if (booking.classList.contains("open")) {
-        if (!dateEl.value) dateEl.value = todayYMD();
-        refreshSlots();
-      }
-    });
 
     function updateTodayHighlight() {
       const isToday = dateEl.value === todayYMD();
@@ -774,6 +713,7 @@
     async function fetchBookedForDate(ymd) {
       const start = new Date(ymd + "T00:00:00");
       const end = new Date(ymd + "T23:59:59");
+
       const { data, error } = await supa
         .from("appointments")
         .select("start_time,status")
@@ -794,20 +734,25 @@
       return set;
     }
 
-    async function refreshSlots() {
+    // ✅ FIX #1: allow refreshSlots() to keep success message (don’t overwrite it)
+    async function refreshSlots(opts = { keepMsg: false }) {
       const ymd = dateEl.value;
       timesBox.innerHTML = "";
       selectedSlot = null;
       confirmBtn.disabled = true;
 
-      msg.className = "msg";
-      msg.textContent = "";
+      if (!opts.keepMsg) {
+        msg.className = "msg";
+        msg.textContent = "";
+      }
 
       updateTodayHighlight();
 
       if (!ymd) {
-        msg.className = "msg warn";
-        msg.textContent = "Please pick a date.";
+        if (!opts.keepMsg) {
+          msg.className = "msg warn";
+          msg.textContent = "Please pick a date.";
+        }
         return;
       }
 
@@ -845,12 +790,14 @@
         timesBox.appendChild(div);
       });
 
-      if (!anyAvailable) {
-        msg.className = "msg warn";
-        msg.textContent = "No available times for this date.";
-      } else {
-        msg.className = "msg warn";
-        msg.textContent = "Select a time to continue.";
+      if (!opts.keepMsg) {
+        if (!anyAvailable) {
+          msg.className = "msg warn";
+          msg.textContent = "No available times for this date.";
+        } else {
+          msg.className = "msg warn";
+          msg.textContent = "Select a time to continue.";
+        }
       }
     }
 
@@ -913,11 +860,7 @@
       const durationMin = parseInt(document.getElementById("duration").value, 10) || 60;
       const endDT = new Date(startDT.getTime() + durationMin * 60000);
 
-      /* ============================================================
-         ✅ FIX #1 INSERTED HERE:
-         Show the REAL Supabase error message in the red box
-         ============================================================ */
-      const payload = {
+      const { error } = await supa.from("appointments").insert([{
         client_name: name,
         client_email: email,
         service,
@@ -925,30 +868,19 @@
         start_time: startDT.toISOString(),
         end_time: endDT.toISOString(),
         status: "confirmed",
-      };
-
-      const { data, error } = await supa
-        .from("appointments")
-        .insert([payload])
-        .select()
-        .single();
+      }]);
 
       if (error) {
-        console.error("Insert error:", error, "payload:", payload);
-
+        console.error("Insert error:", error);
         msg.className = "msg bad";
-        msg.textContent =
-          `Booking failed: ${error.message}` +
-          (error.details ? ` — ${error.details}` : "") +
-          (error.hint ? ` (hint: ${error.hint})` : "");
-
+        msg.textContent = "Booking failed. Please try again in a moment.";
         confirmBtn.disabled = false;
         return;
       }
-      /* ============================================================ */
 
+      // ✅ Success UI
       msg.className = "msg ok";
-      msg.textContent = "Appointment confirmed! A staff member will review it.";
+      msg.textContent = "✅ Appointment booked & confirmation sent!";
       confirmCard.classList.add("show");
       cName.textContent = name;
       cEmail.textContent = email;
@@ -956,8 +888,9 @@
       cService.textContent = service;
       cLoc.textContent = location;
 
-      await refreshSlots();
-      validateForm();
+      // ✅ FIX #1: refresh availability WITHOUT overwriting the green success message
+      await refreshSlots({ keepMsg: true });
+      confirmBtn.disabled = true; // keep disabled after success
     });
 
     /* Init */
