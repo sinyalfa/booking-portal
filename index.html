@@ -6,22 +6,30 @@
   <title>Columbus East Tax Services – Booking Portal</title>
 
   <style>
+    /* ============================================================
+       1) GLOBAL RESETS + VARIABLES
+       ============================================================ */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root{
+    :root {
+      /* Real-time galaxy hue (JS updates this) */
       --galaxy-hue: 220;
 
+      /* Card + text (glossy light-blue glass) */
+      --card-bg: rgba(170, 215, 255, 0.22);
       --card-border: rgba(210, 235, 255, 0.38);
       --card-shadow: 0 32px 90px rgba(0, 0, 0, 0.62);
       --text-main: #0b1220;
       --muted: #64748b;
       --ring: rgba(96, 165, 250, 0.4);
 
+      /* Buttons */
       --btn-call: #2563eb;
       --btn-text: #16a34a;
-      --btn-email: #9333ea;
+      --btn-calc: #f59e0b;
       --btn-book: #0f766e;
 
+      /* Slots */
       --slot-border: #34d399;
       --slot-bg: #ecfdf5;
       --slot-active-bg: #c7d2fe;
@@ -30,12 +38,13 @@
       --slot-disabled-border: #cbd5e1;
       --slot-disabled-text: #94a3b8;
 
+      /* Clock glow */
       --clock-anim-speed: 2.4s;
     }
 
     html, body { height: 100%; }
 
-    body{
+    body {
       font-family: Arial, Helvetica, sans-serif;
       color: #fff;
       overflow-x: hidden;
@@ -44,10 +53,14 @@
       position: relative;
     }
 
+    /* Day/Night theme (JS toggles data-theme) */
     body[data-theme="day"] { filter: brightness(1.06) saturate(1.08); }
     body[data-theme="night"] { filter: brightness(0.98) saturate(1.0); }
 
-    canvas#starfield{
+    /* ============================================================
+       2) CANVAS STARFIELD + SHOOTING STARS LAYER
+       ============================================================ */
+    canvas#starfield {
       position: fixed;
       inset: 0;
       width: 100vw;
@@ -56,15 +69,17 @@
       display: block;
     }
 
-    /* orbiting planets */
-    .space-layer{
+    /* ============================================================
+       3) ORBITING GLASS PLANETS AROUND CARD (BIGGER + FASTER)
+       ============================================================ */
+    .space-layer {
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: -2;
     }
 
-    .planet-orbit{
+    .planet-orbit {
       position: absolute;
       border-radius: 50%;
       width: 560px;
@@ -73,14 +88,14 @@
       animation: orbit-slow 26s linear infinite;
     }
 
-    .planet-orbit.fast{ width: 380px; height: 380px; animation-duration: 16s; }
-    .planet-orbit.medium{ width: 480px; height: 480px; animation-duration: 20s; }
+    .planet-orbit.fast { width: 380px; height: 380px; animation-duration: 16s; }
+    .planet-orbit.medium { width: 480px; height: 480px; animation-duration: 20s; }
 
     .planet-orbit.orbit-1 { top: 6%; left: calc(50% - 280px); }
     .planet-orbit.orbit-2 { top: 62%; left: calc(50% - 240px); }
     .planet-orbit.orbit-3 { top: 26%; left: calc(50% - 190px); }
 
-    .planet-glass{
+    .planet-glass {
       position: absolute;
       border-radius: 50%;
       background:
@@ -97,30 +112,27 @@
           hsl(calc((var(--galaxy-hue) + 280) * 1deg), 90%, 60%),
           hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%)
         );
-
       box-shadow:
         0 0 22px hsla(calc(var(--galaxy-hue) * 1deg), 90%, 65%, 0.75),
         0 0 70px hsla(calc((var(--galaxy-hue) + 110) * 1deg), 90%, 62%, 0.50);
-
       opacity: 0.78;
       animation: floaty 5.2s ease-in-out infinite;
     }
 
-    .planet-orbit.fast .planet-glass{ animation-duration: 4.5s; }
-    .planet-orbit.medium .planet-glass{ animation-duration: 6.0s; }
+    .planet-orbit.fast .planet-glass { animation-duration: 4.5s; }
+    .planet-orbit.medium .planet-glass { animation-duration: 6.0s; }
 
-    .planet-glass.big{ width: 160px; height: 160px; top: -80px; left: calc(50% - 80px); }
-    .planet-glass.medium{ width: 110px; height: 110px; top: calc(50% - 55px); left: -55px; }
-    .planet-glass.small{ width: 86px; height: 86px; top: calc(100% - 43px); left: calc(50% - 43px); }
+    .planet-glass.big { width: 160px; height: 160px; top: -80px; left: calc(50% - 80px); }
+    .planet-glass.medium { width: 110px; height: 110px; top: calc(50% - 55px); left: -55px; }
+    .planet-glass.small { width: 86px; height: 86px; top: calc(100% - 43px); left: calc(50% - 43px); }
 
-    @keyframes orbit-slow{ to { transform: rotate(360deg); } }
-    @keyframes floaty{
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-12px); }
-    }
+    @keyframes orbit-slow { to { transform: rotate(360deg); } }
+    @keyframes floaty { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
 
-    /* layout */
-    .wrap{
+    /* ============================================================
+       4) LAYOUT: CARD WRAPPER + GLOSSY GLASS CARD
+       ============================================================ */
+    .wrap {
       position: relative;
       z-index: 5;
       max-width: 980px;
@@ -128,7 +140,7 @@
       padding: 22px;
     }
 
-    .card{
+    .card {
       position: relative;
       background: linear-gradient(180deg, rgba(210, 235, 255, 0.26), rgba(170, 215, 255, 0.18));
       border-radius: 28px;
@@ -142,7 +154,7 @@
       overflow: hidden;
     }
 
-    .card::before{
+    .card::before {
       content: "";
       position: absolute;
       inset: -2px;
@@ -152,13 +164,16 @@
       pointer-events: none;
       z-index: 0;
     }
-    .card > *{ position: relative; z-index: 1; }
+    .card > * { position: relative; z-index: 1; }
 
-    @media (max-width: 640px){
-      .card{ padding: 28px 18px 20px; }
+    @media (max-width: 640px) {
+      .card { padding: 28px 18px 20px; }
     }
 
-    .logo{
+    /* ============================================================
+       5) LOGO + NEON CLOCK
+       ============================================================ */
+    .logo {
       width: 360px;
       max-width: 92%;
       display: block;
@@ -168,19 +183,19 @@
       filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.18));
     }
 
-    @keyframes glowPulse{
+    @keyframes glowPulse {
       0%, 100% {
         box-shadow: 0 0 14px rgba(59, 130, 246, 0.55), 0 0 40px rgba(37, 99, 235, 0.45);
         transform: translateY(0);
       }
-      50%{
+      50% {
         box-shadow: 0 0 24px rgba(59, 130, 246, 0.85), 0 0 70px rgba(37, 99, 235, 0.75);
         transform: translateY(-1px);
       }
     }
 
-    .clock-line{
-      margin: 10px auto 30px;
+    .clock-line {
+      margin: 10px auto 24px;
       max-width: 520px;
       font-size: 20px;
       font-weight: 900;
@@ -197,12 +212,14 @@
       animation: glowPulse var(--clock-anim-speed) ease-in-out infinite;
     }
 
-    @media (max-width: 480px){
-      .clock-line{ font-size: 16px; padding: 9px 10px; }
+    @media (max-width: 480px) {
+      .clock-line { font-size: 16px; padding: 9px 10px; }
     }
 
-    /* buttons */
-    .btn{
+    /* ============================================================
+       6) MAIN CTA BUTTONS
+       ============================================================ */
+    .btn {
       width: 100%;
       padding: 18px;
       margin: 12px 0;
@@ -216,25 +233,27 @@
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.5);
     }
 
-    .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7); }
-    .btn:active{ transform: translateY(0); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.5); }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7); }
+    .btn:active { transform: translateY(0); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.5); }
 
-    .btn.call{ background: var(--btn-call); }
-    .btn.text{ background: var(--btn-text); }
-    .btn.calc{ background: var(--btn-email); } /* reuse the purple slot */
-    .btn.book{ background: var(--btn-book); }
+    .btn.call { background: var(--btn-call); }
+    .btn.text { background: var(--btn-text); }
+    .btn.calc { background: var(--btn-calc); color:#111827; }
+    .btn.book { background: var(--btn-book); }
 
-    /* Collapsible panels */
-    .panel{
+    /* ============================================================
+       7) PANELS: BOOKING + CALCULATOR
+       ============================================================ */
+    .panel {
       margin-top: 18px;
       text-align: left;
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.5s ease;
     }
-    .panel.open{ max-height: 3000px; }
+    .panel.open { max-height: 3200px; }
 
-    .section{
+    .section {
       margin-top: 12px;
       border-radius: 20px;
       background: #ffffff;
@@ -242,27 +261,20 @@
       padding: 16px;
     }
 
-    /* Calculator: light yellow + white mix */
-    .section.calc-bg{
-      background: linear-gradient(180deg, #fff7cc, #ffffff 55%);
-      border: 1px solid rgba(234, 179, 8, 0.25);
-      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
-    }
+    .subline { font-size: 15px; font-weight: 900; color: #0f172a; }
+    .now { margin-top: 4px; font-weight: 700; font-size: 13px; color: #2563eb; }
 
-    .subline{ font-size: 15px; font-weight: 900; color: #0f172a; }
-    .now{ margin-top: 4px; font-weight: 700; font-size: 13px; color: #2563eb; }
-
-    .row{
+    .row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       margin-top: 10px;
     }
-    @media (max-width: 720px){
-      .row{ grid-template-columns: 1fr; }
+    @media (max-width: 720px) {
+      .row { grid-template-columns: 1fr; }
     }
 
-    label{
+    label {
       font-size: 13px;
       font-weight: 900;
       color: #0f172a;
@@ -272,7 +284,7 @@
       gap: 8px;
     }
 
-    .today-pill{
+    .today-pill {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -285,34 +297,35 @@
       border: 1px solid rgba(34, 197, 94, 0.45);
     }
 
-    input, select{
+    input, select {
       width: 100%;
       padding: 12px 12px;
       border-radius: 12px;
       border: 1px solid #cbd5e1;
       font-size: 14px;
       outline: none;
+      background: #fff;
     }
 
-    input:focus, select:focus{
+    input:focus, select:focus {
       border-color: rgba(37, 99, 235, 0.85);
       box-shadow: 0 0 0 3px var(--ring);
     }
 
-    input.today{
+    input.today {
       border-color: rgba(34, 197, 94, 0.7);
       box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18), 0 0 18px rgba(34, 197, 94, 0.18);
     }
 
-    .slots-title{ margin: 16px 0 10px; font-weight: 900; color: #0f172a; font-size: 15px; }
+    .slots-title { margin: 16px 0 10px; font-weight: 900; color: #0f172a; font-size: 15px; }
 
-    .times{
+    .times {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
       gap: 10px;
     }
 
-    .slot{
+    .slot {
       padding: 12px;
       border-radius: 14px;
       border: 1px solid var(--slot-border);
@@ -325,16 +338,16 @@
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
     }
 
-    .slot:hover{ transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12); }
+    .slot:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12); }
 
-    .slot.active{
+    .slot.active {
       background: var(--slot-active-bg);
       border-color: var(--slot-active-border);
       color: #1e1b4b;
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.24);
     }
 
-    .slot.disabled{
+    .slot.disabled {
       background: var(--slot-disabled-bg);
       border-color: var(--slot-disabled-border);
       color: var(--slot-disabled-text);
@@ -343,20 +356,20 @@
       transform: none;
     }
 
-    .btn.confirm{
+    .btn.confirm {
       margin-top: 16px;
       background: #020617;
       width: 100%;
     }
 
-    .btn.confirm:disabled{
+    .btn.confirm:disabled {
       opacity: 0.5;
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
     }
 
-    .msg{
+    .msg {
       margin-top: 12px;
       padding: 10px 12px;
       border-radius: 10px;
@@ -365,12 +378,14 @@
       display: none;
     }
 
-    .msg.ok{ display: block; background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-    .msg.bad{ display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-    .msg.warn{ display: block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .msg.ok { display: block; background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .msg.bad { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .msg.warn { display: block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
-    /* Confirmation card */
-    .confirm-card{
+    /* ============================================================
+       8) CONFIRMATION CARD (after successful booking)
+       ============================================================ */
+    .confirm-card {
       display: none;
       margin-top: 16px;
       border-radius: 18px;
@@ -378,9 +393,9 @@
       background: #ffffff;
       padding: 14px;
     }
-    .confirm-card.show{ display: block; }
+    .confirm-card.show { display: block; }
 
-    .confirm-head{
+    .confirm-head {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -388,7 +403,7 @@
       border-bottom: 1px solid #e5e7eb;
     }
 
-    .check{
+    .check {
       width: 40px;
       height: 40px;
       border-radius: 14px;
@@ -402,61 +417,78 @@
       font-size: 20px;
     }
 
-    .confirm-title{ font-size: 17px; font-weight: 900; color: #0f172a; }
-    .confirm-sub{ font-size: 13px; color: #475569; font-weight: 700; }
+    .confirm-title { font-size: 17px; font-weight: 900; color: #0f172a; }
+    .confirm-sub { font-size: 13px; color: #475569; font-weight: 700; }
 
-    .grid2{
+    .grid2 {
       margin-top: 12px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
-    @media (max-width: 720px){ .grid2{ grid-template-columns: 1fr; } }
+    @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
 
-    .mini-box{
+    .mini-box {
       border-radius: 14px;
       border: 1px solid #e5e7eb;
       padding: 10px;
       background: #ffffff;
     }
 
-    .mini-label{ font-size: 12px; font-weight: 900; color: #64748b; margin-bottom: 4px; }
-    .mini-val{ font-size: 14px; font-weight: 900; color: #0f172a; word-break: break-word; }
+    .mini-label { font-size: 12px; font-weight: 900; color: #64748b; margin-bottom: 4px; }
+    .mini-val { font-size: 14px; font-weight: 900; color: #0f172a; word-break: break-word; }
 
-    /* Refund button styles */
-    .btn.refund{
-      margin-top: 12px;
-      width: 100%;
+    /* ============================================================
+       9) TAX CALCULATOR STYLES
+       ============================================================ */
+    .calc-wrap{
+      border-radius: 20px;
+      border: 1px solid #e5e7eb;
+      background: linear-gradient(180deg, #fff7c2, #ffffff);
       padding: 16px;
-      border-radius: 16px;
-      border: none;
-      font-weight: 900;
-      font-size: 16px;
-      color: #fff;
-      cursor: default;
-      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
+      color:#0f172a;
     }
-    .btn.refund.green{ background: #16a34a; }
-    .btn.refund.red{ background: #dc2626; }
-    .btn.refund.neutral{ background: #334155; }
-
-    .calc-note{
-      margin-top: 10px;
-      font-size: 12px;
-      font-weight: 800;
-      color: #475569;
-      line-height: 1.35;
-      background: rgba(255,255,255,0.75);
-      border: 1px solid rgba(148,163,184,0.35);
-      padding: 10px 12px;
+    .calc-title{ font-weight:900; font-size:15px; }
+    .calc-note{ color:#64748b; font-size:12px; margin-top:6px; line-height:1.35; }
+    .calc-result{
+      margin-top: 12px;
       border-radius: 14px;
+      padding: 12px;
+      font-weight: 900;
+      font-size: 18px;
+      text-align:center;
+      border: 1px solid #e5e7eb;
+      background:#fff;
     }
-
-    .tiny{
-      font-size: 12px;
-      font-weight: 800;
-      color: #64748b;
-      margin-top: 8px;
+    .calc-green{ background:#dcfce7; color:#166534; border-color:#86efac; }
+    .calc-red{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+    .calc-subgrid{
+      margin-top: 12px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width:720px){ .calc-subgrid{ grid-template-columns:1fr; } }
+    .calc-box{
+      border-radius: 14px;
+      border:1px solid #e5e7eb;
+      background:#fff;
+      padding: 12px;
+    }
+    .calc-box .k{ color:#64748b; font-size:12px; font-weight:900; }
+    .calc-box .v{ margin-top:4px; font-size:14px; font-weight:900; color:#0f172a; word-break:break-word; }
+    .pill-warn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius: 12px;
+      background:#fef3c7;
+      border:1px solid #fde68a;
+      color:#92400e;
+      font-weight:900;
+      font-size:13px;
     }
   </style>
 </head>
@@ -475,106 +507,87 @@
       <img class="logo" src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png" alt="Columbus East Tax Services Logo" />
       <div id="clockLine" class="clock-line"></div>
 
+      <!-- KEEP ALL BUTTONS -->
       <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
       <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
 
-      <!-- NEW: Tax Calculator button -->
-      <button class="btn calc" id="toggleCalcBtn">🧮 Tax Calculator</button>
+      <!-- NEW: Tax Calculator Button (replaces Email button) -->
+      <button class="btn calc" id="calcToggleBtn">🧮 Tax Calculator</button>
 
-      <button class="btn book" id="toggleBookBtn">📅 Book Appointment</button>
+      <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
 
       <!-- TAX CALCULATOR PANEL -->
       <div id="calcPanel" class="panel">
-        <div class="section calc-bg">
-          <div class="subline">Tax Calculator (Estimate)</div>
+        <div class="section">
+          <div class="subline">Tax Calculator (Federal Estimate)</div>
           <div class="now" id="calcNowLine"></div>
 
-          <div class="row" style="margin-top:12px;">
-            <div>
-              <label for="income">Total Income (regular)</label>
-              <input id="income" type="number" step="0.01" placeholder="e.g. 52000" />
-              <div class="tiny">Don’t include overtime here (we handle overtime separately).</div>
-            </div>
-
-            <div>
-              <label for="withheld">Tax Withheld (W-2 Box 2)</label>
-              <input id="withheld" type="number" step="0.01" placeholder="e.g. 6500" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label for="status">Filing Status</label>
-              <select id="status">
-                <option value="single">Single</option>
-                <option value="mfj">Married Filing Joint</option>
-                <option value="mfs">Married Filing Separate</option>
-                <option value="hoh">Head of Household</option>
-              </select>
-            </div>
-
-            <div>
-              <label for="dependents">Total Dependents</label>
-              <input id="dependents" type="number" step="1" min="0" placeholder="e.g. 2" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label for="hourly">Hourly Rate ($/hr)</label>
-              <input id="hourly" type="number" step="0.01" placeholder="e.g. 26.00" />
-            </div>
-
-            <div>
-              <label for="otEarnings">Overtime Earnings (gross $)</label>
-              <input id="otEarnings" type="number" step="0.01" placeholder="e.g. 17000" />
-              <div class="tiny">Assumes time-and-a-half (1.5×) overtime pay.</div>
-            </div>
-          </div>
-
-          <button id="calcBtn" class="btn confirm" type="button">Calculate</button>
-
-          <div id="calcMsg" class="msg"></div>
-
-          <div id="calcResults" class="confirm-card">
-            <div class="confirm-head">
-              <div class="check">✓</div>
-              <div>
-                <div class="confirm-title">Estimate Results</div>
-                <div class="confirm-sub">Overtime “half-premium” is added to refund/owed (your theory).</div>
-              </div>
-            </div>
-
-            <div class="grid2">
-              <div class="mini-box">
-                <div class="mini-label">Estimated Tax (rough)</div>
-                <div id="rTax" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Withheld</div>
-                <div id="rWithheld" class="mini-val"></div>
-              </div>
-
-              <div class="mini-box">
-                <div class="mini-label">Dependent Credit ($2,200 each)</div>
-                <div id="rDepCredit" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Overtime “Half” Premium (OT / 3)</div>
-                <div id="rOtPremium" class="mini-val"></div>
-              </div>
-
-              <div class="mini-box" style="grid-column:1 / -1;">
-                <div class="mini-label">Estimated Overtime Hours</div>
-                <div id="rOtHours" class="mini-val"></div>
-              </div>
-            </div>
-
-            <button id="refundBtn" class="btn refund neutral" type="button">Estimated Refund: —</button>
-
+          <div class="calc-wrap" style="margin-top:12px;">
+            <div class="calc-title">IRS-style estimate + overtime breakdown</div>
             <div class="calc-note">
-              Note: This is an estimate tool for quick planning — not official IRS computation.
-              If you want it year-accurate, we can plug in a specific year’s IRS brackets + standard deduction values.
+              This is an educational estimate. 2025 values can change when IRS publishes final inflation-adjusted amounts.
+              This tool uses standard deduction + progressive brackets and includes a separate overtime breakdown (does not add OT to refund).
+            </div>
+
+            <div class="row" style="margin-top:12px;">
+              <div>
+                <label for="taxYear">Tax Year</label>
+                <select id="taxYear">
+                  <option value="2025" selected>2025 (estimate)</option>
+                  <option value="2024">2024</option>
+                </select>
+              </div>
+              <div>
+                <label for="filingStatus">Filing Status</label>
+                <select id="filingStatus">
+                  <option value="single" selected>Single</option>
+                  <option value="joint">Married Filing Joint</option>
+                  <option value="hoh">Head of Household</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="w2box1">W-2 Box 1 Income</label>
+                <input id="w2box1" type="number" inputmode="numeric" placeholder="71000" />
+              </div>
+              <div>
+                <label for="w2box2">W-2 Box 2 Federal Withheld</label>
+                <input id="w2box2" type="number" inputmode="numeric" placeholder="2300" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="dependents">Dependents</label>
+                <input id="dependents" type="number" inputmode="numeric" min="0" value="0" />
+              </div>
+              <div>
+                <label for="otherAdj">Other pre-tax adjustments (optional)</label>
+                <input id="otherAdj" type="number" inputmode="numeric" placeholder="0" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="hourlyRate">Hourly Rate (optional)</label>
+                <input id="hourlyRate" type="number" inputmode="decimal" placeholder="23" />
+              </div>
+              <div>
+                <label for="otPay">Overtime Pay Earned (optional)</label>
+                <input id="otPay" type="number" inputmode="numeric" placeholder="15000" />
+              </div>
+            </div>
+
+            <button class="btn confirm" id="calcBtn" type="button">Calculate Estimate</button>
+
+            <div id="calcResult" class="calc-result" style="display:none;"></div>
+
+            <div class="calc-subgrid" id="calcBreakdown" style="display:none;"></div>
+
+            <div id="otWarn" class="pill-warn" style="display:none;">
+              ⚠ Overtime increases taxable income and often leads to owing if withholding doesn’t keep up.
             </div>
           </div>
         </div>
@@ -582,7 +595,7 @@
       <!-- /calcPanel -->
 
       <!-- BOOKING PANEL -->
-      <div id="bookingPanel" class="panel">
+      <div id="booking" class="panel">
         <div class="section">
           <div class="subline">Book an Appointment</div>
           <div id="nowLine" class="now"></div>
@@ -674,65 +687,57 @@
               </div>
             </div>
           </div>
+
         </div>
       </div>
-      <!-- /bookingPanel -->
+      <!-- /booking -->
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     /* ------------------------------------------------------------
-       1) SUPABASE CLIENT CONFIG (BOOKING ONLY)
+       1) SUPABASE CLIENT CONFIG (booking)
        ------------------------------------------------------------ */
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-
-    /* IMPORTANT:
-       Use your Supabase ANON key here.
-       (You gave one earlier; paste yours here if you want this file to run standalone.)
-    */
-    const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs";
-    const supa = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     /* ------------------------------------------------------------
        2) UTILITIES
        ------------------------------------------------------------ */
-    function pad(n){ return String(n).padStart(2,"0"); }
-    function money(n){
-      const x = Number(n || 0);
-      return x.toLocaleString("en-US", { style:"currency", currency:"USD" });
-    }
-    function toNum(v){
-      const x = Number(String(v ?? "").replace(/[^0-9.\-]/g,""));
-      return Number.isFinite(x) ? x : 0;
-    }
-    function todayYMD(){
+    function pad(n) { return String(n).padStart(2, "0"); }
+    function todayYMD() {
       const d = new Date();
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     }
-    function fmtNice(dt){
+    function fmtNice(dt) {
       return dt.toLocaleString("en-US", {
-        weekday:"short",
-        month:"short",
-        day:"numeric",
-        hour:"2-digit",
-        minute:"2-digit",
-        hour12:true,
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
       });
     }
-    function makeLocalDateTimeFrom24(dateStr, hm){
+    function makeLocalDateTimeFrom24(dateStr, hm) {
       const [H, M] = hm.split(":").map(Number);
       const [Y, m, D] = dateStr.split("-").map(Number);
-      return new Date(Y, m-1, D, H, M, 0, 0);
+      return new Date(Y, m - 1, D, H, M, 0, 0);
     }
-    function isValidEmail(v){
+    function isValidEmail(v) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    }
+    function money(n){
+      const x = Number(n || 0);
+      return x.toLocaleString("en-US", { style:"currency", currency:"USD", maximumFractionDigits:0 });
     }
 
     /* ------------------------------------------------------------
        3) AUTO SWITCH DAY/NIGHT + SYNC GALAXY HUE WITH REAL TIME
        ------------------------------------------------------------ */
-    function applyThemeAndGalaxy(){
+    function applyThemeAndGalaxy() {
       const now = new Date();
       const h = now.getHours();
       const m = now.getMinutes();
@@ -752,62 +757,71 @@
     setInterval(applyThemeAndGalaxy, 10000);
 
     /* ------------------------------------------------------------
-       4) CLOCK
+       4) NEON CLOCK
        ------------------------------------------------------------ */
     const clockLine = document.getElementById("clockLine");
     const nowLine = document.getElementById("nowLine");
     const calcNowLine = document.getElementById("calcNowLine");
 
-    function updateClock(){
+    function updateClock() {
       const now = new Date();
+
       const datePart = new Intl.DateTimeFormat("en-US", {
-        weekday:"short", month:"short", day:"2-digit", year:"numeric",
+        weekday: "short",
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
       }).format(now);
 
       const timePart = new Intl.DateTimeFormat("en-US", {
-        hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
       }).format(now);
 
-      const s = `${datePart} • ${timePart}`;
-      clockLine.textContent = s;
-      nowLine.textContent = `Now: ${s}`;
-      calcNowLine.textContent = `Now: ${s}`;
+      const line = `${datePart} • ${timePart}`;
+      clockLine.textContent = line;
+      nowLine.textContent = `Now: ${line}`;
+      calcNowLine.textContent = `Now: ${line}`;
     }
+
     updateClock();
     setInterval(updateClock, 1000);
 
     /* ------------------------------------------------------------
-       5) PANEL TOGGLES
+       5) PANEL TOGGLES (booking + calculator)
        ------------------------------------------------------------ */
-    const toggleBookBtn = document.getElementById("toggleBookBtn");
-    const toggleCalcBtn = document.getElementById("toggleCalcBtn");
-    const bookingPanel = document.getElementById("bookingPanel");
+    const toggleBtn = document.getElementById("toggleBtn");
+    const booking = document.getElementById("booking");
+
+    const calcToggleBtn = document.getElementById("calcToggleBtn");
     const calcPanel = document.getElementById("calcPanel");
 
-    function openPanel(which){
-      if(which === "book"){
-        bookingPanel.classList.add("open");
-        calcPanel.classList.remove("open");
-        if (!dateEl.value) dateEl.value = todayYMD();
-        refreshSlots();
-      } else {
-        calcPanel.classList.add("open");
-        bookingPanel.classList.remove("open");
-      }
+    function closeOtherPanels(opening){
+      if(opening === "booking") calcPanel.classList.remove("open");
+      if(opening === "calc") booking.classList.remove("open");
     }
 
-    toggleBookBtn.addEventListener("click", () => {
-      if (bookingPanel.classList.contains("open")) bookingPanel.classList.remove("open");
-      else openPanel("book");
+    toggleBtn.addEventListener("click", () => {
+      closeOtherPanels("booking");
+      booking.classList.toggle("open");
+      if (booking.classList.contains("open")) {
+        if (!dateEl.value) dateEl.value = todayYMD();
+        refreshSlots();
+      }
     });
 
-    toggleCalcBtn.addEventListener("click", () => {
-      if (calcPanel.classList.contains("open")) calcPanel.classList.remove("open");
-      else openPanel("calc");
+    calcToggleBtn.addEventListener("click", () => {
+      closeOtherPanels("calc");
+      calcPanel.classList.toggle("open");
+      if(calcPanel.classList.contains("open")){
+        // nothing required; ready for input
+      }
     });
 
     /* ------------------------------------------------------------
-       6) BOOKING LOGIC (UNCHANGED)
+       6) BOOKING LOGIC (unchanged)
        ------------------------------------------------------------ */
     const timesBox = document.getElementById("times");
     const confirmBtn = document.getElementById("confirmBtn");
@@ -830,19 +844,19 @@
     let selectedSlot = null; // "HH:MM"
     let bookedSet = new Set();
 
-    function updateTodayHighlight(){
+    function updateTodayHighlight() {
       const isToday = dateEl.value === todayYMD();
       todayBadge.style.display = isToday ? "inline-flex" : "none";
       dateEl.classList.toggle("today", isToday);
     }
 
-    function getAllowedHours(dow){
-      if (dow >= 1 && dow <= 5) return [9,10,11,12,17,18,19,20];
-      if (dow === 6) return [8,9,10,11,12,13,14,15,16,17,18,19];
-      return [9,10,11,12,13,14,15,16,17,18,19];
+    function getAllowedHours(dow) {
+      if (dow >= 1 && dow <= 5) return [9, 10, 11, 12, 17, 18, 19, 20];
+      if (dow === 6) return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+      return [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
     }
 
-    function to12hLabel(hm){
+    function to12hLabel(hm) {
       let [H, M] = hm.split(":").map(Number);
       const ampm = H >= 12 ? "PM" : "AM";
       H = H % 12;
@@ -850,17 +864,16 @@
       return `${pad(H)}:${pad(M)} ${ampm}`;
     }
 
-    async function fetchBookedForDate(ymd){
+    async function fetchBookedForDate(ymd) {
       const start = new Date(ymd + "T00:00:00");
       const end = new Date(ymd + "T23:59:59");
-
       const { data, error } = await supa
         .from("appointments")
         .select("start_time,status")
         .gte("start_time", start.toISOString())
         .lte("start_time", end.toISOString());
 
-      if (error){
+      if (error) {
         console.error("Fetch booked error:", error);
         return new Set();
       }
@@ -874,7 +887,7 @@
       return set;
     }
 
-    async function refreshSlots(){
+    async function refreshSlots() {
       const ymd = dateEl.value;
       timesBox.innerHTML = "";
       selectedSlot = null;
@@ -883,7 +896,7 @@
       msg.textContent = "";
       updateTodayHighlight();
 
-      if (!ymd){
+      if (!ymd) {
         msg.className = "msg warn";
         msg.textContent = "Please pick a date.";
         return;
@@ -908,7 +921,7 @@
         div.className = "slot";
         div.textContent = to12hLabel(hm);
 
-        if (isBooked || isPast){
+        if (isBooked || isPast) {
           div.classList.add("disabled");
         } else {
           anyAvailable = true;
@@ -923,7 +936,7 @@
         timesBox.appendChild(div);
       });
 
-      if (!anyAvailable){
+      if (!anyAvailable) {
         msg.className = "msg warn";
         msg.textContent = "No available times for this date.";
       } else {
@@ -932,7 +945,7 @@
       }
     }
 
-    function validateForm(){
+    function validateForm() {
       const nameOk = (fullNameEl.value || "").trim().length > 1;
       const emailOk = isValidEmail((emailEl.value || "").trim());
       const slotOk = !!selectedSlot;
@@ -943,7 +956,7 @@
     emailEl.addEventListener("input", validateForm);
     dateEl.addEventListener("change", () => { refreshSlots(); validateForm(); });
 
-    async function hasSameDayBooking(email, ymd){
+    async function hasSameDayBooking(email, ymd) {
       const start = new Date(ymd + "T00:00:00");
       const end = new Date(ymd + "T23:59:59");
 
@@ -954,7 +967,7 @@
         .gte("start_time", start.toISOString())
         .lte("start_time", end.toISOString());
 
-      if (error){
+      if (error) {
         console.error("Same-day check error:", error);
         return false;
       }
@@ -972,7 +985,7 @@
       const location = locationEl.value;
       const ymd = dateEl.value;
 
-      if (!name || !isValidEmail(email) || !selectedSlot || !ymd){
+      if (!name || !isValidEmail(email) || !selectedSlot || !ymd) {
         msg.className = "msg bad";
         msg.textContent = "Please fill all fields and pick a time.";
         validateForm();
@@ -980,7 +993,7 @@
       }
 
       const already = await hasSameDayBooking(email, ymd);
-      if (already){
+      if (already) {
         msg.className = "msg bad";
         msg.textContent = "You already have an appointment booked for this day.";
         confirmBtn.disabled = false;
@@ -1001,7 +1014,7 @@
         status: "confirmed",
       }]);
 
-      if (error){
+      if (error) {
         console.error("Insert error:", error);
         msg.className = "msg bad";
         msg.textContent = "Booking failed. Please try again in a moment.";
@@ -1022,159 +1035,160 @@
       validateForm();
     });
 
-    /* Init booking date */
+    /* Init booking */
     dateEl.value = todayYMD();
     updateTodayHighlight();
     refreshSlots();
 
     /* ------------------------------------------------------------
-       7) TAX CALCULATOR LOGIC
+       7) TAX CALCULATOR (IRS-style estimate + OT breakdown)
        ------------------------------------------------------------ */
-    const incomeEl = document.getElementById("income");
-    const withheldEl = document.getElementById("withheld");
-    const statusEl = document.getElementById("status");
-    const depsEl = document.getElementById("dependents");
-    const hourlyEl = document.getElementById("hourly");
-    const otEarningsEl = document.getElementById("otEarnings");
+    const taxYearEl = document.getElementById("taxYear");
+    const filingStatusEl = document.getElementById("filingStatus");
+    const w2box1El = document.getElementById("w2box1");
+    const w2box2El = document.getElementById("w2box2");
+    const dependentsEl = document.getElementById("dependents");
+    const otherAdjEl = document.getElementById("otherAdj");
+    const hourlyRateEl = document.getElementById("hourlyRate");
+    const otPayEl = document.getElementById("otPay");
     const calcBtn = document.getElementById("calcBtn");
-    const calcMsg = document.getElementById("calcMsg");
-    const calcResults = document.getElementById("calcResults");
+    const calcResult = document.getElementById("calcResult");
+    const calcBreakdown = document.getElementById("calcBreakdown");
+    const otWarn = document.getElementById("otWarn");
 
-    const rTax = document.getElementById("rTax");
-    const rWithheld = document.getElementById("rWithheld");
-    const rDepCredit = document.getElementById("rDepCredit");
-    const rOtPremium = document.getElementById("rOtPremium");
-    const rOtHours = document.getElementById("rOtHours");
-    const refundBtn = document.getElementById("refundBtn");
-
-    // Simple estimator constants (edit later if you want a specific year)
-    const STANDARD_DEDUCTION = {
-      single: 13850,
-      mfj: 27700,
-      mfs: 13850,
-      hoh: 20800,
+    // Uses 2024 published values; 2025 marked as estimate until IRS releases final adjustments.
+    const TAX_TABLES = {
+      "2024": {
+        stdDeduction: { single:14600, joint:29200, hoh:21900 },
+        brackets: {
+          single: [[11600,0.10],[47150,0.12],[100525,0.22],[191950,0.24],[243725,0.32],[609350,0.35],[Infinity,0.37]],
+          joint:  [[23200,0.10],[94300,0.12],[201050,0.22],[383900,0.24],[487450,0.32],[731200,0.35],[Infinity,0.37]],
+          hoh:    [[16550,0.10],[63100,0.12],[100500,0.22],[191950,0.24],[243700,0.32],[609350,0.35],[Infinity,0.37]],
+        }
+      },
+      "2025": {
+        // Using 2024 as placeholder estimate; swap when IRS releases final 2025 numbers.
+        stdDeduction: { single:14600, joint:29200, hoh:21900 },
+        brackets: {
+          single: [[11600,0.10],[47150,0.12],[100525,0.22],[191950,0.24],[243725,0.32],[609350,0.35],[Infinity,0.37]],
+          joint:  [[23200,0.10],[94300,0.12],[201050,0.22],[383900,0.24],[487450,0.32],[731200,0.35],[Infinity,0.37]],
+          hoh:    [[16550,0.10],[63100,0.12],[100500,0.22],[191950,0.24],[243700,0.32],[609350,0.35],[Infinity,0.37]],
+        }
+      }
     };
 
-    // Very rough progressive brackets (placeholder)
-    // Each item: [cap, rate]
-    const BRACKETS = {
-      single: [
-        [11000, 0.10],
-        [44725, 0.12],
-        [95375, 0.22],
-        [182100, 0.24],
-        [231250, 0.32],
-        [578125, 0.35],
-        [Infinity, 0.37],
-      ],
-      mfj: [
-        [22000, 0.10],
-        [89450, 0.12],
-        [190750, 0.22],
-        [364200, 0.24],
-        [462500, 0.32],
-        [693750, 0.35],
-        [Infinity, 0.37],
-      ],
-      mfs: [
-        [11000, 0.10],
-        [44725, 0.12],
-        [95375, 0.22],
-        [182100, 0.24],
-        [231250, 0.32],
-        [346875, 0.35],
-        [Infinity, 0.37],
-      ],
-      hoh: [
-        [15700, 0.10],
-        [59850, 0.12],
-        [95350, 0.22],
-        [182100, 0.24],
-        [231250, 0.32],
-        [578100, 0.35],
-        [Infinity, 0.37],
-      ]
-    };
-
-    function calcProgressiveTax(taxable, status){
-      const b = BRACKETS[status] || BRACKETS.single;
-      let remaining = Math.max(0, taxable);
+    function calcTaxProgressive(taxable, brackets){
       let tax = 0;
-      let lastCap = 0;
-
-      for (const [cap, rate] of b){
-        const band = Math.min(remaining, cap - lastCap);
-        if (band <= 0) break;
-        tax += band * rate;
-        remaining -= band;
-        lastCap = cap;
-        if (remaining <= 0) break;
+      let prev = 0;
+      for(const [limit, rate] of brackets){
+        const cap = Math.min(taxable, limit);
+        if(cap > prev){
+          tax += (cap - prev) * rate;
+          prev = cap;
+        }
+        if(taxable <= limit) break;
       }
       return tax;
     }
 
-    function setRefundButton(amount){
-      const x = Number(amount || 0);
-      const label = x >= 0 ? `Estimated Refund: ${money(x)}` : `Estimated Owed: ${money(Math.abs(x))}`;
-
-      refundBtn.textContent = label;
-
-      refundBtn.classList.remove("green","red","neutral");
-      if (x > 0.005) refundBtn.classList.add("green");
-      else if (x < -0.005) refundBtn.classList.add("red");
-      else refundBtn.classList.add("neutral");
+    function safeNum(v){
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
     }
 
-    function showCalcMessage(type, text){
-      calcMsg.className = "msg " + type;
-      calcMsg.textContent = text;
+    function setResultBox(amount){
+      calcResult.style.display = "block";
+      calcResult.classList.remove("calc-green","calc-red");
+
+      if(amount >= 0){
+        calcResult.classList.add("calc-green");
+        calcResult.textContent = `Estimated Refund: ${money(amount)}`;
+      } else {
+        calcResult.classList.add("calc-red");
+        calcResult.textContent = `Estimated Owed: ${money(Math.abs(amount))}`;
+      }
     }
 
     calcBtn.addEventListener("click", () => {
-      const income = toNum(incomeEl.value);
-      const withheld = toNum(withheldEl.value);
-      const status = statusEl.value || "single";
-      const deps = Math.max(0, Math.floor(toNum(depsEl.value)));
-      const hourly = toNum(hourlyEl.value);
-      const otEarnings = toNum(otEarningsEl.value);
+      const year = taxYearEl.value || "2025";
+      const status = filingStatusEl.value || "single";
+      const table = TAX_TABLES[year] || TAX_TABLES["2025"];
 
-      // Overtime theory:
-      // OT hours = OT earnings / (hourly * 1.5)
-      // "Half premium" = OT earnings / 3
+      const income = safeNum(w2box1El.value);
+      const withheld = safeNum(w2box2El.value);
+      const deps = Math.max(0, Math.floor(safeNum(dependentsEl.value)));
+      const otherAdj = Math.max(0, safeNum(otherAdjEl.value)); // optional reduction in taxable income
+
+      const hourlyRate = Math.max(0, safeNum(hourlyRateEl.value));
+      const otPay = Math.max(0, safeNum(otPayEl.value));
+
+      // IRS-style taxable income (very simplified)
+      const std = table.stdDeduction[status] ?? table.stdDeduction.single;
+      const taxable = Math.max(0, (income - otherAdj) - std);
+
+      const tax = calcTaxProgressive(taxable, table.brackets[status] || table.brackets.single);
+
+      // Dependent credit requested: $2,200 each (note: real eligibility rules apply)
+      const dependentCredit = deps * 2200;
+
+      // Balance: refund positive, owed negative
+      const balance = (withheld + dependentCredit) - tax;
+      setResultBox(balance);
+
+      // Breakdown cards
+      calcBreakdown.style.display = "grid";
+      const effectiveRate = income > 0 ? (tax / income) : 0;
+
+      // OT breakdown (informational; NOT added to refund)
       let otHours = 0;
-      if (hourly > 0 && otEarnings > 0){
-        otHours = otEarnings / (hourly * 1.5);
+      let halfPremium = 0;
+      if(hourlyRate > 0 && otPay > 0){
+        otHours = otPay / (hourlyRate * 1.5);
+        halfPremium = otPay / 3; // half part of "time and a half" = 1/3 of total OT pay
+        otWarn.style.display = "inline-flex";
+      } else {
+        otWarn.style.display = "none";
       }
 
-      const otPremium = (otEarnings > 0) ? (otEarnings / 3) : 0;
-
-      // Dependent credit
-      const depCredit = deps * 2200;
-
-      // Estimate tax (rough): taxable = income - standard deduction
-      const sd = STANDARD_DEDUCTION[status] ?? STANDARD_DEDUCTION.single;
-      const taxable = Math.max(0, income - sd);
-      const estTax = calcProgressiveTax(taxable, status);
-
-      // Refund/owed logic:
-      // refund = withheld - estTax + depCredit + otPremium
-      const result = withheld - estTax + depCredit + otPremium;
-
-      calcResults.classList.add("show");
-
-      rTax.textContent = money(estTax);
-      rWithheld.textContent = money(withheld);
-      rDepCredit.textContent = money(depCredit);
-      rOtPremium.textContent = money(otPremium);
-      rOtHours.textContent = (otHours > 0) ? `${otHours.toFixed(2)} hours` : "—";
-
-      setRefundButton(result);
-
-      showCalcMessage("ok", "Calculated. Scroll down for results.");
+      calcBreakdown.innerHTML = `
+        <div class="calc-box">
+          <div class="k">Standard Deduction</div>
+          <div class="v">${money(std)}</div>
+        </div>
+        <div class="calc-box">
+          <div class="k">Taxable Income</div>
+          <div class="v">${money(taxable)}</div>
+        </div>
+        <div class="calc-box">
+          <div class="k">Estimated Federal Tax</div>
+          <div class="v">${money(tax)}</div>
+        </div>
+        <div class="calc-box">
+          <div class="k">Effective Tax Rate (rough)</div>
+          <div class="v">${(effectiveRate*100).toFixed(1)}%</div>
+        </div>
+        <div class="calc-box">
+          <div class="k">Withheld (W-2 Box 2)</div>
+          <div class="v">${money(withheld)}</div>
+        </div>
+        <div class="calc-box">
+          <div class="k">Dependent Credit (est.)</div>
+          <div class="v">${money(dependentCredit)}</div>
+        </div>
+        <div class="calc-box" style="grid-column:1 / -1;">
+          <div class="k">Overtime Breakdown (informational)</div>
+          <div class="v">
+            Hourly Rate: ${hourlyRate ? money(hourlyRate) + "/hr" : "—"}<br>
+            Overtime Pay: ${otPay ? money(otPay) : "—"}<br>
+            OT Hours Worked: ${otHours ? otHours.toFixed(1) + " hrs" : "—"}<br>
+            OT “Half Premium”: ${halfPremium ? money(halfPremium) : "—"}
+          </div>
+        </div>
+      `;
     });
 
     /* ------------------------------------------------------------
-       8) STARFIELD + SHOOTING STARS
+       8) CANVAS STARFIELD + SHOOTING STARS
        ------------------------------------------------------------ */
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
@@ -1183,7 +1197,7 @@
     let width = window.innerWidth;
     let height = window.innerHeight;
 
-    function resizeCanvas(){
+    function resizeCanvas() {
       width = window.innerWidth;
       height = window.innerHeight;
       canvas.width = width;
@@ -1192,10 +1206,10 @@
     }
     window.addEventListener("resize", resizeCanvas);
 
-    function initStars(){
+    function initStars() {
       const count = Math.min(220, Math.floor((width * height) / 12000));
       stars = [];
-      for (let i=0;i<count;i++){
+      for (let i = 0; i < count; i++) {
         stars.push({
           x: Math.random() * width,
           y: Math.random() * height,
@@ -1208,7 +1222,7 @@
 
     let shootingStars = [];
 
-    function spawnShootingStar(){
+    function spawnShootingStar() {
       const startX = Math.random() * width * 0.6;
       const startY = Math.random() * height * 0.3;
       const len = Math.random() * 250 + 120;
@@ -1223,7 +1237,7 @@
       });
     }
 
-    function drawStarfield(){
+    function drawStarfield() {
       ctx.clearRect(0, 0, width, height);
 
       const hue = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--galaxy-hue")) || 220;
@@ -1231,7 +1245,7 @@
       ctx.fillRect(0, 0, width, height);
 
       const t = Date.now() * 0.001;
-      for (const s of stars){
+      for (const s of stars) {
         const pulse = 0.5 + 0.5 * Math.sin(t * s.tw + s.x);
         ctx.globalAlpha = s.o * pulse;
         ctx.beginPath();
@@ -1241,14 +1255,13 @@
       }
       ctx.globalAlpha = 1;
 
-      for (let i = shootingStars.length - 1; i >= 0; i--){
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
         const sh = shootingStars[i];
         sh.life++;
         sh.x += sh.vx;
         sh.y += sh.vy;
-
         const p = sh.life / sh.maxLife;
-        if (p >= 1){
+        if (p >= 1) {
           shootingStars.splice(i, 1);
           continue;
         }
@@ -1274,7 +1287,6 @@
     setInterval(() => { if (Math.random() < 0.7) spawnShootingStar(); }, 7000);
 
     resizeCanvas();
-    initStars();
     drawStarfield();
   </script>
 </body>
