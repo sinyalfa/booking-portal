@@ -6,9 +6,6 @@
   <title>Columbus East Tax Services – Booking Portal</title>
 
   <style>
-    /* ============================================================
-       1) GLOBAL RESETS + VARIABLES
-       ============================================================ */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --galaxy-hue: 220;
@@ -45,9 +42,6 @@
     body[data-theme="day"] { filter: brightness(1.06) saturate(1.08); }
     body[data-theme="night"] { filter: brightness(0.98) saturate(1.0); }
 
-    /* ============================================================
-       2) CANVAS STARFIELD
-       ============================================================ */
     canvas#starfield {
       position: fixed;
       inset: 0;
@@ -57,17 +51,10 @@
       display: block;
     }
 
-    /* ============================================================
-       3) LAYOUT: WRAP + GLASS CARD
-       ============================================================ */
     .wrap { position: relative; z-index: 5; max-width: 980px; margin: 0 auto; padding: 22px; }
     .card {
       position: relative;
-      background: linear-gradient(
-        180deg,
-        rgba(210, 235, 255, 0.22),
-        rgba(170, 215, 255, 0.14)
-      );
+      background: linear-gradient(180deg, rgba(210, 235, 255, 0.22), rgba(170, 215, 255, 0.14));
       border-radius: 28px;
       border: 1px solid var(--card-border);
       box-shadow: var(--card-shadow);
@@ -83,15 +70,8 @@
       position: absolute;
       inset: -2px;
       background:
-        radial-gradient(circle at 20% 0%,
-          rgba(255, 255, 255, 0.40),
-          rgba(255, 255, 255, 0.06) 45%,
-          rgba(255, 255, 255, 0) 70%
-        ),
-        radial-gradient(circle at 80% 10%,
-          rgba(59, 130, 246, 0.18),
-          rgba(59, 130, 246, 0) 60%
-        );
+        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.40), rgba(255, 255, 255, 0.06) 45%, rgba(255, 255, 255, 0) 70%),
+        radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.18), rgba(59, 130, 246, 0) 60%);
       pointer-events: none;
       z-index: 0;
     }
@@ -99,9 +79,6 @@
 
     @media (max-width: 640px) { .card { padding: 26px 16px 18px; } }
 
-    /* ============================================================
-       4) LOGO + CLOCK
-       ============================================================ */
     .logo {
       width: 360px;
       max-width: 92%;
@@ -112,16 +89,7 @@
       filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.18));
     }
 
-    @keyframes glowPulse {
-      0%, 100% {
-        box-shadow: 0 0 14px rgba(59, 130, 246, 0.55), 0 0 40px rgba(37, 99, 235, 0.45);
-        transform: translateY(0);
-      }
-      50% {
-        box-shadow: 0 0 24px rgba(59, 130, 246, 0.85), 0 0 70px rgba(37, 99, 235, 0.75);
-        transform: translateY(-1px);
-      }
-    }
+    /* steady glow (no pulsing) */
     .clock-line {
       margin: 10px auto 24px;
       max-width: 520px;
@@ -131,23 +99,16 @@
       text-align: center;
       padding: 10px 16px;
       border-radius: 999px;
-      background: radial-gradient(
-        circle at 50% 0%,
-        hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22),
-        rgba(15, 23, 42, 0.95)
-      );
+      background: radial-gradient(circle at 50% 0%, hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22), rgba(15, 23, 42, 0.95));
       border: 1px solid rgba(191, 219, 254, 0.26);
       letter-spacing: 0.5px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      animation: glowPulse 2.4s ease-in-out infinite;
+      box-shadow: 0 0 18px rgba(59,130,246,0.55), 0 0 50px rgba(37,99,235,0.25);
     }
     @media (max-width: 480px) { .clock-line { font-size: 15px; padding: 9px 10px; } }
 
-    /* ============================================================
-       5) BUTTONS
-       ============================================================ */
     .btn {
       width: 100%;
       padding: 16px;
@@ -170,9 +131,6 @@
     .btn.book { background: var(--btn-book); }
     .btn.calc { background: var(--btn-calc); }
 
-    /* ============================================================
-       6) PANELS (BOOKING + CALCULATOR)
-       ============================================================ */
     .panel {
       margin-top: 14px;
       text-align: left;
@@ -285,9 +243,6 @@
     .msg.bad { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
     .msg.warn { display: block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
-    /* ============================================================
-       7) CONFIRM CARD (after successful booking)
-       ============================================================ */
     .confirm-card {
       display: none;
       margin-top: 16px;
@@ -338,9 +293,6 @@
     .mini-label { font-size: 12px; font-weight: 900; color: #64748b; margin-bottom: 4px; }
     .mini-val { font-size: 14px; font-weight: 900; color: #0f172a; word-break: break-word; }
 
-    /* ============================================================
-       8) TAX CALC SECTION LOOK (light yellow/white mix)
-       ============================================================ */
     .calc-wrap {
       background: linear-gradient(180deg, #fffce9, #ffffff 60%);
       border: 1px solid #e5e7eb;
@@ -357,7 +309,7 @@
     }
 
     /* ============================================================
-       9) FUTURISTIC NEON RESULT HUD (flashy)
+       STEADY NEON RESULT HUD (NO ANIMATION)
        ============================================================ */
     .neo-result{
       grid-column: 1 / -1;
@@ -365,12 +317,7 @@
       border-radius: 18px;
       padding: 16px 16px 14px;
       overflow: hidden;
-
-      background: radial-gradient(circle at 30% 10%,
-        rgba(255,255,255,0.10),
-        rgba(255,255,255,0.04) 40%,
-        rgba(2,6,23,0.55) 85%
-      );
+      background: radial-gradient(circle at 30% 10%, rgba(255,255,255,0.10), rgba(255,255,255,0.04) 40%, rgba(2,6,23,0.55) 85%);
       border: 1px solid rgba(255,255,255,0.10);
       box-shadow:
         0 18px 55px rgba(0,0,0,0.35),
@@ -380,50 +327,25 @@
       margin-top: 12px;
     }
 
-    .neo-border{
-      position:absolute; inset:-2px;
+    .neo-frame{
+      position:absolute;
+      inset:-2px;
       border-radius: 20px;
       padding: 2px;
-      background: conic-gradient(
-        from 0deg,
-        rgba(59,130,246,0.0),
-        rgba(168,85,247,0.85),
-        rgba(34,211,238,0.85),
-        rgba(59,130,246,0.85),
-        rgba(168,85,247,0.85),
-        rgba(59,130,246,0.0)
-      );
-      filter: drop-shadow(0 0 18px rgba(34,211,238,0.30))
-              drop-shadow(0 0 28px rgba(168,85,247,0.22));
-      opacity: 0.95;
-      animation: neoSpin 3.2s linear infinite;
       pointer-events:none;
+      opacity: 0.95;
+      filter: drop-shadow(0 0 18px rgba(34,211,238,0.18));
+      background: linear-gradient(90deg,
+        rgba(168,85,247,0.55),
+        rgba(34,211,238,0.55),
+        rgba(59,130,246,0.55)
+      );
     }
-    @keyframes neoSpin{ to { transform: rotate(360deg); } }
-    .neo-result > .neo-border::before{
+    .neo-frame::before{
       content:"";
       position:absolute; inset:2px;
       border-radius: 16px;
       background: rgba(2,6,23,0.40);
-    }
-
-    .neo-scan{
-      position:absolute; inset:0;
-      background: linear-gradient(
-        180deg,
-        rgba(34,211,238,0) 0%,
-        rgba(34,211,238,0.10) 45%,
-        rgba(34,211,238,0) 70%
-      );
-      transform: translateY(-60%);
-      animation: neoScan 2.6s ease-in-out infinite;
-      opacity: 0.6;
-      pointer-events:none;
-    }
-    @keyframes neoScan{
-      0%   { transform: translateY(-70%); opacity: 0.25; }
-      50%  { transform: translateY(0%);   opacity: 0.75; }
-      100% { transform: translateY(70%);  opacity: 0.25; }
     }
 
     .neo-top{
@@ -468,9 +390,7 @@
       color: rgba(226,232,240,0.95);
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.10);
-      box-shadow:
-        0 0 0 3px rgba(34,211,238,0.10),
-        0 0 22px rgba(34,211,238,0.18);
+      box-shadow: 0 0 0 3px rgba(34,211,238,0.10), 0 0 18px rgba(34,211,238,0.14);
     }
 
     .neo-amount{
@@ -479,9 +399,7 @@
       font-weight: 1000;
       letter-spacing: -0.7px;
       color: rgba(226,232,240,0.98);
-      text-shadow:
-        0 0 18px rgba(34,211,238,0.20),
-        0 0 30px rgba(168,85,247,0.12);
+      text-shadow: 0 0 18px rgba(34,211,238,0.18), 0 0 26px rgba(168,85,247,0.10);
     }
     @media (max-width: 560px){
       .neo-amount{ font-size: 36px; }
@@ -513,87 +431,48 @@
       border: 1px solid rgba(255,255,255,0.12);
       background: rgba(255,255,255,0.06);
       color: rgba(226,232,240,0.98);
-      box-shadow:
-        0 10px 26px rgba(0,0,0,0.35),
-        inset 0 1px 0 rgba(255,255,255,0.10);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.10);
     }
 
     .pill-green{
       background: rgba(34,197,94,0.16);
       border-color: rgba(34,197,94,0.35);
-      box-shadow: 0 12px 30px rgba(34,197,94,0.18), inset 0 1px 0 rgba(255,255,255,0.10);
+      box-shadow: 0 12px 26px rgba(34,197,94,0.14), inset 0 1px 0 rgba(255,255,255,0.10);
     }
     .pill-red{
       background: rgba(239,68,68,0.16);
       border-color: rgba(239,68,68,0.35);
-      box-shadow: 0 12px 30px rgba(239,68,68,0.18), inset 0 1px 0 rgba(255,255,255,0.10);
+      box-shadow: 0 12px 26px rgba(239,68,68,0.14), inset 0 1px 0 rgba(255,255,255,0.10);
     }
     .pill-gray{
       background: rgba(148,163,184,0.12);
       border-color: rgba(148,163,184,0.25);
     }
 
-    /* Outcome border tint */
-    .neo-result.refund .neo-border{
-      background: conic-gradient(from 0deg,
-        rgba(34,197,94,0.0),
-        rgba(34,197,94,0.95),
-        rgba(34,211,238,0.85),
-        rgba(34,197,94,0.95),
-        rgba(34,197,94,0.0)
+    .neo-result.refund .neo-frame{
+      background: linear-gradient(90deg,
+        rgba(34,197,94,0.65),
+        rgba(34,211,238,0.55),
+        rgba(34,197,94,0.65)
       );
-      filter: drop-shadow(0 0 20px rgba(34,197,94,0.25))
-              drop-shadow(0 0 30px rgba(34,211,238,0.18));
+      filter: drop-shadow(0 0 18px rgba(34,197,94,0.18));
     }
-    .neo-result.owed .neo-border{
-      background: conic-gradient(from 0deg,
-        rgba(239,68,68,0.0),
-        rgba(239,68,68,0.95),
-        rgba(168,85,247,0.80),
-        rgba(239,68,68,0.95),
-        rgba(239,68,68,0.0)
+    .neo-result.owed .neo-frame{
+      background: linear-gradient(90deg,
+        rgba(239,68,68,0.70),
+        rgba(168,85,247,0.50),
+        rgba(239,68,68,0.70)
       );
-      filter: drop-shadow(0 0 20px rgba(239,68,68,0.25))
-              drop-shadow(0 0 30px rgba(168,85,247,0.18));
+      filter: drop-shadow(0 0 18px rgba(239,68,68,0.18));
     }
 
-    /* one-time pop */
-    .neo-result.pop{ animation: neoPop 420ms ease-out; }
-    @keyframes neoPop{
-      0%   { transform: scale(0.985); }
-      60%  { transform: scale(1.012); }
-      100% { transform: scale(1.0); }
-    }
-
-    /* Amount color switch */
     .neo-result.refund .neo-amount{
       color: rgba(187, 255, 220, 0.98);
-      text-shadow:
-        0 0 14px rgba(34,197,94,0.35),
-        0 0 28px rgba(34,211,238,0.18);
+      text-shadow: 0 0 14px rgba(34,197,94,0.28), 0 0 24px rgba(34,211,238,0.12);
     }
     .neo-result.owed .neo-amount{
-      color: rgba(255, 200, 200, 0.98);
-      text-shadow:
-        0 0 14px rgba(239,68,68,0.35),
-        0 0 28px rgba(168,85,247,0.16);
-    }
-
-    /* Electric flicker (brief) */
-    .neo-result.flicker .neo-amount,
-    .neo-result.flicker .neo-chip,
-    .neo-result.flicker .neo-pill{
-      animation: electricFlicker 420ms linear 1;
-    }
-    @keyframes electricFlicker{
-      0%   { opacity: 1; filter: brightness(1); transform: translateY(0); }
-      10%  { opacity: 0.55; filter: brightness(1.25); transform: translateY(-0.5px); }
-      18%  { opacity: 1; }
-      28%  { opacity: 0.65; filter: brightness(1.35); }
-      40%  { opacity: 1; }
-      55%  { opacity: 0.72; filter: brightness(1.22); }
-      70%  { opacity: 1; transform: translateY(0.4px); }
-      100% { opacity: 1; filter: brightness(1); transform: translateY(0); }
+      color: rgba(255, 210, 210, 0.98);
+      text-shadow: 0 0 14px rgba(239,68,68,0.28), 0 0 24px rgba(168,85,247,0.10);
     }
   </style>
 </head>
@@ -603,15 +482,9 @@
 
   <div class="wrap">
     <div class="card">
-      <img
-        class="logo"
-        src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png"
-        alt="Columbus East Tax Services Logo"
-      />
-
+      <img class="logo" src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png" alt="Columbus East Tax Services Logo" />
       <div id="clockLine" class="clock-line"></div>
 
-      <!-- KEEP ALL BUTTONS -->
       <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
       <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
       <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
@@ -750,7 +623,6 @@
           <button id="calcBtn" class="btn confirm" style="margin-top:14px;">Calculate</button>
           <div id="calcMsg" class="msg"></div>
 
-          <!-- Results -->
           <div class="section" style="margin-top:14px;">
             <div class="subline" style="margin-bottom:8px;">Estimate Results</div>
 
@@ -776,10 +648,9 @@
               </div>
             </div>
 
-            <!-- FUTURISTIC NEON RESULT HUD -->
+            <!-- STEADY NEON RESULT HUD -->
             <div class="neo-result" id="neoResult">
-              <div class="neo-border"></div>
-              <div class="neo-scan"></div>
+              <div class="neo-frame"></div>
 
               <div class="neo-top">
                 <div class="neo-title">Estimated refund / amount owed</div>
@@ -810,50 +681,27 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    /* ============================================================
-       SUPABASE CONFIG (Booking insert uses this)
-       ============================================================ */
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-
-    // NOTE: You asked to include your anon key. Keep this page public only if your RLS is strong.
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs";
-
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    /* ============================================================
-       UTILITIES
-       ============================================================ */
     const pad = (n) => String(n).padStart(2, "0");
-    const money = (n) => {
-      const x = Number(n || 0);
-      return x.toLocaleString("en-US", { style: "currency", currency: "USD" });
-    };
+    const money = (n) => Number(n || 0).toLocaleString("en-US", { style: "currency", currency: "USD" });
+
     function todayYMD() {
       const d = new Date();
       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     }
     function fmtNice(dt) {
-      return dt.toLocaleString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      });
+      return dt.toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
     }
     function makeLocalDateTimeFrom24(dateStr, hm) {
       const [H, M] = hm.split(":").map(Number);
       const [Y, m, D] = dateStr.split("-").map(Number);
       return new Date(Y, m - 1, D, H, M, 0, 0);
     }
-    function isValidEmail(v) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-    }
+    function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
 
-    /* ============================================================
-       THEME + GALAXY HUE
-       ============================================================ */
     function applyThemeAndGalaxy() {
       const now = new Date();
       const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
@@ -869,28 +717,18 @@
     applyThemeAndGalaxy();
     setInterval(applyThemeAndGalaxy, 10000);
 
-    /* ============================================================
-       CLOCK
-       ============================================================ */
     const clockLine = document.getElementById("clockLine");
     const nowLine = document.getElementById("nowLine");
     function updateClock() {
       const now = new Date();
-      const datePart = new Intl.DateTimeFormat("en-US", {
-        weekday: "short", month: "short", day: "2-digit", year: "numeric",
-      }).format(now);
-      const timePart = new Intl.DateTimeFormat("en-US", {
-        hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
-      }).format(now);
+      const datePart = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "2-digit", year: "numeric" }).format(now);
+      const timePart = new Intl.DateTimeFormat("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).format(now);
       clockLine.textContent = `${datePart} • ${timePart}`;
       if (nowLine) nowLine.textContent = `Now: ${datePart} • ${timePart}`;
     }
     updateClock();
     setInterval(updateClock, 1000);
 
-    /* ============================================================
-       PANEL TOGGLES
-       ============================================================ */
     const toggleBook = document.getElementById("toggleBook");
     const toggleCalc = document.getElementById("toggleCalc");
     const bookingPanel = document.getElementById("bookingPanel");
@@ -904,17 +742,11 @@
         refreshSlots();
       }
     });
-
     toggleCalc.addEventListener("click", () => {
       calcPanel.classList.toggle("open");
-      if (calcPanel.classList.contains("open")) {
-        bookingPanel.classList.remove("open");
-      }
+      if (calcPanel.classList.contains("open")) bookingPanel.classList.remove("open");
     });
 
-    /* ============================================================
-       BOOKING LOGIC
-       ============================================================ */
     const timesBox = document.getElementById("times");
     const confirmBtn = document.getElementById("confirmBtn");
     const msg = document.getElementById("msg");
@@ -937,18 +769,14 @@
     let bookedSet = new Set();
 
     function getAllowedHours(dow) {
-      // weekday: 9/10/11/12 and 5/6/7/8 pm
       if (dow >= 1 && dow <= 5) return [9, 10, 11, 12, 17, 18, 19, 20];
-      // saturday
       if (dow === 6) return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-      // sunday
       return [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
     }
     function to12hLabel(hm) {
       let [H, M] = hm.split(":").map(Number);
       const ampm = H >= 12 ? "PM" : "AM";
-      H = H % 12;
-      if (H === 0) H = 12;
+      H = H % 12; if (H === 0) H = 12;
       return `${pad(H)}:${pad(M)} ${ampm}`;
     }
 
@@ -961,10 +789,7 @@
         .gte("start_time", start.toISOString())
         .lte("start_time", end.toISOString());
 
-      if (error) {
-        console.error("Fetch booked error:", error);
-        return new Set();
-      }
+      if (error) { console.error("Fetch booked error:", error); return new Set(); }
 
       const set = new Set();
       (data || []).forEach((row) => {
@@ -1047,10 +872,7 @@
         .gte("start_time", start.toISOString())
         .lte("start_time", end.toISOString());
 
-      if (error) {
-        console.error("Same-day check error:", error);
-        return false;
-      }
+      if (error) { console.error("Same-day check error:", error); return false; }
       return (data || []).some((row) => (row.status || "").toLowerCase() !== "cancelled");
     }
 
@@ -1116,16 +938,10 @@
       validateBookingForm();
     });
 
-    // Init booking
     dateEl.value = todayYMD();
     refreshSlots();
 
-    /* ============================================================
-       TAX CALCULATOR (simplified; federal only; no overtime)
-       - Standard deduction (approx. 2025-ish placeholders, adjust if you want)
-       - Brackets simplified (single/mfj/mfs/hoh) - rough
-       - Dependent credit $2,200 each (your request)
-       ============================================================ */
+    // TAX CALCULATOR
     const calcBtn = document.getElementById("calcBtn");
     const calcMsg = document.getElementById("calcMsg");
 
@@ -1147,11 +963,10 @@
     const neoSub  = document.getElementById("neoSub");
 
     function stdDeduction(status){
-      // rough placeholders; update later if you want exact year values
       if (status === "mfj") return 29200;
       if (status === "mfs") return 14600;
       if (status === "hoh") return 21900;
-      return 14600; // single
+      return 14600;
     }
 
     function calcTaxFromBrackets(status, taxable){
@@ -1197,7 +1012,6 @@
       const table = brackets[status] || brackets.single;
       let tax = 0;
       const x = Math.max(0, taxable);
-
       for (const [a,b,r] of table) {
         if (x <= a) break;
         const amt = Math.min(x, b) - a;
@@ -1207,15 +1021,8 @@
     }
 
     function setOutcomeUI(net){
-      // reset
-      neo.classList.remove("refund","owed","pop","flicker");
+      neo.classList.remove("refund","owed");
       rPill.className = "neo-pill pill-gray";
-
-      // pop + flicker each calc
-      neo.classList.add("pop");
-      neo.classList.add("flicker");
-      setTimeout(()=>neo.classList.remove("pop"), 500);
-      setTimeout(()=>neo.classList.remove("flicker"), 520);
 
       if (net >= 0) {
         neo.classList.add("refund");
@@ -1258,29 +1065,23 @@
       const std = stdDeduction(status);
       const taxable = Math.max(0, income - std);
       const baseTax = calcTaxFromBrackets(status, taxable);
-
-      // Dependent credit (simplified) - your requested value
       const depCredit = deps * 2200;
-
       const estTax = Math.max(0, baseTax - depCredit);
-      const net = withheld - estTax; // positive => refund, negative => owed
+      const net = withheld - estTax;
 
       rTax.textContent = money(estTax);
       rWithheld.textContent = money(withheld);
       rStd.textContent = money(std);
       rDepCredit.textContent = money(depCredit);
-      rNet.textContent = money(Math.abs(net)) + (net >= 0 ? "" : "");
+      rNet.textContent = money(Math.abs(net));
 
       setOutcomeUI(net);
 
-      // Show message
       calcMsg.className = "msg ok";
       calcMsg.textContent = "Calculated. Scroll down for results.";
     });
 
-    /* ============================================================
-       STARFIELD + SHOOTING STARS
-       ============================================================ */
+    // STARFIELD + SHOOTING STARS
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
     let stars = [];
@@ -1300,13 +1101,7 @@
       const count = Math.min(260, Math.floor((width * height) / 11000));
       stars = [];
       for (let i = 0; i < count; i++) {
-        stars.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          r: Math.random() * 1.4 + 0.4,
-          o: Math.random(),
-          tw: Math.random() * 2 + 1,
-        });
+        stars.push({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 1.4 + 0.4, o: Math.random(), tw: Math.random() * 2 + 1 });
       }
     }
 
@@ -1315,15 +1110,7 @@
       const startX = Math.random() * width * 0.6;
       const startY = Math.random() * height * 0.3;
       const len = Math.random() * 250 + 120;
-      shootingStars.push({
-        x: startX,
-        y: startY,
-        vx: 6 + Math.random() * 4,
-        vy: 3 + Math.random() * 3,
-        life: 0,
-        maxLife: 35 + Math.random() * 20,
-        length: len,
-      });
+      shootingStars.push({ x: startX, y: startY, vx: 6 + Math.random() * 4, vy: 3 + Math.random() * 3, life: 0, maxLife: 35 + Math.random() * 20, length: len });
     }
 
     function drawStarfield() {
@@ -1350,10 +1137,7 @@
         sh.x += sh.vx;
         sh.y += sh.vy;
         const p = sh.life / sh.maxLife;
-        if (p >= 1) {
-          shootingStars.splice(i, 1);
-          continue;
-        }
+        if (p >= 1) { shootingStars.splice(i, 1); continue; }
         const alpha = 1 - p;
         const tailX = sh.x - sh.vx * sh.length * 0.1;
         const tailY = sh.y - sh.vy * sh.length * 0.1;
