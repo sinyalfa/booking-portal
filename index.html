@@ -6,23 +6,23 @@
   <title>Columbus East Tax Services – Booking Portal</title>
 
   <style>
+    /* ============================================================
+       1) GLOBAL RESETS + VARIABLES
+       ============================================================ */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --galaxy-hue: 220;
-
-      --card-bg: rgba(170, 215, 255, 0.22);
-      --card-border: rgba(210, 235, 255, 0.38);
+      --card-border: rgba(210, 235, 255, 0.26);
       --card-shadow: 0 32px 90px rgba(0, 0, 0, 0.62);
       --text-main: #0b1220;
       --muted: #64748b;
-      --ring: rgba(96, 165, 250, 0.4);
+      --ring: rgba(96, 165, 250, 0.35);
 
       --btn-call: #2563eb;
       --btn-text: #16a34a;
       --btn-email: #9333ea;
       --btn-book: #0f766e;
-      --btn-calc: #f59e0b;
+      --btn-calc: #7c3aed;
 
       --slot-border: #34d399;
       --slot-bg: #ecfdf5;
@@ -31,24 +31,23 @@
       --slot-disabled-bg: #f1f5f9;
       --slot-disabled-border: #cbd5e1;
       --slot-disabled-text: #94a3b8;
-
-      --clock-anim-speed: 2.4s;
     }
 
     html, body { height: 100%; }
-
     body {
       font-family: Arial, Helvetica, sans-serif;
       color: #fff;
       overflow-x: hidden;
       background: radial-gradient(circle at 30% 20%, #0b1a3c, #020617 70%);
-      transition: background 1.4s ease, filter 1.2s ease;
+      transition: background 1.2s ease, filter 1.2s ease;
       position: relative;
     }
-
     body[data-theme="day"] { filter: brightness(1.06) saturate(1.08); }
     body[data-theme="night"] { filter: brightness(0.98) saturate(1.0); }
 
+    /* ============================================================
+       2) CANVAS STARFIELD
+       ============================================================ */
     canvas#starfield {
       position: fixed;
       inset: 0;
@@ -58,112 +57,51 @@
       display: block;
     }
 
-    .space-layer {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: -2;
-    }
-
-    .planet-orbit {
-      position: absolute;
-      border-radius: 50%;
-      width: 560px;
-      height: 560px;
-      transform-origin: center center;
-      animation: orbit-slow 26s linear infinite;
-    }
-
-    .planet-orbit.fast {
-      width: 380px;
-      height: 380px;
-      animation-duration: 16s;
-    }
-
-    .planet-orbit.medium {
-      width: 480px;
-      height: 480px;
-      animation-duration: 20s;
-    }
-
-    .planet-orbit.orbit-1 { top: 6%; left: calc(50% - 280px); }
-    .planet-orbit.orbit-2 { top: 62%; left: calc(50% - 240px); }
-    .planet-orbit.orbit-3 { top: 26%; left: calc(50% - 190px); }
-
-    .planet-glass {
-      position: absolute;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 30% 30%,
-          rgba(255, 255, 255, 0.95),
-          rgba(255, 255, 255, 0.12) 40%,
-          rgba(0, 0, 0, 0) 70%
-        ),
-        conic-gradient(from 120deg,
-          hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%),
-          hsl(calc((var(--galaxy-hue) + 70) * 1deg), 90%, 60%),
-          hsl(calc((var(--galaxy-hue) + 140) * 1deg), 90%, 62%),
-          hsl(calc((var(--galaxy-hue) + 210) * 1deg), 90%, 60%),
-          hsl(calc((var(--galaxy-hue) + 280) * 1deg), 90%, 60%),
-          hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%)
-        );
-
-      box-shadow:
-        0 0 22px hsla(calc(var(--galaxy-hue) * 1deg), 90%, 65%, 0.75),
-        0 0 70px hsla(calc((var(--galaxy-hue) + 110) * 1deg), 90%, 62%, 0.50);
-
-      opacity: 0.78;
-      animation: floaty 5.2s ease-in-out infinite;
-    }
-
-    .planet-orbit.fast .planet-glass { animation-duration: 4.5s; }
-    .planet-orbit.medium .planet-glass { animation-duration: 6.0s; }
-
-    .planet-glass.big { width: 160px; height: 160px; top: -80px; left: calc(50% - 80px); }
-    .planet-glass.medium { width: 110px; height: 110px; top: calc(50% - 55px); left: -55px; }
-    .planet-glass.small { width: 86px; height: 86px; top: calc(100% - 43px); left: calc(50% - 43px); }
-
-    @keyframes orbit-slow { to { transform: rotate(360deg); } }
-    @keyframes floaty { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
-
-    .wrap {
-      position: relative;
-      z-index: 5;
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 22px;
-    }
-
+    /* ============================================================
+       3) LAYOUT: WRAP + GLASS CARD
+       ============================================================ */
+    .wrap { position: relative; z-index: 5; max-width: 980px; margin: 0 auto; padding: 22px; }
     .card {
       position: relative;
-      background: linear-gradient(180deg, rgba(210, 235, 255, 0.26), rgba(170, 215, 255, 0.18));
+      background: linear-gradient(
+        180deg,
+        rgba(210, 235, 255, 0.22),
+        rgba(170, 215, 255, 0.14)
+      );
       border-radius: 28px;
       border: 1px solid var(--card-border);
       box-shadow: var(--card-shadow);
-      padding: 36px 24px 28px;
+      padding: 32px 22px 26px;
       text-align: center;
       color: var(--text-main);
       backdrop-filter: blur(18px) saturate(185%);
       -webkit-backdrop-filter: blur(18px) saturate(185%);
       overflow: hidden;
     }
-
     .card::before {
       content: "";
       position: absolute;
       inset: -2px;
       background:
-        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.08) 45%, rgba(255, 255, 255, 0) 70%),
-        radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.20), rgba(59, 130, 246, 0) 60%);
+        radial-gradient(circle at 20% 0%,
+          rgba(255, 255, 255, 0.40),
+          rgba(255, 255, 255, 0.06) 45%,
+          rgba(255, 255, 255, 0) 70%
+        ),
+        radial-gradient(circle at 80% 10%,
+          rgba(59, 130, 246, 0.18),
+          rgba(59, 130, 246, 0) 60%
+        );
       pointer-events: none;
       z-index: 0;
     }
     .card > * { position: relative; z-index: 1; }
 
-    @media (max-width: 640px) {
-      .card { padding: 28px 18px 20px; }
-    }
+    @media (max-width: 640px) { .card { padding: 26px 16px 18px; } }
 
+    /* ============================================================
+       4) LOGO + CLOCK
+       ============================================================ */
     .logo {
       width: 360px;
       max-width: 92%;
@@ -184,33 +122,36 @@
         transform: translateY(-1px);
       }
     }
-
     .clock-line {
-      margin: 10px auto 22px;
-      max-width: 420px;
-      font-size: 20px;
+      margin: 10px auto 24px;
+      max-width: 520px;
+      font-size: 18px;
       font-weight: 900;
       color: #e5f0ff;
       text-align: center;
       padding: 10px 16px;
       border-radius: 999px;
-      background: radial-gradient(circle at 50% 0%, hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22), rgba(15, 23, 42, 0.95));
-      border: 1px solid rgba(191, 219, 254, 0.3);
+      background: radial-gradient(
+        circle at 50% 0%,
+        hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22),
+        rgba(15, 23, 42, 0.95)
+      );
+      border: 1px solid rgba(191, 219, 254, 0.26);
       letter-spacing: 0.5px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      animation: glowPulse var(--clock-anim-speed) ease-in-out infinite;
+      animation: glowPulse 2.4s ease-in-out infinite;
     }
+    @media (max-width: 480px) { .clock-line { font-size: 15px; padding: 9px 10px; } }
 
-    @media (max-width: 480px) {
-      .clock-line { font-size: 16px; padding: 9px 10px; }
-    }
-
+    /* ============================================================
+       5) BUTTONS
+       ============================================================ */
     .btn {
       width: 100%;
-      padding: 18px;
-      margin: 12px 0;
+      padding: 16px;
+      margin: 10px 0;
       border: none;
       border-radius: 18px;
       font-size: 18px;
@@ -220,7 +161,6 @@
       transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.5);
     }
-
     .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7); }
     .btn:active { transform: translateY(0); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.5); }
 
@@ -228,17 +168,19 @@
     .btn.text { background: var(--btn-text); }
     .btn.email { background: var(--btn-email); }
     .btn.book { background: var(--btn-book); }
-    .btn.calc { background: var(--btn-calc); color: #111827; }
+    .btn.calc { background: var(--btn-calc); }
 
-    .booking, .calculator {
-      margin-top: 18px;
+    /* ============================================================
+       6) PANELS (BOOKING + CALCULATOR)
+       ============================================================ */
+    .panel {
+      margin-top: 14px;
       text-align: left;
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.55s ease;
     }
-    .booking.open { max-height: 2600px; }
-    .calculator.open { max-height: 2400px; }
+    .panel.open { max-height: 4000px; }
 
     .section {
       margin-top: 12px;
@@ -249,7 +191,7 @@
     }
 
     .subline { font-size: 15px; font-weight: 900; color: #0f172a; }
-    .now { margin-top: 4px; font-weight: 700; font-size: 13px; color: #2563eb; }
+    .now { margin-top: 4px; font-weight: 800; font-size: 13px; color: #2563eb; }
 
     .row {
       display: grid;
@@ -257,9 +199,7 @@
       gap: 12px;
       margin-top: 10px;
     }
-    @media (max-width: 720px) {
-      .row { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 720px) { .row { grid-template-columns: 1fr; } }
 
     label {
       font-size: 13px;
@@ -271,19 +211,6 @@
       gap: 8px;
     }
 
-    .today-pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 900;
-      color: #0b1220;
-      background: rgba(34, 197, 94, 0.18);
-      border: 1px solid rgba(34, 197, 94, 0.45);
-    }
-
     input, select {
       width: 100%;
       padding: 12px 12px;
@@ -291,17 +218,10 @@
       border: 1px solid #cbd5e1;
       font-size: 14px;
       outline: none;
-      background: #fff;
     }
-
     input:focus, select:focus {
       border-color: rgba(37, 99, 235, 0.85);
       box-shadow: 0 0 0 3px var(--ring);
-    }
-
-    input.today {
-      border-color: rgba(34, 197, 94, 0.7);
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18), 0 0 18px rgba(34, 197, 94, 0.18);
     }
 
     .slots-title { margin: 16px 0 10px; font-weight: 900; color: #0f172a; font-size: 15px; }
@@ -325,16 +245,13 @@
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
       user-select: none;
     }
-
     .slot:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12); }
-
     .slot.active {
       background: var(--slot-active-bg);
       border-color: var(--slot-active-border);
       color: #1e1b4b;
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.24);
     }
-
     .slot.disabled {
       background: var(--slot-disabled-bg);
       border-color: var(--slot-disabled-border);
@@ -349,7 +266,6 @@
       background: #020617;
       width: 100%;
     }
-
     .btn.confirm:disabled {
       opacity: 0.5;
       cursor: not-allowed;
@@ -365,11 +281,13 @@
       font-weight: 900;
       display: none;
     }
-
     .msg.ok { display: block; background: #dcfce7; color: #166534; border: 1px solid #86efac; }
     .msg.bad { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
     .msg.warn { display: block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
+    /* ============================================================
+       7) CONFIRM CARD (after successful booking)
+       ============================================================ */
     .confirm-card {
       display: none;
       margin-top: 16px;
@@ -387,7 +305,6 @@
       padding-bottom: 10px;
       border-bottom: 1px solid #e5e7eb;
     }
-
     .check {
       width: 40px;
       height: 40px;
@@ -401,7 +318,6 @@
       color: #166534;
       font-size: 20px;
     }
-
     .confirm-title { font-size: 17px; font-weight: 900; color: #0f172a; }
     .confirm-sub { font-size: 13px; color: #475569; font-weight: 700; }
 
@@ -419,188 +335,292 @@
       padding: 10px;
       background: #ffffff;
     }
-
     .mini-label { font-size: 12px; font-weight: 900; color: #64748b; margin-bottom: 4px; }
     .mini-val { font-size: 14px; font-weight: 900; color: #0f172a; word-break: break-word; }
 
-    /* -------- Calculator styling (light yellow + white mix) -------- */
-    .calc-section {
+    /* ============================================================
+       8) TAX CALC SECTION LOOK (light yellow/white mix)
+       ============================================================ */
+    .calc-wrap {
+      background: linear-gradient(180deg, #fffce9, #ffffff 60%);
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 14px;
       margin-top: 12px;
-      border-radius: 20px;
-      border: 1px solid #fde68a;
-      padding: 16px;
-      background:
-        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.75) 55%, rgba(254, 243, 199, 0.92) 100%),
-        linear-gradient(180deg, #fff, #fef3c7);
     }
-
     .calc-note {
       margin-top: 10px;
       font-size: 12px;
       font-weight: 800;
-      color: #6b7280;
-      line-height: 1.35;
+      color: #475569;
+      line-height: 1.3;
     }
 
-    .result-box {
-      margin-top: 14px;
+    /* ============================================================
+       9) FUTURISTIC NEON RESULT HUD (flashy)
+       ============================================================ */
+    .neo-result{
+      grid-column: 1 / -1;
+      position: relative;
+      border-radius: 18px;
+      padding: 16px 16px 14px;
+      overflow: hidden;
+
+      background: radial-gradient(circle at 30% 10%,
+        rgba(255,255,255,0.10),
+        rgba(255,255,255,0.04) 40%,
+        rgba(2,6,23,0.55) 85%
+      );
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow:
+        0 18px 55px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px) saturate(150%);
+      -webkit-backdrop-filter: blur(14px) saturate(150%);
+      margin-top: 12px;
+    }
+
+    .neo-border{
+      position:absolute; inset:-2px;
+      border-radius: 20px;
+      padding: 2px;
+      background: conic-gradient(
+        from 0deg,
+        rgba(59,130,246,0.0),
+        rgba(168,85,247,0.85),
+        rgba(34,211,238,0.85),
+        rgba(59,130,246,0.85),
+        rgba(168,85,247,0.85),
+        rgba(59,130,246,0.0)
+      );
+      filter: drop-shadow(0 0 18px rgba(34,211,238,0.30))
+              drop-shadow(0 0 28px rgba(168,85,247,0.22));
+      opacity: 0.95;
+      animation: neoSpin 3.2s linear infinite;
+      pointer-events:none;
+    }
+    @keyframes neoSpin{ to { transform: rotate(360deg); } }
+    .neo-result > .neo-border::before{
+      content:"";
+      position:absolute; inset:2px;
       border-radius: 16px;
-      padding: 14px;
-      border: 1px solid #e5e7eb;
-      background: rgba(255,255,255,0.9);
+      background: rgba(2,6,23,0.40);
     }
 
-    .result-pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 14px;
-      border-radius: 999px;
+    .neo-scan{
+      position:absolute; inset:0;
+      background: linear-gradient(
+        180deg,
+        rgba(34,211,238,0) 0%,
+        rgba(34,211,238,0.10) 45%,
+        rgba(34,211,238,0) 70%
+      );
+      transform: translateY(-60%);
+      animation: neoScan 2.6s ease-in-out infinite;
+      opacity: 0.6;
+      pointer-events:none;
+    }
+    @keyframes neoScan{
+      0%   { transform: translateY(-70%); opacity: 0.25; }
+      50%  { transform: translateY(0%);   opacity: 0.75; }
+      100% { transform: translateY(70%);  opacity: 0.25; }
+    }
+
+    .neo-top{
+      display:flex; justify-content: space-between; align-items:center; gap:10px;
+      position: relative; z-index: 2;
+    }
+    .neo-title{
+      font-size: 13px;
       font-weight: 900;
-      font-size: 14px;
-      border: 1px solid transparent;
-      margin-top: 10px;
-      user-select: none;
+      color: rgba(226,232,240,0.95);
+      letter-spacing: 0.3px;
     }
-    .pill-green { background: #16a34a; color: #fff; border-color: #15803d; }
-    .pill-red { background: #ef4444; color: #fff; border-color: #dc2626; }
-    .pill-gray { background: #111827; color: #fff; border-color: #0b1220; }
+    .neo-chip{
+      font-size: 11px;
+      font-weight: 900;
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: rgba(226,232,240,0.95);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+      white-space: nowrap;
+    }
 
-    .calc-grid3 {
+    .neo-main{
+      display:flex;
+      align-items:center;
+      gap: 12px;
       margin-top: 10px;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
+      position: relative;
+      z-index: 2;
     }
-    @media (max-width: 860px) { .calc-grid3 { grid-template-columns: 1fr; } }
+    .neo-icon{
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 26px;
+      font-weight: 900;
+      color: rgba(226,232,240,0.95);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow:
+        0 0 0 3px rgba(34,211,238,0.10),
+        0 0 22px rgba(34,211,238,0.18);
+    }
 
-    .calc-mini {
-      border-radius: 14px;
-      border: 1px solid #e5e7eb;
-      padding: 10px;
-      background: #ffffff;
+    .neo-amount{
+      font-size: 46px;
+      line-height: 1.05;
+      font-weight: 1000;
+      letter-spacing: -0.7px;
+      color: rgba(226,232,240,0.98);
+      text-shadow:
+        0 0 18px rgba(34,211,238,0.20),
+        0 0 30px rgba(168,85,247,0.12);
     }
-    .calc-mini .mini-label { margin-bottom: 6px; }
-    .calc-mini .mini-val { font-size: 15px; }
+    @media (max-width: 560px){
+      .neo-amount{ font-size: 36px; }
+      .neo-icon{ width: 46px; height: 46px; font-size: 22px; }
+    }
+
+    .neo-bottom{
+      margin-top: 10px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;
+    }
+    .neo-sub{
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(148,163,184,0.95);
+      max-width: 520px;
+    }
+
+    .neo-pill{
+      padding: 12px 18px;
+      font-size: 15px;
+      font-weight: 1000;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: rgba(226,232,240,0.98);
+      box-shadow:
+        0 10px 26px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.10);
+    }
+
+    .pill-green{
+      background: rgba(34,197,94,0.16);
+      border-color: rgba(34,197,94,0.35);
+      box-shadow: 0 12px 30px rgba(34,197,94,0.18), inset 0 1px 0 rgba(255,255,255,0.10);
+    }
+    .pill-red{
+      background: rgba(239,68,68,0.16);
+      border-color: rgba(239,68,68,0.35);
+      box-shadow: 0 12px 30px rgba(239,68,68,0.18), inset 0 1px 0 rgba(255,255,255,0.10);
+    }
+    .pill-gray{
+      background: rgba(148,163,184,0.12);
+      border-color: rgba(148,163,184,0.25);
+    }
+
+    /* Outcome border tint */
+    .neo-result.refund .neo-border{
+      background: conic-gradient(from 0deg,
+        rgba(34,197,94,0.0),
+        rgba(34,197,94,0.95),
+        rgba(34,211,238,0.85),
+        rgba(34,197,94,0.95),
+        rgba(34,197,94,0.0)
+      );
+      filter: drop-shadow(0 0 20px rgba(34,197,94,0.25))
+              drop-shadow(0 0 30px rgba(34,211,238,0.18));
+    }
+    .neo-result.owed .neo-border{
+      background: conic-gradient(from 0deg,
+        rgba(239,68,68,0.0),
+        rgba(239,68,68,0.95),
+        rgba(168,85,247,0.80),
+        rgba(239,68,68,0.95),
+        rgba(239,68,68,0.0)
+      );
+      filter: drop-shadow(0 0 20px rgba(239,68,68,0.25))
+              drop-shadow(0 0 30px rgba(168,85,247,0.18));
+    }
+
+    /* one-time pop */
+    .neo-result.pop{ animation: neoPop 420ms ease-out; }
+    @keyframes neoPop{
+      0%   { transform: scale(0.985); }
+      60%  { transform: scale(1.012); }
+      100% { transform: scale(1.0); }
+    }
+
+    /* Amount color switch */
+    .neo-result.refund .neo-amount{
+      color: rgba(187, 255, 220, 0.98);
+      text-shadow:
+        0 0 14px rgba(34,197,94,0.35),
+        0 0 28px rgba(34,211,238,0.18);
+    }
+    .neo-result.owed .neo-amount{
+      color: rgba(255, 200, 200, 0.98);
+      text-shadow:
+        0 0 14px rgba(239,68,68,0.35),
+        0 0 28px rgba(168,85,247,0.16);
+    }
+
+    /* Electric flicker (brief) */
+    .neo-result.flicker .neo-amount,
+    .neo-result.flicker .neo-chip,
+    .neo-result.flicker .neo-pill{
+      animation: electricFlicker 420ms linear 1;
+    }
+    @keyframes electricFlicker{
+      0%   { opacity: 1; filter: brightness(1); transform: translateY(0); }
+      10%  { opacity: 0.55; filter: brightness(1.25); transform: translateY(-0.5px); }
+      18%  { opacity: 1; }
+      28%  { opacity: 0.65; filter: brightness(1.35); }
+      40%  { opacity: 1; }
+      55%  { opacity: 0.72; filter: brightness(1.22); }
+      70%  { opacity: 1; transform: translateY(0.4px); }
+      100% { opacity: 1; filter: brightness(1); transform: translateY(0); }
+    }
   </style>
 </head>
 
 <body>
   <canvas id="starfield"></canvas>
 
-  <div class="space-layer">
-    <div class="planet-orbit orbit-1"><div class="planet-glass big"></div></div>
-    <div class="planet-orbit orbit-2 medium"><div class="planet-glass medium"></div></div>
-    <div class="planet-orbit orbit-3 fast"><div class="planet-glass small"></div></div>
-  </div>
-
   <div class="wrap">
     <div class="card">
-      <img class="logo"
+      <img
+        class="logo"
         src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png"
         alt="Columbus East Tax Services Logo"
       />
 
       <div id="clockLine" class="clock-line"></div>
 
+      <!-- KEEP ALL BUTTONS -->
       <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
       <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
       <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
 
-      <!-- NEW: Tax Calculator toggle (Email stays) -->
-      <button class="btn calc" id="calcToggleBtn">🧮 Tax Calculator</button>
-
-      <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
-
-      <!-- TAX CALCULATOR PANEL -->
-      <div id="calculator" class="calculator">
-        <div class="calc-section">
-          <div class="subline">Federal Tax Calculator (Estimate)</div>
-          <div class="now" id="calcNowLine"></div>
-
-          <div class="row" style="margin-top:12px;">
-            <div>
-              <label for="taxYear">Tax Year</label>
-              <select id="taxYear">
-                <option value="2025" selected>2025</option>
-                <option value="2024">2024</option>
-              </select>
-            </div>
-            <div>
-              <label for="filingStatus">Filing Status</label>
-              <select id="filingStatus">
-                <option value="single" selected>Single</option>
-                <option value="mfj">Married Filing Jointly</option>
-                <option value="mfs">Married Filing Separately</option>
-                <option value="hoh">Head of Household</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label for="w2Wages">W-2 Box 1 Wages</label>
-              <input id="w2Wages" inputmode="decimal" placeholder="e.g., 56000" />
-            </div>
-            <div>
-              <label for="otherIncome">Other Income (optional)</label>
-              <input id="otherIncome" inputmode="decimal" placeholder="e.g., 1500" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label for="withheld">W-2 Box 2 Federal Withholding</label>
-              <input id="withheld" inputmode="decimal" placeholder="e.g., 2300" />
-            </div>
-            <div>
-              <label for="dependents">Dependents</label>
-              <input id="dependents" inputmode="numeric" placeholder="e.g., 0" />
-            </div>
-          </div>
-
-          <button id="calcBtn" class="btn confirm" type="button" style="margin-top:14px;">Calculate</button>
-
-          <div id="calcMsg" class="msg"></div>
-
-          <div class="result-box" id="calcResult" style="display:none;">
-            <div class="subline" style="margin-bottom:6px;">Result</div>
-
-            <div class="calc-grid3">
-              <div class="calc-mini">
-                <div class="mini-label">Taxable income (est.)</div>
-                <div class="mini-val" id="rTaxable">$0</div>
-              </div>
-              <div class="calc-mini">
-                <div class="mini-label">Tax (est.)</div>
-                <div class="mini-val" id="rTax">$0</div>
-              </div>
-              <div class="calc-mini">
-                <div class="mini-label">Credits (dependents)</div>
-                <div class="mini-val" id="rCredits">$0</div>
-              </div>
-              <div class="calc-mini">
-                <div class="mini-label">Withholding</div>
-                <div class="mini-val" id="rWithheld">$0</div>
-              </div>
-              <div class="calc-mini" style="grid-column: 1 / -1;">
-                <div class="mini-label">Estimated refund / amount owed</div>
-                <div class="mini-val" id="rNet">$0</div>
-                <div id="rPill" class="result-pill pill-gray">Estimate</div>
-              </div>
-            </div>
-
-            <div class="calc-note">
-              This is a basic federal estimate using simplified rules (standard deduction + brackets + dependent credit).
-              It does not include itemized deductions, EITC, CTC phaseouts, education credits, self-employment tax, ACA, etc.
-              Use as a quick estimate only.
-            </div>
-          </div>
-        </div>
-      </div>
+      <button class="btn book" id="toggleBook">📅 Book Appointment</button>
+      <button class="btn calc" id="toggleCalc">🧮 Tax Calculator</button>
 
       <!-- BOOKING PANEL -->
-      <div id="booking" class="booking">
+      <div id="bookingPanel" class="panel">
         <div class="section">
           <div class="subline">Book an Appointment</div>
           <div id="nowLine" class="now"></div>
@@ -642,7 +662,7 @@
 
           <div class="row">
             <div>
-              <label for="date">Date <span id="todayBadge" class="today-pill" style="display:none;">Today</span></label>
+              <label for="date">Date</label>
               <input id="date" type="date" />
             </div>
             <div>
@@ -657,7 +677,6 @@
           <div id="times" class="times"></div>
 
           <button id="confirmBtn" class="btn confirm" disabled>Confirm Booking</button>
-
           <div id="msg" class="msg"></div>
 
           <div id="confirmCard" class="confirm-card">
@@ -692,26 +711,123 @@
               </div>
             </div>
           </div>
-
         </div>
       </div>
-      <!-- /booking -->
+
+      <!-- TAX CALCULATOR PANEL -->
+      <div id="calcPanel" class="panel">
+        <div class="section calc-wrap">
+          <div class="subline">Tax Calculator (Federal-only • simplified)</div>
+          <div class="now" style="color:#7c3aed;">Quick estimate (standard deduction + basic brackets + dependent credit)</div>
+
+          <div class="row" style="margin-top:12px;">
+            <div>
+              <label for="income">Total Income (W-2 Box 1)</label>
+              <input id="income" type="number" inputmode="numeric" placeholder="e.g. 56000" />
+            </div>
+            <div>
+              <label for="withheld">Tax Withheld (W-2 Box 2)</label>
+              <input id="withheld" type="number" inputmode="numeric" placeholder="e.g. 2300" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="filing">Filing Status</label>
+              <select id="filing">
+                <option value="single">Single</option>
+                <option value="mfj">Married Filing Jointly</option>
+                <option value="mfs">Married Filing Separately</option>
+                <option value="hoh">Head of Household</option>
+              </select>
+            </div>
+            <div>
+              <label for="deps">Total Dependents</label>
+              <input id="deps" type="number" inputmode="numeric" placeholder="e.g. 0" />
+            </div>
+          </div>
+
+          <button id="calcBtn" class="btn confirm" style="margin-top:14px;">Calculate</button>
+          <div id="calcMsg" class="msg"></div>
+
+          <!-- Results -->
+          <div class="section" style="margin-top:14px;">
+            <div class="subline" style="margin-bottom:8px;">Estimate Results</div>
+
+            <div class="row">
+              <div class="mini-box">
+                <div class="mini-label">Estimated Tax (rough)</div>
+                <div id="rTax" class="mini-val">$0</div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Withheld</div>
+                <div id="rWithheld" class="mini-val">$0</div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="mini-box">
+                <div class="mini-label">Standard Deduction (est.)</div>
+                <div id="rStd" class="mini-val">$0</div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Dependent Credit ($2,200 each)</div>
+                <div id="rDepCredit" class="mini-val">$0</div>
+              </div>
+            </div>
+
+            <!-- FUTURISTIC NEON RESULT HUD -->
+            <div class="neo-result" id="neoResult">
+              <div class="neo-border"></div>
+              <div class="neo-scan"></div>
+
+              <div class="neo-top">
+                <div class="neo-title">Estimated refund / amount owed</div>
+                <div class="neo-chip" id="neoChip">FEDERAL • ESTIMATE</div>
+              </div>
+
+              <div class="neo-main">
+                <div class="neo-icon" id="neoIcon">⟡</div>
+                <div class="neo-amount" id="rNet">$0</div>
+              </div>
+
+              <div class="neo-bottom">
+                <div id="rPill" class="neo-pill pill-gray">Estimate</div>
+                <div class="neo-sub" id="neoSub">This is a simplified estimate (not IRS official).</div>
+              </div>
+            </div>
+
+            <div class="calc-note">
+              This is a basic estimate using simplified rules. It does not include itemized deductions, EITC/CTC phaseouts, education credits,
+              self-employment tax, ACA, additional taxes, etc. Use as a quick planning estimate only.
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    /* ------------------------------------------------------------
-       1) SUPABASE CLIENT CONFIG (Booking uses this)
-       ------------------------------------------------------------ */
+    /* ============================================================
+       SUPABASE CONFIG (Booking insert uses this)
+       ============================================================ */
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
+
+    // NOTE: You asked to include your anon key. Keep this page public only if your RLS is strong.
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs";
+
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    /* ------------------------------------------------------------
-       2) UTILITIES
-       ------------------------------------------------------------ */
-    function pad(n) { return String(n).padStart(2, "0"); }
+    /* ============================================================
+       UTILITIES
+       ============================================================ */
+    const pad = (n) => String(n).padStart(2, "0");
+    const money = (n) => {
+      const x = Number(n || 0);
+      return x.toLocaleString("en-US", { style: "currency", currency: "USD" });
+    };
     function todayYMD() {
       const d = new Date();
       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -734,27 +850,14 @@
     function isValidEmail(v) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
     }
-    function money(n) {
-      const x = Number(n || 0);
-      return x.toLocaleString("en-US", { style:"currency", currency:"USD", maximumFractionDigits: 0 });
-    }
-    function numVal(id) {
-      const v = (document.getElementById(id).value || "").toString().replace(/[$, ]/g,"").trim();
-      const n = parseFloat(v);
-      return Number.isFinite(n) ? n : 0;
-    }
 
-    /* ------------------------------------------------------------
-       3) AUTO SWITCH DAY/NIGHT + SYNC GALAXY HUE WITH REAL TIME
-       ------------------------------------------------------------ */
+    /* ============================================================
+       THEME + GALAXY HUE
+       ============================================================ */
     function applyThemeAndGalaxy() {
       const now = new Date();
-      const h = now.getHours();
-      const m = now.getMinutes();
-      const s = now.getSeconds();
-
+      const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
       document.body.dataset.theme = (h >= 7 && h < 19) ? "day" : "night";
-
       const hue = (h * 15 + m * 0.25 + s * (0.25 / 60)) % 360;
       document.documentElement.style.setProperty("--galaxy-hue", hue.toFixed(2));
 
@@ -766,78 +869,63 @@
     applyThemeAndGalaxy();
     setInterval(applyThemeAndGalaxy, 10000);
 
-    /* ------------------------------------------------------------
-       4) NEON CLOCK
-       ------------------------------------------------------------ */
+    /* ============================================================
+       CLOCK
+       ============================================================ */
     const clockLine = document.getElementById("clockLine");
     const nowLine = document.getElementById("nowLine");
-    const calcNowLine = document.getElementById("calcNowLine");
-
     function updateClock() {
       const now = new Date();
       const datePart = new Intl.DateTimeFormat("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
+        weekday: "short", month: "short", day: "2-digit", year: "numeric",
       }).format(now);
-
       const timePart = new Intl.DateTimeFormat("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
+        hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
       }).format(now);
-
       clockLine.textContent = `${datePart} • ${timePart}`;
-      nowLine.textContent = `Now: ${datePart} • ${timePart}`;
-      calcNowLine.textContent = `Now: ${datePart} • ${timePart}`;
+      if (nowLine) nowLine.textContent = `Now: ${datePart} • ${timePart}`;
     }
     updateClock();
     setInterval(updateClock, 1000);
 
-    /* ------------------------------------------------------------
-       5) COLLAPSIBLE PANELS (booking + calculator)
-       ------------------------------------------------------------ */
-    const toggleBtn = document.getElementById("toggleBtn");
-    const booking = document.getElementById("booking");
+    /* ============================================================
+       PANEL TOGGLES
+       ============================================================ */
+    const toggleBook = document.getElementById("toggleBook");
+    const toggleCalc = document.getElementById("toggleCalc");
+    const bookingPanel = document.getElementById("bookingPanel");
+    const calcPanel = document.getElementById("calcPanel");
 
-    const calcToggleBtn = document.getElementById("calcToggleBtn");
-    const calculator = document.getElementById("calculator");
-
-    function openPanel(panelEl) {
-      // optional behavior: open one at a time
-      if (panelEl === booking) calculator.classList.remove("open");
-      if (panelEl === calculator) booking.classList.remove("open");
-      panelEl.classList.toggle("open");
-    }
-
-    toggleBtn.addEventListener("click", () => {
-      openPanel(booking);
-      if (booking.classList.contains("open")) {
+    toggleBook.addEventListener("click", () => {
+      bookingPanel.classList.toggle("open");
+      if (bookingPanel.classList.contains("open")) {
+        calcPanel.classList.remove("open");
         if (!dateEl.value) dateEl.value = todayYMD();
         refreshSlots();
       }
     });
 
-    calcToggleBtn.addEventListener("click", () => {
-      openPanel(calculator);
+    toggleCalc.addEventListener("click", () => {
+      calcPanel.classList.toggle("open");
+      if (calcPanel.classList.contains("open")) {
+        bookingPanel.classList.remove("open");
+      }
     });
 
-    /* ------------------------------------------------------------
-       6) BOOKING LOGIC (unchanged)
-       ------------------------------------------------------------ */
+    /* ============================================================
+       BOOKING LOGIC
+       ============================================================ */
     const timesBox = document.getElementById("times");
     const confirmBtn = document.getElementById("confirmBtn");
     const msg = document.getElementById("msg");
     const confirmCard = document.getElementById("confirmCard");
-    const todayBadge = document.getElementById("todayBadge");
 
     const fullNameEl = document.getElementById("fullName");
     const emailEl = document.getElementById("email");
     const serviceEl = document.getElementById("service");
     const locationEl = document.getElementById("location");
     const dateEl = document.getElementById("date");
+    const durationEl = document.getElementById("duration");
 
     const cName = document.getElementById("cName");
     const cEmail = document.getElementById("cEmail");
@@ -848,18 +936,14 @@
     let selectedSlot = null;
     let bookedSet = new Set();
 
-    function updateTodayHighlight() {
-      const isToday = dateEl.value === todayYMD();
-      todayBadge.style.display = isToday ? "inline-flex" : "none";
-      dateEl.classList.toggle("today", isToday);
-    }
-
     function getAllowedHours(dow) {
+      // weekday: 9/10/11/12 and 5/6/7/8 pm
       if (dow >= 1 && dow <= 5) return [9, 10, 11, 12, 17, 18, 19, 20];
+      // saturday
       if (dow === 6) return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+      // sunday
       return [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
     }
-
     function to12hLabel(hm) {
       let [H, M] = hm.split(":").map(Number);
       const ampm = H >= 12 ? "PM" : "AM";
@@ -898,7 +982,6 @@
       confirmBtn.disabled = true;
       msg.className = "msg";
       msg.textContent = "";
-      updateTodayHighlight();
 
       if (!ymd) {
         msg.className = "msg warn";
@@ -933,37 +1016,30 @@
             document.querySelectorAll(".slot").forEach((x) => x.classList.remove("active"));
             div.classList.add("active");
             selectedSlot = hm;
-            validateForm();
+            validateBookingForm();
           });
         }
-
         timesBox.appendChild(div);
       });
 
-      if (!anyAvailable) {
-        msg.className = "msg warn";
-        msg.textContent = "No available times for this date.";
-      } else {
-        msg.className = "msg warn";
-        msg.textContent = "Select a time to continue.";
-      }
+      msg.className = "msg warn";
+      msg.textContent = anyAvailable ? "Select a time to continue." : "No available times for this date.";
     }
 
-    function validateForm() {
+    function validateBookingForm() {
       const nameOk = (fullNameEl.value || "").trim().length > 1;
       const emailOk = isValidEmail((emailEl.value || "").trim());
       const slotOk = !!selectedSlot;
       confirmBtn.disabled = !(nameOk && emailOk && slotOk);
     }
 
-    fullNameEl.addEventListener("input", validateForm);
-    emailEl.addEventListener("input", validateForm);
-    dateEl.addEventListener("change", () => { refreshSlots(); validateForm(); });
+    fullNameEl.addEventListener("input", validateBookingForm);
+    emailEl.addEventListener("input", validateBookingForm);
+    dateEl.addEventListener("change", () => { refreshSlots(); validateBookingForm(); });
 
     async function hasSameDayBooking(email, ymd) {
       const start = new Date(ymd + "T00:00:00");
       const end = new Date(ymd + "T23:59:59");
-
       const { data, error } = await supa
         .from("appointments")
         .select("start_time,status")
@@ -992,7 +1068,7 @@
       if (!name || !isValidEmail(email) || !selectedSlot || !ymd) {
         msg.className = "msg bad";
         msg.textContent = "Please fill all fields and pick a time.";
-        validateForm();
+        validateBookingForm();
         return;
       }
 
@@ -1000,12 +1076,12 @@
       if (already) {
         msg.className = "msg bad";
         msg.textContent = "You already have an appointment booked for this day.";
-        confirmBtn.disabled = false;
+        validateBookingForm();
         return;
       }
 
       const startDT = makeLocalDateTimeFrom24(ymd, selectedSlot);
-      const durationMin = parseInt(document.getElementById("duration").value, 10) || 60;
+      const durationMin = parseInt(durationEl.value, 10) || 60;
       const endDT = new Date(startDT.getTime() + durationMin * 60000);
 
       const { error } = await supa.from("appointments").insert([{
@@ -1022,13 +1098,14 @@
         console.error("Insert error:", error);
         msg.className = "msg bad";
         msg.textContent = "Booking failed. Please try again in a moment.";
-        confirmBtn.disabled = false;
+        validateBookingForm();
         return;
       }
 
       msg.className = "msg ok";
-      msg.textContent = "Appointment confirmed! A staff member will review it.";
+      msg.textContent = "Appointment booked & confirmation sent!";
       confirmCard.classList.add("show");
+
       cName.textContent = name;
       cEmail.textContent = email;
       cWhen.textContent = fmtNice(startDT);
@@ -1036,203 +1113,176 @@
       cLoc.textContent = location;
 
       await refreshSlots();
-      validateForm();
+      validateBookingForm();
     });
 
+    // Init booking
     dateEl.value = todayYMD();
-    updateTodayHighlight();
     refreshSlots();
 
-    /* ------------------------------------------------------------
-       7) TAX CALCULATOR (basic federal estimate, no overtime)
-       ------------------------------------------------------------ */
-
-    // EDIT THIS SECTION if you want different IRS-year values.
-    // These are baseline progressive brackets + standard deduction by filing status.
-    // (Set to the year you want to use.)
-    const TAX_TABLES = {
-      // NOTE: You should update these to the exact IRS numbers you want for 2025.
-      // Values below are a reasonable baseline structure.
-      "2025": {
-        standardDeduction: {
-          single: 14600,
-          mfj: 29200,
-          mfs: 14600,
-          hoh: 21900,
-        },
-        brackets: {
-          single: [
-            { upTo: 11600, rate: 0.10 },
-            { upTo: 47150, rate: 0.12 },
-            { upTo: 100525, rate: 0.22 },
-            { upTo: 191950, rate: 0.24 },
-            { upTo: 243725, rate: 0.32 },
-            { upTo: 609350, rate: 0.35 },
-            { upTo: Infinity, rate: 0.37 },
-          ],
-          mfj: [
-            { upTo: 23200, rate: 0.10 },
-            { upTo: 94300, rate: 0.12 },
-            { upTo: 201050, rate: 0.22 },
-            { upTo: 383900, rate: 0.24 },
-            { upTo: 487450, rate: 0.32 },
-            { upTo: 731200, rate: 0.35 },
-            { upTo: Infinity, rate: 0.37 },
-          ],
-          mfs: [
-            { upTo: 11600, rate: 0.10 },
-            { upTo: 47150, rate: 0.12 },
-            { upTo: 100525, rate: 0.22 },
-            { upTo: 191950, rate: 0.24 },
-            { upTo: 243725, rate: 0.32 },
-            { upTo: 365600, rate: 0.35 },
-            { upTo: Infinity, rate: 0.37 },
-          ],
-          hoh: [
-            { upTo: 16550, rate: 0.10 },
-            { upTo: 63100, rate: 0.12 },
-            { upTo: 100500, rate: 0.22 },
-            { upTo: 191950, rate: 0.24 },
-            { upTo: 243700, rate: 0.32 },
-            { upTo: 609350, rate: 0.35 },
-            { upTo: Infinity, rate: 0.37 },
-          ],
-        },
-        dependentCreditEach: 2200
-      },
-      "2024": {
-        standardDeduction: {
-          single: 14600,
-          mfj: 29200,
-          mfs: 14600,
-          hoh: 21900,
-        },
-        brackets: {
-          single: [
-            { upTo: 11600, rate: 0.10 },
-            { upTo: 47150, rate: 0.12 },
-            { upTo: 100525, rate: 0.22 },
-            { upTo: 191950, rate: 0.24 },
-            { upTo: 243725, rate: 0.32 },
-            { upTo: 609350, rate: 0.35 },
-            { upTo: Infinity, rate: 0.37 },
-          ],
-          mfj: [
-            { upTo: 23200, rate: 0.10 },
-            { upTo: 94300, rate: 0.12 },
-            { upTo: 201050, rate: 0.22 },
-            { upTo: 383900, rate: 0.24 },
-            { upTo: 487450, rate: 0.32 },
-            { upTo: 731200, rate: 0.35 },
-            { upTo: Infinity, rate: 0.37 },
-          ],
-          mfs: [
-            { upTo: 11600, rate: 0.10 },
-            { upTo: 47150, rate: 0.12 },
-            { upTo: 100525, rate: 0.22 },
-            { upTo: 191950, rate: 0.24 },
-            { upTo: 243725, rate: 0.32 },
-            { upTo: 365600, rate: 0.35 },
-            { upTo: Infinity, rate: 0.37 },
-          ],
-          hoh: [
-            { upTo: 16550, rate: 0.10 },
-            { upTo: 63100, rate: 0.12 },
-            { upTo: 100500, rate: 0.22 },
-            { upTo: 191950, rate: 0.24 },
-            { upTo: 243700, rate: 0.32 },
-            { upTo: 609350, rate: 0.35 },
-            { upTo: Infinity, rate: 0.37 },
-          ],
-        },
-        dependentCreditEach: 2200
-      }
-    };
-
-    function computeProgressiveTax(taxable, bracketList) {
-      let tax = 0;
-      let prev = 0;
-      for (const b of bracketList) {
-        const cap = b.upTo;
-        const amt = Math.max(0, Math.min(taxable, cap) - prev);
-        tax += amt * b.rate;
-        prev = cap;
-        if (taxable <= cap) break;
-      }
-      return Math.max(0, tax);
-    }
-
-    const taxYearEl = document.getElementById("taxYear");
-    const filingStatusEl = document.getElementById("filingStatus");
+    /* ============================================================
+       TAX CALCULATOR (simplified; federal only; no overtime)
+       - Standard deduction (approx. 2025-ish placeholders, adjust if you want)
+       - Brackets simplified (single/mfj/mfs/hoh) - rough
+       - Dependent credit $2,200 each (your request)
+       ============================================================ */
     const calcBtn = document.getElementById("calcBtn");
     const calcMsg = document.getElementById("calcMsg");
-    const calcResult = document.getElementById("calcResult");
-    const rTaxable = document.getElementById("rTaxable");
+
+    const incomeEl = document.getElementById("income");
+    const withheldEl = document.getElementById("withheld");
+    const filingEl = document.getElementById("filing");
+    const depsEl = document.getElementById("deps");
+
     const rTax = document.getElementById("rTax");
-    const rCredits = document.getElementById("rCredits");
     const rWithheld = document.getElementById("rWithheld");
+    const rStd = document.getElementById("rStd");
+    const rDepCredit = document.getElementById("rDepCredit");
     const rNet = document.getElementById("rNet");
     const rPill = document.getElementById("rPill");
 
+    const neo = document.getElementById("neoResult");
+    const neoChip = document.getElementById("neoChip");
+    const neoIcon = document.getElementById("neoIcon");
+    const neoSub  = document.getElementById("neoSub");
+
+    function stdDeduction(status){
+      // rough placeholders; update later if you want exact year values
+      if (status === "mfj") return 29200;
+      if (status === "mfs") return 14600;
+      if (status === "hoh") return 21900;
+      return 14600; // single
+    }
+
+    function calcTaxFromBrackets(status, taxable){
+      const brackets = {
+        single: [
+          [0, 11600, 0.10],
+          [11600, 47150, 0.12],
+          [47150, 100525, 0.22],
+          [100525, 191950, 0.24],
+          [191950, 243725, 0.32],
+          [243725, 609350, 0.35],
+          [609350, Infinity, 0.37],
+        ],
+        mfj: [
+          [0, 23200, 0.10],
+          [23200, 94300, 0.12],
+          [94300, 201050, 0.22],
+          [201050, 383900, 0.24],
+          [383900, 487450, 0.32],
+          [487450, 731200, 0.35],
+          [731200, Infinity, 0.37],
+        ],
+        mfs: [
+          [0, 11600, 0.10],
+          [11600, 47150, 0.12],
+          [47150, 100525, 0.22],
+          [100525, 191950, 0.24],
+          [191950, 243725, 0.32],
+          [243725, 365600, 0.35],
+          [365600, Infinity, 0.37],
+        ],
+        hoh: [
+          [0, 16550, 0.10],
+          [16550, 63100, 0.12],
+          [63100, 100500, 0.22],
+          [100500, 191950, 0.24],
+          [191950, 243700, 0.32],
+          [243700, 609350, 0.35],
+          [609350, Infinity, 0.37],
+        ],
+      };
+
+      const table = brackets[status] || brackets.single;
+      let tax = 0;
+      const x = Math.max(0, taxable);
+
+      for (const [a,b,r] of table) {
+        if (x <= a) break;
+        const amt = Math.min(x, b) - a;
+        if (amt > 0) tax += amt * r;
+      }
+      return tax;
+    }
+
+    function setOutcomeUI(net){
+      // reset
+      neo.classList.remove("refund","owed","pop","flicker");
+      rPill.className = "neo-pill pill-gray";
+
+      // pop + flicker each calc
+      neo.classList.add("pop");
+      neo.classList.add("flicker");
+      setTimeout(()=>neo.classList.remove("pop"), 500);
+      setTimeout(()=>neo.classList.remove("flicker"), 520);
+
+      if (net >= 0) {
+        neo.classList.add("refund");
+        neoChip.textContent = "REFUND • ESTIMATE";
+        neoIcon.textContent = "💸";
+        neoSub.textContent = "Estimated refund (simplified federal rules).";
+        rPill.textContent = "Estimated refund";
+        rPill.className = "neo-pill pill-green";
+      } else {
+        neo.classList.add("owed");
+        neoChip.textContent = "OWED • ESTIMATE";
+        neoIcon.textContent = "⚠️";
+        neoSub.textContent = "Estimated amount owed (simplified federal rules).";
+        rPill.textContent = "Estimated owed";
+        rPill.className = "neo-pill pill-red";
+      }
+    }
+
     calcBtn.addEventListener("click", () => {
-      calcMsg.className = "msg";
-      calcMsg.textContent = "";
-      calcResult.style.display = "none";
+      calcMsg.className = "msg warn";
+      calcMsg.textContent = "Calculating...";
+      calcMsg.style.display = "block";
 
-      const year = taxYearEl.value || "2025";
-      const status = filingStatusEl.value || "single";
+      const income = Number(incomeEl.value || 0);
+      const withheld = Number(withheldEl.value || 0);
+      const deps = Math.max(0, Math.floor(Number(depsEl.value || 0)));
+      const status = filingEl.value;
 
-      const wages = numVal("w2Wages");
-      const other = numVal("otherIncome");
-      const withheld = numVal("withheld");
-      const deps = Math.max(0, Math.floor(numVal("dependents")));
-
-      if ((wages + other) <= 0) {
-        calcMsg.className = "msg warn";
-        calcMsg.textContent = "Enter your income (W-2 wages or other income).";
+      if (income <= 0) {
+        calcMsg.className = "msg bad";
+        calcMsg.textContent = "Enter your income (W-2 Box 1).";
+        return;
+      }
+      if (withheld < 0) {
+        calcMsg.className = "msg bad";
+        calcMsg.textContent = "Withheld can't be negative.";
         return;
       }
 
-      const table = TAX_TABLES[year] || TAX_TABLES["2025"];
-      const std = (table.standardDeduction[status] ?? table.standardDeduction.single);
-      const brackets = (table.brackets[status] ?? table.brackets.single);
+      const std = stdDeduction(status);
+      const taxable = Math.max(0, income - std);
+      const baseTax = calcTaxFromBrackets(status, taxable);
 
-      const agi = Math.max(0, wages + other);
-      const taxable = Math.max(0, agi - std);
+      // Dependent credit (simplified) - your requested value
+      const depCredit = deps * 2200;
 
-      const tax = computeProgressiveTax(taxable, brackets);
+      const estTax = Math.max(0, baseTax - depCredit);
+      const net = withheld - estTax; // positive => refund, negative => owed
 
-      // Dependent credit (simple): $2,200 each (as requested)
-      const credits = deps * (table.dependentCreditEach ?? 2200);
-
-      // Net: withheld - (tax - credits)
-      // If positive => refund estimate; negative => owed estimate
-      const net = withheld - Math.max(0, (tax - credits));
-
-      rTaxable.textContent = money(taxable);
-      rTax.textContent = money(tax);
-      rCredits.textContent = money(credits);
+      rTax.textContent = money(estTax);
       rWithheld.textContent = money(withheld);
+      rStd.textContent = money(std);
+      rDepCredit.textContent = money(depCredit);
+      rNet.textContent = money(Math.abs(net)) + (net >= 0 ? "" : "");
 
-      if (net >= 0) {
-        rNet.textContent = `${money(net)} (Estimated refund)`;
-        rPill.className = "result-pill pill-green";
-        rPill.textContent = "Estimated refund";
-      } else {
-        rNet.textContent = `${money(Math.abs(net))} (Estimated amount owed)`;
-        rPill.className = "result-pill pill-red";
-        rPill.textContent = "Estimated owed";
-      }
+      setOutcomeUI(net);
 
-      calcResult.style.display = "block";
+      // Show message
+      calcMsg.className = "msg ok";
+      calcMsg.textContent = "Calculated. Scroll down for results.";
     });
 
-    /* ------------------------------------------------------------
-       8) CANVAS STARFIELD + SHOOTING STARS
-       ------------------------------------------------------------ */
+    /* ============================================================
+       STARFIELD + SHOOTING STARS
+       ============================================================ */
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
-
     let stars = [];
     let width = window.innerWidth;
     let height = window.innerHeight;
@@ -1247,7 +1297,7 @@
     window.addEventListener("resize", resizeCanvas);
 
     function initStars() {
-      const count = Math.min(220, Math.floor((width * height) / 12000));
+      const count = Math.min(260, Math.floor((width * height) / 11000));
       stars = [];
       for (let i = 0; i < count; i++) {
         stars.push({
@@ -1261,7 +1311,6 @@
     }
 
     let shootingStars = [];
-
     function spawnShootingStar() {
       const startX = Math.random() * width * 0.6;
       const startY = Math.random() * height * 0.3;
@@ -1325,7 +1374,6 @@
     }
 
     setInterval(() => { if (Math.random() < 0.7) spawnShootingStar(); }, 7000);
-
     resizeCanvas();
     drawStarfield();
   </script>
