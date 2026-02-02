@@ -6,16 +6,11 @@
   <title>Columbus East Tax Services – Booking Portal</title>
 
   <style>
-    /* ============================================================
-       1) GLOBAL RESETS + VARIABLES
-       ============================================================ */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      /* Real-time galaxy hue (JS updates this) */
       --galaxy-hue: 220;
 
-      /* Card + text (glossy light-blue glass) */
       --card-bg: rgba(170, 215, 255, 0.22);
       --card-border: rgba(210, 235, 255, 0.38);
       --card-shadow: 0 32px 90px rgba(0, 0, 0, 0.62);
@@ -23,13 +18,12 @@
       --muted: #64748b;
       --ring: rgba(96, 165, 250, 0.4);
 
-      /* Buttons */
       --btn-call: #2563eb;
       --btn-text: #16a34a;
-      --btn-calc: #f59e0b;
+      --btn-email: #9333ea;
       --btn-book: #0f766e;
+      --btn-calc: #f59e0b;
 
-      /* Slots */
       --slot-border: #34d399;
       --slot-bg: #ecfdf5;
       --slot-active-bg: #c7d2fe;
@@ -38,7 +32,6 @@
       --slot-disabled-border: #cbd5e1;
       --slot-disabled-text: #94a3b8;
 
-      /* Clock glow */
       --clock-anim-speed: 2.4s;
     }
 
@@ -53,13 +46,9 @@
       position: relative;
     }
 
-    /* Day/Night theme (JS toggles data-theme) */
     body[data-theme="day"] { filter: brightness(1.06) saturate(1.08); }
     body[data-theme="night"] { filter: brightness(0.98) saturate(1.0); }
 
-    /* ============================================================
-       2) CANVAS STARFIELD + SHOOTING STARS LAYER
-       ============================================================ */
     canvas#starfield {
       position: fixed;
       inset: 0;
@@ -69,9 +58,6 @@
       display: block;
     }
 
-    /* ============================================================
-       3) ORBITING GLASS PLANETS AROUND CARD (BIGGER + FASTER)
-       ============================================================ */
     .space-layer {
       position: fixed;
       inset: 0;
@@ -88,8 +74,17 @@
       animation: orbit-slow 26s linear infinite;
     }
 
-    .planet-orbit.fast { width: 380px; height: 380px; animation-duration: 16s; }
-    .planet-orbit.medium { width: 480px; height: 480px; animation-duration: 20s; }
+    .planet-orbit.fast {
+      width: 380px;
+      height: 380px;
+      animation-duration: 16s;
+    }
+
+    .planet-orbit.medium {
+      width: 480px;
+      height: 480px;
+      animation-duration: 20s;
+    }
 
     .planet-orbit.orbit-1 { top: 6%; left: calc(50% - 280px); }
     .planet-orbit.orbit-2 { top: 62%; left: calc(50% - 240px); }
@@ -112,9 +107,11 @@
           hsl(calc((var(--galaxy-hue) + 280) * 1deg), 90%, 60%),
           hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%)
         );
+
       box-shadow:
         0 0 22px hsla(calc(var(--galaxy-hue) * 1deg), 90%, 65%, 0.75),
         0 0 70px hsla(calc((var(--galaxy-hue) + 110) * 1deg), 90%, 62%, 0.50);
+
       opacity: 0.78;
       animation: floaty 5.2s ease-in-out infinite;
     }
@@ -129,9 +126,6 @@
     @keyframes orbit-slow { to { transform: rotate(360deg); } }
     @keyframes floaty { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
 
-    /* ============================================================
-       4) LAYOUT: CARD WRAPPER + GLOSSY GLASS CARD
-       ============================================================ */
     .wrap {
       position: relative;
       z-index: 5;
@@ -170,9 +164,6 @@
       .card { padding: 28px 18px 20px; }
     }
 
-    /* ============================================================
-       5) LOGO + NEON CLOCK
-       ============================================================ */
     .logo {
       width: 360px;
       max-width: 92%;
@@ -195,8 +186,8 @@
     }
 
     .clock-line {
-      margin: 10px auto 24px;
-      max-width: 520px;
+      margin: 10px auto 22px;
+      max-width: 420px;
       font-size: 20px;
       font-weight: 900;
       color: #e5f0ff;
@@ -216,9 +207,6 @@
       .clock-line { font-size: 16px; padding: 9px 10px; }
     }
 
-    /* ============================================================
-       6) MAIN CTA BUTTONS
-       ============================================================ */
     .btn {
       width: 100%;
       padding: 18px;
@@ -238,20 +226,19 @@
 
     .btn.call { background: var(--btn-call); }
     .btn.text { background: var(--btn-text); }
-    .btn.calc { background: var(--btn-calc); color:#111827; }
+    .btn.email { background: var(--btn-email); }
     .btn.book { background: var(--btn-book); }
+    .btn.calc { background: var(--btn-calc); color: #111827; }
 
-    /* ============================================================
-       7) PANELS: BOOKING + CALCULATOR
-       ============================================================ */
-    .panel {
+    .booking, .calculator {
       margin-top: 18px;
       text-align: left;
       max-height: 0;
       overflow: hidden;
-      transition: max-height 0.5s ease;
+      transition: max-height 0.55s ease;
     }
-    .panel.open { max-height: 3200px; }
+    .booking.open { max-height: 2600px; }
+    .calculator.open { max-height: 2400px; }
 
     .section {
       margin-top: 12px;
@@ -336,6 +323,7 @@
       text-align: center;
       cursor: pointer;
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+      user-select: none;
     }
 
     .slot:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12); }
@@ -382,9 +370,6 @@
     .msg.bad { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
     .msg.warn { display: block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
-    /* ============================================================
-       8) CONFIRMATION CARD (after successful booking)
-       ============================================================ */
     .confirm-card {
       display: none;
       margin-top: 16px;
@@ -438,58 +423,65 @@
     .mini-label { font-size: 12px; font-weight: 900; color: #64748b; margin-bottom: 4px; }
     .mini-val { font-size: 14px; font-weight: 900; color: #0f172a; word-break: break-word; }
 
-    /* ============================================================
-       9) TAX CALCULATOR STYLES
-       ============================================================ */
-    .calc-wrap{
+    /* -------- Calculator styling (light yellow + white mix) -------- */
+    .calc-section {
+      margin-top: 12px;
       border-radius: 20px;
-      border: 1px solid #e5e7eb;
-      background: linear-gradient(180deg, #fff7c2, #ffffff);
+      border: 1px solid #fde68a;
       padding: 16px;
-      color:#0f172a;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.75) 55%, rgba(254, 243, 199, 0.92) 100%),
+        linear-gradient(180deg, #fff, #fef3c7);
     }
-    .calc-title{ font-weight:900; font-size:15px; }
-    .calc-note{ color:#64748b; font-size:12px; margin-top:6px; line-height:1.35; }
-    .calc-result{
-      margin-top: 12px;
-      border-radius: 14px;
-      padding: 12px;
-      font-weight: 900;
-      font-size: 18px;
-      text-align:center;
+
+    .calc-note {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #6b7280;
+      line-height: 1.35;
+    }
+
+    .result-box {
+      margin-top: 14px;
+      border-radius: 16px;
+      padding: 14px;
       border: 1px solid #e5e7eb;
-      background:#fff;
+      background: rgba(255,255,255,0.9);
     }
-    .calc-green{ background:#dcfce7; color:#166534; border-color:#86efac; }
-    .calc-red{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
-    .calc-subgrid{
-      margin-top: 12px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
+
+    .result-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 14px;
+      border: 1px solid transparent;
+      margin-top: 10px;
+      user-select: none;
     }
-    @media (max-width:720px){ .calc-subgrid{ grid-template-columns:1fr; } }
-    .calc-box{
+    .pill-green { background: #16a34a; color: #fff; border-color: #15803d; }
+    .pill-red { background: #ef4444; color: #fff; border-color: #dc2626; }
+    .pill-gray { background: #111827; color: #fff; border-color: #0b1220; }
+
+    .calc-grid3 {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 860px) { .calc-grid3 { grid-template-columns: 1fr; } }
+
+    .calc-mini {
       border-radius: 14px;
-      border:1px solid #e5e7eb;
-      background:#fff;
-      padding: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 10px;
+      background: #ffffff;
     }
-    .calc-box .k{ color:#64748b; font-size:12px; font-weight:900; }
-    .calc-box .v{ margin-top:4px; font-size:14px; font-weight:900; color:#0f172a; word-break:break-word; }
-    .pill-warn{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius: 12px;
-      background:#fef3c7;
-      border:1px solid #fde68a;
-      color:#92400e;
-      font-weight:900;
-      font-size:13px;
-    }
+    .calc-mini .mini-label { margin-bottom: 6px; }
+    .calc-mini .mini-val { font-size: 15px; }
   </style>
 </head>
 
@@ -504,98 +496,111 @@
 
   <div class="wrap">
     <div class="card">
-      <img class="logo" src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png" alt="Columbus East Tax Services Logo" />
+      <img class="logo"
+        src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png"
+        alt="Columbus East Tax Services Logo"
+      />
+
       <div id="clockLine" class="clock-line"></div>
 
-      <!-- KEEP ALL BUTTONS -->
       <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
       <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
+      <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
 
-      <!-- NEW: Tax Calculator Button (replaces Email button) -->
+      <!-- NEW: Tax Calculator toggle (Email stays) -->
       <button class="btn calc" id="calcToggleBtn">🧮 Tax Calculator</button>
 
       <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
 
       <!-- TAX CALCULATOR PANEL -->
-      <div id="calcPanel" class="panel">
-        <div class="section">
-          <div class="subline">Tax Calculator (Federal Estimate)</div>
+      <div id="calculator" class="calculator">
+        <div class="calc-section">
+          <div class="subline">Federal Tax Calculator (Estimate)</div>
           <div class="now" id="calcNowLine"></div>
 
-          <div class="calc-wrap" style="margin-top:12px;">
-            <div class="calc-title">IRS-style estimate + overtime breakdown</div>
+          <div class="row" style="margin-top:12px;">
+            <div>
+              <label for="taxYear">Tax Year</label>
+              <select id="taxYear">
+                <option value="2025" selected>2025</option>
+                <option value="2024">2024</option>
+              </select>
+            </div>
+            <div>
+              <label for="filingStatus">Filing Status</label>
+              <select id="filingStatus">
+                <option value="single" selected>Single</option>
+                <option value="mfj">Married Filing Jointly</option>
+                <option value="mfs">Married Filing Separately</option>
+                <option value="hoh">Head of Household</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="w2Wages">W-2 Box 1 Wages</label>
+              <input id="w2Wages" inputmode="decimal" placeholder="e.g., 56000" />
+            </div>
+            <div>
+              <label for="otherIncome">Other Income (optional)</label>
+              <input id="otherIncome" inputmode="decimal" placeholder="e.g., 1500" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="withheld">W-2 Box 2 Federal Withholding</label>
+              <input id="withheld" inputmode="decimal" placeholder="e.g., 2300" />
+            </div>
+            <div>
+              <label for="dependents">Dependents</label>
+              <input id="dependents" inputmode="numeric" placeholder="e.g., 0" />
+            </div>
+          </div>
+
+          <button id="calcBtn" class="btn confirm" type="button" style="margin-top:14px;">Calculate</button>
+
+          <div id="calcMsg" class="msg"></div>
+
+          <div class="result-box" id="calcResult" style="display:none;">
+            <div class="subline" style="margin-bottom:6px;">Result</div>
+
+            <div class="calc-grid3">
+              <div class="calc-mini">
+                <div class="mini-label">Taxable income (est.)</div>
+                <div class="mini-val" id="rTaxable">$0</div>
+              </div>
+              <div class="calc-mini">
+                <div class="mini-label">Tax (est.)</div>
+                <div class="mini-val" id="rTax">$0</div>
+              </div>
+              <div class="calc-mini">
+                <div class="mini-label">Credits (dependents)</div>
+                <div class="mini-val" id="rCredits">$0</div>
+              </div>
+              <div class="calc-mini">
+                <div class="mini-label">Withholding</div>
+                <div class="mini-val" id="rWithheld">$0</div>
+              </div>
+              <div class="calc-mini" style="grid-column: 1 / -1;">
+                <div class="mini-label">Estimated refund / amount owed</div>
+                <div class="mini-val" id="rNet">$0</div>
+                <div id="rPill" class="result-pill pill-gray">Estimate</div>
+              </div>
+            </div>
+
             <div class="calc-note">
-              This is an educational estimate. 2025 values can change when IRS publishes final inflation-adjusted amounts.
-              This tool uses standard deduction + progressive brackets and includes a separate overtime breakdown (does not add OT to refund).
-            </div>
-
-            <div class="row" style="margin-top:12px;">
-              <div>
-                <label for="taxYear">Tax Year</label>
-                <select id="taxYear">
-                  <option value="2025" selected>2025 (estimate)</option>
-                  <option value="2024">2024</option>
-                </select>
-              </div>
-              <div>
-                <label for="filingStatus">Filing Status</label>
-                <select id="filingStatus">
-                  <option value="single" selected>Single</option>
-                  <option value="joint">Married Filing Joint</option>
-                  <option value="hoh">Head of Household</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="row">
-              <div>
-                <label for="w2box1">W-2 Box 1 Income</label>
-                <input id="w2box1" type="number" inputmode="numeric" placeholder="71000" />
-              </div>
-              <div>
-                <label for="w2box2">W-2 Box 2 Federal Withheld</label>
-                <input id="w2box2" type="number" inputmode="numeric" placeholder="2300" />
-              </div>
-            </div>
-
-            <div class="row">
-              <div>
-                <label for="dependents">Dependents</label>
-                <input id="dependents" type="number" inputmode="numeric" min="0" value="0" />
-              </div>
-              <div>
-                <label for="otherAdj">Other pre-tax adjustments (optional)</label>
-                <input id="otherAdj" type="number" inputmode="numeric" placeholder="0" />
-              </div>
-            </div>
-
-            <div class="row">
-              <div>
-                <label for="hourlyRate">Hourly Rate (optional)</label>
-                <input id="hourlyRate" type="number" inputmode="decimal" placeholder="23" />
-              </div>
-              <div>
-                <label for="otPay">Overtime Pay Earned (optional)</label>
-                <input id="otPay" type="number" inputmode="numeric" placeholder="15000" />
-              </div>
-            </div>
-
-            <button class="btn confirm" id="calcBtn" type="button">Calculate Estimate</button>
-
-            <div id="calcResult" class="calc-result" style="display:none;"></div>
-
-            <div class="calc-subgrid" id="calcBreakdown" style="display:none;"></div>
-
-            <div id="otWarn" class="pill-warn" style="display:none;">
-              ⚠ Overtime increases taxable income and often leads to owing if withholding doesn’t keep up.
+              This is a basic federal estimate using simplified rules (standard deduction + brackets + dependent credit).
+              It does not include itemized deductions, EITC, CTC phaseouts, education credits, self-employment tax, ACA, etc.
+              Use as a quick estimate only.
             </div>
           </div>
         </div>
       </div>
-      <!-- /calcPanel -->
 
       <!-- BOOKING PANEL -->
-      <div id="booking" class="panel">
+      <div id="booking" class="booking">
         <div class="section">
           <div class="subline">Book an Appointment</div>
           <div id="nowLine" class="now"></div>
@@ -697,7 +702,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     /* ------------------------------------------------------------
-       1) SUPABASE CLIENT CONFIG (booking)
+       1) SUPABASE CLIENT CONFIG (Booking uses this)
        ------------------------------------------------------------ */
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
     const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
@@ -729,9 +734,14 @@
     function isValidEmail(v) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
     }
-    function money(n){
+    function money(n) {
       const x = Number(n || 0);
-      return x.toLocaleString("en-US", { style:"currency", currency:"USD", maximumFractionDigits:0 });
+      return x.toLocaleString("en-US", { style:"currency", currency:"USD", maximumFractionDigits: 0 });
+    }
+    function numVal(id) {
+      const v = (document.getElementById(id).value || "").toString().replace(/[$, ]/g,"").trim();
+      const n = parseFloat(v);
+      return Number.isFinite(n) ? n : 0;
     }
 
     /* ------------------------------------------------------------
@@ -765,7 +775,6 @@
 
     function updateClock() {
       const now = new Date();
-
       const datePart = new Intl.DateTimeFormat("en-US", {
         weekday: "short",
         month: "short",
@@ -780,32 +789,31 @@
         hour12: false,
       }).format(now);
 
-      const line = `${datePart} • ${timePart}`;
-      clockLine.textContent = line;
-      nowLine.textContent = `Now: ${line}`;
-      calcNowLine.textContent = `Now: ${line}`;
+      clockLine.textContent = `${datePart} • ${timePart}`;
+      nowLine.textContent = `Now: ${datePart} • ${timePart}`;
+      calcNowLine.textContent = `Now: ${datePart} • ${timePart}`;
     }
-
     updateClock();
     setInterval(updateClock, 1000);
 
     /* ------------------------------------------------------------
-       5) PANEL TOGGLES (booking + calculator)
+       5) COLLAPSIBLE PANELS (booking + calculator)
        ------------------------------------------------------------ */
     const toggleBtn = document.getElementById("toggleBtn");
     const booking = document.getElementById("booking");
 
     const calcToggleBtn = document.getElementById("calcToggleBtn");
-    const calcPanel = document.getElementById("calcPanel");
+    const calculator = document.getElementById("calculator");
 
-    function closeOtherPanels(opening){
-      if(opening === "booking") calcPanel.classList.remove("open");
-      if(opening === "calc") booking.classList.remove("open");
+    function openPanel(panelEl) {
+      // optional behavior: open one at a time
+      if (panelEl === booking) calculator.classList.remove("open");
+      if (panelEl === calculator) booking.classList.remove("open");
+      panelEl.classList.toggle("open");
     }
 
     toggleBtn.addEventListener("click", () => {
-      closeOtherPanels("booking");
-      booking.classList.toggle("open");
+      openPanel(booking);
       if (booking.classList.contains("open")) {
         if (!dateEl.value) dateEl.value = todayYMD();
         refreshSlots();
@@ -813,11 +821,7 @@
     });
 
     calcToggleBtn.addEventListener("click", () => {
-      closeOtherPanels("calc");
-      calcPanel.classList.toggle("open");
-      if(calcPanel.classList.contains("open")){
-        // nothing required; ready for input
-      }
+      openPanel(calculator);
     });
 
     /* ------------------------------------------------------------
@@ -841,7 +845,7 @@
     const cService = document.getElementById("cService");
     const cLoc = document.getElementById("cLoc");
 
-    let selectedSlot = null; // "HH:MM"
+    let selectedSlot = null;
     let bookedSet = new Set();
 
     function updateTodayHighlight() {
@@ -1035,156 +1039,192 @@
       validateForm();
     });
 
-    /* Init booking */
     dateEl.value = todayYMD();
     updateTodayHighlight();
     refreshSlots();
 
     /* ------------------------------------------------------------
-       7) TAX CALCULATOR (IRS-style estimate + OT breakdown)
+       7) TAX CALCULATOR (basic federal estimate, no overtime)
        ------------------------------------------------------------ */
-    const taxYearEl = document.getElementById("taxYear");
-    const filingStatusEl = document.getElementById("filingStatus");
-    const w2box1El = document.getElementById("w2box1");
-    const w2box2El = document.getElementById("w2box2");
-    const dependentsEl = document.getElementById("dependents");
-    const otherAdjEl = document.getElementById("otherAdj");
-    const hourlyRateEl = document.getElementById("hourlyRate");
-    const otPayEl = document.getElementById("otPay");
-    const calcBtn = document.getElementById("calcBtn");
-    const calcResult = document.getElementById("calcResult");
-    const calcBreakdown = document.getElementById("calcBreakdown");
-    const otWarn = document.getElementById("otWarn");
 
-    // Uses 2024 published values; 2025 marked as estimate until IRS releases final adjustments.
+    // EDIT THIS SECTION if you want different IRS-year values.
+    // These are baseline progressive brackets + standard deduction by filing status.
+    // (Set to the year you want to use.)
     const TAX_TABLES = {
-      "2024": {
-        stdDeduction: { single:14600, joint:29200, hoh:21900 },
-        brackets: {
-          single: [[11600,0.10],[47150,0.12],[100525,0.22],[191950,0.24],[243725,0.32],[609350,0.35],[Infinity,0.37]],
-          joint:  [[23200,0.10],[94300,0.12],[201050,0.22],[383900,0.24],[487450,0.32],[731200,0.35],[Infinity,0.37]],
-          hoh:    [[16550,0.10],[63100,0.12],[100500,0.22],[191950,0.24],[243700,0.32],[609350,0.35],[Infinity,0.37]],
-        }
-      },
+      // NOTE: You should update these to the exact IRS numbers you want for 2025.
+      // Values below are a reasonable baseline structure.
       "2025": {
-        // Using 2024 as placeholder estimate; swap when IRS releases final 2025 numbers.
-        stdDeduction: { single:14600, joint:29200, hoh:21900 },
+        standardDeduction: {
+          single: 14600,
+          mfj: 29200,
+          mfs: 14600,
+          hoh: 21900,
+        },
         brackets: {
-          single: [[11600,0.10],[47150,0.12],[100525,0.22],[191950,0.24],[243725,0.32],[609350,0.35],[Infinity,0.37]],
-          joint:  [[23200,0.10],[94300,0.12],[201050,0.22],[383900,0.24],[487450,0.32],[731200,0.35],[Infinity,0.37]],
-          hoh:    [[16550,0.10],[63100,0.12],[100500,0.22],[191950,0.24],[243700,0.32],[609350,0.35],[Infinity,0.37]],
-        }
+          single: [
+            { upTo: 11600, rate: 0.10 },
+            { upTo: 47150, rate: 0.12 },
+            { upTo: 100525, rate: 0.22 },
+            { upTo: 191950, rate: 0.24 },
+            { upTo: 243725, rate: 0.32 },
+            { upTo: 609350, rate: 0.35 },
+            { upTo: Infinity, rate: 0.37 },
+          ],
+          mfj: [
+            { upTo: 23200, rate: 0.10 },
+            { upTo: 94300, rate: 0.12 },
+            { upTo: 201050, rate: 0.22 },
+            { upTo: 383900, rate: 0.24 },
+            { upTo: 487450, rate: 0.32 },
+            { upTo: 731200, rate: 0.35 },
+            { upTo: Infinity, rate: 0.37 },
+          ],
+          mfs: [
+            { upTo: 11600, rate: 0.10 },
+            { upTo: 47150, rate: 0.12 },
+            { upTo: 100525, rate: 0.22 },
+            { upTo: 191950, rate: 0.24 },
+            { upTo: 243725, rate: 0.32 },
+            { upTo: 365600, rate: 0.35 },
+            { upTo: Infinity, rate: 0.37 },
+          ],
+          hoh: [
+            { upTo: 16550, rate: 0.10 },
+            { upTo: 63100, rate: 0.12 },
+            { upTo: 100500, rate: 0.22 },
+            { upTo: 191950, rate: 0.24 },
+            { upTo: 243700, rate: 0.32 },
+            { upTo: 609350, rate: 0.35 },
+            { upTo: Infinity, rate: 0.37 },
+          ],
+        },
+        dependentCreditEach: 2200
+      },
+      "2024": {
+        standardDeduction: {
+          single: 14600,
+          mfj: 29200,
+          mfs: 14600,
+          hoh: 21900,
+        },
+        brackets: {
+          single: [
+            { upTo: 11600, rate: 0.10 },
+            { upTo: 47150, rate: 0.12 },
+            { upTo: 100525, rate: 0.22 },
+            { upTo: 191950, rate: 0.24 },
+            { upTo: 243725, rate: 0.32 },
+            { upTo: 609350, rate: 0.35 },
+            { upTo: Infinity, rate: 0.37 },
+          ],
+          mfj: [
+            { upTo: 23200, rate: 0.10 },
+            { upTo: 94300, rate: 0.12 },
+            { upTo: 201050, rate: 0.22 },
+            { upTo: 383900, rate: 0.24 },
+            { upTo: 487450, rate: 0.32 },
+            { upTo: 731200, rate: 0.35 },
+            { upTo: Infinity, rate: 0.37 },
+          ],
+          mfs: [
+            { upTo: 11600, rate: 0.10 },
+            { upTo: 47150, rate: 0.12 },
+            { upTo: 100525, rate: 0.22 },
+            { upTo: 191950, rate: 0.24 },
+            { upTo: 243725, rate: 0.32 },
+            { upTo: 365600, rate: 0.35 },
+            { upTo: Infinity, rate: 0.37 },
+          ],
+          hoh: [
+            { upTo: 16550, rate: 0.10 },
+            { upTo: 63100, rate: 0.12 },
+            { upTo: 100500, rate: 0.22 },
+            { upTo: 191950, rate: 0.24 },
+            { upTo: 243700, rate: 0.32 },
+            { upTo: 609350, rate: 0.35 },
+            { upTo: Infinity, rate: 0.37 },
+          ],
+        },
+        dependentCreditEach: 2200
       }
     };
 
-    function calcTaxProgressive(taxable, brackets){
+    function computeProgressiveTax(taxable, bracketList) {
       let tax = 0;
       let prev = 0;
-      for(const [limit, rate] of brackets){
-        const cap = Math.min(taxable, limit);
-        if(cap > prev){
-          tax += (cap - prev) * rate;
-          prev = cap;
-        }
-        if(taxable <= limit) break;
+      for (const b of bracketList) {
+        const cap = b.upTo;
+        const amt = Math.max(0, Math.min(taxable, cap) - prev);
+        tax += amt * b.rate;
+        prev = cap;
+        if (taxable <= cap) break;
       }
-      return tax;
+      return Math.max(0, tax);
     }
 
-    function safeNum(v){
-      const n = Number(v);
-      return Number.isFinite(n) ? n : 0;
-    }
-
-    function setResultBox(amount){
-      calcResult.style.display = "block";
-      calcResult.classList.remove("calc-green","calc-red");
-
-      if(amount >= 0){
-        calcResult.classList.add("calc-green");
-        calcResult.textContent = `Estimated Refund: ${money(amount)}`;
-      } else {
-        calcResult.classList.add("calc-red");
-        calcResult.textContent = `Estimated Owed: ${money(Math.abs(amount))}`;
-      }
-    }
+    const taxYearEl = document.getElementById("taxYear");
+    const filingStatusEl = document.getElementById("filingStatus");
+    const calcBtn = document.getElementById("calcBtn");
+    const calcMsg = document.getElementById("calcMsg");
+    const calcResult = document.getElementById("calcResult");
+    const rTaxable = document.getElementById("rTaxable");
+    const rTax = document.getElementById("rTax");
+    const rCredits = document.getElementById("rCredits");
+    const rWithheld = document.getElementById("rWithheld");
+    const rNet = document.getElementById("rNet");
+    const rPill = document.getElementById("rPill");
 
     calcBtn.addEventListener("click", () => {
+      calcMsg.className = "msg";
+      calcMsg.textContent = "";
+      calcResult.style.display = "none";
+
       const year = taxYearEl.value || "2025";
       const status = filingStatusEl.value || "single";
-      const table = TAX_TABLES[year] || TAX_TABLES["2025"];
 
-      const income = safeNum(w2box1El.value);
-      const withheld = safeNum(w2box2El.value);
-      const deps = Math.max(0, Math.floor(safeNum(dependentsEl.value)));
-      const otherAdj = Math.max(0, safeNum(otherAdjEl.value)); // optional reduction in taxable income
+      const wages = numVal("w2Wages");
+      const other = numVal("otherIncome");
+      const withheld = numVal("withheld");
+      const deps = Math.max(0, Math.floor(numVal("dependents")));
 
-      const hourlyRate = Math.max(0, safeNum(hourlyRateEl.value));
-      const otPay = Math.max(0, safeNum(otPayEl.value));
-
-      // IRS-style taxable income (very simplified)
-      const std = table.stdDeduction[status] ?? table.stdDeduction.single;
-      const taxable = Math.max(0, (income - otherAdj) - std);
-
-      const tax = calcTaxProgressive(taxable, table.brackets[status] || table.brackets.single);
-
-      // Dependent credit requested: $2,200 each (note: real eligibility rules apply)
-      const dependentCredit = deps * 2200;
-
-      // Balance: refund positive, owed negative
-      const balance = (withheld + dependentCredit) - tax;
-      setResultBox(balance);
-
-      // Breakdown cards
-      calcBreakdown.style.display = "grid";
-      const effectiveRate = income > 0 ? (tax / income) : 0;
-
-      // OT breakdown (informational; NOT added to refund)
-      let otHours = 0;
-      let halfPremium = 0;
-      if(hourlyRate > 0 && otPay > 0){
-        otHours = otPay / (hourlyRate * 1.5);
-        halfPremium = otPay / 3; // half part of "time and a half" = 1/3 of total OT pay
-        otWarn.style.display = "inline-flex";
-      } else {
-        otWarn.style.display = "none";
+      if ((wages + other) <= 0) {
+        calcMsg.className = "msg warn";
+        calcMsg.textContent = "Enter your income (W-2 wages or other income).";
+        return;
       }
 
-      calcBreakdown.innerHTML = `
-        <div class="calc-box">
-          <div class="k">Standard Deduction</div>
-          <div class="v">${money(std)}</div>
-        </div>
-        <div class="calc-box">
-          <div class="k">Taxable Income</div>
-          <div class="v">${money(taxable)}</div>
-        </div>
-        <div class="calc-box">
-          <div class="k">Estimated Federal Tax</div>
-          <div class="v">${money(tax)}</div>
-        </div>
-        <div class="calc-box">
-          <div class="k">Effective Tax Rate (rough)</div>
-          <div class="v">${(effectiveRate*100).toFixed(1)}%</div>
-        </div>
-        <div class="calc-box">
-          <div class="k">Withheld (W-2 Box 2)</div>
-          <div class="v">${money(withheld)}</div>
-        </div>
-        <div class="calc-box">
-          <div class="k">Dependent Credit (est.)</div>
-          <div class="v">${money(dependentCredit)}</div>
-        </div>
-        <div class="calc-box" style="grid-column:1 / -1;">
-          <div class="k">Overtime Breakdown (informational)</div>
-          <div class="v">
-            Hourly Rate: ${hourlyRate ? money(hourlyRate) + "/hr" : "—"}<br>
-            Overtime Pay: ${otPay ? money(otPay) : "—"}<br>
-            OT Hours Worked: ${otHours ? otHours.toFixed(1) + " hrs" : "—"}<br>
-            OT “Half Premium”: ${halfPremium ? money(halfPremium) : "—"}
-          </div>
-        </div>
-      `;
+      const table = TAX_TABLES[year] || TAX_TABLES["2025"];
+      const std = (table.standardDeduction[status] ?? table.standardDeduction.single);
+      const brackets = (table.brackets[status] ?? table.brackets.single);
+
+      const agi = Math.max(0, wages + other);
+      const taxable = Math.max(0, agi - std);
+
+      const tax = computeProgressiveTax(taxable, brackets);
+
+      // Dependent credit (simple): $2,200 each (as requested)
+      const credits = deps * (table.dependentCreditEach ?? 2200);
+
+      // Net: withheld - (tax - credits)
+      // If positive => refund estimate; negative => owed estimate
+      const net = withheld - Math.max(0, (tax - credits));
+
+      rTaxable.textContent = money(taxable);
+      rTax.textContent = money(tax);
+      rCredits.textContent = money(credits);
+      rWithheld.textContent = money(withheld);
+
+      if (net >= 0) {
+        rNet.textContent = `${money(net)} (Estimated refund)`;
+        rPill.className = "result-pill pill-green";
+        rPill.textContent = "Estimated refund";
+      } else {
+        rNet.textContent = `${money(Math.abs(net))} (Estimated amount owed)`;
+        rPill.className = "result-pill pill-red";
+        rPill.textContent = "Estimated owed";
+      }
+
+      calcResult.style.display = "block";
     });
 
     /* ------------------------------------------------------------
