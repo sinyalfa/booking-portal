@@ -6,24 +6,29 @@
   <title>Columbus East Tax Services – Booking Portal</title>
 
   <style>
+    /* ============================================================
+       1) GLOBAL RESETS + VARIABLES
+       ============================================================ */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --galaxy-hue: 220;
 
-      --card-bg: rgba(170, 215, 255, 0.22);
+      /* Glass card */
       --card-border: rgba(210, 235, 255, 0.38);
       --card-shadow: 0 32px 90px rgba(0, 0, 0, 0.62);
       --text-main: #0b1220;
       --muted: #64748b;
       --ring: rgba(96, 165, 250, 0.4);
 
+      /* Buttons */
       --btn-call: #2563eb;
       --btn-text: #16a34a;
       --btn-email: #9333ea;
-      --btn-book: #0f766e;
       --btn-calc: #f59e0b;
+      --btn-book: #0f766e;
 
+      /* Slots */
       --slot-border: #34d399;
       --slot-bg: #ecfdf5;
       --slot-active-bg: #c7d2fe;
@@ -32,14 +37,11 @@
       --slot-disabled-border: #cbd5e1;
       --slot-disabled-text: #94a3b8;
 
+      /* Clock glow */
       --clock-anim-speed: 2.4s;
 
-      /* Countdown glow */
-      --countGlow1: rgba(59,130,246,0.55);
-      --countGlow2: rgba(34,197,94,0.35);
-
-      /* Marquee speed (lower = faster) */
-      --marquee-duration: 34s;
+      /* Marquee speed */
+      --marquee-duration: 22s;
     }
 
     html, body { height: 100%; }
@@ -57,7 +59,7 @@
     body[data-theme="night"] { filter: brightness(0.98) saturate(1.0); }
 
     /* ============================================================
-       CANVAS STARFIELD
+       2) CANVAS STARFIELD + SHOOTING STARS
        ============================================================ */
     canvas#starfield {
       position: fixed;
@@ -69,7 +71,7 @@
     }
 
     /* ============================================================
-       ORBITING GLASS PLANETS
+       3) ORBITING GLASS PLANETS
        ============================================================ */
     .space-layer {
       position: fixed;
@@ -87,8 +89,17 @@
       animation: orbit-slow 26s linear infinite;
     }
 
-    .planet-orbit.fast { width: 380px; height: 380px; animation-duration: 16s; }
-    .planet-orbit.medium { width: 480px; height: 480px; animation-duration: 20s; }
+    .planet-orbit.fast {
+      width: 380px;
+      height: 380px;
+      animation-duration: 16s;
+    }
+
+    .planet-orbit.medium {
+      width: 480px;
+      height: 480px;
+      animation-duration: 20s;
+    }
 
     .planet-orbit.orbit-1 { top: 6%; left: calc(50% - 280px); }
     .planet-orbit.orbit-2 { top: 62%; left: calc(50% - 240px); }
@@ -121,15 +132,27 @@
     .planet-orbit.fast .planet-glass { animation-duration: 4.5s; }
     .planet-orbit.medium .planet-glass { animation-duration: 6.0s; }
 
-    .planet-glass.big { width: 160px; height: 160px; top: -80px; left: calc(50% - 80px); }
-    .planet-glass.medium { width: 110px; height: 110px; top: calc(50% - 55px); left: -55px; }
-    .planet-glass.small { width: 86px; height: 86px; top: calc(100% - 43px); left: calc(50% - 43px); }
+    .planet-glass.big {
+      width: 160px; height: 160px;
+      top: -80px; left: calc(50% - 80px);
+    }
+    .planet-glass.medium {
+      width: 110px; height: 110px;
+      top: calc(50% - 55px); left: -55px;
+    }
+    .planet-glass.small {
+      width: 86px; height: 86px;
+      top: calc(100% - 43px); left: calc(50% - 43px);
+    }
 
     @keyframes orbit-slow { to { transform: rotate(360deg); } }
-    @keyframes floaty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
 
     /* ============================================================
-       WRAP + CARD
+       4) LAYOUT: WRAP + GLASS CARD
        ============================================================ */
     .wrap {
       position: relative;
@@ -158,17 +181,26 @@
       position: absolute;
       inset: -2px;
       background:
-        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.08) 45%, rgba(255, 255, 255, 0) 70%),
-        radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.20), rgba(59, 130, 246, 0) 60%);
+        radial-gradient(circle at 20% 0%,
+          rgba(255, 255, 255, 0.45),
+          rgba(255, 255, 255, 0.08) 45%,
+          rgba(255, 255, 255, 0) 70%
+        ),
+        radial-gradient(circle at 80% 10%,
+          rgba(59, 130, 246, 0.20),
+          rgba(59, 130, 246, 0) 60%
+        );
       pointer-events: none;
       z-index: 0;
     }
     .card > * { position: relative; z-index: 1; }
 
-    @media (max-width: 640px) { .card { padding: 28px 18px 20px; } }
+    @media (max-width: 640px) {
+      .card { padding: 28px 18px 20px; }
+    }
 
     /* ============================================================
-       LOGO + CLOCK
+       5) LOGO + CLOCK + COUNTDOWN
        ============================================================ */
     .logo {
       width: 360px;
@@ -182,17 +214,21 @@
 
     @keyframes glowPulse {
       0%, 100% {
-        box-shadow: 0 0 14px rgba(59, 130, 246, 0.55), 0 0 40px rgba(37, 99, 235, 0.45);
+        box-shadow:
+          0 0 14px rgba(59, 130, 246, 0.55),
+          0 0 40px rgba(37, 99, 235, 0.45);
         transform: translateY(0);
       }
       50% {
-        box-shadow: 0 0 24px rgba(59, 130, 246, 0.85), 0 0 70px rgba(37, 99, 235, 0.75);
+        box-shadow:
+          0 0 24px rgba(59, 130, 246, 0.85),
+          0 0 70px rgba(37, 99, 235, 0.75);
         transform: translateY(-1px);
       }
     }
 
     .clock-line {
-      margin: 10px auto 12px;
+      margin: 10px auto 10px;
       max-width: 520px;
       font-size: 20px;
       font-weight: 900;
@@ -200,7 +236,11 @@
       text-align: center;
       padding: 10px 16px;
       border-radius: 999px;
-      background: radial-gradient(circle at 50% 0%, hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22), rgba(15, 23, 42, 0.95));
+      background: radial-gradient(
+        circle at 50% 0%,
+        hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22),
+        rgba(15, 23, 42, 0.95)
+      );
       border: 1px solid rgba(191, 219, 254, 0.3);
       letter-spacing: 0.5px;
       white-space: nowrap;
@@ -209,113 +249,82 @@
       animation: glowPulse var(--clock-anim-speed) ease-in-out infinite;
     }
 
-    @media (max-width: 480px) { .clock-line { font-size: 16px; padding: 9px 10px; } }
-
-    /* ============================================================
-       COUNTDOWN (button-sized, no labels)
-       ============================================================ */
+    /* COUNTDOWN: same size as clock */
     .countdown-btn {
+      margin: 10px auto 12px;
+      max-width: 520px;
       width: 100%;
-      padding: 18px;
-      margin: 10px 0 12px;
-      border-radius: 18px;
-      border: 1px solid rgba(191, 219, 254, 0.25);
-      background:
-        radial-gradient(circle at 50% 0%, rgba(59,130,246,0.18), rgba(2,6,23,0.88));
-      box-shadow:
-        0 10px 24px rgba(15, 23, 42, 0.5),
-        0 0 26px var(--countGlow2);
-      color: #fff;
+      font-size: 20px;
       font-weight: 900;
-      font-size: 18px;
+      color: #e5f0ff;
       text-align: center;
-      letter-spacing: 0.3px;
-      user-select: none;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: radial-gradient(
+        circle at 50% 0%,
+        rgba(34, 197, 94, 0.16),
+        rgba(15, 23, 42, 0.95)
+      );
+      border: 1px solid rgba(191, 219, 254, 0.3);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      animation: glowPulse var(--clock-anim-speed) ease-in-out infinite;
+      box-shadow:
+        0 0 14px rgba(34, 197, 94, 0.35),
+        0 0 40px rgba(34, 197, 94, 0.22);
     }
 
-    .countdown-btn.ok { --countGlow2: rgba(34,197,94,0.30); }
-    .countdown-btn.warn { --countGlow2: rgba(245,158,11,0.35); }
-    .countdown-btn.soon { --countGlow2: rgba(251,146,60,0.40); }
+    @media (max-width: 480px) {
+      .clock-line { font-size: 16px; padding: 9px 10px; }
+      .countdown-btn { font-size: 16px; padding: 9px 10px; }
+    }
 
     /* ============================================================
-       MARQUEE (button-sized)
+       6) BIG MARQUEE (same “button” size, bigger text)
        ============================================================ */
-    .marquee {
+    .marquee-btn {
       width: 100%;
-      padding: 18px;
-      margin: 0 0 8px;
-      border-radius: 18px;
-      border: 1px solid rgba(191, 219, 254, 0.28);
-      background:
-        radial-gradient(circle at 50% 0%, rgba(168,85,247,0.16), rgba(2,6,23,0.82));
+      padding: 18px;                 /* same as .btn */
+      margin: 12px 0;
+      border-radius: 18px;           /* same as .btn */
+      background: rgba(15, 23, 42, 0.78);
+      border: 1px solid rgba(191, 219, 254, 0.24);
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.5);
       overflow: hidden;
       position: relative;
     }
 
-    .marquee::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      background:
-        radial-gradient(650px 220px at 10% 0%, rgba(59,130,246,0.14), transparent 60%),
-        radial-gradient(650px 220px at 95% 20%, rgba(34,197,94,0.12), transparent 55%);
-      pointer-events:none;
-      z-index:0;
-    }
-
-    .marquee-track{
-      position: relative;
-      z-index: 1;
-      overflow: hidden;
-      white-space: nowrap;
-      mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-      -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-    }
-
-    .marquee-move{
-      display: inline-flex;
-      align-items:center;
-      gap: 20px;
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      gap: 28px;
       will-change: transform;
       animation: marqueeScroll var(--marquee-duration) linear infinite;
+      align-items: center;
+    }
+
+    .marquee-item {
       font-weight: 900;
-      font-size: 18px;
+      font-size: 20px;               /* BIGGER */
       color: rgba(255,255,255,0.96);
       text-shadow: 0 0 18px rgba(59,130,246,0.18);
+      white-space: nowrap;
+      padding: 2px 0;
     }
-
-    .marquee-item{
-      display:inline-flex;
-      align-items:center;
-      gap: 10px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(2,6,23,0.35);
-      border: 1px solid rgba(191,219,254,0.18);
-    }
-
-    .marquee-dot{
-      width: 10px; height: 10px; border-radius: 999px;
-      background: rgba(34,197,94,0.85);
-      box-shadow: 0 0 14px rgba(34,197,94,0.35);
-      flex: 0 0 auto;
-    }
-
-    .marquee-ic{ font-size: 18px; line-height: 1; }
 
     @keyframes marqueeScroll {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
 
-    @media (max-width: 480px){
-      .marquee-move{ font-size: 16px; }
-      .countdown-btn{ font-size: 16px; }
+    @media (max-width: 480px) {
+      .marquee-item { font-size: 18px; }
     }
 
     /* ============================================================
-       BUTTONS
+       7) MAIN CTA BUTTONS
        ============================================================ */
     .btn {
       width: 100%;
@@ -330,27 +339,26 @@
       transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.5);
     }
-
     .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7); }
     .btn:active { transform: translateY(0); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.5); }
 
     .btn.call { background: var(--btn-call); }
     .btn.text { background: var(--btn-text); }
     .btn.email { background: var(--btn-email); }
+    .btn.calc { background: var(--btn-calc); }
     .btn.book { background: var(--btn-book); }
-    .btn.calc { background: var(--btn-calc); color: #111827; }
 
     /* ============================================================
-       BOOKING PANEL
+       8) COLLAPSIBLE PANELS (Calculator + Booking)
        ============================================================ */
-    .booking {
-      margin-top: 18px;
+    .panel {
+      margin-top: 10px;
       text-align: left;
       max-height: 0;
       overflow: hidden;
-      transition: max-height 0.5s ease;
+      transition: max-height 0.55s ease;
     }
-    .booking.open { max-height: 2600px; }
+    .panel.open { max-height: 3600px; }
 
     .section {
       margin-top: 12px;
@@ -381,19 +389,6 @@
       gap: 8px;
     }
 
-    .today-pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 900;
-      color: #0b1220;
-      background: rgba(34, 197, 94, 0.18);
-      border: 1px solid rgba(34, 197, 94, 0.45);
-    }
-
     input, select {
       width: 100%;
       padding: 12px 12px;
@@ -401,60 +396,13 @@
       border: 1px solid #cbd5e1;
       font-size: 14px;
       outline: none;
+      background: #fff;
     }
 
     input:focus, select:focus {
       border-color: rgba(37, 99, 235, 0.85);
       box-shadow: 0 0 0 3px var(--ring);
     }
-
-    input.today {
-      border-color: rgba(34, 197, 94, 0.7);
-      box-shadow:
-        0 0 0 3px rgba(34, 197, 94, 0.18),
-        0 0 18px rgba(34, 197, 94, 0.18);
-    }
-
-    .slots-title { margin: 16px 0 10px; font-weight: 900; color: #0f172a; font-size: 15px; }
-
-    .times {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 10px;
-    }
-
-    .slot {
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid var(--slot-border);
-      background: var(--slot-bg);
-      font-size: 14px;
-      font-weight: 900;
-      color: #065f46;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
-    }
-    .slot:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12); }
-
-    .slot.active {
-      background: var(--slot-active-bg);
-      border-color: var(--slot-active-border);
-      color: #1e1b4b;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.24);
-    }
-
-    .slot.disabled {
-      background: var(--slot-disabled-bg);
-      border-color: var(--slot-disabled-border);
-      color: var(--slot-disabled-text);
-      cursor: not-allowed;
-      box-shadow: none;
-      transform: none;
-    }
-
-    .btn.confirm { margin-top: 16px; background: #020617; width: 100%; }
-    .btn.confirm:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
     .msg {
       margin-top: 12px;
@@ -468,56 +416,96 @@
     .msg.bad { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
     .msg.warn { display: block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
-    .confirm-card {
-      display: none;
-      margin-top: 16px;
-      border-radius: 18px;
-      border: 1px solid #e5e7eb;
-      background: #ffffff;
-      padding: 14px;
-    }
-    .confirm-card.show { display: block; }
-
-    .confirm-head {
-      display: flex;
-      align-items: center;
+    /* Booking slots */
+    .slots-title { margin: 16px 0 10px; font-weight: 900; color: #0f172a; font-size: 15px; }
+    .times {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
       gap: 10px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #e5e7eb;
+    }
+    .slot {
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--slot-border);
+      background: var(--slot-bg);
+      font-size: 14px;
+      font-weight: 900;
+      color: #065f46;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+      user-select: none;
+    }
+    .slot:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12); }
+    .slot.active {
+      background: var(--slot-active-bg);
+      border-color: var(--slot-active-border);
+      color: #1e1b4b;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.24);
+    }
+    .slot.disabled {
+      background: var(--slot-disabled-bg);
+      border-color: var(--slot-disabled-border);
+      color: var(--slot-disabled-text);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
     }
 
-    .check {
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      background: #dcfce7;
-      border: 1px solid #86efac;
-      display: flex;
+    .btn.confirm {
+      margin-top: 16px;
+      background: #020617;
+      width: 100%;
+    }
+    .btn.confirm:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Small helper pill */
+    .today-pill {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
       font-weight: 900;
-      color: #166534;
-      font-size: 20px;
+      color: #0b1220;
+      background: rgba(34, 197, 94, 0.18);
+      border: 1px solid rgba(34, 197, 94, 0.45);
+    }
+    input.today {
+      border-color: rgba(34, 197, 94, 0.7);
+      box-shadow:
+        0 0 0 3px rgba(34, 197, 94, 0.18),
+        0 0 18px rgba(34, 197, 94, 0.18);
     }
 
-    .confirm-title { font-size: 17px; font-weight: 900; color: #0f172a; }
-    .confirm-sub { font-size: 13px; color: #475569; font-weight: 700; }
-
-    .grid2 {
+    /* Calculator result box */
+    .calc-result {
+      margin-top: 12px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      padding: 12px;
+      background: linear-gradient(180deg, rgba(254, 252, 232, 0.95), rgba(255, 255, 255, 0.95));
+      color: #0f172a;
+    }
+    .calc-grid {
       margin-top: 12px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
-    @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
-
+    @media (max-width: 720px) { .calc-grid { grid-template-columns: 1fr; } }
     .mini-box {
       border-radius: 14px;
       border: 1px solid #e5e7eb;
       padding: 10px;
       background: #ffffff;
     }
-
     .mini-label { font-size: 12px; font-weight: 900; color: #64748b; margin-bottom: 4px; }
     .mini-val { font-size: 14px; font-weight: 900; color: #0f172a; word-break: break-word; }
   </style>
@@ -540,41 +528,95 @@
       />
 
       <div id="clockLine" class="clock-line"></div>
+      <!-- Countdown right below clock (no extra words) -->
+      <div id="countdownLine" class="countdown-btn">--d --h --m --s</div>
 
-      <!-- NEW: Countdown right below the clock (no labels, button-sized) -->
-      <div id="countdownBtn" class="countdown-btn ok">—</div>
+      <!-- BIG “button-sized” marquee -->
+      <div class="marquee-btn" aria-label="Updates">
+        <div id="marqueeTrack" class="marquee-track">
+          <!-- JS duplicates items for seamless scroll -->
+          <div class="marquee-item">📌 Bring W-2s, ID, Social Security cards (dependents too)</div>
+          <div class="marquee-item">💡 Most refunds depend on income, credits, and withholding</div>
+          <div class="marquee-item">✅ E-file = faster processing</div>
+          <div class="marquee-item">🧾 Have 1099s? Bring all forms + expenses</div>
+          <div class="marquee-item">📍 In-person or Online / Phone / Text appointments available</div>
+        </div>
+      </div>
 
-      <!-- NEW: Marquee button-sized (same feel as Call/Text buttons) -->
-      <div class="marquee" aria-label="Tax info marquee">
-        <div class="marquee-track">
-          <div class="marquee-move" id="marqueeMove">
-            <!-- Set A -->
-            <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">✅</span>Bring W-2/1099s, photo ID, and direct deposit info.</span>
-            <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">📩</span>Got an IRS letter? Bring it — we can help respond.</span>
-            <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">💼</span>Self-employed? Track expenses — it can lower taxes.</span>
-            <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">🏠</span>Moved or changed jobs? Update address/withholding.</span>
-            <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">⏳</span>Need more time? Ask about filing an extension.</span>
-            <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">📌</span>Fastest refunds usually come with e-file + direct deposit.</span>
+      <!-- 5 Buttons -->
+      <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
+      <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
+      <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
 
-            <!-- Duplicate for seamless loop -->
-            <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">✅</span>Bring W-2/1099s, photo ID, and direct deposit info.</span>
-            <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">📩</span>Got an IRS letter? Bring it — we can help respond.</span>
-            <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">💼</span>Self-employed? Track expenses — it can lower taxes.</span>
-            <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">🏠</span>Moved or changed jobs? Update address/withholding.</span>
-            <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">⏳</span>Need more time? Ask about filing an extension.</span>
-            <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">📌</span>Fastest refunds usually come with e-file + direct deposit.</span>
+      <button class="btn calc" id="toggleCalcBtn">🧮 Tax Calculator</button>
+      <button class="btn book" id="toggleBookBtn">📅 Book Appointment</button>
+
+      <!-- Calculator Panel -->
+      <div id="calcPanel" class="panel">
+        <div class="section">
+          <div class="subline">Federal Estimate (Simple)</div>
+          <div class="now" id="calcNowLine"></div>
+
+          <div class="row">
+            <div>
+              <label for="calcIncome">W-2 Box 1 (Wages)</label>
+              <input id="calcIncome" inputmode="decimal" placeholder="e.g. 56000" />
+            </div>
+            <div>
+              <label for="calcWithheld">W-2 Box 2 (Federal Withheld)</label>
+              <input id="calcWithheld" inputmode="decimal" placeholder="e.g. 2300" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="calcStatus">Filing Status</label>
+              <select id="calcStatus">
+                <option value="single">Single</option>
+                <option value="mfj">Married Filing Jointly</option>
+                <option value="mfs">Married Filing Separately</option>
+                <option value="hoh">Head of Household</option>
+              </select>
+            </div>
+            <div>
+              <label for="calcDeps">Dependents (Child Tax Credit)</label>
+              <input id="calcDeps" inputmode="numeric" placeholder="e.g. 0" />
+            </div>
+          </div>
+
+          <button class="btn confirm" id="calcBtn" type="button">Calculate</button>
+
+          <div id="calcMsg" class="msg"></div>
+
+          <div id="calcResult" class="calc-result" style="display:none;">
+            <div class="subline" style="margin-bottom:6px;">Estimated Refund / Owed</div>
+            <div class="calc-grid">
+              <div class="mini-box">
+                <div class="mini-label">Estimated Tax</div>
+                <div id="outTax" class="mini-val">$0</div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Withholding</div>
+                <div id="outWh" class="mini-val">$0</div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Credits (est.)</div>
+                <div id="outCredits" class="mini-val">$0</div>
+              </div>
+              <div class="mini-box">
+                <div class="mini-label">Estimated Refund / Owed</div>
+                <div id="outNet" class="mini-val">$0</div>
+              </div>
+            </div>
+            <div style="margin-top:10px; color:#475569; font-weight:700; font-size:12px;">
+              Note: This is a simple estimate (not IRS-final). For accuracy: bring all forms, credits, and deductions.
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Your 5 buttons (kept) -->
-      <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
-      <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
-      <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
-      <button class="btn calc" type="button" onclick="alert('Calculator panel goes here (if enabled).')">🧮 Tax Calculator</button>
-      <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
-
-      <div id="booking" class="booking">
+      <!-- Booking Panel -->
+      <div id="bookingPanel" class="panel">
         <div class="section">
           <div class="subline">Book an Appointment</div>
           <div id="nowLine" class="now"></div>
@@ -633,91 +675,28 @@
           <button id="confirmBtn" class="btn confirm" disabled>Confirm Booking</button>
 
           <div id="msg" class="msg"></div>
-
-          <div id="confirmCard" class="confirm-card">
-            <div class="confirm-head">
-              <div class="check">✓</div>
-              <div>
-                <div class="confirm-title">Booking Confirmed</div>
-                <div class="confirm-sub">Your appointment has been added to our schedule.</div>
-              </div>
-            </div>
-
-            <div class="grid2">
-              <div class="mini-box">
-                <div class="mini-label">Client</div>
-                <div id="cName" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Email</div>
-                <div id="cEmail" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Date & Time</div>
-                <div id="cWhen" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Service</div>
-                <div id="cService" class="mini-val"></div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Location</div>
-                <div id="cLoc" class="mini-val"></div>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
-      <!-- /booking -->
     </div>
   </div>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
     /* ------------------------------------------------------------
-       1) SUPABASE CLIENT CONFIG
+       0) IMPORTANT: PUT YOUR SUPABASE KEYS HERE
        ------------------------------------------------------------ */
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
-    const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const supabaseAnonKey = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE"; // <-- replace
+    const supa = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
     /* ------------------------------------------------------------
-       2) UTILITIES
-       ------------------------------------------------------------ */
-    function pad(n) { return String(n).padStart(2, "0"); }
-    function todayYMD() {
-      const d = new Date();
-      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-    }
-    function fmtNice(dt) {
-      return dt.toLocaleString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      });
-    }
-    function makeLocalDateTimeFrom24(dateStr, hm) {
-      const [H, M] = hm.split(":").map(Number);
-      const [Y, m, D] = dateStr.split("-").map(Number);
-      return new Date(Y, m - 1, D, H, M, 0, 0);
-    }
-    function isValidEmail(v) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-    }
-
-    /* ------------------------------------------------------------
-       3) AUTO SWITCH DAY/NIGHT + SYNC GALAXY HUE
+       1) THEME + GALAXY HUE
        ------------------------------------------------------------ */
     function applyThemeAndGalaxy() {
       const now = new Date();
-      const h = now.getHours();
-      const m = now.getMinutes();
-      const s = now.getSeconds();
-
+      const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
       document.body.dataset.theme = (h >= 7 && h < 19) ? "day" : "night";
 
       const hue = (h * 15 + m * 0.25 + s * (0.25 / 60)) % 360;
@@ -732,129 +711,219 @@
     setInterval(applyThemeAndGalaxy, 10000);
 
     /* ------------------------------------------------------------
-       4) CLOCK
+       2) CLOCK + "NOW" LINES
        ------------------------------------------------------------ */
     const clockLine = document.getElementById("clockLine");
     const nowLine = document.getElementById("nowLine");
+    const calcNowLine = document.getElementById("calcNowLine");
 
     function updateClock() {
       const now = new Date();
-
       const datePart = new Intl.DateTimeFormat("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
+        weekday: "short", month: "short", day: "2-digit", year: "numeric",
       }).format(now);
 
       const timePart = new Intl.DateTimeFormat("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
+        hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
       }).format(now);
 
-      clockLine.textContent = `${datePart} • ${timePart}`;
-      nowLine.textContent = `Now: ${datePart} • ${timePart}`;
+      const text = `${datePart} • ${timePart}`;
+      clockLine.textContent = text;
+      nowLine.textContent = `Now: ${text}`;
+      calcNowLine.textContent = `Now: ${text}`;
     }
     updateClock();
     setInterval(updateClock, 1000);
 
     /* ------------------------------------------------------------
-       4B) COUNTDOWN (no labels)
-       - Still counts down to Apr 15, 2026 11:59:59 PM ET,
-         but we do NOT display the date/labels anymore.
+       3) COUNTDOWN (NO EXTRA WORDS)
        ------------------------------------------------------------ */
-    const countdownBtn = document.getElementById("countdownBtn");
-    const TAX_TZ = "America/New_York";
+    const countdownLine = document.getElementById("countdownLine");
 
-    function getTimeZoneOffsetMinutes(date, timeZone) {
-      const dtf = new Intl.DateTimeFormat("en-US", {
-        timeZone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      });
-      const parts = dtf.formatToParts(date);
-      const map = {};
-      for (const p of parts) if (p.type !== "literal") map[p.type] = p.value;
-
-      const asUTC = Date.UTC(
-        Number(map.year),
-        Number(map.month) - 1,
-        Number(map.day),
-        Number(map.hour),
-        Number(map.minute),
-        Number(map.second)
-      );
-      return (asUTC - date.getTime()) / 60000;
+    function nextTaxDay() {
+      // Picks April 15 of current year if still ahead; otherwise next year
+      const now = new Date();
+      const y = now.getFullYear();
+      const tThis = new Date(y, 3, 15, 0, 0, 0); // April is month 3
+      if (tThis.getTime() > now.getTime()) return tThis;
+      return new Date(y + 1, 3, 15, 0, 0, 0);
     }
 
-    function makeDateInTimeZone({ year, month, day, hour, minute, second }, timeZone) {
-      const utcGuess = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
-      const offsetMin = getTimeZoneOffsetMinutes(utcGuess, timeZone);
-      return new Date(utcGuess.getTime() - offsetMin * 60000);
-    }
+    const taxTarget = nextTaxDay();
 
-    const deadlineET = makeDateInTimeZone(
-      { year: 2026, month: 4, day: 15, hour: 23, minute: 59, second: 59 },
-      TAX_TZ
-    );
-
-    function formatCountdownShort(ms) {
-      const totalSec = Math.max(0, Math.floor(ms / 1000));
-      const days = Math.floor(totalSec / 86400);
-      const hours = Math.floor((totalSec % 86400) / 3600);
-      const mins = Math.floor((totalSec % 3600) / 60);
-      const secs = totalSec % 60;
-      return `${days} days · ${pad(hours)}:${pad(mins)}:${pad(secs)}`;
-    }
-
-    function setCountdownState(daysLeft) {
-      countdownBtn.classList.remove("ok", "warn", "soon");
-      if (daysLeft >= 30) countdownBtn.classList.add("ok");
-      else if (daysLeft >= 14) countdownBtn.classList.add("warn");
-      else countdownBtn.classList.add("soon");
+    function fmtCountdown(ms) {
+      if (ms <= 0) return "0d 00h 00m 00s";
+      const sec = Math.floor(ms / 1000);
+      const d = Math.floor(sec / 86400);
+      const h = Math.floor((sec % 86400) / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
     }
 
     function updateCountdown() {
       const now = new Date();
-      const diff = deadlineET.getTime() - now.getTime();
-      const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
-      setCountdownState(daysLeft);
-
-      if (diff <= 0) countdownBtn.textContent = "Deadline reached";
-      else countdownBtn.textContent = formatCountdownShort(diff);
+      countdownLine.textContent = fmtCountdown(taxTarget.getTime() - now.getTime());
     }
-
     updateCountdown();
     setInterval(updateCountdown, 1000);
 
     /* ------------------------------------------------------------
-       5) BOOKING TOGGLE
+       4) MARQUEE: DUPLICATE FOR SEAMLESS SCROLL
        ------------------------------------------------------------ */
-    const toggleBtn = document.getElementById("toggleBtn");
-    const booking = document.getElementById("booking");
+    const marqueeTrack = document.getElementById("marqueeTrack");
+    // Duplicate the existing items once so the animation can scroll half width
+    marqueeTrack.innerHTML = marqueeTrack.innerHTML + marqueeTrack.innerHTML;
 
-    toggleBtn.addEventListener("click", () => {
-      booking.classList.toggle("open");
-      if (booking.classList.contains("open")) {
+    /* ------------------------------------------------------------
+       5) PANEL TOGGLES (Calculator + Booking)
+       ------------------------------------------------------------ */
+    const toggleCalcBtn = document.getElementById("toggleCalcBtn");
+    const toggleBookBtn = document.getElementById("toggleBookBtn");
+    const calcPanel = document.getElementById("calcPanel");
+    const bookingPanel = document.getElementById("bookingPanel");
+
+    toggleCalcBtn.addEventListener("click", () => {
+      calcPanel.classList.toggle("open");
+      // keep booking as-is (don’t auto-close)
+    });
+
+    toggleBookBtn.addEventListener("click", () => {
+      bookingPanel.classList.toggle("open");
+      if (bookingPanel.classList.contains("open")) {
         if (!dateEl.value) dateEl.value = todayYMD();
         refreshSlots();
       }
     });
 
     /* ------------------------------------------------------------
-       6) BOOKING LOGIC
+       6) SIMPLE CALCULATOR (Federal-only rough estimate)
        ------------------------------------------------------------ */
+    const calcIncome = document.getElementById("calcIncome");
+    const calcWithheld = document.getElementById("calcWithheld");
+    const calcStatus = document.getElementById("calcStatus");
+    const calcDeps = document.getElementById("calcDeps");
+    const calcBtn = document.getElementById("calcBtn");
+
+    const calcMsg = document.getElementById("calcMsg");
+    const calcResult = document.getElementById("calcResult");
+    const outTax = document.getElementById("outTax");
+    const outWh = document.getElementById("outWh");
+    const outCredits = document.getElementById("outCredits");
+    const outNet = document.getElementById("outNet");
+
+    function money(n) {
+      const x = Number(n || 0);
+      return x.toLocaleString("en-US", { style: "currency", currency: "USD" });
+    }
+
+    // VERY simple progressive tax (placeholder-ish) + standard deduction approximations.
+    // You can swap this later for a proper 2025 table if you want.
+    function standardDeduction(status) {
+      // rough ballpark (not official)
+      if (status === "mfj") return 29200;
+      if (status === "hoh") return 21900;
+      if (status === "mfs") return 14600;
+      return 14600; // single
+    }
+
+    function estimateTax(taxable) {
+      // SIMPLE brackets (placeholder-ish) for demo; replace with official tables if desired.
+      // 10% up to 11k, 12% to 44,725, 22% to 95,375, etc.
+      let tax = 0;
+      const brackets = [
+        { upTo: 11000, rate: 0.10 },
+        { upTo: 44725, rate: 0.12 },
+        { upTo: 95375, rate: 0.22 },
+        { upTo: 182100, rate: 0.24 },
+        { upTo: 231250, rate: 0.32 },
+        { upTo: 578125, rate: 0.35 },
+        { upTo: Infinity, rate: 0.37 },
+      ];
+
+      let remaining = Math.max(0, taxable);
+      let lastCap = 0;
+
+      for (const b of brackets) {
+        const cap = b.upTo;
+        const chunk = Math.min(remaining, cap - lastCap);
+        if (chunk <= 0) break;
+        tax += chunk * b.rate;
+        remaining -= chunk;
+        lastCap = cap;
+      }
+      return Math.max(0, Math.round(tax));
+    }
+
+    function parseNum(v) {
+      const n = Number(String(v || "").replace(/[^0-9.]/g, ""));
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    calcBtn.addEventListener("click", () => {
+      calcMsg.className = "msg";
+      calcMsg.textContent = "";
+      calcResult.style.display = "none";
+
+      const wages = parseNum(calcIncome.value);
+      const withheld = parseNum(calcWithheld.value);
+      const deps = Math.max(0, Math.floor(parseNum(calcDeps.value)));
+      const status = calcStatus.value;
+
+      if (wages <= 0) {
+        calcMsg.className = "msg warn";
+        calcMsg.textContent = "Enter W-2 Box 1 wages.";
+        return;
+      }
+
+      const std = standardDeduction(status);
+      const taxable = Math.max(0, wages - std);
+
+      const tax = estimateTax(taxable);
+
+      // Child tax credit approximation (you requested $2200 each previously).
+      const credits = deps * 2200;
+
+      const net = (withheld + credits) - tax; // positive = refund (rough)
+
+      outTax.textContent = money(tax);
+      outWh.textContent = money(withheld);
+      outCredits.textContent = money(credits);
+      outNet.textContent = (net >= 0) ? `Refund ${money(net)}` : `Owed ${money(Math.abs(net))}`;
+
+      calcResult.style.display = "block";
+      calcMsg.className = "msg ok";
+      calcMsg.textContent = "Estimate calculated.";
+    });
+
+    /* ------------------------------------------------------------
+       7) BOOKING LOGIC (Supabase)
+       ------------------------------------------------------------ */
+    function pad(n) { return String(n).padStart(2, "0"); }
+    function todayYMD() {
+      const d = new Date();
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }
+    function makeLocalDateTimeFrom24(dateStr, hm) {
+      const [H, M] = hm.split(":").map(Number);
+      const [Y, m, D] = dateStr.split("-").map(Number);
+      return new Date(Y, m - 1, D, H, M, 0, 0);
+    }
+    function isValidEmail(v) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    }
+    function to12hLabel(hm) {
+      let [H, M] = hm.split(":").map(Number);
+      const ampm = H >= 12 ? "PM" : "AM";
+      H = H % 12;
+      if (H === 0) H = 12;
+      return `${pad(H)}:${pad(M)} ${ampm}`;
+    }
+
     const timesBox = document.getElementById("times");
     const confirmBtn = document.getElementById("confirmBtn");
     const msg = document.getElementById("msg");
-    const confirmCard = document.getElementById("confirmCard");
     const todayBadge = document.getElementById("todayBadge");
 
     const fullNameEl = document.getElementById("fullName");
@@ -863,13 +932,7 @@
     const locationEl = document.getElementById("location");
     const dateEl = document.getElementById("date");
 
-    const cName = document.getElementById("cName");
-    const cEmail = document.getElementById("cEmail");
-    const cWhen = document.getElementById("cWhen");
-    const cService = document.getElementById("cService");
-    const cLoc = document.getElementById("cLoc");
-
-    let selectedSlot = null;
+    let selectedSlot = null; // "HH:MM"
     let bookedSet = new Set();
 
     function updateTodayHighlight() {
@@ -882,14 +945,6 @@
       if (dow >= 1 && dow <= 5) return [9, 10, 11, 12, 17, 18, 19, 20];
       if (dow === 6) return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
       return [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-    }
-
-    function to12hLabel(hm) {
-      let [H, M] = hm.split(":").map(Number);
-      const ampm = H >= 12 ? "PM" : "AM";
-      H = H % 12;
-      if (H === 0) H = 12;
-      return `${pad(H)}:${pad(M)} ${ampm}`;
     }
 
     async function fetchBookedForDate(ymd) {
@@ -914,6 +969,17 @@
       });
       return set;
     }
+
+    function validateForm() {
+      const nameOk = (fullNameEl.value || "").trim().length > 1;
+      const emailOk = isValidEmail((emailEl.value || "").trim());
+      const slotOk = !!selectedSlot;
+      confirmBtn.disabled = !(nameOk && emailOk && slotOk);
+    }
+
+    fullNameEl.addEventListener("input", validateForm);
+    emailEl.addEventListener("input", validateForm);
+    dateEl.addEventListener("change", () => { refreshSlots(); validateForm(); });
 
     async function refreshSlots() {
       const ymd = dateEl.value;
@@ -960,29 +1026,12 @@
             validateForm();
           });
         }
-
         timesBox.appendChild(div);
       });
 
-      if (!anyAvailable) {
-        msg.className = "msg warn";
-        msg.textContent = "No available times for this date.";
-      } else {
-        msg.className = "msg warn";
-        msg.textContent = "Select a time to continue.";
-      }
+      msg.className = "msg warn";
+      msg.textContent = anyAvailable ? "Select a time to continue." : "No available times for this date.";
     }
-
-    function validateForm() {
-      const nameOk = (fullNameEl.value || "").trim().length > 1;
-      const emailOk = isValidEmail((emailEl.value || "").trim());
-      const slotOk = !!selectedSlot;
-      confirmBtn.disabled = !(nameOk && emailOk && slotOk);
-    }
-
-    fullNameEl.addEventListener("input", validateForm);
-    emailEl.addEventListener("input", validateForm);
-    dateEl.addEventListener("change", () => { refreshSlots(); validateForm(); });
 
     async function hasSameDayBooking(email, ymd) {
       const start = new Date(ymd + "T00:00:00");
@@ -1052,23 +1101,18 @@
 
       msg.className = "msg ok";
       msg.textContent = "Appointment confirmed! A staff member will review it.";
-      confirmCard.classList.add("show");
-      cName.textContent = name;
-      cEmail.textContent = email;
-      cWhen.textContent = fmtNice(startDT);
-      cService.textContent = service;
-      cLoc.textContent = location;
 
       await refreshSlots();
       validateForm();
     });
 
+    /* Init booking default date */
     dateEl.value = todayYMD();
     updateTodayHighlight();
     refreshSlots();
 
     /* ------------------------------------------------------------
-       7) CANVAS STARFIELD + SHOOTING STARS
+       8) CANVAS STARFIELD + SHOOTING STARS
        ------------------------------------------------------------ */
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
@@ -1076,6 +1120,7 @@
     let stars = [];
     let width = window.innerWidth;
     let height = window.innerHeight;
+    let shootingStars = [];
 
     function resizeCanvas() {
       width = window.innerWidth;
@@ -1099,8 +1144,6 @@
         });
       }
     }
-
-    let shootingStars = [];
 
     function spawnShootingStar() {
       const startX = Math.random() * width * 0.6;
@@ -1141,8 +1184,10 @@
         sh.x += sh.vx;
         sh.y += sh.vy;
         const p = sh.life / sh.maxLife;
-        if (p >= 1) { shootingStars.splice(i, 1); continue; }
-
+        if (p >= 1) {
+          shootingStars.splice(i, 1);
+          continue;
+        }
         const alpha = 1 - p;
         const tailX = sh.x - sh.vx * sh.length * 0.1;
         const tailY = sh.y - sh.vy * sh.length * 0.1;
