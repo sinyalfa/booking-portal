@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Columbus East Tax Services – Booking Portal</title>
 
   <style>
@@ -15,10 +12,8 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      /* Real-time galaxy hue (JS updates this) */
       --galaxy-hue: 220;
 
-      /* Card + text (UPDATED: glossy light-blue glass) */
       --card-bg: rgba(170, 215, 255, 0.22);
       --card-border: rgba(210, 235, 255, 0.38);
       --card-shadow: 0 32px 90px rgba(0, 0, 0, 0.62);
@@ -26,14 +21,12 @@
       --muted: #64748b;
       --ring: rgba(96, 165, 250, 0.4);
 
-      /* Buttons */
       --btn-call: #2563eb;
       --btn-text: #16a34a;
       --btn-email: #9333ea;
       --btn-book: #0f766e;
       --btn-calc: #f59e0b;
 
-      /* Slots */
       --slot-border: #34d399;
       --slot-bg: #ecfdf5;
       --slot-active-bg: #c7d2fe;
@@ -42,12 +35,13 @@
       --slot-disabled-border: #cbd5e1;
       --slot-disabled-text: #94a3b8;
 
-      /* Clock glow */
       --clock-anim-speed: 2.4s;
 
-      /* Deadline glow (JS toggles classes) */
-      --deadlineGlow: rgba(34, 197, 94, 0.65);   /* green */
+      --deadlineGlow: rgba(34, 197, 94, 0.65);
       --deadlineGlow2: rgba(34, 197, 94, 0.35);
+
+      /* Marquee speed (lower = faster) */
+      --marquee-duration: 34s;
     }
 
     html, body { height: 100%; }
@@ -61,12 +55,11 @@
       position: relative;
     }
 
-    /* Day/Night theme (JS toggles data-theme) */
     body[data-theme="day"] { filter: brightness(1.06) saturate(1.08); }
     body[data-theme="night"] { filter: brightness(0.98) saturate(1.0); }
 
     /* ============================================================
-       2) CANVAS STARFIELD + SHOOTING STARS LAYER
+       2) CANVAS STARFIELD + SHOOTING STARS
        ============================================================ */
     canvas#starfield {
       position: fixed;
@@ -78,7 +71,7 @@
     }
 
     /* ============================================================
-       3) ORBITING GLASS PLANETS AROUND CARD (BIGGER + FASTER)
+       3) ORBITING GLASS PLANETS
        ============================================================ */
     .space-layer {
       position: fixed;
@@ -96,17 +89,8 @@
       animation: orbit-slow 26s linear infinite;
     }
 
-    .planet-orbit.fast {
-      width: 380px;
-      height: 380px;
-      animation-duration: 16s;
-    }
-
-    .planet-orbit.medium {
-      width: 480px;
-      height: 480px;
-      animation-duration: 20s;
-    }
+    .planet-orbit.fast { width: 380px; height: 380px; animation-duration: 16s; }
+    .planet-orbit.medium { width: 480px; height: 480px; animation-duration: 20s; }
 
     .planet-orbit.orbit-1 { top: 6%; left: calc(50% - 280px); }
     .planet-orbit.orbit-2 { top: 62%; left: calc(50% - 240px); }
@@ -129,11 +113,9 @@
           hsl(calc((var(--galaxy-hue) + 280) * 1deg), 90%, 60%),
           hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%)
         );
-
       box-shadow:
         0 0 22px hsla(calc(var(--galaxy-hue) * 1deg), 90%, 65%, 0.75),
         0 0 70px hsla(calc((var(--galaxy-hue) + 110) * 1deg), 90%, 62%, 0.50);
-
       opacity: 0.78;
       animation: floaty 5.2s ease-in-out infinite;
     }
@@ -141,33 +123,15 @@
     .planet-orbit.fast .planet-glass { animation-duration: 4.5s; }
     .planet-orbit.medium .planet-glass { animation-duration: 6.0s; }
 
-    .planet-glass.big {
-      width: 160px;
-      height: 160px;
-      top: -80px;
-      left: calc(50% - 80px);
-    }
-    .planet-glass.medium {
-      width: 110px;
-      height: 110px;
-      top: calc(50% - 55px);
-      left: -55px;
-    }
-    .planet-glass.small {
-      width: 86px;
-      height: 86px;
-      top: calc(100% - 43px);
-      left: calc(50% - 43px);
-    }
+    .planet-glass.big { width: 160px; height: 160px; top: -80px; left: calc(50% - 80px); }
+    .planet-glass.medium { width: 110px; height: 110px; top: calc(50% - 55px); left: -55px; }
+    .planet-glass.small { width: 86px; height: 86px; top: calc(100% - 43px); left: calc(50% - 43px); }
 
     @keyframes orbit-slow { to { transform: rotate(360deg); } }
-    @keyframes floaty {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-12px); }
-    }
+    @keyframes floaty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
 
     /* ============================================================
-       4) LAYOUT: CARD WRAPPER + GLOSSY GLASS CARD
+       4) WRAP + CARD
        ============================================================ */
     .wrap {
       position: relative;
@@ -179,11 +143,7 @@
 
     .card {
       position: relative;
-      background: linear-gradient(
-        180deg,
-        rgba(210, 235, 255, 0.26),
-        rgba(170, 215, 255, 0.18)
-      );
+      background: linear-gradient(180deg, rgba(210, 235, 255, 0.26), rgba(170, 215, 255, 0.18));
       border-radius: 28px;
       border: 1px solid var(--card-border);
       box-shadow: var(--card-shadow);
@@ -200,26 +160,17 @@
       position: absolute;
       inset: -2px;
       background:
-        radial-gradient(circle at 20% 0%,
-          rgba(255, 255, 255, 0.45),
-          rgba(255, 255, 255, 0.08) 45%,
-          rgba(255, 255, 255, 0) 70%
-        ),
-        radial-gradient(circle at 80% 10%,
-          rgba(59, 130, 246, 0.20),
-          rgba(59, 130, 246, 0) 60%
-        );
+        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.08) 45%, rgba(255, 255, 255, 0) 70%),
+        radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.20), rgba(59, 130, 246, 0) 60%);
       pointer-events: none;
       z-index: 0;
     }
     .card > * { position: relative; z-index: 1; }
 
-    @media (max-width: 640px) {
-      .card { padding: 28px 18px 20px; }
-    }
+    @media (max-width: 640px) { .card { padding: 28px 18px 20px; } }
 
     /* ============================================================
-       5) LOGO + NEON CLOCK
+       5) LOGO + CLOCK
        ============================================================ */
     .logo {
       width: 360px;
@@ -233,15 +184,11 @@
 
     @keyframes glowPulse {
       0%, 100% {
-        box-shadow:
-          0 0 14px rgba(59, 130, 246, 0.55),
-          0 0 40px rgba(37, 99, 235, 0.45);
+        box-shadow: 0 0 14px rgba(59, 130, 246, 0.55), 0 0 40px rgba(37, 99, 235, 0.45);
         transform: translateY(0);
       }
       50% {
-        box-shadow:
-          0 0 24px rgba(59, 130, 246, 0.85),
-          0 0 70px rgba(37, 99, 235, 0.75);
+        box-shadow: 0 0 24px rgba(59, 130, 246, 0.85), 0 0 70px rgba(37, 99, 235, 0.75);
         transform: translateY(-1px);
       }
     }
@@ -255,11 +202,7 @@
       text-align: center;
       padding: 10px 16px;
       border-radius: 999px;
-      background: radial-gradient(
-        circle at 50% 0%,
-        hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22),
-        rgba(15, 23, 42, 0.95)
-      );
+      background: radial-gradient(circle at 50% 0%, hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22), rgba(15, 23, 42, 0.95));
       border: 1px solid rgba(191, 219, 254, 0.3);
       letter-spacing: 0.5px;
       white-space: nowrap;
@@ -268,26 +211,19 @@
       animation: glowPulse var(--clock-anim-speed) ease-in-out infinite;
     }
 
-    @media (max-width: 480px) {
-      .clock-line { font-size: 16px; padding: 9px 10px; }
-    }
+    @media (max-width: 480px) { .clock-line { font-size: 16px; padding: 9px 10px; } }
 
     /* ============================================================
-       5B) TAX DEADLINE COUNTDOWN CARD (APRIL 15, 2026)
+       5B) DEADLINE COUNTDOWN CARD
        ============================================================ */
     .deadline-card{
       max-width: 720px;
-      margin: 0 auto 18px;
+      margin: 0 auto 10px;
       border-radius: 20px;
       padding: 14px 14px;
-      background: radial-gradient(circle at 50% 0%,
-        rgba(34, 197, 94, 0.18),
-        rgba(15, 23, 42, 0.92)
-      );
+      background: radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.18), rgba(15, 23, 42, 0.92));
       border: 1px solid rgba(191, 219, 254, 0.25);
-      box-shadow:
-        0 0 0 6px rgba(59,130,246,0.08),
-        0 18px 40px rgba(0,0,0,0.35);
+      box-shadow: 0 0 0 6px rgba(59,130,246,0.08), 0 18px 40px rgba(0,0,0,0.35);
       color: #e5f0ff;
       text-align: left;
       overflow: hidden;
@@ -312,18 +248,9 @@
       gap:10px;
       flex-wrap:wrap;
     }
-    .deadline-title{
-      font-weight: 900;
-      font-size: 13px;
-      letter-spacing: 0.3px;
-      color: rgba(226, 232, 240, 0.92);
-    }
-    .deadline-date{
-      font-weight: 900;
-      font-size: 13px;
-      color: rgba(191, 219, 254, 0.92);
-      white-space: nowrap;
-    }
+    .deadline-title{ font-weight: 900; font-size: 13px; letter-spacing: 0.3px; color: rgba(226, 232, 240, 0.92); }
+    .deadline-date{ font-weight: 900; font-size: 13px; color: rgba(191, 219, 254, 0.92); white-space: nowrap; }
+
     .deadline-remaining{
       margin-top: 8px;
       display:flex;
@@ -331,11 +258,7 @@
       gap:10px;
       flex-wrap:wrap;
     }
-    .deadline-label{
-      font-weight: 900;
-      font-size: 14px;
-      color: rgba(226, 232, 240, 0.92);
-    }
+    .deadline-label{ font-weight: 900; font-size: 14px; color: rgba(226, 232, 240, 0.92); }
     .deadline-time{
       font-weight: 900;
       font-size: 18px;
@@ -347,33 +270,7 @@
       box-shadow: 0 0 18px var(--deadlineGlow2);
       white-space: nowrap;
     }
-    .deadline-tip{
-      margin-top: 10px;
-      font-size: 13px;
-      font-weight: 800;
-      color: rgba(226, 232, 240, 0.95);
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      line-height: 1.35;
-    }
-    .tip-dot{
-      width: 10px; height: 10px; border-radius: 999px;
-      background: var(--deadlineGlow);
-      box-shadow: 0 0 14px var(--deadlineGlow2);
-      flex: 0 0 auto;
-      margin-top: 4px;
-    }
-    .tip-text{
-      flex:1;
-      opacity: 1;
-      transition: opacity .28s ease;
-    }
-    .tip-text.fade{
-      opacity: 0;
-    }
 
-    /* State colors (steady, not flashy) */
     .deadline-ok{
       --deadlineGlow: rgba(34, 197, 94, 0.65);
       --deadlineGlow2: rgba(34, 197, 94, 0.35);
@@ -388,7 +285,103 @@
     }
 
     /* ============================================================
-       6) MAIN CTA BUTTONS
+       5C) BIG MARQUEE BAR (under countdown)
+       ============================================================ */
+    .marquee {
+      max-width: 720px;
+      margin: 0 auto 16px;
+      border-radius: 20px;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid rgba(191, 219, 254, 0.28);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08)),
+        radial-gradient(circle at 50% 0%, rgba(59,130,246,0.14), rgba(2,6,23,0.78));
+      box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+      position: relative;
+    }
+    .marquee::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(700px 220px at 10% 0%, rgba(168,85,247,0.16), transparent 60%),
+        radial-gradient(720px 240px at 95% 15%, rgba(34,197,94,0.14), transparent 55%);
+      pointer-events:none;
+      z-index:0;
+    }
+    .marquee-inner{
+      position: relative;
+      z-index: 1;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding: 12px 14px;
+    }
+    .marquee-badge{
+      flex: 0 0 auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 12px;
+      color: #0b1220;
+      background: rgba(226,232,240,0.95);
+      border: 1px solid rgba(191,219,254,0.65);
+      box-shadow: 0 0 18px rgba(59,130,246,0.18);
+      white-space: nowrap;
+    }
+    .marquee-track{
+      flex: 1 1 auto;
+      overflow: hidden;
+      mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+    }
+    .marquee-move{
+      display: inline-flex;
+      align-items:center;
+      gap: 26px;
+      white-space: nowrap;
+      will-change: transform;
+      animation: marqueeScroll var(--marquee-duration) linear infinite;
+      font-weight: 900;
+      font-size: 16px;
+      color: rgba(255,255,255,0.96);
+      text-shadow: 0 0 18px rgba(59,130,246,0.18);
+    }
+    .marquee-item{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(2,6,23,0.35);
+      border: 1px solid rgba(191,219,254,0.18);
+    }
+    .marquee-dot{
+      width: 10px; height: 10px; border-radius: 999px;
+      background: rgba(34,197,94,0.85);
+      box-shadow: 0 0 14px rgba(34,197,94,0.35);
+      flex: 0 0 auto;
+    }
+    .marquee-ic{
+      font-size: 18px;
+      line-height: 1;
+    }
+    @keyframes marqueeScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    @media (max-width: 480px){
+      .marquee-move{ font-size: 14px; }
+      .marquee-badge{ font-size: 11px; padding: 8px 10px; }
+    }
+
+    /* ============================================================
+       6) BUTTONS
        ============================================================ */
     .btn {
       width: 100%;
@@ -403,7 +396,6 @@
       transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.5);
     }
-
     .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7); }
     .btn:active { transform: translateY(0); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.5); }
 
@@ -411,10 +403,10 @@
     .btn.text { background: var(--btn-text); }
     .btn.email { background: var(--btn-email); }
     .btn.book { background: var(--btn-book); }
-    .btn.calc { background: var(--btn-calc); color: #111827; }
+    .btn.calc { background: var(--btn-calc); color:#111827; }
 
     /* ============================================================
-       7) BOOKING PANEL CONTAINER
+       7) BOOKING PANEL
        ============================================================ */
     .booking {
       margin-top: 18px;
@@ -442,9 +434,7 @@
       gap: 12px;
       margin-top: 10px;
     }
-    @media (max-width: 720px) {
-      .row { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 720px) { .row { grid-template-columns: 1fr; } }
 
     label {
       font-size: 13px;
@@ -510,7 +500,6 @@
       cursor: pointer;
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
     }
-
     .slot:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12); }
 
     .slot.active {
@@ -529,18 +518,8 @@
       transform: none;
     }
 
-    .btn.confirm {
-      margin-top: 16px;
-      background: #020617;
-      width: 100%;
-    }
-
-    .btn.confirm:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
+    .btn.confirm { margin-top: 16px; background: #020617; width: 100%; }
+    .btn.confirm:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
     .msg {
       margin-top: 12px;
@@ -550,13 +529,12 @@
       font-weight: 900;
       display: none;
     }
-
     .msg.ok { display: block; background: #dcfce7; color: #166534; border: 1px solid #86efac; }
     .msg.bad { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
     .msg.warn { display: block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
     /* ============================================================
-       8) CONFIRMATION CARD (after successful booking)
+       8) CONFIRMATION CARD
        ============================================================ */
     .confirm-card {
       display: none;
@@ -617,42 +595,56 @@
   <canvas id="starfield"></canvas>
 
   <div class="space-layer">
-    <div class="planet-orbit orbit-1">
-      <div class="planet-glass big"></div>
-    </div>
-    <div class="planet-orbit orbit-2 medium">
-      <div class="planet-glass medium"></div>
-    </div>
-    <div class="planet-orbit orbit-3 fast">
-      <div class="planet-glass small"></div>
-    </div>
+    <div class="planet-orbit orbit-1"><div class="planet-glass big"></div></div>
+    <div class="planet-orbit orbit-2 medium"><div class="planet-glass medium"></div></div>
+    <div class="planet-orbit orbit-3 fast"><div class="planet-glass small"></div></div>
   </div>
 
   <div class="wrap">
     <div class="card">
-      <img
-        class="logo"
+      <img class="logo"
         src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png"
         alt="Columbus East Tax Services Logo"
       />
 
       <div id="clockLine" class="clock-line"></div>
 
-      <!-- ✅ NEW: Deadline Countdown + Rotating Tip -->
+      <!-- Countdown stays -->
       <div id="deadlineCard" class="deadline-card deadline-ok" aria-live="polite">
         <div class="deadline-top">
           <div class="deadline-title">Federal filing deadline (Tax Year 2025)</div>
           <div class="deadline-date">Apr 15, 2026 • 11:59 PM ET</div>
         </div>
-
         <div class="deadline-remaining">
           <div class="deadline-label">Time remaining:</div>
           <div id="deadlineTime" class="deadline-time">—</div>
         </div>
+      </div>
 
-        <div class="deadline-tip">
-          <div class="tip-dot"></div>
-          <div id="deadlineTip" class="tip-text">Tip: —</div>
+      <!-- NEW: Big marquee under countdown -->
+      <div class="marquee" aria-label="Tax info marquee">
+        <div class="marquee-inner">
+          <div class="marquee-badge">📣 Tax Info</div>
+          <div class="marquee-track">
+            <!-- We duplicate the list to make a seamless loop -->
+            <div class="marquee-move" id="marqueeMove">
+              <!-- Set A -->
+              <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">✅</span>Bring W-2/1099s, ID, and direct deposit info.</span>
+              <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">📩</span>Got an IRS letter? Bring it — we can help respond.</span>
+              <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">👶</span>New baby? You may qualify for child-related credits.</span>
+              <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">🏠</span>Moved or changed jobs? Update your address/withholding.</span>
+              <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">💼</span>Self-employed? Track expenses — it can lower taxes.</span>
+              <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">⏳</span>Need more time? Ask about filing an extension.</span>
+
+              <!-- Set B (duplicate for seamless loop) -->
+              <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">✅</span>Bring W-2/1099s, ID, and direct deposit info.</span>
+              <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">📩</span>Got an IRS letter? Bring it — we can help respond.</span>
+              <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">👶</span>New baby? You may qualify for child-related credits.</span>
+              <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">🏠</span>Moved or changed jobs? Update your address/withholding.</span>
+              <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">💼</span>Self-employed? Track expenses — it can lower taxes.</span>
+              <span class="marquee-item"><span class="marquee-dot"></span><span class="marquee-ic">⏳</span>Need more time? Ask about filing an extension.</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -660,10 +652,7 @@
       <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
       <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
       <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
-
-      <!-- (If you already have a calculator panel elsewhere, keep it. This button is just here for your 5-button lineup.) -->
       <button class="btn calc" type="button" onclick="alert('Calculator panel goes here (if enabled).')">🧮 Tax Calculator</button>
-
       <button class="btn book" id="toggleBtn">📅 Book Appointment</button>
 
       <div id="booking" class="booking">
@@ -723,7 +712,6 @@
           <div id="times" class="times"></div>
 
           <button id="confirmBtn" class="btn confirm" disabled>Confirm Booking</button>
-
           <div id="msg" class="msg"></div>
 
           <div id="confirmCard" class="confirm-card">
@@ -802,7 +790,7 @@
     }
 
     /* ------------------------------------------------------------
-       3) AUTO SWITCH DAY/NIGHT + SYNC GALAXY HUE WITH REAL TIME
+       3) AUTO SWITCH DAY/NIGHT + SYNC GALAXY HUE
        ------------------------------------------------------------ */
     function applyThemeAndGalaxy() {
       const now = new Date();
@@ -824,7 +812,7 @@
     setInterval(applyThemeAndGalaxy, 10000);
 
     /* ------------------------------------------------------------
-       4) NEON CLOCK
+       4) CLOCK
        ------------------------------------------------------------ */
     const clockLine = document.getElementById("clockLine");
     const nowLine = document.getElementById("nowLine");
@@ -854,16 +842,13 @@
     setInterval(updateClock, 1000);
 
     /* ------------------------------------------------------------
-       4B) DEADLINE COUNTDOWN (Fixed: Apr 15, 2026 • 11:59:59 PM ET)
-       + Rotating Tip line
+       4B) DEADLINE COUNTDOWN — Apr 15, 2026 11:59:59 PM ET
        ------------------------------------------------------------ */
     const deadlineCard = document.getElementById("deadlineCard");
     const deadlineTimeEl = document.getElementById("deadlineTime");
-    const deadlineTipEl = document.getElementById("deadlineTip");
     const TAX_TZ = "America/New_York";
 
     function getTimeZoneOffsetMinutes(date, timeZone) {
-      // Returns minutes to add to UTC to get timeZone (sign matches Date.getTimezoneOffset style)
       const dtf = new Intl.DateTimeFormat("en-US", {
         timeZone,
         year: "numeric",
@@ -876,9 +861,8 @@
       });
       const parts = dtf.formatToParts(date);
       const map = {};
-      for (const p of parts) {
-        if (p.type !== "literal") map[p.type] = p.value;
-      }
+      for (const p of parts) if (p.type !== "literal") map[p.type] = p.value;
+
       const asUTC = Date.UTC(
         Number(map.year),
         Number(map.month) - 1,
@@ -887,12 +871,10 @@
         Number(map.minute),
         Number(map.second)
       );
-      // If date.getTime() is behind asUTC, offset will be positive.
       return (asUTC - date.getTime()) / 60000;
     }
 
     function makeDateInTimeZone({ year, month, day, hour, minute, second }, timeZone) {
-      // Build the instant that corresponds to that local time in the requested timeZone.
       const utcGuess = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
       const offsetMin = getTimeZoneOffsetMinutes(utcGuess, timeZone);
       return new Date(utcGuess.getTime() - offsetMin * 60000);
@@ -902,17 +884,6 @@
       { year: 2026, month: 4, day: 15, hour: 23, minute: 59, second: 59 },
       TAX_TZ
     );
-
-    const tips = [
-      "Bring: ID, W-2/1099s, last year return, and bank info for direct deposit.",
-      "Got an IRS letter? Bring it — don’t ignore it. We can help respond correctly.",
-      "Missing a form? That’s okay — we can still review and plan the next step.",
-      "Owing doesn’t mean you did anything wrong — withholding changes can cause it.",
-      "Self-employed or 1099? Keep expense records — it can reduce taxable income.",
-      "Need more time? Extensions are available — ask us what to do next.",
-      "Changes like a new job, marriage, or a new baby can affect credits and withholding."
-    ];
-    let tipIndex = 0;
 
     function setDeadlineState(daysLeft) {
       deadlineCard.classList.remove("deadline-ok", "deadline-warn", "deadline-soon");
@@ -933,34 +904,18 @@
     function updateDeadlineCountdown() {
       const now = new Date();
       const diff = deadlineET.getTime() - now.getTime();
-
       const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
       setDeadlineState(daysLeft);
 
-      if (diff <= 0) {
-        deadlineTimeEl.textContent = "Deadline reached";
-        return;
-      }
-      deadlineTimeEl.textContent = formatCountdown(diff);
+      if (diff <= 0) deadlineTimeEl.textContent = "Deadline reached";
+      else deadlineTimeEl.textContent = formatCountdown(diff);
     }
 
-    function rotateTip() {
-      deadlineTipEl.classList.add("fade");
-      setTimeout(() => {
-        tipIndex = (tipIndex + 1) % tips.length;
-        deadlineTipEl.textContent = "Tip: " + tips[tipIndex];
-        deadlineTipEl.classList.remove("fade");
-      }, 220);
-    }
-
-    // Init tip + countdown
-    deadlineTipEl.textContent = "Tip: " + tips[tipIndex];
     updateDeadlineCountdown();
     setInterval(updateDeadlineCountdown, 1000);
-    setInterval(rotateTip, 8000);
 
     /* ------------------------------------------------------------
-       5) COLLAPSIBLE BOOKING PANEL TOGGLE
+       5) BOOKING TOGGLE
        ------------------------------------------------------------ */
     const toggleBtn = document.getElementById("toggleBtn");
     const booking = document.getElementById("booking");
@@ -994,7 +949,7 @@
     const cService = document.getElementById("cService");
     const cLoc = document.getElementById("cLoc");
 
-    let selectedSlot = null; // "HH:MM"
+    let selectedSlot = null;
     let bookedSet = new Set();
 
     function updateTodayHighlight() {
@@ -1112,7 +1067,6 @@
     async function hasSameDayBooking(email, ymd) {
       const start = new Date(ymd + "T00:00:00");
       const end = new Date(ymd + "T23:59:59");
-
       const { data, error } = await supa
         .from("appointments")
         .select("start_time,status")
@@ -1188,7 +1142,6 @@
       validateForm();
     });
 
-    /* Init */
     dateEl.value = todayYMD();
     updateTodayHighlight();
     refreshSlots();
@@ -1267,10 +1220,8 @@
         sh.x += sh.vx;
         sh.y += sh.vy;
         const p = sh.life / sh.maxLife;
-        if (p >= 1) {
-          shootingStars.splice(i, 1);
-          continue;
-        }
+        if (p >= 1) { shootingStars.splice(i, 1); continue; }
+
         const alpha = 1 - p;
         const tailX = sh.x - sh.vx * sh.length * 0.1;
         const tailY = sh.y - sh.vy * sh.length * 0.1;
