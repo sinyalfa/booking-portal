@@ -821,11 +821,12 @@
     // VERY simple progressive tax (placeholder-ish) + standard deduction approximations.
     // You can swap this later for a proper 2025 table if you want.
     function standardDeduction(status) {
-      // rough ballpark (not official)
-      if (status === "mfj") return 29200;
-      if (status === "hoh") return 21900;
-      if (status === "mfs") return 14600;
-      return 14600; // single
+      // ✅ UPDATED: Tax Year 2025 standard deductions
+      // Single / MFS: 15,750 | MFJ: 31,500 | HOH: 23,625
+      if (status === "mfj") return 31500;
+      if (status === "hoh") return 23625;
+      if (status === "mfs") return 15750;
+      return 15750; // single
     }
 
     function estimateTax(taxable) {
