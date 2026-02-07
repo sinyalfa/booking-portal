@@ -2,25 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
   <title>Columbus East Tax Services – Booking Portal</title>
 
   <style>
+    /* ============================================================
+       1) GLOBAL RESETS + VARIABLES
+       ============================================================ */
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
+      /* Real-time galaxy hue (JS updates this) */
       --galaxy-hue: 220;
-      --card-border: rgba(210, 235, 255, 0.26);
+
+      /* Card + text */
+      --card-bg: rgba(170, 215, 255, 0.22);
+      --card-border: rgba(210, 235, 255, 0.38);
       --card-shadow: 0 32px 90px rgba(0, 0, 0, 0.62);
       --text-main: #0b1220;
       --muted: #64748b;
-      --ring: rgba(96, 165, 250, 0.35);
+      --ring: rgba(96, 165, 250, 0.4);
 
+      /* Buttons */
       --btn-call: #2563eb;
       --btn-text: #16a34a;
       --btn-email: #9333ea;
+      --btn-calc: #f59e0b;  /* calculator button */
       --btn-book: #0f766e;
-      --btn-calc: #7c3aed;
 
+      /* Slots */
       --slot-border: #34d399;
       --slot-bg: #ecfdf5;
       --slot-active-bg: #c7d2fe;
@@ -28,20 +41,34 @@
       --slot-disabled-bg: #f1f5f9;
       --slot-disabled-border: #cbd5e1;
       --slot-disabled-text: #94a3b8;
+
+      /* Clock glow */
+      --clock-anim-speed: 2.4s;
+
+      /* Calculator panel */
+      --calc-bg1: rgba(255, 251, 235, 0.98); /* light yellow */
+      --calc-bg2: rgba(255, 255, 255, 0.98); /* white */
+      --calc-border: rgba(226, 232, 240, 1);
     }
 
     html, body { height: 100%; }
+
     body {
       font-family: Arial, Helvetica, sans-serif;
       color: #fff;
       overflow-x: hidden;
       background: radial-gradient(circle at 30% 20%, #0b1a3c, #020617 70%);
-      transition: background 1.2s ease, filter 1.2s ease;
+      transition: background 1.4s ease, filter 1.2s ease;
       position: relative;
     }
+
+    /* Day/Night theme (JS toggles data-theme) */
     body[data-theme="day"] { filter: brightness(1.06) saturate(1.08); }
     body[data-theme="night"] { filter: brightness(0.98) saturate(1.0); }
 
+    /* ============================================================
+       2) CANVAS STARFIELD + SHOOTING STARS LAYER
+       ============================================================ */
     canvas#starfield {
       position: fixed;
       inset: 0;
@@ -51,34 +78,150 @@
       display: block;
     }
 
-    .wrap { position: relative; z-index: 5; max-width: 980px; margin: 0 auto; padding: 22px; }
+    /* ============================================================
+       3) ORBITING GLASS PLANETS AROUND CARD
+       ============================================================ */
+    .space-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .planet-orbit {
+      position: absolute;
+      border-radius: 50%;
+      width: 560px;
+      height: 560px;
+      transform-origin: center center;
+      animation: orbit-slow 26s linear infinite;
+    }
+
+    .planet-orbit.fast {
+      width: 380px;
+      height: 380px;
+      animation-duration: 16s;
+    }
+
+    .planet-orbit.medium {
+      width: 480px;
+      height: 480px;
+      animation-duration: 20s;
+    }
+
+    .planet-orbit.orbit-1 { top: 6%; left: calc(50% - 280px); }
+    .planet-orbit.orbit-2 { top: 62%; left: calc(50% - 240px); }
+    .planet-orbit.orbit-3 { top: 26%; left: calc(50% - 190px); }
+
+    .planet-glass {
+      position: absolute;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 30%,
+          rgba(255, 255, 255, 0.95),
+          rgba(255, 255, 255, 0.12) 40%,
+          rgba(0, 0, 0, 0) 70%
+        ),
+        conic-gradient(from 120deg,
+          hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%),
+          hsl(calc((var(--galaxy-hue) + 70) * 1deg), 90%, 60%),
+          hsl(calc((var(--galaxy-hue) + 140) * 1deg), 90%, 62%),
+          hsl(calc((var(--galaxy-hue) + 210) * 1deg), 90%, 60%),
+          hsl(calc((var(--galaxy-hue) + 280) * 1deg), 90%, 60%),
+          hsl(calc(var(--galaxy-hue) * 1deg), 90%, 65%)
+        );
+
+      box-shadow:
+        0 0 22px hsla(calc(var(--galaxy-hue) * 1deg), 90%, 65%, 0.75),
+        0 0 70px hsla(calc((var(--galaxy-hue) + 110) * 1deg), 90%, 62%, 0.50);
+
+      opacity: 0.78;
+      animation: floaty 5.2s ease-in-out infinite;
+    }
+
+    .planet-orbit.fast .planet-glass { animation-duration: 4.5s; }
+    .planet-orbit.medium .planet-glass { animation-duration: 6.0s; }
+
+    .planet-glass.big {
+      width: 160px;
+      height: 160px;
+      top: -80px;
+      left: calc(50% - 80px);
+    }
+    .planet-glass.medium {
+      width: 110px;
+      height: 110px;
+      top: calc(50% - 55px);
+      left: -55px;
+    }
+    .planet-glass.small {
+      width: 86px;
+      height: 86px;
+      top: calc(100% - 43px);
+      left: calc(50% - 43px);
+    }
+
+    @keyframes orbit-slow { to { transform: rotate(360deg); } }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+
+    /* ============================================================
+       4) LAYOUT: CARD WRAPPER + GLOSSY GLASS CARD
+       ============================================================ */
+    .wrap {
+      position: relative;
+      z-index: 5;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
     .card {
       position: relative;
-      background: linear-gradient(180deg, rgba(210, 235, 255, 0.22), rgba(170, 215, 255, 0.14));
+      background: linear-gradient(
+        180deg,
+        rgba(210, 235, 255, 0.26),
+        rgba(170, 215, 255, 0.18)
+      );
       border-radius: 28px;
       border: 1px solid var(--card-border);
       box-shadow: var(--card-shadow);
-      padding: 32px 22px 26px;
+      padding: 36px 24px 28px;
       text-align: center;
       color: var(--text-main);
       backdrop-filter: blur(18px) saturate(185%);
       -webkit-backdrop-filter: blur(18px) saturate(185%);
       overflow: hidden;
     }
+
     .card::before {
       content: "";
       position: absolute;
       inset: -2px;
       background:
-        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.40), rgba(255, 255, 255, 0.06) 45%, rgba(255, 255, 255, 0) 70%),
-        radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.18), rgba(59, 130, 246, 0) 60%);
+        radial-gradient(circle at 20% 0%,
+          rgba(255, 255, 255, 0.45),
+          rgba(255, 255, 255, 0.08) 45%,
+          rgba(255, 255, 255, 0) 70%
+        ),
+        radial-gradient(circle at 80% 10%,
+          rgba(59, 130, 246, 0.20),
+          rgba(59, 130, 246, 0) 60%
+        );
       pointer-events: none;
       z-index: 0;
     }
     .card > * { position: relative; z-index: 1; }
 
-    @media (max-width: 640px) { .card { padding: 26px 16px 18px; } }
+    @media (max-width: 640px) {
+      .card { padding: 28px 18px 20px; }
+    }
 
+    /* ============================================================
+       5) LOGO + NEON CLOCK
+       ============================================================ */
     .logo {
       width: 360px;
       max-width: 92%;
@@ -89,30 +232,54 @@
       filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.18));
     }
 
-    /* steady glow (no pulsing) */
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow:
+          0 0 14px rgba(59, 130, 246, 0.55),
+          0 0 40px rgba(37, 99, 235, 0.45);
+        transform: translateY(0);
+      }
+      50% {
+        box-shadow:
+          0 0 24px rgba(59, 130, 246, 0.85),
+          0 0 70px rgba(37, 99, 235, 0.75);
+        transform: translateY(-1px);
+      }
+    }
+
     .clock-line {
-      margin: 10px auto 24px;
+      margin: 10px auto 26px;
       max-width: 520px;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 900;
       color: #e5f0ff;
       text-align: center;
       padding: 10px 16px;
       border-radius: 999px;
-      background: radial-gradient(circle at 50% 0%, hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22), rgba(15, 23, 42, 0.95));
-      border: 1px solid rgba(191, 219, 254, 0.26);
+      background: radial-gradient(
+        circle at 50% 0%,
+        hsla(calc(var(--galaxy-hue) * 1deg), 90%, 60%, 0.22),
+        rgba(15, 23, 42, 0.95)
+      );
+      border: 1px solid rgba(191, 219, 254, 0.3);
       letter-spacing: 0.5px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      box-shadow: 0 0 18px rgba(59,130,246,0.55), 0 0 50px rgba(37,99,235,0.25);
+      animation: glowPulse var(--clock-anim-speed) ease-in-out infinite;
     }
-    @media (max-width: 480px) { .clock-line { font-size: 15px; padding: 9px 10px; } }
 
+    @media (max-width: 480px) {
+      .clock-line { font-size: 16px; padding: 9px 10px; }
+    }
+
+    /* ============================================================
+       6) MAIN CTA BUTTONS (5 buttons)
+       ============================================================ */
     .btn {
       width: 100%;
-      padding: 16px;
-      margin: 10px 0;
+      padding: 18px;
+      margin: 12px 0;
       border: none;
       border-radius: 18px;
       font-size: 18px;
@@ -122,23 +289,27 @@
       transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.5);
     }
+
     .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7); }
     .btn:active { transform: translateY(0); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.5); }
 
     .btn.call { background: var(--btn-call); }
     .btn.text { background: var(--btn-text); }
     .btn.email { background: var(--btn-email); }
+    .btn.calc { background: var(--btn-calc); color: #111827; }
     .btn.book { background: var(--btn-book); }
-    .btn.calc { background: var(--btn-calc); }
 
-    .panel {
-      margin-top: 14px;
+    /* ============================================================
+       7) COLLAPSIBLE PANELS (Calculator + Booking)
+       ============================================================ */
+    .panel-wrap{
+      margin-top: 18px;
       text-align: left;
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.55s ease;
     }
-    .panel.open { max-height: 4000px; }
+    .panel-wrap.open { max-height: 3600px; }
 
     .section {
       margin-top: 12px;
@@ -149,7 +320,7 @@
     }
 
     .subline { font-size: 15px; font-weight: 900; color: #0f172a; }
-    .now { margin-top: 4px; font-weight: 800; font-size: 13px; color: #2563eb; }
+    .now { margin-top: 4px; font-weight: 700; font-size: 13px; color: #2563eb; }
 
     .row {
       display: grid;
@@ -157,7 +328,9 @@
       gap: 12px;
       margin-top: 10px;
     }
-    @media (max-width: 720px) { .row { grid-template-columns: 1fr; } }
+    @media (max-width: 720px) {
+      .row { grid-template-columns: 1fr; }
+    }
 
     label {
       font-size: 13px;
@@ -169,6 +342,19 @@
       gap: 8px;
     }
 
+    .today-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #0b1220;
+      background: rgba(34, 197, 94, 0.18);
+      border: 1px solid rgba(34, 197, 94, 0.45);
+    }
+
     input, select {
       width: 100%;
       padding: 12px 12px;
@@ -177,9 +363,17 @@
       font-size: 14px;
       outline: none;
     }
+
     input:focus, select:focus {
       border-color: rgba(37, 99, 235, 0.85);
       box-shadow: 0 0 0 3px var(--ring);
+    }
+
+    input.today {
+      border-color: rgba(34, 197, 94, 0.7);
+      box-shadow:
+        0 0 0 3px rgba(34, 197, 94, 0.18),
+        0 0 18px rgba(34, 197, 94, 0.18);
     }
 
     .slots-title { margin: 16px 0 10px; font-weight: 900; color: #0f172a; font-size: 15px; }
@@ -201,15 +395,17 @@
       text-align: center;
       cursor: pointer;
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
-      user-select: none;
     }
+
     .slot:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12); }
+
     .slot.active {
       background: var(--slot-active-bg);
       border-color: var(--slot-active-border);
       color: #1e1b4b;
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.24);
     }
+
     .slot.disabled {
       background: var(--slot-disabled-bg);
       border-color: var(--slot-disabled-border);
@@ -224,6 +420,7 @@
       background: #020617;
       width: 100%;
     }
+
     .btn.confirm:disabled {
       opacity: 0.5;
       cursor: not-allowed;
@@ -239,10 +436,14 @@
       font-weight: 900;
       display: none;
     }
+
     .msg.ok { display: block; background: #dcfce7; color: #166534; border: 1px solid #86efac; }
     .msg.bad { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
     .msg.warn { display: block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
+    /* ============================================================
+       8) CONFIRMATION CARD (after successful booking)
+       ============================================================ */
     .confirm-card {
       display: none;
       margin-top: 16px;
@@ -260,6 +461,7 @@
       padding-bottom: 10px;
       border-bottom: 1px solid #e5e7eb;
     }
+
     .check {
       width: 40px;
       height: 40px;
@@ -273,6 +475,7 @@
       color: #166534;
       font-size: 20px;
     }
+
     .confirm-title { font-size: 17px; font-weight: 900; color: #0f172a; }
     .confirm-sub { font-size: 13px; color: #475569; font-weight: 700; }
 
@@ -290,210 +493,495 @@
       padding: 10px;
       background: #ffffff;
     }
+
     .mini-label { font-size: 12px; font-weight: 900; color: #64748b; margin-bottom: 4px; }
     .mini-val { font-size: 14px; font-weight: 900; color: #0f172a; word-break: break-word; }
 
-    .calc-wrap {
-      background: linear-gradient(180deg, #fffce9, #ffffff 60%);
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
-      padding: 14px;
-      margin-top: 12px;
-    }
-    .calc-note {
-      margin-top: 10px;
-      font-size: 12px;
-      font-weight: 800;
-      color: #475569;
-      line-height: 1.3;
-    }
-
     /* ============================================================
-       STEADY NEON RESULT HUD (NO ANIMATION)
+       9) CALCULATOR PANEL (Tabs + soft yellow/white)
        ============================================================ */
-    .neo-result{
-      grid-column: 1 / -1;
-      position: relative;
+    .toolShell{
+      border: 1px solid var(--calc-border);
       border-radius: 18px;
-      padding: 16px 16px 14px;
       overflow: hidden;
-      background: radial-gradient(circle at 30% 10%, rgba(255,255,255,0.10), rgba(255,255,255,0.04) 40%, rgba(2,6,23,0.55) 85%);
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow:
-        0 18px 55px rgba(0,0,0,0.35),
-        inset 0 1px 0 rgba(255,255,255,0.08);
-      backdrop-filter: blur(14px) saturate(150%);
-      -webkit-backdrop-filter: blur(14px) saturate(150%);
-      margin-top: 12px;
+      background: linear-gradient(180deg, var(--calc-bg1), var(--calc-bg2));
     }
-
-    .neo-frame{
-      position:absolute;
-      inset:-2px;
-      border-radius: 20px;
-      padding: 2px;
-      pointer-events:none;
-      opacity: 0.95;
-      filter: drop-shadow(0 0 18px rgba(34,211,238,0.18));
-      background: linear-gradient(90deg,
-        rgba(168,85,247,0.55),
-        rgba(34,211,238,0.55),
-        rgba(59,130,246,0.55)
-      );
+    .toolHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 14px 14px;
+      border-bottom: 1px solid rgba(226,232,240,.9);
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(10px);
     }
-    .neo-frame::before{
-      content:"";
-      position:absolute; inset:2px;
-      border-radius: 16px;
-      background: rgba(2,6,23,0.40);
-    }
-
-    .neo-top{
-      display:flex; justify-content: space-between; align-items:center; gap:10px;
-      position: relative; z-index: 2;
-    }
-    .neo-title{
-      font-size: 13px;
+    .toolTitle{
       font-weight: 900;
-      color: rgba(226,232,240,0.95);
-      letter-spacing: 0.3px;
+      color: #0f172a;
+      font-size: 15px;
     }
-    .neo-chip{
-      font-size: 11px;
-      font-weight: 900;
+    .toolBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
       padding: 6px 10px;
       border-radius: 999px;
-      color: rgba(226,232,240,0.95);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+      font-size: 12px;
+      font-weight: 900;
+      color: #0f172a;
+      border: 1px solid rgba(226,232,240,1);
+      background: rgba(255,255,255,0.8);
       white-space: nowrap;
     }
 
-    .neo-main{
+    .tabs{
       display:flex;
-      align-items:center;
-      gap: 12px;
-      margin-top: 10px;
-      position: relative;
-      z-index: 2;
-    }
-    .neo-icon{
-      width: 54px;
-      height: 54px;
-      border-radius: 16px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size: 26px;
-      font-weight: 900;
-      color: rgba(226,232,240,0.95);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: 0 0 0 3px rgba(34,211,238,0.10), 0 0 18px rgba(34,211,238,0.14);
-    }
-
-    .neo-amount{
-      font-size: 46px;
-      line-height: 1.05;
-      font-weight: 1000;
-      letter-spacing: -0.7px;
-      color: rgba(226,232,240,0.98);
-      text-shadow: 0 0 18px rgba(34,211,238,0.18), 0 0 26px rgba(168,85,247,0.10);
-    }
-    @media (max-width: 560px){
-      .neo-amount{ font-size: 36px; }
-      .neo-icon{ width: 46px; height: 46px; font-size: 22px; }
-    }
-
-    .neo-bottom{
-      margin-top: 10px;
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      gap: 12px;
+      gap: 8px;
+      padding: 12px 14px 0;
       flex-wrap: wrap;
-      position: relative;
-      z-index: 2;
     }
-    .neo-sub{
+    .tabBtn{
+      border: 1px solid rgba(203,213,225,1);
+      background: rgba(255,255,255,0.92);
+      color: #0f172a;
+      font-weight: 900;
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      user-select: none;
+    }
+    .tabBtn:hover{ transform: translateY(-1px); box-shadow: 0 10px 18px rgba(15,23,42,.08); }
+    .tabBtn.active{
+      background: #0b1220;
+      border-color: rgba(15,23,42,0.9);
+      color: #fff;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.18);
+    }
+
+    .toolBody{
+      padding: 14px;
+    }
+    .toolPane{ display:none; }
+    .toolPane.show{ display:block; }
+
+    .hint{
+      margin-top: 8px;
       font-size: 12px;
       font-weight: 800;
-      color: rgba(148,163,184,0.95);
-      max-width: 520px;
+      color: #475569;
+      line-height: 1.35;
+    }
+    .noteBox{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(226,232,240,1);
+      background: rgba(255,255,255,0.85);
+      color: #0f172a;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.4;
     }
 
-    .neo-pill{
-      padding: 12px 18px;
-      font-size: 15px;
-      font-weight: 1000;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      color: rgba(226,232,240,0.98);
-      box-shadow: 0 10px 26px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.10);
+    .resultCard{
+      margin-top: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(226,232,240,1);
+      background: rgba(255,255,255,0.92);
+      padding: 14px;
+      box-shadow: 0 12px 26px rgba(15,23,42,0.08);
+    }
+    .resultTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .resultTitle{
+      font-weight: 900;
+      color:#0f172a;
+      font-size: 14px;
+    }
+    .bigNumber{
+      font-weight: 900;
+      font-size: 28px;
+      color:#0f172a;
+      letter-spacing: .2px;
+    }
+    .bigSub{
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #475569;
+    }
+    .miniGrid{
+      margin-top: 12px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 720px){ .miniGrid{ grid-template-columns:1fr; } }
+    .miniMetric{
+      border-radius: 14px;
+      border: 1px solid rgba(226,232,240,1);
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.92);
+    }
+    .miniMetric .k{ font-size: 11px; font-weight: 900; color: #64748b; }
+    .miniMetric .v{ margin-top: 4px; font-size: 14px; font-weight: 900; color:#0f172a; }
+
+    .goalTiles{
+      margin-top: 10px;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 720px){ .goalTiles{ grid-template-columns: 1fr; } }
+    .goalTile{
+      border-radius: 14px;
+      border: 1px solid rgba(203,213,225,1);
+      background: rgba(255,255,255,0.9);
+      padding: 12px;
+      cursor: pointer;
+      transition: transform .12s ease, box-shadow .12s ease;
+      user-select: none;
+    }
+    .goalTile:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(15,23,42,.08); }
+    .goalTile.active{
+      border-color: rgba(59,130,246,0.7);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.18);
+    }
+    .goalTile .t{ font-weight: 900; color:#0f172a; }
+    .goalTile .d{ margin-top: 4px; font-weight: 800; font-size: 12px; color:#475569; }
+
+    .toolActions{
+      margin-top: 12px;
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .miniBtn{
+      border: none;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 900;
+      cursor: pointer;
+      background: #0b1220;
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.14);
+      transition: transform .12s ease, opacity .12s ease;
+    }
+    .miniBtn:hover{ transform: translateY(-1px); }
+    .miniBtn.secondary{
+      background: rgba(255,255,255,0.9);
+      color: #0b1220;
+      border: 1px solid rgba(203,213,225,1);
+      box-shadow: none;
     }
 
-    .pill-green{
-      background: rgba(34,197,94,0.16);
-      border-color: rgba(34,197,94,0.35);
-      box-shadow: 0 12px 26px rgba(34,197,94,0.14), inset 0 1px 0 rgba(255,255,255,0.10);
+    /* small modal */
+    .modalBack{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 16px;
+      z-index: 9999;
     }
-    .pill-red{
-      background: rgba(239,68,68,0.16);
-      border-color: rgba(239,68,68,0.35);
-      box-shadow: 0 12px 26px rgba(239,68,68,0.14), inset 0 1px 0 rgba(255,255,255,0.10);
+    .modalBack.show{ display:flex; }
+    .modal{
+      width: 100%;
+      max-width: 560px;
+      border-radius: 18px;
+      border: 1px solid rgba(226,232,240,1);
+      background: rgba(255,255,255,0.96);
+      padding: 14px;
+      box-shadow: 0 28px 90px rgba(0,0,0,0.45);
+      color: #0f172a;
     }
-    .pill-gray{
-      background: rgba(148,163,184,0.12);
-      border-color: rgba(148,163,184,0.25);
-    }
-
-    .neo-result.refund .neo-frame{
-      background: linear-gradient(90deg,
-        rgba(34,197,94,0.65),
-        rgba(34,211,238,0.55),
-        rgba(34,197,94,0.65)
-      );
-      filter: drop-shadow(0 0 18px rgba(34,197,94,0.18));
-    }
-    .neo-result.owed .neo-frame{
-      background: linear-gradient(90deg,
-        rgba(239,68,68,0.70),
-        rgba(168,85,247,0.50),
-        rgba(239,68,68,0.70)
-      );
-      filter: drop-shadow(0 0 18px rgba(239,68,68,0.18));
-    }
-
-    .neo-result.refund .neo-amount{
-      color: rgba(187, 255, 220, 0.98);
-      text-shadow: 0 0 14px rgba(34,197,94,0.28), 0 0 24px rgba(34,211,238,0.12);
-    }
-    .neo-result.owed .neo-amount{
-      color: rgba(255, 210, 210, 0.98);
-      text-shadow: 0 0 14px rgba(239,68,68,0.28), 0 0 24px rgba(168,85,247,0.10);
-    }
+    .modal h3{ font-size: 15px; font-weight: 900; margin-bottom: 8px; }
+    .modal p{ font-size: 13px; font-weight: 800; color:#334155; line-height:1.45; margin-top: 8px; }
   </style>
 </head>
 
 <body>
   <canvas id="starfield"></canvas>
 
+  <div class="space-layer">
+    <div class="planet-orbit orbit-1">
+      <div class="planet-glass big"></div>
+    </div>
+    <div class="planet-orbit orbit-2 medium">
+      <div class="planet-glass medium"></div>
+    </div>
+    <div class="planet-orbit orbit-3 fast">
+      <div class="planet-glass small"></div>
+    </div>
+  </div>
+
+  <!-- W-4 modal -->
+  <div id="w4ModalBack" class="modalBack" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="How to fill W-4">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        <h3>How to fill the W-4 (simple)</h3>
+        <button id="w4Close" class="miniBtn secondary" type="button">Close</button>
+      </div>
+      <p><b>Step 1:</b> Choose filing status (Single / MFJ / HOH).</p>
+      <p><b>Step 3:</b> Dependents reduce withholding (credits). Enter children/other dependents if applicable.</p>
+      <p><b>Step 4(a):</b> Other income (like interest, side income) can increase withholding needs.</p>
+      <p><b>Step 4(b):</b> Deductions: use standard unless you itemize a lot.</p>
+      <p><b>Step 4(c):</b> Extra withholding per paycheck (best way to avoid owing).</p>
+      <p style="opacity:.9;">This page provides general guidance only. Payroll systems may differ.</p>
+    </div>
+  </div>
+
   <div class="wrap">
     <div class="card">
-      <img class="logo" src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png" alt="Columbus East Tax Services Logo" />
+      <img
+        class="logo"
+        src="https://raw.githubusercontent.com/sinyalfa/booking-portal/main/logo11.png"
+        alt="Columbus East Tax Services Logo"
+      />
+
       <div id="clockLine" class="clock-line"></div>
 
+      <!-- ✅ KEEP 5 BUTTONS -->
       <button class="btn call" onclick="window.location='tel:6142597625'">📞 Call Now</button>
       <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
       <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
 
-      <button class="btn book" id="toggleBook">📅 Book Appointment</button>
-      <button class="btn calc" id="toggleCalc">🧮 Tax Calculator</button>
+      <button class="btn calc" id="toggleCalcBtn" type="button">🧾 Calculator</button>
+      <button class="btn book" id="toggleBookBtn" type="button">📅 Book Appointment</button>
 
-      <!-- BOOKING PANEL -->
-      <div id="bookingPanel" class="panel">
+      <!-- CALCULATOR PANEL (expand/retract) -->
+      <div id="calcPanel" class="panel-wrap" aria-label="Calculator panel">
+        <div class="section">
+          <div class="toolShell">
+            <div class="toolHead">
+              <div class="toolTitle">Tools</div>
+              <div class="toolBadge">Federal only • Estimate</div>
+            </div>
+
+            <div class="tabs" role="tablist" aria-label="Calculator tabs">
+              <button id="tabTax" class="tabBtn active" type="button" role="tab" aria-selected="true">Tax Calculator</button>
+              <button id="tabW4" class="tabBtn" type="button" role="tab" aria-selected="false">W-4 Helper</button>
+            </div>
+
+            <div class="toolBody">
+              <!-- TAX CALCULATOR PANE -->
+              <div id="paneTax" class="toolPane show" role="tabpanel" aria-label="Tax Calculator">
+                <div class="subline">Tax Calculator (simple)</div>
+                <div class="hint">
+                  Uses a simplified estimate (not official). For exact results, we recommend a full review.
+                </div>
+
+                <div class="row" style="margin-top:12px;">
+                  <div>
+                    <label for="tcStatus">Filing Status</label>
+                    <select id="tcStatus">
+                      <option value="single">Single</option>
+                      <option value="mfj">Married Filing Joint</option>
+                      <option value="hoh">Head of Household</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="tcYear">Tax Year (display only)</label>
+                    <select id="tcYear">
+                      <option>2025</option>
+                      <option>2024</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div>
+                    <label for="tcWages">W-2 Box 1 Wages</label>
+                    <input id="tcWages" type="number" inputmode="decimal" placeholder="e.g. 56000" />
+                  </div>
+                  <div>
+                    <label for="tcWithheld">W-2 Box 2 Federal Withheld</label>
+                    <input id="tcWithheld" type="number" inputmode="decimal" placeholder="e.g. 2300" />
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div>
+                    <label for="tcDeps">Number of Dependents</label>
+                    <input id="tcDeps" type="number" inputmode="numeric" min="0" value="0" />
+                  </div>
+                  <div>
+                    <label for="tcOther">Other Income (optional)</label>
+                    <input id="tcOther" type="number" inputmode="decimal" placeholder="e.g. 0" />
+                  </div>
+                </div>
+
+                <div class="toolActions">
+                  <button id="tcCalcBtn" class="miniBtn" type="button">Calculate</button>
+                  <button id="tcResetBtn" class="miniBtn secondary" type="button">Reset</button>
+                </div>
+
+                <div id="tcMsg" class="noteBox" style="display:none;"></div>
+
+                <div id="tcResults" class="resultCard" style="display:none;">
+                  <div class="resultTop">
+                    <div>
+                      <div class="resultTitle">Estimated Result</div>
+                      <div class="bigSub">Refund = withheld − estimated tax</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div id="tcBig" class="bigNumber">$0</div>
+                      <div id="tcBigSub" class="bigSub">—</div>
+                    </div>
+                  </div>
+
+                  <div class="miniGrid">
+                    <div class="miniMetric">
+                      <div class="k">Estimated Tax</div>
+                      <div id="tcTax" class="v">$0</div>
+                    </div>
+                    <div class="miniMetric">
+                      <div class="k">Withheld</div>
+                      <div id="tcWh" class="v">$0</div>
+                    </div>
+                    <div class="miniMetric">
+                      <div class="k">Taxable Income (approx.)</div>
+                      <div id="tcTaxable" class="v">$0</div>
+                    </div>
+                    <div class="miniMetric">
+                      <div class="k">Dependent Credit (simple)</div>
+                      <div id="tcCred" class="v">$0</div>
+                    </div>
+                  </div>
+
+                  <div class="noteBox" style="margin-top:12px;">
+                    Note: This is a simplified estimate and may not match software for all situations (credits, deductions, other forms).
+                  </div>
+                </div>
+              </div>
+
+              <!-- W-4 HELPER PANE -->
+              <div id="paneW4" class="toolPane" role="tabpanel" aria-label="W-4 Helper">
+                <div class="subline">W-4 Withholding Helper</div>
+                <div class="hint">
+                  Fill your basics and we’ll suggest an <b>extra withholding per paycheck</b> directionally.
+                </div>
+
+                <div class="row" style="margin-top:12px;">
+                  <div>
+                    <label for="w4Status">Filing Status</label>
+                    <select id="w4Status">
+                      <option value="single">Single</option>
+                      <option value="mfj">Married Filing Joint</option>
+                      <option value="hoh">Head of Household</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="w4Freq">Pay Frequency</label>
+                    <select id="w4Freq">
+                      <option value="52">Weekly (52)</option>
+                      <option value="26" selected>Biweekly (26)</option>
+                      <option value="24">Semi-monthly (24)</option>
+                      <option value="12">Monthly (12)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div>
+                    <label for="w4Gross">Gross Pay per Paycheck</label>
+                    <input id="w4Gross" type="number" inputmode="decimal" placeholder="e.g. 2150" />
+                  </div>
+                  <div>
+                    <label for="w4Withhold">Current Federal Withholding per Paycheck</label>
+                    <input id="w4Withhold" type="number" inputmode="decimal" placeholder="e.g. 90" />
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div>
+                    <label for="w4Kids">Children under 17</label>
+                    <input id="w4Kids" type="number" inputmode="numeric" min="0" value="0" />
+                  </div>
+                  <div>
+                    <label for="w4OtherDeps">Other dependents</label>
+                    <input id="w4OtherDeps" type="number" inputmode="numeric" min="0" value="0" />
+                  </div>
+                </div>
+
+                <div class="noteBox">
+                  Goal: pick what you prefer at tax time.
+                </div>
+
+                <div class="goalTiles" aria-label="W-4 goal">
+                  <div class="goalTile active" data-goal="zero" role="button" tabindex="0">
+                    <div class="t">Near $0</div>
+                    <div class="d">Aim for break-even</div>
+                  </div>
+                  <div class="goalTile" data-goal="refund" role="button" tabindex="0">
+                    <div class="t">Refund</div>
+                    <div class="d">Withhold a bit more</div>
+                  </div>
+                  <div class="goalTile" data-goal="owe" role="button" tabindex="0">
+                    <div class="t">Owe a little</div>
+                    <div class="d">Keep more in paychecks</div>
+                  </div>
+                </div>
+
+                <div class="toolActions">
+                  <button id="w4CalcBtn" class="miniBtn" type="button">Get Recommendation</button>
+                  <button id="w4HowBtn" class="miniBtn secondary" type="button">How to fill W-4</button>
+                  <button id="w4BookBtn" class="miniBtn secondary" type="button">Book appointment</button>
+                </div>
+
+                <div id="w4Results" class="resultCard" style="display:none;">
+                  <div class="resultTop">
+                    <div>
+                      <div class="resultTitle">Suggested change</div>
+                      <div class="bigSub">This is directional guidance (estimate).</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div id="w4Big" class="bigNumber">$0</div>
+                      <div id="w4BigSub" class="bigSub">per paycheck</div>
+                    </div>
+                  </div>
+
+                  <div class="miniGrid">
+                    <div class="miniMetric">
+                      <div class="k">Estimated annual tax</div>
+                      <div id="w4EstTax" class="v">$0</div>
+                    </div>
+                    <div class="miniMetric">
+                      <div class="k">Estimated annual withholding</div>
+                      <div id="w4EstWh" class="v">$0</div>
+                    </div>
+                    <div class="miniMetric">
+                      <div class="k">Where to enter</div>
+                      <div class="v">W-4 Step 4(c)</div>
+                    </div>
+                    <div class="miniMetric">
+                      <div class="k">Notes</div>
+                      <div class="v">Review during appt</div>
+                    </div>
+                  </div>
+
+                  <div class="noteBox" style="margin-top:12px;">
+                    Tip: If you have multiple jobs or big deductions/credits, we’ll fine-tune this during your appointment.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOKING PANEL (expand/retract) -->
+      <div id="bookingPanel" class="panel-wrap" aria-label="Booking panel">
         <div class="section">
           <div class="subline">Book an Appointment</div>
           <div id="nowLine" class="now"></div>
@@ -504,8 +992,8 @@
               <input id="fullName" placeholder="Your full name" />
             </div>
             <div>
-              <label for="email">Email</label>
-              <input id="email" placeholder="you@example.com" />
+              <label for="clientEmail">Email</label>
+              <input id="clientEmail" placeholder="you@example.com" />
             </div>
           </div>
 
@@ -535,7 +1023,7 @@
 
           <div class="row">
             <div>
-              <label for="date">Date</label>
+              <label for="date">Date <span id="todayBadge" class="today-pill" style="display:none;">Today</span></label>
               <input id="date" type="date" />
             </div>
             <div>
@@ -550,6 +1038,7 @@
           <div id="times" class="times"></div>
 
           <button id="confirmBtn" class="btn confirm" disabled>Confirm Booking</button>
+
           <div id="msg" class="msg"></div>
 
           <div id="confirmCard" class="confirm-card">
@@ -584,128 +1073,64 @@
               </div>
             </div>
           </div>
+
         </div>
       </div>
-
-      <!-- TAX CALCULATOR PANEL -->
-      <div id="calcPanel" class="panel">
-        <div class="section calc-wrap">
-          <div class="subline">Tax Calculator (Federal-only • simplified)</div>
-          <div class="now" style="color:#7c3aed;">Quick estimate (standard deduction + basic brackets + dependent credit)</div>
-
-          <div class="row" style="margin-top:12px;">
-            <div>
-              <label for="income">Total Income (W-2 Box 1)</label>
-              <input id="income" type="number" inputmode="numeric" placeholder="e.g. 56000" />
-            </div>
-            <div>
-              <label for="withheld">Tax Withheld (W-2 Box 2)</label>
-              <input id="withheld" type="number" inputmode="numeric" placeholder="e.g. 2300" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label for="filing">Filing Status</label>
-              <select id="filing">
-                <option value="single">Single</option>
-                <option value="mfj">Married Filing Jointly</option>
-                <option value="mfs">Married Filing Separately</option>
-                <option value="hoh">Head of Household</option>
-              </select>
-            </div>
-            <div>
-              <label for="deps">Total Dependents</label>
-              <input id="deps" type="number" inputmode="numeric" placeholder="e.g. 0" />
-            </div>
-          </div>
-
-          <button id="calcBtn" class="btn confirm" style="margin-top:14px;">Calculate</button>
-          <div id="calcMsg" class="msg"></div>
-
-          <div class="section" style="margin-top:14px;">
-            <div class="subline" style="margin-bottom:8px;">Estimate Results</div>
-
-            <div class="row">
-              <div class="mini-box">
-                <div class="mini-label">Estimated Tax (rough)</div>
-                <div id="rTax" class="mini-val">$0</div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Withheld</div>
-                <div id="rWithheld" class="mini-val">$0</div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="mini-box">
-                <div class="mini-label">Standard Deduction (est.)</div>
-                <div id="rStd" class="mini-val">$0</div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Dependent Credit ($2,200 each)</div>
-                <div id="rDepCredit" class="mini-val">$0</div>
-              </div>
-            </div>
-
-            <!-- STEADY NEON RESULT HUD -->
-            <div class="neo-result" id="neoResult">
-              <div class="neo-frame"></div>
-
-              <div class="neo-top">
-                <div class="neo-title">Estimated refund / amount owed</div>
-                <div class="neo-chip" id="neoChip">FEDERAL • ESTIMATE</div>
-              </div>
-
-              <div class="neo-main">
-                <div class="neo-icon" id="neoIcon">⟡</div>
-                <div class="neo-amount" id="rNet">$0</div>
-              </div>
-
-              <div class="neo-bottom">
-                <div id="rPill" class="neo-pill pill-gray">Estimate</div>
-                <div class="neo-sub" id="neoSub">This is a simplified estimate (not IRS official).</div>
-              </div>
-            </div>
-
-            <div class="calc-note">
-              This is a basic estimate using simplified rules. It does not include itemized deductions, EITC/CTC phaseouts, education credits,
-              self-employment tax, ACA, additional taxes, etc. Use as a quick planning estimate only.
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <!-- /bookingPanel -->
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    /* ------------------------------------------------------------
+       1) SUPABASE CLIENT CONFIG (booking uses this)
+       ------------------------------------------------------------ */
     const supabaseUrl = "https://zleztbdrxnqirccgkvqx.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsZXp0YmRyeG5xaXJjY2drdnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODU5MjAsImV4cCI6MjA4MzY2MTkyMH0.k2BeeoNXCStyq5JqfGCEMYHhuPLN5LUSru9M-_HrOgs";
+    const supabaseKey = "sb_publishable_pXXUCH_hx0eg7tUbQNz3rw_DaJgACMR";
     const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    const pad = (n) => String(n).padStart(2, "0");
-    const money = (n) => Number(n || 0).toLocaleString("en-US", { style: "currency", currency: "USD" });
-
+    /* ------------------------------------------------------------
+       2) UTILITIES
+       ------------------------------------------------------------ */
+    function pad(n) { return String(n).padStart(2, "0"); }
     function todayYMD() {
       const d = new Date();
       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     }
     function fmtNice(dt) {
-      return dt.toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
+      return dt.toLocaleString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
     }
     function makeLocalDateTimeFrom24(dateStr, hm) {
       const [H, M] = hm.split(":").map(Number);
       const [Y, m, D] = dateStr.split("-").map(Number);
       return new Date(Y, m - 1, D, H, M, 0, 0);
     }
-    function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+    function isValidEmail(v) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    }
+    function money(n){
+      const x = Number(n || 0);
+      return x.toLocaleString("en-US", { style:"currency", currency:"USD", maximumFractionDigits: 0 });
+    }
 
+    /* ------------------------------------------------------------
+       3) AUTO SWITCH DAY/NIGHT + SYNC GALAXY HUE WITH REAL TIME
+       ------------------------------------------------------------ */
     function applyThemeAndGalaxy() {
       const now = new Date();
-      const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const s = now.getSeconds();
+
       document.body.dataset.theme = (h >= 7 && h < 19) ? "day" : "night";
+
       const hue = (h * 15 + m * 0.25 + s * (0.25 / 60)) % 360;
       document.documentElement.style.setProperty("--galaxy-hue", hue.toFixed(2));
 
@@ -717,47 +1142,313 @@
     applyThemeAndGalaxy();
     setInterval(applyThemeAndGalaxy, 10000);
 
+    /* ------------------------------------------------------------
+       4) NEON CLOCK (short weekday + short month + 24h)
+       ------------------------------------------------------------ */
     const clockLine = document.getElementById("clockLine");
     const nowLine = document.getElementById("nowLine");
+
     function updateClock() {
       const now = new Date();
-      const datePart = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "2-digit", year: "numeric" }).format(now);
-      const timePart = new Intl.DateTimeFormat("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).format(now);
+      const datePart = new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      }).format(now);
+
+      const timePart = new Intl.DateTimeFormat("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }).format(now);
+
       clockLine.textContent = `${datePart} • ${timePart}`;
       if (nowLine) nowLine.textContent = `Now: ${datePart} • ${timePart}`;
     }
     updateClock();
     setInterval(updateClock, 1000);
 
-    const toggleBook = document.getElementById("toggleBook");
-    const toggleCalc = document.getElementById("toggleCalc");
-    const bookingPanel = document.getElementById("bookingPanel");
+    /* ------------------------------------------------------------
+       5) PANEL TOGGLES (Calculator + Booking)
+       ------------------------------------------------------------ */
+    const toggleCalcBtn = document.getElementById("toggleCalcBtn");
+    const toggleBookBtn = document.getElementById("toggleBookBtn");
     const calcPanel = document.getElementById("calcPanel");
+    const bookingPanel = document.getElementById("bookingPanel");
 
-    toggleBook.addEventListener("click", () => {
-      bookingPanel.classList.toggle("open");
-      if (bookingPanel.classList.contains("open")) {
-        calcPanel.classList.remove("open");
-        if (!dateEl.value) dateEl.value = todayYMD();
-        refreshSlots();
+    function openPanel(panelEl){
+      panelEl.classList.add("open");
+    }
+    function closePanel(panelEl){
+      panelEl.classList.remove("open");
+    }
+    function togglePanel(panelEl){
+      panelEl.classList.toggle("open");
+    }
+
+    toggleCalcBtn.addEventListener("click", () => {
+      // keep both possible, but if you prefer only one open at a time, uncomment next line:
+      // closePanel(bookingPanel);
+      togglePanel(calcPanel);
+      if (calcPanel.classList.contains("open")) {
+        // scroll gently into view
+        setTimeout(() => calcPanel.scrollIntoView({ behavior:"smooth", block:"start" }), 50);
       }
     });
-    toggleCalc.addEventListener("click", () => {
-      calcPanel.classList.toggle("open");
-      if (calcPanel.classList.contains("open")) bookingPanel.classList.remove("open");
+
+    toggleBookBtn.addEventListener("click", () => {
+      // closePanel(calcPanel);
+      togglePanel(bookingPanel);
+      if (bookingPanel.classList.contains("open")) {
+        if (!dateEl.value) dateEl.value = todayYMD();
+        refreshSlots();
+        setTimeout(() => bookingPanel.scrollIntoView({ behavior:"smooth", block:"start" }), 50);
+      }
     });
 
+    /* ------------------------------------------------------------
+       6) CALCULATOR TABS (A)
+       ------------------------------------------------------------ */
+    const tabTax = document.getElementById("tabTax");
+    const tabW4 = document.getElementById("tabW4");
+    const paneTax = document.getElementById("paneTax");
+    const paneW4 = document.getElementById("paneW4");
+
+    function showTab(which){
+      const isTax = which === "tax";
+      tabTax.classList.toggle("active", isTax);
+      tabW4.classList.toggle("active", !isTax);
+      tabTax.setAttribute("aria-selected", isTax ? "true":"false");
+      tabW4.setAttribute("aria-selected", !isTax ? "true":"false");
+      paneTax.classList.toggle("show", isTax);
+      paneW4.classList.toggle("show", !isTax);
+    }
+    tabTax.addEventListener("click", () => showTab("tax"));
+    tabW4.addEventListener("click", () => showTab("w4"));
+
+    /* ------------------------------------------------------------
+       7) SIMPLE TAX CALC (illustrative only)
+       ------------------------------------------------------------ */
+    const tcStatus = document.getElementById("tcStatus");
+    const tcWages = document.getElementById("tcWages");
+    const tcWithheld = document.getElementById("tcWithheld");
+    const tcDeps = document.getElementById("tcDeps");
+    const tcOther = document.getElementById("tcOther");
+    const tcCalcBtn = document.getElementById("tcCalcBtn");
+    const tcResetBtn = document.getElementById("tcResetBtn");
+    const tcMsg = document.getElementById("tcMsg");
+    const tcResults = document.getElementById("tcResults");
+    const tcBig = document.getElementById("tcBig");
+    const tcBigSub = document.getElementById("tcBigSub");
+    const tcTax = document.getElementById("tcTax");
+    const tcWh = document.getElementById("tcWh");
+    const tcTaxable = document.getElementById("tcTaxable");
+    const tcCred = document.getElementById("tcCred");
+
+    // NOTE: simplified constants (not official). You can swap later with IRS-accurate logic.
+    const STD_DED = { single: 14600, mfj: 29200, hoh: 21900 }; // placeholder-ish
+    const DEP_CREDIT_SIMPLE = 2200; // user asked earlier; used as simple credit indicator
+
+    const BRACKETS = {
+      single: [
+        [0, 0.10],
+        [11600, 0.12],
+        [47150, 0.22],
+        [100525, 0.24],
+        [191950, 0.32],
+        [243725, 0.35],
+        [609350, 0.37],
+      ],
+      mfj: [
+        [0, 0.10],
+        [23200, 0.12],
+        [94300, 0.22],
+        [201050, 0.24],
+        [383900, 0.32],
+        [487450, 0.35],
+        [731200, 0.37],
+      ],
+      hoh: [
+        [0, 0.10],
+        [16550, 0.12],
+        [63100, 0.22],
+        [100500, 0.24],
+        [191950, 0.32],
+        [243700, 0.35],
+        [609350, 0.37],
+      ],
+    };
+
+    function calcTaxFromBrackets(taxable, status){
+      const b = BRACKETS[status] || BRACKETS.single;
+      let tax = 0;
+      for (let i=0; i<b.length; i++){
+        const start = b[i][0];
+        const rate = b[i][1];
+        const nextStart = (i < b.length-1) ? b[i+1][0] : Infinity;
+        if (taxable > start){
+          const amt = Math.min(taxable, nextStart) - start;
+          tax += amt * rate;
+        }
+      }
+      return Math.max(0, tax);
+    }
+
+    function showTcMsg(text){
+      tcMsg.style.display = "block";
+      tcMsg.textContent = text;
+    }
+
+    tcCalcBtn.addEventListener("click", () => {
+      const status = tcStatus.value;
+      const wages = Number(tcWages.value || 0);
+      const other = Number(tcOther.value || 0);
+      const withheld = Number(tcWithheld.value || 0);
+      const deps = Math.max(0, parseInt(tcDeps.value || "0", 10) || 0);
+
+      if (!wages || wages < 0){
+        showTcMsg("Enter a valid W-2 Box 1 wage amount.");
+        tcResults.style.display = "none";
+        return;
+      }
+
+      tcMsg.style.display = "none";
+
+      const gross = wages + other;
+      const taxable = Math.max(0, gross - (STD_DED[status] || STD_DED.single));
+
+      const preCreditTax = calcTaxFromBrackets(taxable, status);
+      const credit = deps * DEP_CREDIT_SIMPLE; // simplified
+      const estTax = Math.max(0, preCreditTax - credit);
+
+      const estRefund = withheld - estTax;
+
+      tcResults.style.display = "block";
+      tcTax.textContent = money(estTax);
+      tcWh.textContent = money(withheld);
+      tcTaxable.textContent = money(taxable);
+      tcCred.textContent = money(credit);
+
+      tcBig.textContent = money(Math.abs(estRefund));
+      tcBigSub.textContent = estRefund >= 0 ? "Estimated refund" : "Estimated amount owed";
+    });
+
+    tcResetBtn.addEventListener("click", () => {
+      tcWages.value = "";
+      tcWithheld.value = "";
+      tcOther.value = "";
+      tcDeps.value = "0";
+      tcMsg.style.display = "none";
+      tcResults.style.display = "none";
+    });
+
+    /* ------------------------------------------------------------
+       8) W-4 Helper (design + light guidance)
+       ------------------------------------------------------------ */
+    const w4Status = document.getElementById("w4Status");
+    const w4Freq = document.getElementById("w4Freq");
+    const w4Gross = document.getElementById("w4Gross");
+    const w4Withhold = document.getElementById("w4Withhold");
+    const w4Kids = document.getElementById("w4Kids");
+    const w4OtherDeps = document.getElementById("w4OtherDeps");
+    const w4CalcBtn = document.getElementById("w4CalcBtn");
+    const w4HowBtn = document.getElementById("w4HowBtn");
+    const w4BookBtn = document.getElementById("w4BookBtn");
+
+    const w4Results = document.getElementById("w4Results");
+    const w4Big = document.getElementById("w4Big");
+    const w4EstTax = document.getElementById("w4EstTax");
+    const w4EstWh = document.getElementById("w4EstWh");
+
+    let w4Goal = "zero";
+
+    document.querySelectorAll(".goalTile").forEach(tile => {
+      function activate(){
+        document.querySelectorAll(".goalTile").forEach(x => x.classList.remove("active"));
+        tile.classList.add("active");
+        w4Goal = tile.getAttribute("data-goal") || "zero";
+      }
+      tile.addEventListener("click", activate);
+      tile.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " ") activate(); });
+    });
+
+    function estimateAnnualTaxFromIncome(status, annualIncome, kids, otherDeps){
+      const taxable = Math.max(0, annualIncome - (STD_DED[status] || STD_DED.single));
+      const pre = calcTaxFromBrackets(taxable, status);
+      // very simplified credit placeholder: kids * 2000-ish, other deps * 500-ish (directional)
+      const credit = Math.max(0, kids * 2000 + otherDeps * 500);
+      return Math.max(0, pre - credit);
+    }
+
+    w4CalcBtn.addEventListener("click", () => {
+      const status = w4Status.value;
+      const freq = Number(w4Freq.value || 26);
+      const grossPer = Number(w4Gross.value || 0);
+      const whPer = Number(w4Withhold.value || 0);
+      const kids = Math.max(0, parseInt(w4Kids.value || "0", 10) || 0);
+      const otherDeps = Math.max(0, parseInt(w4OtherDeps.value || "0", 10) || 0);
+
+      if (!grossPer || grossPer <= 0 || !freq){
+        alert("Enter your gross pay per paycheck.");
+        return;
+      }
+      if (whPer < 0){
+        alert("Enter a valid withholding per paycheck.");
+        return;
+      }
+
+      const annualIncome = grossPer * freq;
+      const annualWithholding = whPer * freq;
+      const estTax = estimateAnnualTaxFromIncome(status, annualIncome, kids, otherDeps);
+
+      // goal targets:
+      // refund: aim to over-withhold by $600/year
+      // zero: aim ~0
+      // owe: allow owing ~$400/year
+      let targetDelta = 0;
+      if (w4Goal === "refund") targetDelta = 600;
+      else if (w4Goal === "owe") targetDelta = -400;
+
+      const neededAnnualWithholding = estTax + targetDelta;
+      const diffAnnual = neededAnnualWithholding - annualWithholding;
+      const diffPerPay = diffAnnual / freq;
+
+      w4Results.style.display = "block";
+      w4EstTax.textContent = money(estTax);
+      w4EstWh.textContent = money(annualWithholding);
+      w4Big.textContent = money(Math.round(diffPerPay));
+    });
+
+    // modal
+    const w4ModalBack = document.getElementById("w4ModalBack");
+    const w4Close = document.getElementById("w4Close");
+    w4HowBtn.addEventListener("click", () => { w4ModalBack.classList.add("show"); w4ModalBack.setAttribute("aria-hidden","false"); });
+    w4Close.addEventListener("click", () => { w4ModalBack.classList.remove("show"); w4ModalBack.setAttribute("aria-hidden","true"); });
+    w4ModalBack.addEventListener("click", (e) => { if(e.target === w4ModalBack){ w4ModalBack.classList.remove("show"); w4ModalBack.setAttribute("aria-hidden","true"); } });
+
+    w4BookBtn.addEventListener("click", () => {
+      openPanel(bookingPanel);
+      setTimeout(() => bookingPanel.scrollIntoView({ behavior:"smooth", block:"start" }), 50);
+      // optionally auto-open booking if closed
+      if (!bookingPanel.classList.contains("open")) bookingPanel.classList.add("open");
+    });
+
+    /* ------------------------------------------------------------
+       9) BOOKING LOGIC (your existing Supabase booking)
+       ------------------------------------------------------------ */
     const timesBox = document.getElementById("times");
     const confirmBtn = document.getElementById("confirmBtn");
     const msg = document.getElementById("msg");
     const confirmCard = document.getElementById("confirmCard");
+    const todayBadge = document.getElementById("todayBadge");
 
     const fullNameEl = document.getElementById("fullName");
-    const emailEl = document.getElementById("email");
+    const clientEmailEl = document.getElementById("clientEmail");
     const serviceEl = document.getElementById("service");
     const locationEl = document.getElementById("location");
     const dateEl = document.getElementById("date");
-    const durationEl = document.getElementById("duration");
 
     const cName = document.getElementById("cName");
     const cEmail = document.getElementById("cEmail");
@@ -765,18 +1456,26 @@
     const cService = document.getElementById("cService");
     const cLoc = document.getElementById("cLoc");
 
-    let selectedSlot = null;
+    let selectedSlot = null; // "HH:MM"
     let bookedSet = new Set();
+
+    function updateTodayHighlight() {
+      const isToday = dateEl.value === todayYMD();
+      todayBadge.style.display = isToday ? "inline-flex" : "none";
+      dateEl.classList.toggle("today", isToday);
+    }
 
     function getAllowedHours(dow) {
       if (dow >= 1 && dow <= 5) return [9, 10, 11, 12, 17, 18, 19, 20];
       if (dow === 6) return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
       return [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
     }
+
     function to12hLabel(hm) {
       let [H, M] = hm.split(":").map(Number);
       const ampm = H >= 12 ? "PM" : "AM";
-      H = H % 12; if (H === 0) H = 12;
+      H = H % 12;
+      if (H === 0) H = 12;
       return `${pad(H)}:${pad(M)} ${ampm}`;
     }
 
@@ -789,7 +1488,10 @@
         .gte("start_time", start.toISOString())
         .lte("start_time", end.toISOString());
 
-      if (error) { console.error("Fetch booked error:", error); return new Set(); }
+      if (error) {
+        console.error("Fetch booked error:", error);
+        return new Set();
+      }
 
       const set = new Set();
       (data || []).forEach((row) => {
@@ -807,6 +1509,8 @@
       confirmBtn.disabled = true;
       msg.className = "msg";
       msg.textContent = "";
+      confirmCard.classList.remove("show");
+      updateTodayHighlight();
 
       if (!ymd) {
         msg.className = "msg warn";
@@ -841,30 +1545,37 @@
             document.querySelectorAll(".slot").forEach((x) => x.classList.remove("active"));
             div.classList.add("active");
             selectedSlot = hm;
-            validateBookingForm();
+            validateForm();
           });
         }
+
         timesBox.appendChild(div);
       });
 
-      msg.className = "msg warn";
-      msg.textContent = anyAvailable ? "Select a time to continue." : "No available times for this date.";
+      if (!anyAvailable) {
+        msg.className = "msg warn";
+        msg.textContent = "No available times for this date.";
+      } else {
+        msg.className = "msg warn";
+        msg.textContent = "Select a time to continue.";
+      }
     }
 
-    function validateBookingForm() {
+    function validateForm() {
       const nameOk = (fullNameEl.value || "").trim().length > 1;
-      const emailOk = isValidEmail((emailEl.value || "").trim());
+      const emailOk = isValidEmail((clientEmailEl.value || "").trim());
       const slotOk = !!selectedSlot;
       confirmBtn.disabled = !(nameOk && emailOk && slotOk);
     }
 
-    fullNameEl.addEventListener("input", validateBookingForm);
-    emailEl.addEventListener("input", validateBookingForm);
-    dateEl.addEventListener("change", () => { refreshSlots(); validateBookingForm(); });
+    fullNameEl.addEventListener("input", validateForm);
+    clientEmailEl.addEventListener("input", validateForm);
+    dateEl.addEventListener("change", () => { refreshSlots(); validateForm(); });
 
     async function hasSameDayBooking(email, ymd) {
       const start = new Date(ymd + "T00:00:00");
       const end = new Date(ymd + "T23:59:59");
+
       const { data, error } = await supa
         .from("appointments")
         .select("start_time,status")
@@ -872,7 +1583,10 @@
         .gte("start_time", start.toISOString())
         .lte("start_time", end.toISOString());
 
-      if (error) { console.error("Same-day check error:", error); return false; }
+      if (error) {
+        console.error("Same-day check error:", error);
+        return false;
+      }
       return (data || []).some((row) => (row.status || "").toLowerCase() !== "cancelled");
     }
 
@@ -882,7 +1596,7 @@
       confirmBtn.disabled = true;
 
       const name = (fullNameEl.value || "").trim();
-      const email = (emailEl.value || "").trim().toLowerCase();
+      const email = (clientEmailEl.value || "").trim().toLowerCase();
       const service = serviceEl.value;
       const location = locationEl.value;
       const ymd = dateEl.value;
@@ -890,7 +1604,7 @@
       if (!name || !isValidEmail(email) || !selectedSlot || !ymd) {
         msg.className = "msg bad";
         msg.textContent = "Please fill all fields and pick a time.";
-        validateBookingForm();
+        validateForm();
         return;
       }
 
@@ -898,12 +1612,12 @@
       if (already) {
         msg.className = "msg bad";
         msg.textContent = "You already have an appointment booked for this day.";
-        validateBookingForm();
+        confirmBtn.disabled = false;
         return;
       }
 
       const startDT = makeLocalDateTimeFrom24(ymd, selectedSlot);
-      const durationMin = parseInt(durationEl.value, 10) || 60;
+      const durationMin = parseInt(document.getElementById("duration").value, 10) || 60;
       const endDT = new Date(startDT.getTime() + durationMin * 60000);
 
       const { error } = await supa.from("appointments").insert([{
@@ -920,14 +1634,13 @@
         console.error("Insert error:", error);
         msg.className = "msg bad";
         msg.textContent = "Booking failed. Please try again in a moment.";
-        validateBookingForm();
+        confirmBtn.disabled = false;
         return;
       }
 
       msg.className = "msg ok";
-      msg.textContent = "Appointment booked & confirmation sent!";
+      msg.textContent = "Appointment confirmed! A staff member will review it.";
       confirmCard.classList.add("show");
-
       cName.textContent = name;
       cEmail.textContent = email;
       cWhen.textContent = fmtNice(startDT);
@@ -935,155 +1648,35 @@
       cLoc.textContent = location;
 
       await refreshSlots();
-      validateBookingForm();
+      validateForm();
     });
+
+    /* Init booking + clock line in booking */
+    const nowLineEl = document.getElementById("nowLine");
+    function updateNowLine(){
+      const now = new Date();
+      const datePart = new Intl.DateTimeFormat("en-US", {
+        weekday: "short", month: "short", day: "2-digit", year: "numeric",
+      }).format(now);
+      const timePart = new Intl.DateTimeFormat("en-US", {
+        hour: "2-digit", minute:"2-digit", second:"2-digit", hour12:false
+      }).format(now);
+      if (nowLineEl) nowLineEl.textContent = `Now: ${datePart} • ${timePart}`;
+    }
+    updateNowLine();
+    setInterval(updateNowLine, 1000);
 
     dateEl.value = todayYMD();
+    updateTodayHighlight();
     refreshSlots();
+    validateForm();
 
-    // TAX CALCULATOR
-    const calcBtn = document.getElementById("calcBtn");
-    const calcMsg = document.getElementById("calcMsg");
-
-    const incomeEl = document.getElementById("income");
-    const withheldEl = document.getElementById("withheld");
-    const filingEl = document.getElementById("filing");
-    const depsEl = document.getElementById("deps");
-
-    const rTax = document.getElementById("rTax");
-    const rWithheld = document.getElementById("rWithheld");
-    const rStd = document.getElementById("rStd");
-    const rDepCredit = document.getElementById("rDepCredit");
-    const rNet = document.getElementById("rNet");
-    const rPill = document.getElementById("rPill");
-
-    const neo = document.getElementById("neoResult");
-    const neoChip = document.getElementById("neoChip");
-    const neoIcon = document.getElementById("neoIcon");
-    const neoSub  = document.getElementById("neoSub");
-
-    function stdDeduction(status){
-      if (status === "mfj") return 29200;
-      if (status === "mfs") return 14600;
-      if (status === "hoh") return 21900;
-      return 14600;
-    }
-
-    function calcTaxFromBrackets(status, taxable){
-      const brackets = {
-        single: [
-          [0, 11600, 0.10],
-          [11600, 47150, 0.12],
-          [47150, 100525, 0.22],
-          [100525, 191950, 0.24],
-          [191950, 243725, 0.32],
-          [243725, 609350, 0.35],
-          [609350, Infinity, 0.37],
-        ],
-        mfj: [
-          [0, 23200, 0.10],
-          [23200, 94300, 0.12],
-          [94300, 201050, 0.22],
-          [201050, 383900, 0.24],
-          [383900, 487450, 0.32],
-          [487450, 731200, 0.35],
-          [731200, Infinity, 0.37],
-        ],
-        mfs: [
-          [0, 11600, 0.10],
-          [11600, 47150, 0.12],
-          [47150, 100525, 0.22],
-          [100525, 191950, 0.24],
-          [191950, 243725, 0.32],
-          [243725, 365600, 0.35],
-          [365600, Infinity, 0.37],
-        ],
-        hoh: [
-          [0, 16550, 0.10],
-          [16550, 63100, 0.12],
-          [63100, 100500, 0.22],
-          [100500, 191950, 0.24],
-          [191950, 243700, 0.32],
-          [243700, 609350, 0.35],
-          [609350, Infinity, 0.37],
-        ],
-      };
-
-      const table = brackets[status] || brackets.single;
-      let tax = 0;
-      const x = Math.max(0, taxable);
-      for (const [a,b,r] of table) {
-        if (x <= a) break;
-        const amt = Math.min(x, b) - a;
-        if (amt > 0) tax += amt * r;
-      }
-      return tax;
-    }
-
-    function setOutcomeUI(net){
-      neo.classList.remove("refund","owed");
-      rPill.className = "neo-pill pill-gray";
-
-      if (net >= 0) {
-        neo.classList.add("refund");
-        neoChip.textContent = "REFUND • ESTIMATE";
-        neoIcon.textContent = "💸";
-        neoSub.textContent = "Estimated refund (simplified federal rules).";
-        rPill.textContent = "Estimated refund";
-        rPill.className = "neo-pill pill-green";
-      } else {
-        neo.classList.add("owed");
-        neoChip.textContent = "OWED • ESTIMATE";
-        neoIcon.textContent = "⚠️";
-        neoSub.textContent = "Estimated amount owed (simplified federal rules).";
-        rPill.textContent = "Estimated owed";
-        rPill.className = "neo-pill pill-red";
-      }
-    }
-
-    calcBtn.addEventListener("click", () => {
-      calcMsg.className = "msg warn";
-      calcMsg.textContent = "Calculating...";
-      calcMsg.style.display = "block";
-
-      const income = Number(incomeEl.value || 0);
-      const withheld = Number(withheldEl.value || 0);
-      const deps = Math.max(0, Math.floor(Number(depsEl.value || 0)));
-      const status = filingEl.value;
-
-      if (income <= 0) {
-        calcMsg.className = "msg bad";
-        calcMsg.textContent = "Enter your income (W-2 Box 1).";
-        return;
-      }
-      if (withheld < 0) {
-        calcMsg.className = "msg bad";
-        calcMsg.textContent = "Withheld can't be negative.";
-        return;
-      }
-
-      const std = stdDeduction(status);
-      const taxable = Math.max(0, income - std);
-      const baseTax = calcTaxFromBrackets(status, taxable);
-      const depCredit = deps * 2200;
-      const estTax = Math.max(0, baseTax - depCredit);
-      const net = withheld - estTax;
-
-      rTax.textContent = money(estTax);
-      rWithheld.textContent = money(withheld);
-      rStd.textContent = money(std);
-      rDepCredit.textContent = money(depCredit);
-      rNet.textContent = money(Math.abs(net));
-
-      setOutcomeUI(net);
-
-      calcMsg.className = "msg ok";
-      calcMsg.textContent = "Calculated. Scroll down for results.";
-    });
-
-    // STARFIELD + SHOOTING STARS
+    /* ------------------------------------------------------------
+       10) CANVAS STARFIELD + SHOOTING STARS
+       ------------------------------------------------------------ */
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
+
     let stars = [];
     let width = window.innerWidth;
     let height = window.innerHeight;
@@ -1098,19 +1691,34 @@
     window.addEventListener("resize", resizeCanvas);
 
     function initStars() {
-      const count = Math.min(260, Math.floor((width * height) / 11000));
+      const count = Math.min(220, Math.floor((width * height) / 12000));
       stars = [];
       for (let i = 0; i < count; i++) {
-        stars.push({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 1.4 + 0.4, o: Math.random(), tw: Math.random() * 2 + 1 });
+        stars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: Math.random() * 1.4 + 0.4,
+          o: Math.random(),
+          tw: Math.random() * 2 + 1,
+        });
       }
     }
 
     let shootingStars = [];
+
     function spawnShootingStar() {
       const startX = Math.random() * width * 0.6;
       const startY = Math.random() * height * 0.3;
       const len = Math.random() * 250 + 120;
-      shootingStars.push({ x: startX, y: startY, vx: 6 + Math.random() * 4, vy: 3 + Math.random() * 3, life: 0, maxLife: 35 + Math.random() * 20, length: len });
+      shootingStars.push({
+        x: startX,
+        y: startY,
+        vx: 6 + Math.random() * 4,
+        vy: 3 + Math.random() * 3,
+        life: 0,
+        maxLife: 35 + Math.random() * 20,
+        length: len,
+      });
     }
 
     function drawStarfield() {
@@ -1137,7 +1745,10 @@
         sh.x += sh.vx;
         sh.y += sh.vy;
         const p = sh.life / sh.maxLife;
-        if (p >= 1) { shootingStars.splice(i, 1); continue; }
+        if (p >= 1) {
+          shootingStars.splice(i, 1);
+          continue;
+        }
         const alpha = 1 - p;
         const tailX = sh.x - sh.vx * sh.length * 0.1;
         const tailY = sh.y - sh.vy * sh.length * 0.1;
@@ -1158,6 +1769,7 @@
     }
 
     setInterval(() => { if (Math.random() < 0.7) spawnShootingStar(); }, 7000);
+
     resizeCanvas();
     drawStarfield();
   </script>
