@@ -387,6 +387,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     input, select {
@@ -508,6 +509,59 @@
     }
     .mini-label { font-size: 12px; font-weight: 900; color: #64748b; margin-bottom: 4px; }
     .mini-val { font-size: 14px; font-weight: 900; color: #0f172a; word-break: break-word; }
+
+    /* ============================================================
+       9) TAX TOOLS TABS (Tax Calculator + W-4 Helper)
+       ============================================================ */
+    .tabs {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      flex: 1;
+      min-width: 160px;
+      border: 1px solid #e5e7eb;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
+    }
+    .tab-btn:hover { transform: translateY(-1px); }
+    .tab-btn.active {
+      background: #0f172a;
+      color: #fff;
+      border-color: #0f172a;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
+    }
+    .tab-panel { display: none; margin-top: 12px; }
+    .tab-panel.active { display: block; }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #475569;
+      line-height: 1.35;
+    }
+
+    .inline-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .inline-check input[type="checkbox"]{
+      width: 18px;
+      height: 18px;
+      accent-color: #0f172a;
+    }
   </style>
 </head>
 
@@ -528,13 +582,10 @@
       />
 
       <div id="clockLine" class="clock-line"></div>
-      <!-- Countdown right below clock (no extra words) -->
       <div id="countdownLine" class="countdown-btn">--d --h --m --s</div>
 
-      <!-- BIG “button-sized” marquee -->
       <div class="marquee-btn" aria-label="Updates">
         <div id="marqueeTrack" class="marquee-track">
-          <!-- JS duplicates items for seamless scroll -->
           <div class="marquee-item">📌 Bring W-2s, ID, Social Security cards (dependents too)</div>
           <div class="marquee-item">💡 Most refunds depend on income, credits, and withholding</div>
           <div class="marquee-item">✅ E-file = faster processing</div>
@@ -548,68 +599,217 @@
       <button class="btn text" onclick="window.location='sms:6142597625'">💬 Text Us</button>
       <button class="btn email" onclick="window.location='mailto:columbuseast.taxservices@outlook.com'">✉️ Email Us</button>
 
-      <button class="btn calc" id="toggleCalcBtn">🧮 Tax Calculator</button>
+      <button class="btn calc" id="toggleCalcBtn">🧮 Tax Tools</button>
       <button class="btn book" id="toggleBookBtn">📅 Book Appointment</button>
 
       <!-- Calculator Panel -->
       <div id="calcPanel" class="panel">
         <div class="section">
-          <div class="subline">Federal Estimate (Simple)</div>
+          <div class="subline">Tax Tools</div>
           <div class="now" id="calcNowLine"></div>
 
-          <div class="row">
-            <div>
-              <label for="calcIncome">W-2 Box 1 (Wages)</label>
-              <input id="calcIncome" inputmode="decimal" placeholder="e.g. 56000" />
+          <!-- Tabs -->
+          <div class="tabs" role="tablist" aria-label="Tax tools tabs">
+            <button id="tabTaxCalc" class="tab-btn active" type="button" role="tab" aria-selected="true">🧮 Tax Calculator</button>
+            <button id="tabW4" class="tab-btn" type="button" role="tab" aria-selected="false">🧾 W-4 Helper</button>
+          </div>
+
+          <!-- TAB 1: Tax Calculator -->
+          <div id="panelTaxCalc" class="tab-panel active" role="tabpanel" aria-labelledby="tabTaxCalc">
+            <div class="hint">
+              Federal-only estimate using IRS-style brackets + standard deduction. Not final IRS filing.
             </div>
-            <div>
-              <label for="calcWithheld">W-2 Box 2 (Federal Withheld)</label>
-              <input id="calcWithheld" inputmode="decimal" placeholder="e.g. 2300" />
+
+            <div class="row">
+              <div>
+                <label for="taxYear">Tax Year (tables)</label>
+                <select id="taxYear">
+                  <option value="2025">2025</option>
+                  <option value="2026" selected>2026</option>
+                </select>
+              </div>
+              <div>
+                <label for="calcStatus">Filing Status</label>
+                <select id="calcStatus">
+                  <option value="single">Single</option>
+                  <option value="mfj">Married Filing Jointly</option>
+                  <option value="mfs">Married Filing Separately</option>
+                  <option value="hoh">Head of Household</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="calcIncome">Wages (W-2 Box 1)</label>
+                <input id="calcIncome" inputmode="decimal" placeholder="e.g. 56000" />
+              </div>
+              <div>
+                <label for="calcWithheld">Federal Withheld (W-2 Box 2)</label>
+                <input id="calcWithheld" inputmode="decimal" placeholder="e.g. 2300" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="calcDepsKids">Qualifying children under 17 (CTC)</label>
+                <input id="calcDepsKids" inputmode="numeric" placeholder="e.g. 0" />
+              </div>
+              <div>
+                <label for="calcDepsOther">Other dependents</label>
+                <input id="calcDepsOther" inputmode="numeric" placeholder="e.g. 0" />
+              </div>
+            </div>
+
+            <button class="btn confirm" id="calcBtn" type="button">Calculate</button>
+
+            <div id="calcMsg" class="msg"></div>
+
+            <div id="calcResult" class="calc-result" style="display:none;">
+              <div class="subline" style="margin-bottom:6px;">Estimated Refund / Owed</div>
+              <div class="calc-grid">
+                <div class="mini-box">
+                  <div class="mini-label">Estimated Tax</div>
+                  <div id="outTax" class="mini-val">$0</div>
+                </div>
+                <div class="mini-box">
+                  <div class="mini-label">Withholding</div>
+                  <div id="outWh" class="mini-val">$0</div>
+                </div>
+                <div class="mini-box">
+                  <div class="mini-label">Credits (est.)</div>
+                  <div id="outCredits" class="mini-val">$0</div>
+                </div>
+                <div class="mini-box">
+                  <div class="mini-label">Estimated Refund / Owed</div>
+                  <div id="outNet" class="mini-val">$0</div>
+                </div>
+              </div>
+              <div class="hint" style="margin-top:10px;">
+                Credits here use: $2,200 per qualifying child + $500 per other dependent (simple).
+              </div>
             </div>
           </div>
 
-          <div class="row">
-            <div>
-              <label for="calcStatus">Filing Status</label>
-              <select id="calcStatus">
-                <option value="single">Single</option>
-                <option value="mfj">Married Filing Jointly</option>
-                <option value="mfs">Married Filing Separately</option>
-                <option value="hoh">Head of Household</option>
-              </select>
+          <!-- TAB 2: W-4 Helper -->
+          <div id="panelW4" class="tab-panel" role="tabpanel" aria-labelledby="tabW4">
+            <div class="hint">
+              Estimates federal income tax withholding per paycheck using the IRS “annualize wages → apply brackets → subtract Step 3 credits → divide by pay periods → add Step 4(c)” flow.
+              (Still an estimate. Actual employer payroll tables can differ with rounding rules.)
             </div>
-            <div>
-              <label for="calcDeps">Dependents (Child Tax Credit)</label>
-              <input id="calcDeps" inputmode="numeric" placeholder="e.g. 0" />
-            </div>
-          </div>
 
-          <button class="btn confirm" id="calcBtn" type="button">Calculate</button>
-
-          <div id="calcMsg" class="msg"></div>
-
-          <div id="calcResult" class="calc-result" style="display:none;">
-            <div class="subline" style="margin-bottom:6px;">Estimated Refund / Owed</div>
-            <div class="calc-grid">
-              <div class="mini-box">
-                <div class="mini-label">Estimated Tax</div>
-                <div id="outTax" class="mini-val">$0</div>
+            <div class="row">
+              <div>
+                <label for="w4Year">Withholding Tables (Year)</label>
+                <select id="w4Year">
+                  <option value="2025">2025</option>
+                  <option value="2026" selected>2026</option>
+                </select>
               </div>
-              <div class="mini-box">
-                <div class="mini-label">Withholding</div>
-                <div id="outWh" class="mini-val">$0</div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Credits (est.)</div>
-                <div id="outCredits" class="mini-val">$0</div>
-              </div>
-              <div class="mini-box">
-                <div class="mini-label">Estimated Refund / Owed</div>
-                <div id="outNet" class="mini-val">$0</div>
+              <div>
+                <label for="w4PayFreq">Pay Frequency</label>
+                <select id="w4PayFreq">
+                  <option value="52">Weekly (52)</option>
+                  <option value="26" selected>Biweekly (26)</option>
+                  <option value="24">Semimonthly (24)</option>
+                  <option value="12">Monthly (12)</option>
+                </select>
               </div>
             </div>
-            <div style="margin-top:10px; color:#475569; font-weight:700; font-size:12px;">
-              Note: This is a simple estimate (not IRS-final). For accuracy: bring all forms, credits, and deductions.
+
+            <div class="row">
+              <div>
+                <label for="w4Gross">Gross pay per paycheck</label>
+                <input id="w4Gross" inputmode="decimal" placeholder="e.g. 2100" />
+              </div>
+              <div>
+                <label for="w4Pretax">Pre-tax deductions per paycheck (401k/insurance)</label>
+                <input id="w4Pretax" inputmode="decimal" placeholder="e.g. 150" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="w4Status">Filing Status (W-4 Step 1(c))</label>
+                <select id="w4Status">
+                  <option value="single">Single</option>
+                  <option value="mfj">Married Filing Jointly</option>
+                  <option value="mfs">Married Filing Separately</option>
+                  <option value="hoh">Head of Household</option>
+                </select>
+              </div>
+              <div>
+                <label>
+                  Step 2(c) checkbox (Multiple Jobs / Spouse Works)
+                  <span class="inline-check" title="If checked, IRS method halves the standard deduction and bracket thresholds for withholding calculations.">
+                    <input id="w4Step2" type="checkbox" />
+                    <span>Checked</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="w4Kids">Step 3: Qualifying children under 17</label>
+                <input id="w4Kids" inputmode="numeric" placeholder="e.g. 0" />
+              </div>
+              <div>
+                <label for="w4OtherDeps">Step 3: Other dependents</label>
+                <input id="w4OtherDeps" inputmode="numeric" placeholder="e.g. 0" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="w4OtherIncome">Step 4(a): Other income (ANNUAL)</label>
+                <input id="w4OtherIncome" inputmode="decimal" placeholder="e.g. 1200" />
+              </div>
+              <div>
+                <label for="w4Deductions">Step 4(b): Deductions (ANNUAL)</label>
+                <input id="w4Deductions" inputmode="decimal" placeholder="e.g. 8000" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="w4Extra">Step 4(c): Extra withholding (per paycheck)</label>
+                <input id="w4Extra" inputmode="decimal" placeholder="e.g. 25" />
+              </div>
+              <div>
+                <label for="w4BonusAnnual">Bonuses (optional, ANNUAL)</label>
+                <input id="w4BonusAnnual" inputmode="decimal" placeholder="e.g. 5000" />
+              </div>
+            </div>
+
+            <button class="btn confirm" id="w4Btn" type="button">Estimate Withholding</button>
+
+            <div id="w4Msg" class="msg"></div>
+
+            <div id="w4Result" class="calc-result" style="display:none;">
+              <div class="subline" style="margin-bottom:6px;">Estimated Federal Withholding</div>
+              <div class="calc-grid">
+                <div class="mini-box">
+                  <div class="mini-label">Annualized wage (after pre-tax)</div>
+                  <div id="w4OutAnnualWage" class="mini-val">$0</div>
+                </div>
+                <div class="mini-box">
+                  <div class="mini-label">Annual taxable (after std + 4(b))</div>
+                  <div id="w4OutTaxable" class="mini-val">$0</div>
+                </div>
+                <div class="mini-box">
+                  <div class="mini-label">Annual tax (after Step 3 credits)</div>
+                  <div id="w4OutAnnualTax" class="mini-val">$0</div>
+                </div>
+                <div class="mini-box">
+                  <div class="mini-label">Withholding per paycheck</div>
+                  <div id="w4OutPerPay" class="mini-val">$0</div>
+                </div>
+              </div>
+
+              <div class="hint" style="margin-top:10px;">
+                Step 3 credits used: $2,200 per qualifying child + $500 per other dependent (simple). If Step 2(c) is checked, the standard deduction and bracket thresholds are halved for the calculation.
+              </div>
             </div>
           </div>
         </div>
@@ -741,7 +941,6 @@
     const countdownLine = document.getElementById("countdownLine");
 
     function nextTaxDay() {
-      // Picks April 15 of current year if still ahead; otherwise next year
       const now = new Date();
       const y = now.getFullYear();
       const tThis = new Date(y, 3, 15, 0, 0, 0); // April is month 3
@@ -773,11 +972,10 @@
        4) MARQUEE: DUPLICATE FOR SEAMLESS SCROLL
        ------------------------------------------------------------ */
     const marqueeTrack = document.getElementById("marqueeTrack");
-    // Duplicate the existing items once so the animation can scroll half width
     marqueeTrack.innerHTML = marqueeTrack.innerHTML + marqueeTrack.innerHTML;
 
     /* ------------------------------------------------------------
-       5) PANEL TOGGLES (Calculator + Booking)
+       5) PANEL TOGGLES (Tax Tools + Booking)
        ------------------------------------------------------------ */
     const toggleCalcBtn = document.getElementById("toggleCalcBtn");
     const toggleBookBtn = document.getElementById("toggleBookBtn");
@@ -786,7 +984,6 @@
 
     toggleCalcBtn.addEventListener("click", () => {
       calcPanel.classList.toggle("open");
-      // keep booking as-is (don’t auto-close)
     });
 
     toggleBookBtn.addEventListener("click", () => {
@@ -798,12 +995,109 @@
     });
 
     /* ------------------------------------------------------------
-       6) SIMPLE CALCULATOR (Federal-only rough estimate)
+       6) TAX TABLES + HELPERS
        ------------------------------------------------------------ */
+    function money(n) {
+      const x = Number(n || 0);
+      return x.toLocaleString("en-US", { style: "currency", currency: "USD" });
+    }
+    function parseNum(v) {
+      const n = Number(String(v || "").replace(/[^0-9.]/g, ""));
+      return Number.isFinite(n) ? n : 0;
+    }
+    function clampInt(v) {
+      return Math.max(0, Math.floor(parseNum(v)));
+    }
+
+    // Standard deduction (updated)
+    const STD_DED = {
+      2025: { single: 15750, mfs: 15750, hoh: 23625, mfj: 31500 },
+      2026: { single: 16100, mfs: 16100, hoh: 24150, mfj: 32200 },
+    };
+
+    // Bracket edges (taxable income) by year/status.
+    // We compute progressive tax by edges + rates (not base-tax shortcuts).
+    const BRACKETS = {
+      2025: {
+        mfj: { edges: [23850, 96950, 206700, 394600, 501050, 751600], rates: [0.10,0.12,0.22,0.24,0.32,0.35,0.37] },
+        hoh: { edges: [17000, 64850, 103350, 197300, 250500, 626350], rates: [0.10,0.12,0.22,0.24,0.32,0.35,0.37] },
+        single:{ edges: [11925, 48475, 103350, 197300, 250525, 626350], rates: [0.10,0.12,0.22,0.24,0.32,0.35,0.37] },
+        mfs:  { edges: [11925, 48475, 103350, 197300, 250525, 375800], rates: [0.10,0.12,0.22,0.24,0.32,0.35,0.37] },
+      },
+      2026: {
+        mfj: { edges: [24800, 100800, 211400, 403550, 512450, 768700], rates: [0.10,0.12,0.22,0.24,0.32,0.35,0.37] },
+        hoh: { edges: [17700, 67450, 105700, 201750, 256200, 640600], rates: [0.10,0.12,0.22,0.24,0.32,0.35,0.37] },
+        single:{ edges: [12400, 50400, 105700, 201775, 256225, 640600], rates: [0.10,0.12,0.22,0.24,0.32,0.35,0.37] },
+        mfs:  { edges: [12400, 50400, 105700, 201775, 256225, 384350], rates: [0.10,0.12,0.22,0.24,0.32,0.35,0.37] },
+      }
+    };
+
+    // Credits used in these simple tools:
+    const CTC_PER_CHILD = 2200;
+    const CTC_PER_OTHER_DEP = 500;
+
+    function computeProgressiveTax(taxable, edges, rates) {
+      // edges: [cap1, cap2, ...] ascending. rates length = edges.length + 1
+      let tax = 0;
+      let prev = 0;
+      let remaining = Math.max(0, taxable);
+
+      for (let i = 0; i < edges.length; i++) {
+        const cap = edges[i];
+        const chunk = Math.min(remaining, cap - prev);
+        if (chunk <= 0) break;
+        tax += chunk * rates[i];
+        remaining -= chunk;
+        prev = cap;
+      }
+      if (remaining > 0) tax += remaining * rates[rates.length - 1];
+      return Math.max(0, Math.round(tax));
+    }
+
+    function getStdDed(year, status, step2Checked=false) {
+      const y = Number(year);
+      const base = (STD_DED[y] && STD_DED[y][status]) ? STD_DED[y][status] : 0;
+      return step2Checked ? base / 2 : base;
+    }
+
+    function getBracketEdges(year, status, step2Checked=false) {
+      const y = Number(year);
+      const b = BRACKETS[y] && BRACKETS[y][status];
+      if (!b) return { edges: [], rates: [0.10,0.12,0.22,0.24,0.32,0.35,0.37] };
+      const edges = step2Checked ? b.edges.map(x => x / 2) : b.edges.slice();
+      return { edges, rates: b.rates.slice() };
+    }
+
+    /* ------------------------------------------------------------
+       7) TABS LOGIC (Tax Calc / W-4)
+       ------------------------------------------------------------ */
+    const tabTaxCalc = document.getElementById("tabTaxCalc");
+    const tabW4 = document.getElementById("tabW4");
+    const panelTaxCalc = document.getElementById("panelTaxCalc");
+    const panelW4 = document.getElementById("panelW4");
+
+    function setTab(which) {
+      const isTax = which === "tax";
+      tabTaxCalc.classList.toggle("active", isTax);
+      tabW4.classList.toggle("active", !isTax);
+      tabTaxCalc.setAttribute("aria-selected", isTax ? "true" : "false");
+      tabW4.setAttribute("aria-selected", !isTax ? "true" : "false");
+      panelTaxCalc.classList.toggle("active", isTax);
+      panelW4.classList.toggle("active", !isTax);
+    }
+
+    tabTaxCalc.addEventListener("click", () => setTab("tax"));
+    tabW4.addEventListener("click", () => setTab("w4"));
+
+    /* ------------------------------------------------------------
+       8) TAB 1: TAX CALCULATOR
+       ------------------------------------------------------------ */
+    const taxYearEl = document.getElementById("taxYear");
     const calcIncome = document.getElementById("calcIncome");
     const calcWithheld = document.getElementById("calcWithheld");
     const calcStatus = document.getElementById("calcStatus");
-    const calcDeps = document.getElementById("calcDeps");
+    const calcDepsKids = document.getElementById("calcDepsKids");
+    const calcDepsOther = document.getElementById("calcDepsOther");
     const calcBtn = document.getElementById("calcBtn");
 
     const calcMsg = document.getElementById("calcMsg");
@@ -813,80 +1107,34 @@
     const outCredits = document.getElementById("outCredits");
     const outNet = document.getElementById("outNet");
 
-    function money(n) {
-      const x = Number(n || 0);
-      return x.toLocaleString("en-US", { style: "currency", currency: "USD" });
-    }
-
-    // VERY simple progressive tax (placeholder-ish) + standard deduction approximations.
-    // You can swap this later for a proper 2025 table if you want.
-    function standardDeduction(status) {
-      // ✅ UPDATED: Tax Year 2025 standard deductions
-      // Single / MFS: 15,750 | MFJ: 31,500 | HOH: 23,625
-      if (status === "mfj") return 31500;
-      if (status === "hoh") return 23625;
-      if (status === "mfs") return 15750;
-      return 15750; // single
-    }
-
-    function estimateTax(taxable) {
-      // SIMPLE brackets (placeholder-ish) for demo; replace with official tables if desired.
-      // 10% up to 11k, 12% to 44,725, 22% to 95,375, etc.
-      let tax = 0;
-      const brackets = [
-        { upTo: 11000, rate: 0.10 },
-        { upTo: 44725, rate: 0.12 },
-        { upTo: 95375, rate: 0.22 },
-        { upTo: 182100, rate: 0.24 },
-        { upTo: 231250, rate: 0.32 },
-        { upTo: 578125, rate: 0.35 },
-        { upTo: Infinity, rate: 0.37 },
-      ];
-
-      let remaining = Math.max(0, taxable);
-      let lastCap = 0;
-
-      for (const b of brackets) {
-        const cap = b.upTo;
-        const chunk = Math.min(remaining, cap - lastCap);
-        if (chunk <= 0) break;
-        tax += chunk * b.rate;
-        remaining -= chunk;
-        lastCap = cap;
-      }
-      return Math.max(0, Math.round(tax));
-    }
-
-    function parseNum(v) {
-      const n = Number(String(v || "").replace(/[^0-9.]/g, ""));
-      return Number.isFinite(n) ? n : 0;
-    }
-
     calcBtn.addEventListener("click", () => {
       calcMsg.className = "msg";
       calcMsg.textContent = "";
       calcResult.style.display = "none";
 
+      const year = Number(taxYearEl.value);
       const wages = parseNum(calcIncome.value);
       const withheld = parseNum(calcWithheld.value);
-      const deps = Math.max(0, Math.floor(parseNum(calcDeps.value)));
+      const kids = clampInt(calcDepsKids.value);
+      const otherDeps = clampInt(calcDepsOther.value);
       const status = calcStatus.value;
 
       if (wages <= 0) {
         calcMsg.className = "msg warn";
-        calcMsg.textContent = "Enter W-2 Box 1 wages.";
+        calcMsg.textContent = "Enter wages (W-2 Box 1).";
         return;
       }
 
-      const std = standardDeduction(status);
+      const std = getStdDed(year, status, false);
       const taxable = Math.max(0, wages - std);
 
-      const tax = estimateTax(taxable);
+      const { edges, rates } = getBracketEdges(year, status, false);
+      const tax = computeProgressiveTax(taxable, edges, rates);
 
-      // Child tax credit approximation (you requested $2200 each previously).
-      const credits = deps * 2200;
+      const credits = kids * CTC_PER_CHILD + otherDeps * CTC_PER_OTHER_DEP;
+      const netTaxAfterCredits = Math.max(0, tax - credits);
 
-      const net = (withheld + credits) - tax; // positive = refund (rough)
+      const net = withheld - netTaxAfterCredits; // positive = refund
 
       outTax.textContent = money(tax);
       outWh.textContent = money(withheld);
@@ -899,7 +1147,95 @@
     });
 
     /* ------------------------------------------------------------
-       7) BOOKING LOGIC (Supabase)
+       9) TAB 2: W-4 HELPER (IRS-style annualized flow)
+       ------------------------------------------------------------ */
+    const w4Year = document.getElementById("w4Year");
+    const w4PayFreq = document.getElementById("w4PayFreq");
+    const w4Gross = document.getElementById("w4Gross");
+    const w4Pretax = document.getElementById("w4Pretax");
+    const w4Status = document.getElementById("w4Status");
+    const w4Step2 = document.getElementById("w4Step2");
+    const w4Kids = document.getElementById("w4Kids");
+    const w4OtherDeps = document.getElementById("w4OtherDeps");
+    const w4OtherIncome = document.getElementById("w4OtherIncome");
+    const w4Deductions = document.getElementById("w4Deductions");
+    const w4Extra = document.getElementById("w4Extra");
+    const w4BonusAnnual = document.getElementById("w4BonusAnnual");
+    const w4Btn = document.getElementById("w4Btn");
+
+    const w4Msg = document.getElementById("w4Msg");
+    const w4Result = document.getElementById("w4Result");
+    const w4OutAnnualWage = document.getElementById("w4OutAnnualWage");
+    const w4OutTaxable = document.getElementById("w4OutTaxable");
+    const w4OutAnnualTax = document.getElementById("w4OutAnnualTax");
+    const w4OutPerPay = document.getElementById("w4OutPerPay");
+
+    w4Btn.addEventListener("click", () => {
+      w4Msg.className = "msg";
+      w4Msg.textContent = "";
+      w4Result.style.display = "none";
+
+      const year = Number(w4Year.value);
+      const payPeriods = parseInt(w4PayFreq.value, 10) || 26;
+
+      const gross = parseNum(w4Gross.value);
+      const pretax = parseNum(w4Pretax.value);
+      const status = w4Status.value;
+      const step2 = !!w4Step2.checked;
+
+      const kids = clampInt(w4Kids.value);
+      const otherDeps = clampInt(w4OtherDeps.value);
+
+      const otherIncomeAnnual = parseNum(w4OtherIncome.value);
+      const deductionsAnnual = parseNum(w4Deductions.value);
+      const extraPerPay = parseNum(w4Extra.value);
+      const bonusAnnual = parseNum(w4BonusAnnual.value);
+
+      if (gross <= 0) {
+        w4Msg.className = "msg warn";
+        w4Msg.textContent = "Enter gross pay per paycheck.";
+        return;
+      }
+      if (!STD_DED[year] || !BRACKETS[year]) {
+        w4Msg.className = "msg bad";
+        w4Msg.textContent = "Tax table year not supported in this build.";
+        return;
+      }
+
+      // 1) Annualize wages (gross + optional bonuses - pretax)
+      const perPayTaxableWage = Math.max(0, gross - pretax);
+      const annualWage = perPayTaxableWage * payPeriods + bonusAnnual;
+
+      // 2) Step 4(a) add other income; Step 4(b) subtract deductions
+      const annualAdjusted = annualWage + otherIncomeAnnual - deductionsAnnual;
+
+      // 3) Subtract standard deduction (Step 2(c) checked => halve std + brackets)
+      const std = getStdDed(year, status, step2);
+      const taxableAnnual = Math.max(0, annualAdjusted - std);
+
+      // 4) Compute annual tax using brackets (Step 2(c) checked => halve bracket thresholds)
+      const { edges, rates } = getBracketEdges(year, status, step2);
+      let annualTax = computeProgressiveTax(taxableAnnual, edges, rates);
+
+      // 5) Subtract Step 3 credits (annual)
+      const credits = kids * CTC_PER_CHILD + otherDeps * CTC_PER_OTHER_DEP;
+      annualTax = Math.max(0, annualTax - credits);
+
+      // 6) Divide by pay periods and add Step 4(c) extra per paycheck
+      const perPay = Math.max(0, (annualTax / payPeriods)) + extraPerPay;
+
+      w4OutAnnualWage.textContent = money(annualWage);
+      w4OutTaxable.textContent = money(taxableAnnual);
+      w4OutAnnualTax.textContent = money(annualTax);
+      w4OutPerPay.textContent = money(perPay);
+
+      w4Result.style.display = "block";
+      w4Msg.className = "msg ok";
+      w4Msg.textContent = "Withholding estimate calculated.";
+    });
+
+    /* ------------------------------------------------------------
+       10) BOOKING LOGIC (Supabase)
        ------------------------------------------------------------ */
     function pad(n) { return String(n).padStart(2, "0"); }
     function todayYMD() {
@@ -1113,7 +1449,7 @@
     refreshSlots();
 
     /* ------------------------------------------------------------
-       8) CANVAS STARFIELD + SHOOTING STARS
+       11) CANVAS STARFIELD + SHOOTING STARS
        ------------------------------------------------------------ */
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
